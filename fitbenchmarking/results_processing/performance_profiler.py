@@ -2,19 +2,13 @@
 Set up performance profiles for both accuracy and runtime tables
 """
 import os
-from textwrap import wrap
 
-import matplotlib
 import numpy as np
-
-matplotlib.use('Agg')
-# pylint: disable=wrong-import-position,ungrouped-imports
-import matplotlib.pyplot as plt  # noqa: E402
-
-# pylint: enable=wrong-import-position,ungrouped-imports
+import plotly.graph_objects as go
+from fitbenchmarking.results_processing.plots import Plot
 
 
-def profile(results, fig_dir):
+def profile(results, fig_dir, supp_dir, options):
     """
     Function that generates profiler plots
 
@@ -22,12 +16,17 @@ def profile(results, fig_dir):
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
+    :param supp_dir: path to the support_pages directory
+    :type supp_dir: str
+    :param options: The options for the run
+    :type options: utils.options.Options
 
     :return: path to acc and runtime profile graphs
     :rtype: tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path = plot(acc_bound, runtime_bound, fig_dir)
+    plot_path = plot(acc_bound, runtime_bound, fig_dir,
+                     supp_dir, options)
     return plot_path
 
 
@@ -70,7 +69,7 @@ def prepare_profile_data(results):
     return acc_dict, runtime_dict
 
 
-def plot(acc, runtime, fig_dir):
+def plot(acc, runtime, fig_dir, supp_dir, options):
     """
     Function that generates profiler plots
 
@@ -80,14 +79,19 @@ def plot(acc, runtime, fig_dir):
     :type runtime: dict
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
+    :param supp_dir: path to the support_pages directory
+    :type supp_dir: str
+    :param options: The options for the run
+    :type options: utils.options.Options
 
     :return: path to acc and runtime profile graphs
     :rtype: tuple(str, str)
     """
     figure_path = []
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
-        this_filename = os.path.join(fig_dir, f"{name}_profile.png")
-        figure_path.append(this_filename)
+        this_filename_html = os.path.join(fig_dir, f"{name}_profile.html")
+
+        figure_path.append(this_filename_html)
 
         step_values = []
         max_value = 0.0
@@ -103,67 +107,69 @@ def plot(acc, runtime, fig_dir):
 
         use_log_plot = True
         if max_value < linear_upper_limit:
-            # if we don't need a log plot, then don't print one
-            fig, ax = plt.subplots(1, 2,
-                                   gridspec_kw={
-                                       'width_ratios': [30, 7.8],
-                                       'wspace': 0.01})
-            legend_ax = 1
             use_log_plot = False
-        else:
-            fig, ax = plt.subplots(1, 3,
-                                   sharey=True,
-                                   gridspec_kw={
-                                       'width_ratios': [10, 20, 7.8],
-                                       'wspace': 0.01})
-            legend_ax = 2
 
         # Plot linear performance profile
         keys = profile_plot.keys()
-        create_plot(ax[0], step_values, keys)
-        ax[0].set_xlim(1, linear_upper_limit)
-        ax[0].set_xticks([1, 2, 4, 6, 8, 10])
-        ax[0].set_xticklabels(['$1$', '$2$', '$4$', '$6$', '$8$', '$10$'])
-        ax[0].yaxis.set_ticks_position('left')
+        fig = create_plot(step_values, keys)
 
-        if use_log_plot:
-            # Plot log performance profile
-            create_plot(ax[1], step_values, keys)
-            ax[1].set_xlim(
-                linear_upper_limit,
-                min(max_value+1, 10000))
-            ax[1].set_xscale('log')
-            ax[1].set_xticks([100, 1000, 10000])
-            ax[1].set_xticklabels(['$10^2$', '$10^3$', '$10^4$'])
-            ax[1].yaxis.set_ticks_position('right')
-            ax[1].tick_params(axis='y', labelcolor='white')
+        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
+        x_ticks_labels = ["1", "2", "5", "10", "10<sup>2</sup>",
+                          "10<sup>3</sup>", "10<sup>4</sup>"]
 
-        # legend
-        ax[legend_ax].axis('off')
-        handles, labels = ax[0].get_legend_handles_labels()
-        wrapped_labels = ['\n'.join(wrap(label, 22)) for label in labels]
-        ax[legend_ax].legend(handles, wrapped_labels, loc=2, prop={'size': 7})
+        if use_log_plot is True:
+            x_upper_limit = min(max_value+1, 10000)
+            x_limits = (1, x_upper_limit)
+            fig.update_xaxes(type="log",
+                             range=[np.log10(i) for i in x_limits],
+                             tickvals=x_ticks,
+                             ticktext=x_ticks_labels)
+        else:
+            x_limits = (1, linear_upper_limit)
+            fig.update_xaxes(range=x_limits,
+                             tickvals=x_ticks,
+                             ticktext=x_ticks_labels)
 
-        # Common parts
-        plt.ylim(0.0, 1.0)
-        fig.suptitle(f"Performance profile - {name}")
+        # Update appearance of graph
+        fig.update_layout(autosize=True,
+                          title={'text': f"Performance profile - {name}",
+                                 'y': 0.9,
+                                 'x': 0.5,
+                                 'xanchor': 'center'
+                                 },
+                          xaxis_title='f',
+                          yaxis_title="fraction for which solver"
+                                      "within f of best",
+                          legend={'font': {'size': 13},
+                                  'y': 0.1
+                                  },
+                          plot_bgcolor='white',
+                          )
 
-        # add a big axis, hide frame
-        fig.add_subplot(111, frameon=False)
-        # hide tick and tick label of the big axis
-        plt.tick_params(labelcolor='none',
-                        top=False,
-                        bottom=False,
-                        left=False,
-                        right=False)
-        # the xlabel has added white space to (empirically) make it look
-        # centred under the plots (and not the legend)
-        plt.xlabel("f                       ")
-        plt.ylabel("fraction for which solver within f of best")
-        ax[0].set_ylim(0.0, 1.05)
+        # Update both axis to show the grid
+        fig.update_xaxes(
+            showgrid=True,
+            mirror=True,
+            ticks='outside',
+            showline=True,
+            linecolor='black',
+            gridcolor='lightgrey'
+        )
+        fig.update_yaxes(
+            showgrid=True,
+            mirror=True,
+            ticks='outside',
+            showline=True,
+            linecolor='black',
+            gridcolor='lightgrey',
+            range=(0, 1.05)
+        )
 
-        plt.savefig(this_filename, dpi=150)
-        plt.close(fig)
+        Plot.write_html_with_link_plotlyjs(fig,
+                                           fig_dir,
+                                           this_filename_html,
+                                           options,
+                                           supp_dir)
 
     return figure_path
 
@@ -175,24 +181,29 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
-    """
-    Function to draw the profile on a matplotlib axis
+def create_plot(step_values: 'list[np.ndarray]', solvers: 'list[str]'):
 
-    :param ax: A matplotlib axis to be filled
-    :type ax: an `.axes.SubplotBase` subclass of `~.axes.Axes`
-              (or a subclass of `~.axes.Axes`)
-    :param step_values: a sorted list of the values of the metric
+    """
+    Function to draw the profile in plotly
+
+    :param step_values: A sorted list of the values of the metric
                         being profiled
     :type step_values: list of np.array[float]
     :param solvers: A list of the labels for the different solvers
     :type solvers: list of strings
+
+    :return: The perfomance profile graph
+    :rtype: plotly.graph_objs._figure.Figure
     """
-    lines = ["-", "-.", "--", ":"]
-    # use only 9 of matplotlib's colours, as this will give us
-    # 9 * 4 = 36 line/colour combinations, as opposed to
-    # 10 * 4 / 2 = 20 if we used all 10
-    colors = ["C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]
+
+    fig = go.Figure()
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
+    # Use only 3 of the possible 5 linestyles, because 5 is a factor
+    # of 10 (number of colours) and using 10 colours + 5 linestyles
+    # would not give enough line/colour combinations
+    linestyles = ['solid', 'dash', 'dashdot']
 
     huge = 1.0e20  # set a large value as a proxy for infinity
 
@@ -207,10 +218,17 @@ def create_plot(ax, step_values: 'list[np.ndarray]', solvers: 'list[str]'):
                 plural_ending = ""
             solver = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
         solver_values = np.append(solver_values, huge)
-        ax.step(solver_values,
-                plot_points,
-                label=solver,
-                linestyle=lines[(i % len(lines))],
-                color=colors[(i % len(colors))],
-                lw=2.0,
-                where='post')
+
+        fig.add_trace(
+            go.Scatter(x=solver_values,
+                       y=plot_points,
+                       mode='lines',
+                       line={"shape": 'hv',
+                             "dash": linestyles[(i % len(linestyles))],
+                             "color": colors[(i % len(colors))]},
+                       name=solver,
+                       type='scatter'
+                       )
+            )
+
+    return fig

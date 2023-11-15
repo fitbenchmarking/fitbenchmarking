@@ -76,8 +76,8 @@ class PerformanceProfilerTests(unittest.TestCase):
                 v/min_runtime for v in self.runtime_expected[k]]
 
         self.fig_dir = ''
-        self.acc_name = "acc_profile.png"
-        self.runtime_name = "runtime_profile.png"
+        self.acc_name = "acc_profile.html"
+        self.runtime_name = "runtime_profile.html"
 
     def tearDown(self):
         """
@@ -103,11 +103,15 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that the performance profiler returns the expected paths
         """
+        supp_dir = os.path.join(self.fig_dir, 'support_pages')
+        options = Options()
         acc, runtime = performance_profiler.profile(self.results,
-                                                    self.fig_dir)
+                                                    self.fig_dir,
+                                                    supp_dir,
+                                                    options)
 
-        assert acc == "acc_profile.png"
-        assert runtime == "runtime_profile.png"
+        assert acc == "acc_profile.html"
+        assert runtime == "runtime_profile.html"
 
     # pylint: enable=W0632
 
