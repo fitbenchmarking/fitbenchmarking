@@ -763,7 +763,8 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
     :type output_file: str
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
-    :param dfs_all_prob_sets: For each problem set, dataframes to create dash plots.
+    :param dfs_all_prob_sets: For each problem set, dataframes to create
+                              dash plots.
     :type dfs_all_prob_sets: List of dicts
     :param groups: The group directories the results refer to.
     :type groups: list
@@ -835,4 +836,5 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
                     "Please provide it in the following form:  \n"
                     "ip-address:port/problem_set/performance_profile.")
 
-    app.run(port=8053, debug=True)
+    actual_port = options.port
+    app.run(port=actual_port, debug=True)

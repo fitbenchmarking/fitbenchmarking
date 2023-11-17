@@ -133,6 +133,12 @@ of the Fitbenchmarking docs. '''
                         default='mean',
                         help="Set the metric for the runtime.")
 
+    parser.add_argument('-prt', '--port',
+                        metavar='PORT',
+                        type=int,
+                        default=0,
+                        help="Set the port for Dash.")
+
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--make_plots', action='store_true',
                         help="Use this option if you have decided to "
@@ -371,7 +377,8 @@ def main():
         'level': args.level,
         'external_output': args.external_output,
         'run_name': args.run_name,
-        'runtime_metric': args.runtime_metric
+        'runtime_metric': args.runtime_metric,
+        'port': args.port
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
