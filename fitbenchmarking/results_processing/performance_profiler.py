@@ -4,7 +4,6 @@ Set up performance profiles for both accuracy and runtime tables
 import os
 
 import numpy as np
-import plotly
 import plotly.graph_objects as go
 import pandas as pd
 import dash
@@ -25,8 +24,9 @@ def profile(results, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: path to acc and runtime profile graphs
-    :rtype: tuple(str, str)
+    :return: Path to acc and runtime profile graphs;
+             data for plotting the graphs
+    :rtype: Tuple(tuple(str, str), tuple(pd.DataFrame, pd.DataFrame))
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
     plot_path, data_dfs = get_plot_path_and_data(acc_bound,
@@ -88,8 +88,9 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: path to acc and runtime profile graphs
-    :rtype: tuple(str, str)
+    :return: Path to acc and runtime profile graphs;
+             data for plotting the graphs
+    :rtype: Tuple(tuple(str, str), tuple(pd.DataFrame, pd.DataFrame))
     """
     figure_path = []
     data_dfs = {}
@@ -114,6 +115,9 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
         if max_value < linear_upper_limit:
             use_log_plot = False
 
+        log_upper_limit = min(max_value+1, 10000)
+
+
         # Plot linear performance profile
         keys = profile_plot.keys()
         fig, data_df = create_plot_and_data_df(step_values=step_values,
@@ -121,64 +125,92 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
         data_dfs[name] = data_df
 
-        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
-        x_ticks_labels = ["1", "2", "5", "10", "10<sup>2</sup>",
-                          "10<sup>3</sup>", "10<sup>4</sup>"]
-
-        if use_log_plot is True:
-            x_upper_limit = min(max_value+1, 10000)
-            x_limits = (1, x_upper_limit)
-            fig.update_xaxes(type="log",
-                             range=[np.log10(i) for i in x_limits],
-                             tickvals=x_ticks,
-                             ticktext=x_ticks_labels)
-        else:
-            x_limits = (1, linear_upper_limit)
-            fig.update_xaxes(range=x_limits,
-                             tickvals=x_ticks,
-                             ticktext=x_ticks_labels)
-
-        # Update appearance of graph
-        fig.update_layout(autosize=True,
-                          title={'text': f"Performance profile - {name}",
-                                 'y': 0.9,
-                                 'x': 0.5,
-                                 'xanchor': 'center'
-                                 },
-                          xaxis_title='f',
-                          yaxis_title="fraction for which solver"
-                                      "within f of best",
-                          legend={'font': {'size': 13},
-                                  'y': 0.1
-                                  },
-                          plot_bgcolor='white',
-                          )
-
-        # Update both axis to show the grid
-        fig.update_xaxes(
-            showgrid=True,
-            mirror=True,
-            ticks='outside',
-            showline=True,
-            linecolor='black',
-            gridcolor='lightgrey'
-        )
-        fig.update_yaxes(
-            showgrid=True,
-            mirror=True,
-            ticks='outside',
-            showline=True,
-            linecolor='black',
-            gridcolor='lightgrey',
-            range=(0, 1.05)
-        )
+        fig = update_fig(fig, name, use_log_plot,
+                         log_upper_limit)
 
         Plot.write_html_with_link_plotlyjs(fig,
                                            fig_dir,
                                            this_filename_html,
                                            options)
 
-    return figure_path
+    return figure_path, data_dfs
+
+
+def update_fig(fig, name, use_log_plot,
+               log_upper_limit):
+
+    """Update layout of plotly (or Dash) plot.
+
+    :param fig: The performance profile plot
+    :type fig: plotly.graph_objects.Figure
+    :param name: The name of the graph
+    :type name: str
+    :param use_log_plot: Whether to use a log plot or not
+    :type use_log_plot: boolean
+    :param log_upper_limit: The upper limit for the x axis if log
+    :type log_upper_limit: int
+
+    :return: Updated plot
+    :rtype: plotly.graph_objects.Figure
+
+    """
+    linear_upper_limit = 10
+    x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
+    x_ticks_labels = ["1", "2", "5", "10", "10<sup>2</sup>",
+                      "10<sup>3</sup>", "10<sup>4</sup>"]
+    if use_log_plot is True:
+        x_limits = (1, log_upper_limit)
+        fig.update_xaxes(type="log",
+                         range=[np.log10(i) for i in x_limits],
+                         tickvals=x_ticks,
+                         ticktext=x_ticks_labels)
+    else:
+        x_limits = (1, linear_upper_limit)
+        fig.update_xaxes(range=x_limits,
+                         tickvals=x_ticks,
+                         ticktext=x_ticks_labels)
+
+    # Update appearance of graph
+    graph_title = f"Performance profile - {name}"
+
+    fig.update_layout(
+        autosize=True,
+        title={
+            'text': graph_title,
+            'y': 0.85,
+            'x': 0.4,
+            'xanchor': 'center'
+        },
+        xaxis_title='f',
+        yaxis_title="fraction for which solver within f of best",
+        legend={
+            'font': {'size': 13},
+            'y': 0.1
+        },
+        plot_bgcolor='white',
+    )
+
+    # Update both axis to show the grid
+    fig.update_xaxes(
+        showgrid=True,
+        mirror=True,
+        ticks='outside',
+        showline=True,
+        linecolor='black',
+        gridcolor='lightgrey'
+    )
+
+    fig.update_yaxes(
+        showgrid=True,
+        mirror=True,
+        ticks='outside',
+        showline=True,
+        linecolor='black',
+        gridcolor='lightgrey',
+        range=(0, 1.05)
+    )
+
+    return fig
 
 
 def _remove_nans(values: np.ndarray) -> np.ndarray:
@@ -200,8 +232,8 @@ def create_plot_and_data_df(step_values: 'list[np.ndarray]',
     :param solvers: A list of the labels for the different solvers
     :type solvers: list of strings
 
-    :return: The perfomance profile graph
-    :rtype: plotly.graph_objs._figure.Figure
+    :return: The perfomance profile graph; the data for plotting the graph
+    :rtype: tuple(plotly.graph_objects.Figure, pd.DataFrame)
     """
 
     fig = go.Figure()
@@ -258,14 +290,17 @@ def create_df(solvers, solver_values, plot_points):
     """
     Creates a df with performance profile data.
 
-    :param solvers:
-    :type solvers:
-    :param solver_values:
-    :type solver_values:
+    :param solvers: The list of solvers
+    :type solvers: list of strings
+    :param solver_values: The solver values (x values) for each solver
+    :type solver_values: list of numpy arrays
+    :param plot_points: The y values for each solver
+    :type plot_points: list of numpy arrays
 
-    :return:
-    :rtype:
+    :return: Dataframe with performance profile data
+    :rtype: pd.DataFrame
     """
+
     solvers_repeated = np.repeat(solvers, len(plot_points[0]))
 
     def flatten(list_i):
@@ -304,7 +339,14 @@ class perfProfile(object):
             dcc.RadioItems(
                 id=f"Log axis toggle {self.identif}",
                 options=["Log x-axis", "Linear x-axis"],
-                value="Log x-axis"
+                value="Log x-axis",
+                labelStyle={"margin-top": "1rem",
+                            "margin-left": "1rem",
+                            "margin-right": "1rem",
+                            "margin-bottom": "0rem"},
+                style={"display": "flex",
+                       "font-family": "math",
+                       "font-size": '17px'}
             ),
             dcc.Graph(id=f"visual {self.identif}")
             ],
@@ -330,10 +372,15 @@ class perfProfile(object):
         linestyles = ['solid', 'dash', 'dashdot']
 
         i = 1
+        max_value = 0
         for solver, data_one_solver in self.data.groupby('solver'):
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
+
+            temp_max_value = max(list(solver_values))
+            if temp_max_value > max_value:
+                max_value = temp_max_value
 
             fig.add_trace(
                 go.Scatter(
@@ -349,26 +396,13 @@ class perfProfile(object):
                     type='scatter'))
             i = i+1
 
-        x_limits = (1, 10000)
-        x_ticks = [1, 2, 5, 10, 100, 1000, 10000]
-        x_ticks_labels = [
-            "1", "2", "5", "10",
-            "10<sup>2</sup>",
-            "10<sup>3</sup>",
-            "10<sup>4</sup>"
-        ]
+        log_upper_limit = min(max_value+1, 10000)
 
         if x_axis_scale == 'Log x-axis':
-            fig.update_xaxes(
-                type="log",
-                range=[np.log10(i) for i in x_limits],
-                tickvals=x_ticks,
-                ticktext=x_ticks_labels)
+            use_log_plot = True
         else:
-            fig.update_xaxes(
-                type="linear",
-                range=x_limits,
-                tickvals=x_ticks,
-                ticktext=x_ticks_labels)
+            use_log_plot = False
 
+        fig = update_fig(fig, self.profile_name, use_log_plot,
+                         log_upper_limit)
         return fig
