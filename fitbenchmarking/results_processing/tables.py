@@ -110,12 +110,13 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             report_failed_min = \
                 any(minimizers for minimizers in unselected_minimzers.values())
 
-            if len(table.pp_filenames)==1:
+            if len(table.pp_filenames) == 1:
                 pp_index = [1]
-            elif len(table.pp_filenames)==2:
+            elif len(table.pp_filenames) == 2:
                 pp_index = [1, 2]
             else:
-                raise ValueError('Diplaying more than two profiles is not possible yet.')
+                raise ValueError('Diplaying more than two profiles is not'
+                                 'possible yet.')
 
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(

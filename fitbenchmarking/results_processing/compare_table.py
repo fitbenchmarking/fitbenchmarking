@@ -46,8 +46,10 @@ class CompareTable(Table):
         group_dir_label = group_dir.split('/')[-1]
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
-        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_acc',
-                             f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_runtime']
+        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
+                             'perf_prof_acc',
+                             f'http://127.0.0.1:{port}/{group_dir_label}/'
+                             'perf_prof_runtime']
 
         self.colour_template = \
             'background-image: linear-gradient({0},{0},{1},{1})'

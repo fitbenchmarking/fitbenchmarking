@@ -117,7 +117,6 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
         log_upper_limit = min(max_value+1, 10000)
 
-
         # Plot linear performance profile
         keys = profile_plot.keys()
         fig, data_df = create_plot_and_data_df(step_values=step_values,
