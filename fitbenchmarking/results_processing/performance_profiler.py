@@ -188,6 +188,8 @@ def update_fig(fig, name, use_log_plot,
             'y': 0.1
         },
         plot_bgcolor='white',
+        font_family='verdana',
+        font_color='#454545',
     )
 
     # Update both axis to show the grid
@@ -345,8 +347,9 @@ class perfProfile(object):
                             "margin-right": "1rem",
                             "margin-bottom": "0rem"},
                 style={"display": "flex",
-                       "font-family": "math",
-                       "font-size": '17px'}
+                       "font-family": "verdana",
+                       "color": '#454545',
+                       "font-size": "15px"}
             ),
             dcc.Graph(id=f"visual {self.identif}")
             ],
