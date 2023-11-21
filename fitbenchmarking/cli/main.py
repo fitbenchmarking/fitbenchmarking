@@ -130,7 +130,7 @@ of the Fitbenchmarking docs. '''
                                  'harmonic',
                                  'trim'],
                         type=str,
-                        default='mean',
+                        default='',
                         help="Set the metric for the runtime.")
 
     group1 = parser.add_mutually_exclusive_group()
