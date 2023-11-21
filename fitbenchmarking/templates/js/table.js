@@ -4,7 +4,7 @@
 * @param   {String} search_text   The text to search for.
 * @return  {jQuery Object}        A collection of DOM elements which matched the jQuery search.
 */
-function _find_element_from_text(class_name, search_text) { 
+function _find_element_from_text(class_name, search_text) {
     return $(class_name).filter(function() { return $(this).text() == search_text; });
 }
 
@@ -82,3 +82,23 @@ function toggle_prob_size_header() {
         $('th:nth-child(2)').hide();
     }
   }
+
+
+/**
+* Allows to switch between offline and online (Dash) performance profile plots.
+*/
+function load_offline_src(path, index){
+    document.getElementById("i_frame"+index).setAttribute("src", path)
+}
+if (document.getElementById("offline_plot"+index)){
+    document.getElementById("offline_plot"+index).addEventListener("click", load_offline_src(path));
+}
+
+
+function load_online_src(path, index){
+    document.getElementById("i_frame"+index).setAttribute("src", path);
+}
+if (document.getElementById("online_plot"+index)){
+    document.getElementById("online_plot"+index).addEventListener("click", load_online_src(path));
+}
+

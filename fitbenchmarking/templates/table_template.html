@@ -140,8 +140,19 @@
                             </h2>
                             <div class="content">
                                 <div class="graph">
-                                    {% for imgfile in pp_filenames %}
-                                        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ imgfile }}"></iframe>
+                                    {% for offline_plot, dash_plot, index in zipped_paths %}
+                                        <p> For a more interative plot (Dash), switch to "Online version" by clicking the button below.
+                                            <b>This will only work if the Dash app is running.</b> </p>
+                                        <div>
+                                        <button class="btn default" id="offline_plot{{index}}"
+                                                onclick="load_offline_src(this.value)">Offline version</button>
+                                        <button class="btn default" id="online_plot{{index}}"
+                                                onclick="load_online_src('{{dash_plot}}', '{{index}}')">Online version</button>
+                                        </div>
+                                        <p></p>
+                                        <iframe width="100%" height="500" id="i_frame{{index}}" frameborder="0" seamless="seamless" scrolling="no"
+                                                src="{{ offline_plot }}"></iframe>
+
                                     {% endfor %}
                                 </div>
                                 <p>
