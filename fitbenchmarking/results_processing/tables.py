@@ -110,6 +110,13 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             report_failed_min = \
                 any(minimizers for minimizers in unselected_minimzers.values())
 
+            if len(table.pp_filenames)==1:
+                pp_index = [1]
+            elif len(table.pp_filenames)==2:
+                pp_index = [1, 2]
+            else:
+                raise ValueError('Diplaying more than two profiles is not possible yet.')
+
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(
                     template.render(css_style_sheet=css['main'],
@@ -128,6 +135,10 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     result_name=table.table_title,
                                     has_pp=table.has_pp,
                                     pp_filenames=table.pp_filenames,
+                                    pp_dash_urls=table.pp_dash_urls,
+                                    zipped_paths=zip(table.pp_filenames,
+                                                     table.pp_dash_urls,
+                                                     pp_index),
                                     cbar=cbar,
                                     run_name=run_name,
                                     error_message=ERROR_OPTIONS,
