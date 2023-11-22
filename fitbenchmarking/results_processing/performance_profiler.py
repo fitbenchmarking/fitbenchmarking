@@ -319,7 +319,7 @@ def create_df(solvers, solver_values, plot_points):
     return data_df
 
 
-class perfProfile(object):
+class DashPerfProfile(object):
 
     """General class for creating performance profiles."""
 

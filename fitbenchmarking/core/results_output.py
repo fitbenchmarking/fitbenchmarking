@@ -13,7 +13,8 @@ from jinja2 import Environment, FileSystemLoader
 import pandas as pd
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
-from fitbenchmarking.results_processing.performance_profiler import perfProfile
+from fitbenchmarking.results_processing.performance_profiler import \
+    DashPerfProfile
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
@@ -798,12 +799,12 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
     # Dash app
     inst_all_groups = {}
     for group, data_dfs in zip(groups, dfs_all_prob_sets):
-        inst = {'accProfile': perfProfile(profile_name='Accuracy',
-                                          data_df=data_dfs['acc'],
-                                          group_label=group),
-                'runtimeProfile': perfProfile(profile_name='Runtime',
-                                              data_df=data_dfs['runtime'],
-                                              group_label=group)}
+        inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
+                                              data_df=data_dfs['acc'],
+                                              group_label=group),
+                'runtimeProfile': DashPerfProfile(profile_name='Runtime',
+                                                  data_df=data_dfs['runtime'],
+                                                  group_label=group)}
         inst_all_groups[group] = inst
 
     app = Dash(__name__, suppress_callback_exceptions=True)
