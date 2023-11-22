@@ -5,8 +5,13 @@ Tests for the performance profiler file.
 import inspect
 import os
 import unittest
+from inspect import getfile
 import numpy as np
+from pandas.testing import assert_frame_equal
+from pandas import read_csv
+import pandas as pd
 
+import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
@@ -79,6 +84,11 @@ class PerformanceProfilerTests(unittest.TestCase):
         self.acc_name = "acc_profile.html"
         self.runtime_name = "runtime_profile.html"
 
+        root = os.path.dirname(getfile(fitbenchmarking))
+        self.expected_results_dir = os.path.join(
+            root, 'results_processing',
+            'tests', 'expected_results')
+
     def tearDown(self):
         """
         Removes expected acc and runtime plots
@@ -99,7 +109,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             assert np.allclose(v, runtime[k])
 
     # pylint: disable=W0632
-    def test_correct_profile(self):
+    def test_correct_profile_output_paths(self):
         """
         Test that the performance profiler returns the expected paths
         """
@@ -110,6 +120,46 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         assert acc == "acc_profile.html"
         assert runtime == "runtime_profile.html"
+
+    def test_correct_profile_output_dict_format(self):
+        """
+        Test that the performance profiler returns the expected paths
+        """
+        supp_dir = os.path.join(self.fig_dir, 'support_pages')
+        options = Options()
+        (_, _), data_dfs = performance_profiler.profile(self.results,
+                                                        self.fig_dir,
+                                                        supp_dir,
+                                                        options)
+
+        assert isinstance(data_dfs, dict)
+        for df in list(data_dfs.values()):
+            assert isinstance(df, pd.DataFrame)
+            assert not df.empty
+
+    def test_create_correct_data_df(self):
+        """
+        Test that the performance profiler creates the expected dataframes
+        to be used to build the dash plots.
+        """
+        expected_df = read_csv(self.expected_results_dir + "/pp_data.csv")
+        solvers = ['lm-bumps [bumps]', 'scipy-leastsq [bumps]',
+                   'dfogn [dfo] (4 failures)']
+        solver_values = [
+            np.array([0., 5.4, 11., 20., 59.1, 130.5, 300.1, 600.5, 1000]),
+            np.array([0., 1.9, 11.1, 41.5, 101.3, 130.5, 200.8, 300, 5000]),
+            np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1, 78.6, 230.5, 770.1]),
+        ]
+
+        plot_points = len(solvers) * [
+            np.array([
+                0., 0.125, 0.25, 0.375,
+                0.5, 0.625, 0.75, 0.875,
+                1.])]
+        output_df = performance_profiler.create_df(solvers,
+                                                   solver_values,
+                                                   plot_points)
+        assert_frame_equal(output_df, expected_df)
 
     # pylint: enable=W0632
 
