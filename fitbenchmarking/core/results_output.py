@@ -54,8 +54,9 @@ def save_results(options, results, group_name, failed_problems,
                                   based on the algorithm_type option
     :type unselected_minimizers: dict
 
-    :return: Path to directory of group results
-    :rtype: str
+    :return: Path to directory of group results;
+             dictionary with data for performance profile plots
+    :rtype: str, dict(pandas.DataFrame, pandas.DataFrame)
     """
     group_dir, supp_dir, fig_dir = \
         create_directories(options, group_name)

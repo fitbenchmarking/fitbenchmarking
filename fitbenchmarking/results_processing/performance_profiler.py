@@ -88,9 +88,9 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: Path to acc and runtime profile graphs;
-             data for plotting the graphs
-    :rtype: Tuple(tuple(str, str), tuple(pd.DataFrame, pd.DataFrame))
+    :return: path to acc and runtime profile graphs;
+             dictionary with dataframes for plotting the graphs
+    :rtype: tuple(str, str), dict(pandas.DataFrame, pandas.DataFrame)
     """
     figure_path = []
     data_dfs = {}
@@ -144,7 +144,7 @@ def update_fig(fig, name, use_log_plot,
     :type fig: plotly.graph_objects.Figure
     :param name: The name of the graph
     :type name: str
-    :param use_log_plot: Whether to use a log plot or not
+    :param use_log_plot: Whether to use a log x axis or not
     :type use_log_plot: boolean
     :param log_upper_limit: The upper limit for the x axis if log
     :type log_upper_limit: int
@@ -234,7 +234,7 @@ def create_plot_and_data_df(step_values: 'list[np.ndarray]',
     :type solvers: list of strings
 
     :return: The perfomance profile graph; the data for plotting the graph
-    :rtype: tuple(plotly.graph_objects.Figure, pd.DataFrame)
+    :rtype: plotly.graph_objects.Figure, pandas.DataFrame
     """
 
     fig = go.Figure()
@@ -325,6 +325,16 @@ class DashPerfProfile(object):
 
     def __init__(self, profile_name, data_df, group_label):
 
+        """Initialises a performance profile graph.
+
+        :param profile_name: the name of the profile (e.g. runtime)
+        :type profile_name: str
+        :param data_df: the data for creating the graph
+        :type data_df: pandas.DataFrame
+        :param group_label: the group_dir this plot refers to
+        :type group_label: str
+        """
+
         self.data = data_df
         self.profile_name = profile_name
         self.group_label = group_label
@@ -334,7 +344,7 @@ class DashPerfProfile(object):
 
     def layout(self):
 
-        """Creates layout for the performance profile"""
+        """Creates and returns the layout for the performance profile."""
 
         layout = html.Div([
             dcc.RadioItems(
@@ -357,16 +367,23 @@ class DashPerfProfile(object):
 
     def set_callbacks(self):
 
-        """Calls callbacks on the function that creates the dash plot"""
+        """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
             Input(f"Log axis toggle {self.identif}", "value")
-            )(self.create_chart)
+            )(self.create_graph)
 
-    def create_chart(self, x_axis_scale):
+    def create_graph(self, x_axis_scale):
 
-        """Creates the dash plot"""
+        """Creates the dash plot.
+
+        :param x_axis_scale: can be either "Log x-axis" or "Linear x-axis"
+        :type x_axis_scale: str
+
+        :return: figure for the Dash plot
+        :rtype: plotly.graph_objects.Figure, pd.DataFrame
+        """
 
         fig = go.Figure()
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
