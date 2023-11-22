@@ -133,7 +133,7 @@ of the Fitbenchmarking docs. '''
                         default='mean',
                         help="Set the metric for the runtime.")
 
-    parser.add_argument('-prt', '--port',
+    parser.add_argument('--port',
                         metavar='PORT',
                         type=int,
                         default=0,

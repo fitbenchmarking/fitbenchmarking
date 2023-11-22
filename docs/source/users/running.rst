@@ -173,6 +173,12 @@ They can be changed using the arguments in the table below.
      - ``-rt``
      - ``--runtime_metric``
      - | Set the metric for the runtime.
+   * - *Dash port*
+     - ``-prt``
+     - ``--port``
+     - | Set the port for running the Dash
+     - | app, used to obtain the interactive
+     - | performance profile plots.
 
 **For example, to change the results directory:**
 

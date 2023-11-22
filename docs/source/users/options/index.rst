@@ -20,6 +20,7 @@ and how to override them, are given in the pages below.
     output_option
     logging_option
     runtime_option
+    dash_option
 
 
 The options file must be a ``.ini`` formatted file
