@@ -48,14 +48,14 @@ class DummyTable(Table):
 
     def get_value(self, result):
         """
-        Just use the chi_sq value
+        Just use the acc value
 
         :param result: The result to get the value for
         :type result: FittingResult
         :return: The value for the table
         :rtype: tuple[float]
         """
-        return [result.chi_sq]
+        return [result.acc]
 
 
 class CreateResultsDictTests(TestCase):

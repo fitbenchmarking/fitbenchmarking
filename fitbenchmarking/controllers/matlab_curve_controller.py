@@ -26,6 +26,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         'conjugate_gradient': [],
         'steepest_descent': [],
         'global_optimization': [],
+        'MCMC': []
     }
 
     incompatible_problems = ['mantid', 'horace']

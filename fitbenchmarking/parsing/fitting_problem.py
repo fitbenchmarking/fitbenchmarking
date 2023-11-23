@@ -211,7 +211,8 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        use_errors = "weighted_nlls" in self.options.cost_func_type
+        use_errors = "weighted_nlls" in self.options.cost_func_type\
+            or "loglike_nlls" in self.options.cost_func_type
         if not self.multifit:
             correct_vals = correct_data(x=self.data_x,
                                         y=self.data_y,

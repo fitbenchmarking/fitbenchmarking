@@ -70,7 +70,8 @@ class GradientFreeController(Controller):
                                 'EvolutionStrategyOptimizer',
                                 'BayesianOptimizer',
                                 'TreeStructuredParzenEstimators',
-                                'DecisionTreeOptimizer']}
+                                'DecisionTreeOptimizer'],
+        'MCMC': []}
 
     controller_name = 'gradient_free'
 

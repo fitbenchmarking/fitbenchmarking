@@ -82,7 +82,8 @@ class CeresController(Controller):
                                'Polak_Ribiere',
                                'Hestenes_Stiefel'],
         'steepest_descent': ['steepest_descent'],
-        'global_optimization': []
+        'global_optimization': [],
+        'MCMC': []
     }
 
     jacobian_enabled_solvers = ['Levenberg_Marquardt',

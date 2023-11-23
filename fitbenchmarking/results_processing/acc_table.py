@@ -12,12 +12,16 @@ class AccTable(Table):
     The accuracy results are calculated by evaluating the cost function with
     the fitted parameters.
 
+    For Bayesian fitting, accuracy results represent the confidence that the
+    fitted parameter values are within 10% of the expected parameter values
+    (calculated using scipy.optimize.minimize).
+
     """
 
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
         """
-        Initialise the accuracy table which shows the chi_sq results
+        Initialise the accuracy table which shows the acc results
 
         :param results: Results grouped by row and category (for colouring)
         :type results:

@@ -30,7 +30,8 @@ class ScipyGOController(Controller):
         'conjugate_gradient': [],
         'steepest_descent': [],
         'global_optimization': ['differential_evolution', 'shgo',
-                                'dual_annealing']
+                                'dual_annealing'],
+        'MCMC': []
     }
 
     jacobian_enabled_solvers = ['shgo', 'dual_annealing']

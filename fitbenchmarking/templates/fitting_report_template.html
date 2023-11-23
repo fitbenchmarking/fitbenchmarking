@@ -89,6 +89,16 @@
                         {% else %}
                             <h3>{{ fitted_plot }}</h3>
                         {% endif %}
+                        {% if pdf_plot_available %}
+                            <h3>Estimated posterior pdf of each parameter</h3>
+                            <p>
+                                The vertical red line on each pdf shows the Scipy curve fit parameter estimate, with the dashed vertical red lines indicating the 2 sigma error of the fit.
+                                The area between the dashed lines is used to calculate the confidence in the MCMC fit.
+                            </p>
+                            <iframe width="100%" height="800" frameborder="0" seamless="seamless" scrolling="no" src="{{ pdf_plot }}"></iframe>
+                        {% else %}
+                            <h3>{{ pdf_plot }}</h3>
+                        {% endif %}
                         <button class="btn default" onclick="history.go(-1)">
                         <i class="fa fa-arrow-left"></i>
                         </button>

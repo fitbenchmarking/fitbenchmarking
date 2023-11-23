@@ -29,7 +29,8 @@ class RALFitController(Controller):
             'bfgs': [],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': []}
+            'global_optimization': [],
+            'MCMC': []}
 
     jacobian_enabled_solvers = ['gn', 'hybrid', 'newton', 'newton-tensor',
                                 'gn_reg', 'hybrid_reg', 'newton_reg',

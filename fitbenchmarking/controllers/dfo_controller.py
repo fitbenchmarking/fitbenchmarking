@@ -27,7 +27,8 @@ class DFOController(Controller):
             'bfgs': [],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': []}
+            'global_optimization': [],
+            'MCMC': []}
 
     def __init__(self, cost_func):
         """

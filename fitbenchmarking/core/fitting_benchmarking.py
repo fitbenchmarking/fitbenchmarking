@@ -614,10 +614,13 @@ def perform_fit(controller, options, grabbed_output):
 
         # Avoid deleting results (max runtime exception) if gotten this far
         controller.timer.reset()
-        accuracy = controller.eval_chisq(params=controller.final_params,
-                                         x=controller.data_x,
-                                         y=controller.data_y,
-                                         e=controller.data_e)
+        if controller.params_pdfs is None:
+            accuracy = controller.eval_chisq(params=controller.final_params,
+                                             x=controller.data_x,
+                                             y=controller.data_y,
+                                             e=controller.data_e)
+        else:
+            accuracy = controller.eval_confidence()
 
         accuracy_check = any(np.isnan(n) for n in accuracy) \
             if controller.problem.multifit else np.isnan(accuracy)

@@ -64,6 +64,7 @@ class FittingResult:
         self.problem_format: 'str' = problem.format
         self.problem_desc: 'str' = problem.description
         self.initial_params: 'list[float]' = controller.initial_params
+        self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
 
@@ -86,6 +87,9 @@ class FittingResult:
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
         self.emissions = emissions
+
+        # Posterior pdfs for Bayesian fitting
+        self.params_pdfs = controller.params_pdfs
 
         # Details of options used for this run
         self.software = controller.software
@@ -159,6 +163,7 @@ class FittingResult:
         self.start_figure_link = ''
         self.figure_link = ''
         self.figure_error = ''
+        self.posterior_plots = ''
 
     def __str__(self):
         info = {"Cost Function": self.costfun_tag,

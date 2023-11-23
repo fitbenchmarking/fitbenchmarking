@@ -701,7 +701,29 @@ The Nlopt minimizers are set as follows:
            G_MLSL_LDS
            G_MLSL
 
+.. _paramonte:
 
+Paramonte (``paramonte``)
+=========================
+
+`Paramonte <https://www.cdslab.org/paramonte/index.html>`__ is a
+serial/parallel library of Monte Carlo routines for sampling mathematical
+objective functions of arbitrary-dimensions. We currently support:
+
+* `ParaDRAM Sampler <https://www.cdslab.org/pubs/2020_Shahmoradi_I.pdf>`__ (:code:`paraDram_sampler`)
+
+**Licence** Paramonte is available under an `MIT licence <https://github.com/cdslaborg/paramonte/blob/main/LICENSE.md>`__
+
+The Paramonte minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    paramonte: paraDram_sampler
+
+.. warning::
+   The additional dependency Paramonte must be installed to use these minimizers;
+   see :ref:`extra_dependencies`.
 
 .. _ralfit:
 

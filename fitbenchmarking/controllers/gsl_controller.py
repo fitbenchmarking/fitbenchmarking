@@ -34,7 +34,8 @@ class GSLController(Controller):
             'bfgs': ['vector_bfgs', 'vector_bfgs2'],
             'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
             'steepest_descent': ['steepest_descent'],
-            'global_optimization': []}
+            'global_optimization': [],
+            'MCMC': []}
 
     jacobian_enabled_solvers = ['lmsder', 'lmder', 'conjugate_pr',
                                 'conjugate_fr', 'vector_bfgs',

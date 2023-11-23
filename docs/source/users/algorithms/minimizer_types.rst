@@ -58,3 +58,8 @@ Global Optimization (``global_optimization``):
 
 .. algorithmcheckdocs::
     :key: global_optimization
+
+MCMC (``MCMC``):
+
+.. algorithmcheckdocs::
+    :key: MCMC

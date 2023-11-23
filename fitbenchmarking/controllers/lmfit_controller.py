@@ -71,7 +71,8 @@ class LmfitController(Controller):
         'global_optimization': ['differential_evolution',
                                 'ampgo',
                                 'shgo',
-                                'dual_annealing']
+                                'dual_annealing'],
+        'MCMC': []
         }
 
     jacobian_enabled_solvers = ['cg',

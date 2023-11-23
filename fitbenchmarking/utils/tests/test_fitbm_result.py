@@ -264,14 +264,14 @@ class FitbmResultTests(unittest.TestCase):
 
     def test_norm_acc_finite_min(self):
         """
-        Test that sanitised names are correct when min_chi_sq is finite.
+        Test that sanitised names are correct when min_acc is finite.
         """
         expected = self.accuracy / self.min_accuracy
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_acc_infinite_min(self):
         """
-        Test that sanitised names are correct when min_chi_sq is infinite.
+        Test that sanitised names are correct when min_acc is infinite.
         """
         expected = np.inf
         self.result.accuracy = np.inf

@@ -28,7 +28,8 @@ class GOFitController(Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': ['alternating', 'multistart']
+        'global_optimization': ['alternating', 'multistart'],
+        'MCMC': []
     }
 
     jacobian_enabled_solvers = ['multistart', 'regularisation']

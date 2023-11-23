@@ -15,6 +15,7 @@ by the algorithm type list, with options detailed below, along with advantages/d
     deriv_free
     line_search
     trust_region
+    bayesian
 
     minimizer_types
 

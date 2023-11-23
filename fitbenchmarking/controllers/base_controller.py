@@ -5,6 +5,7 @@ Implements the base class for the fitting software controllers.
 from abc import ABCMeta, abstractmethod
 
 import numpy
+from scipy.optimize import curve_fit
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleHessianError,
                                               IncompatibleJacobianError,
@@ -45,6 +46,7 @@ class Controller:
     #:     - ``conjugate_gradient`` - Conjugate Gradient algorithms
     #:     - ``steepest_descent`` - Steepest Descent algorithms
     #:     - ``global_optimization`` - Global Optimization algorithms
+    #:     - ``MCMC`` - Markov Chain Monte Carlo algorithms
     #:
     #: The **values** of the dictionary are given as a list of minimizers
     #: for that specific controller that fit into each of the above
@@ -60,7 +62,8 @@ class Controller:
                        'bfgs': [],
                        'conjugate_gradient': [],
                        'steepest_descent': [],
-                       'global_optimization': []}
+                       'global_optimization': [],
+                       'MCMC': []}
 
     #: Within the controller class, you must define the list
     #: ``jacobian_enabled_solvers`` if any of the minimizers
@@ -143,6 +146,11 @@ class Controller:
 
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
+
+        # save parameter estimates from MCMC minimizers
+        self.params_pdfs = None
+
+        self.par_names = self.problem.param_names
 
     @property
     def flag(self):
@@ -235,6 +243,43 @@ class Controller:
         kwargs = {k: v for k, v in zip('xye', [x, y, e]) if v is not None}
         out = self.cost_func.eval_cost(params=params, **kwargs)
         return out
+
+    def eval_confidence(self):
+        """
+        Computes overall confidence in MCMC fit
+        """
+        popt, pcov = curve_fit(self.problem.function,
+                               xdata=self.data_x,
+                               ydata=self.data_y,
+                               p0=self.initial_params,
+                               sigma=self.data_e,
+                               maxfev=500)
+
+        perr = numpy.sqrt(numpy.diag(pcov))
+
+        self.params_pdfs['scipy_pfit'] = popt.tolist()
+        self.params_pdfs['scipy_perr'] = perr.tolist()
+
+        # calculate overall confidence within 2 sigma tolerance
+        par_conf = []
+        for i, name in enumerate(self.par_names):
+            tol = 2*perr[i]
+            hist, bin_edges = numpy.histogram(self.params_pdfs[name],
+                                              bins=100, density=True)
+            # check tol range is covered by hist range
+            tol_range = [popt[i]-tol, popt[i]+tol]
+            if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
+                par_conf.append(0)
+            else:
+                width = numpy.diff(bin_edges)[0]
+                start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
+                end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
+                if start_bin == end_bin:
+                    par_conf.append(hist[start_bin]*width)
+                else:
+                    par_conf.append(sum(hist[start_bin:end_bin]*width))
+
+        return numpy.prod(par_conf)
 
     def _validate_jacobian(self) -> None:
         """

@@ -90,6 +90,7 @@ class Checkpoint:
             'runtimes': result.runtimes,
             'emissions': result.emissions,
             'flag': result.error_flag,
+            'params_pdfs': result.params_pdfs,
             'software': result.software,
             'minimizer': result.minimizer,
             'jacobian': result.jac,
@@ -269,6 +270,7 @@ class Checkpoint:
                 new_result.runtimes = r['runtimes']
                 new_result.emissions = r['emissions']
                 new_result.error_flag = r['flag']
+                new_result.params_pdfs = r['params_pdfs']
                 new_result.software = r['software']
                 new_result.minimizer = r['minimizer']
                 new_result.jac = r['jacobian']

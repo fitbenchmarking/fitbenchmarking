@@ -26,7 +26,8 @@ class ScipyLSController(Controller):
         'bfgs': [],
         'conjugate_gradient': [],
         'steepest_descent': [],
-        'global_optimization': []}
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
 
