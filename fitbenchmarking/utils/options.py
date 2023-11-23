@@ -468,7 +468,7 @@ class Options:
                                               additional_options)
 
         dash_settings = config['DASH']
-        self.port = self.read_value(dash_settings.getstr,
+        self.port = self.read_value(dash_settings.getint,
                                     'port',
                                     additional_options)
 
