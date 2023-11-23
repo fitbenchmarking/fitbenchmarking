@@ -833,10 +833,9 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
             else:
                 return "404 Page Error!"
 
-        else:
-            return ("404 Page Error! Path does not have the expected shape. "
-                    "Please provide it in the following form:  \n"
-                    "ip-address:port/problem_set/performance_profile.")
+        return ("404 Page Error! Path does not have the expected shape. "
+                "Please provide it in the following form:  \n"
+                "ip-address:port/problem_set/performance_profile.")
 
     actual_port = options.port
     app.run(port=actual_port)

@@ -1,5 +1,4 @@
 from setuptools import find_packages, setup
-from glob import glob
 
 with open('README.md', encoding="utf-8") as f:
     long_description = f.read()
