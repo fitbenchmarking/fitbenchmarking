@@ -70,9 +70,8 @@ class LocalMinTable(Table):
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
         self.pp_dash_urls = \
-            [os.path.relpath(pp, group_dir) for pp in
-             [f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_acc',
-              f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_runtime']]
+            [f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_acc',
+             f'http://127.0.0.1:{port}/{group_dir_label}/perf_prof_runtime']
 
         # Check whether any selected cost function is not a least squares
         # problem - if non least squares are present then local min table is
