@@ -319,7 +319,7 @@ def create_df(solvers, solver_values, plot_points):
     return data_df
 
 
-class DashPerfProfile(object):
+class DashPerfProfile():
 
     """General class for creating performance profiles."""
 
@@ -416,11 +416,7 @@ class DashPerfProfile(object):
             i = i+1
 
         log_upper_limit = min(max_value+1, 10000)
-
-        if x_axis_scale == 'Log x-axis':
-            use_log_plot = True
-        else:
-            use_log_plot = False
+        use_log_plot = (x_axis_scale == 'Log x-axis')
 
         fig = update_fig(fig, self.profile_name, use_log_plot,
                          log_upper_limit)
