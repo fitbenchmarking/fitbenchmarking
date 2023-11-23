@@ -119,8 +119,8 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
         # Plot linear performance profile
         keys = profile_plot.keys()
-        fig, data_df = create_plot_and_data_df(step_values=step_values,
-                                               solvers=keys)
+        fig, data_df = create_plot_and_df(step_values=step_values,
+                                          solvers=keys)
 
         data_dfs[name] = data_df
 
@@ -221,8 +221,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot_and_data_df(step_values: 'list[np.ndarray]',
-                            solvers: 'list[str]'):
+def create_plot_and_df(step_values: 'list[np.ndarray]',
+                       solvers: 'list[str]'):
 
     """
     Function to draw the profile in plotly
