@@ -10,6 +10,7 @@ import numpy as np
 from pandas.testing import assert_frame_equal
 from pandas import read_csv
 import pandas as pd
+import plotly.graph_objects as go
 
 import fitbenchmarking
 from fitbenchmarking import test_files
@@ -80,6 +81,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             self.runtime_expected[k] = [
                 v/min_runtime for v in self.runtime_expected[k]]
 
+        self.supp_pag_dir = 'support_pages'
         self.fig_dir = ''
         self.acc_name = "acc_profile.html"
         self.runtime_name = "runtime_profile.html"
@@ -111,31 +113,80 @@ class PerformanceProfilerTests(unittest.TestCase):
     # pylint: disable=W0632
     def test_correct_profile_output_paths(self):
         """
-        Test that the performance profiler returns the expected paths
+        Test that the performance profiler returns the expected paths.
         """
         options = Options()
-        acc, runtime = performance_profiler.profile(self.results,
-                                                    self.fig_dir,
-                                                    options)
+        (acc, runtime), _ = performance_profiler.profile(self.results,
+                                                         self.fig_dir,
+                                                         options)
 
         assert acc == "acc_profile.html"
         assert runtime == "runtime_profile.html"
 
-    def test_correct_profile_output_dict_format(self):
+    def test_profile_returns_dict(self):
         """
-        Test that the performance profiler returns the expected paths
+        Test that the performance profiler returns the expected dictionary
+        of dataframes for plotting the profiles.
         """
-        supp_dir = os.path.join(self.fig_dir, 'support_pages')
         options = Options()
         (_, _), data_dfs = performance_profiler.profile(self.results,
                                                         self.fig_dir,
-                                                        supp_dir,
                                                         options)
 
         assert isinstance(data_dfs, dict)
         for df in list(data_dfs.values()):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
+
+    @staticmethod
+    def test_update_fig_returns_plotly_go():
+        """
+        Test that update_fig returns a plotly graph object.
+        """
+        fig = go.Figure()
+        profile_name = 'acc'
+        use_log_plot = True
+        log_upper_limit = 10000
+        fig = performance_profiler.update_fig(fig, profile_name,
+                                              use_log_plot,
+                                              log_upper_limit)
+        assert isinstance(fig, go.Figure)
+
+    @staticmethod
+    def test_create_plot_and_df_returns_plotly_go():
+        """
+        Test that create_plot_and_data_df returns a plotly graph object.
+        """
+        step_values = [
+            np.array([0., 1., 1., 1., 1.2, 1.4, 1.6, 1.7,
+                      2., 5., 6.5, 8., 10.4, 15.9, 200., 500., 1000.]),
+            np.array([0., 1., 1., 1.6, 2., 6., 8., 15.,
+                      20., 30., 50., 80., 100., 300., 500., 600., 1200.]),
+            np.array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+                      1., 1., 1., 1., 1., 1., 1.])
+            ]
+        solvers = ['migrad [minuit]', 'simplex [minuit]', 'dfogn [dfo]']
+        plot, _ = performance_profiler.\
+            create_plot_and_df(step_values, solvers)
+        assert isinstance(plot, go.Figure)
+
+    @staticmethod
+    def test_create_plot_and_df_returns_pandas_df():
+        """
+        Test that create_plot_and_data_df returns a pandas Dataframe.
+        """
+        step_values = [
+            np.array([0., 1., 1., 1., 1.2, 1.4, 1.6, 1.7,
+                      2., 5., 6.5, 8., 10.4, 15.9, 200., 500., 1000.]),
+            np.array([0., 1., 1., 1.6, 2., 6., 8., 15.,
+                      20., 30., 50., 80., 100., 300., 500., 600., 1200.]),
+            np.array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
+                      1., 1., 1., 1., 1., 1., 1.])
+            ]
+        solvers = ['migrad [minuit]', 'simplex [minuit]', 'dfogn [dfo]']
+        _, data_df = performance_profiler.\
+            create_plot_and_df(step_values, solvers)
+        assert isinstance(data_df, pd.DataFrame)
 
     def test_create_correct_data_df(self):
         """
