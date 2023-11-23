@@ -90,7 +90,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
     :return: path to acc and runtime profile graphs;
              dictionary with dataframes for plotting the graphs
-    :rtype: tuple(str, str), dict(pandas.DataFrame, pandas.DataFrame)
+    :rtype: list(str, str), dict(pandas.DataFrame, pandas.DataFrame)
     """
     figure_path = []
     data_dfs = {}
