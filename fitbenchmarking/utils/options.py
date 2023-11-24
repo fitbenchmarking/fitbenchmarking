@@ -173,6 +173,7 @@ class Options:
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'results_browser': [True, False],
+         'run_dash': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -300,6 +301,7 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'results_browser': True,
+         'run_dash': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'run_name': '',
          'checkpoint_filename': 'checkpoint.json'}
@@ -432,6 +434,12 @@ class Options:
         else:
             self.results_browser = self.read_value(
                 output.getboolean, 'results_browser', additional_options)
+
+        if 'run_dash' in additional_options:
+            self.run_dash = additional_options['run_dash']
+        else:
+            self.run_dash = self.read_value(
+                output.getboolean, 'run_dash', additional_options)
 
         if 'pbar' in additional_options:
             self.pbar = additional_options['pbar']
@@ -594,6 +602,7 @@ class Options:
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
                             'results_browser': self.results_browser,
+                            'run_dash': self.run_dash,
                             'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type),
                             'run_name': self.run_name}

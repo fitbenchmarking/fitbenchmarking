@@ -837,5 +837,7 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
                 "Please provide it in the following form:  \n"
                 "ip-address:port/problem_set/performance_profile.")
 
-    actual_port = options.port
-    app.run(port=actual_port)
+
+    if options.run_dash:
+        actual_port = options.port
+        app.run(port=actual_port)

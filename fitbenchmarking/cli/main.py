@@ -215,6 +215,14 @@ of the Fitbenchmarking docs. '''
                         action='store_true',
                         help='Load results from the checkpoint and generate'
                              'reports. Will not run any new tests.')
+
+    group4 = parser.add_mutually_exclusive_group()
+    group4.add_argument('--run_dash', action='store_true',
+                        help="Use this option if you have decided to "
+                        "run dash for interactive plots.")
+    group4.add_argument('--dont_run_dash', action='store_true',
+                        help="Use this option if you have decided not to "
+                        "run dash for interactive plots.")
     return parser
 
 
@@ -394,6 +402,13 @@ def main():
         options_dictionary['results_browser'] = True
     elif args.no_results_browser:
         options_dictionary['results_browser'] = False
+
+    # Check if run_dash in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.run_dash:
+        options_dictionary['run_dash'] = True
+    elif args.dont_run_dash:
+        options_dictionary['run_dash'] = False
 
     # Check if benchmark in options.py should be overridden, and if so,
     # add to options_dictionary
