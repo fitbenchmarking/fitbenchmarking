@@ -828,15 +828,13 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
 
             if table == 'perf_prof_acc':
                 return correct_inst['accProfile'].layout()
-            elif table == 'perf_prof_runtime':
+            if table == 'perf_prof_runtime':
                 return correct_inst['runtimeProfile'].layout()
-            else:
-                return "404 Page Error!"
+            return ("404 Page Error!")
 
         return ("404 Page Error! Path does not have the expected shape. "
                 "Please provide it in the following form:  \n"
                 "ip-address:port/problem_set/performance_profile.")
-
 
     if options.run_dash:
         actual_port = options.port
