@@ -15,7 +15,8 @@ from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.core.results_output import create_directories, create_index_page
+from fitbenchmarking.core.results_output import \
+    create_directories, create_index_page
 
 
 def load_mock_result():
@@ -58,8 +59,9 @@ class PlotTests(unittest.TestCase):
                            group_name='NIST_low')
 
         self.js_dir = self.opts.results_dir+'/js'
-        self.support_dir = self.opts.results_dir+'/NIST_low/support_pages'
-        self.figures_dir = self.opts.results_dir+'/NIST_low/support_pages/figures'
+        self.support_dir = self.opts.results_dir + '/NIST_low/support_pages'
+        self.figures_dir = self.opts.results_dir + \
+            '/NIST_low/support_pages/figures'
 
         create_index_page(self.opts, ['NIST_low'], self.figures_dir)
 
