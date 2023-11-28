@@ -5,7 +5,7 @@ Test plots
 import inspect
 import os
 import unittest
-import shutil
+from tempfile import TemporaryDirectory
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -17,8 +17,6 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.core.results_output import \
     create_directories, create_index_page
-
-from tempfile import TemporaryDirectory
 
 
 def load_mock_result():
@@ -57,7 +55,10 @@ class PlotTests(unittest.TestCase):
 
         self.opts = Options()
         self.opts.use_errors = True
+
+        # pylint: disable=consider-using-with
         self.opts.results_dir = TemporaryDirectory().name
+        # pylint: enable=consider-using-with
 
         create_directories(options=self.opts, group_name='NIST_low')
         self.figures_dir = self.opts.results_dir + \
