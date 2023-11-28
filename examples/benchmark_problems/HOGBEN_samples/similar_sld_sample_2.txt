@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'HOGBEN'
+name = 'similar_sld_sample_2'
+description = '3-layer sample with layers of similar SLD'
+input_file = 'similar_sld_sample_2.txt'
+function = 'function=similar_sld_sample_2_model.pkl'
+plot_scale = 'logY'
