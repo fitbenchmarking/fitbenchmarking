@@ -87,18 +87,31 @@ function toggle_prob_size_header() {
 /**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
-function load_offline_src(path, index){
-    document.getElementById("i_frame"+index).setAttribute("src", path)
+function load_offline_src(_button){
+    document.getElementById("i_frame"+_button.dataset.value2).setAttribute("src", _button.dataset.value1)
 }
-if (document.getElementById("offline_plot"+index)){
-    document.getElementById("offline_plot"+index).addEventListener("click", load_offline_src(path));
+if (document.getElementById("offline_plot1")){
+    document.getElementById("offline_plot1").addEventListener("click", load_offline_src(
+        document.getElementById("offline_plot1")
+    ));
+}
+if (document.getElementById("offline_plot2")){
+    document.getElementById("offline_plot2").addEventListener("click", load_offline_src(
+        document.getElementById("offline_plot2")
+    ));
 }
 
 
-function load_online_src(path, index){
-    document.getElementById("i_frame"+index).setAttribute("src", path);
+function load_online_src(_button){
+    document.getElementById("i_frame"+_button.dataset.value2).setAttribute("src", _button.dataset.value1)
 }
-if (document.getElementById("online_plot"+index)){
-    document.getElementById("online_plot"+index).addEventListener("click", load_online_src(path));
+if (document.getElementById("online_plot1")){
+    document.getElementById("online_plot1").addEventListener("click", load_online_src(
+        document.getElementById("online_plot1")
+    ));
 }
-
+if (document.getElementById("online_plot2")){
+    document.getElementById("online_plot2").addEventListener("click", load_online_src(
+        document.getElementById("online_plot2")
+    ));
+}

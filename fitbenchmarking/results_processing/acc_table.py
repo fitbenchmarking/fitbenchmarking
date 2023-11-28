@@ -46,7 +46,9 @@ class AccTable(Table):
         self.has_pp = True
         port = options.port
         group_dir_label = group_dir.split('/')[-1]
-        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
+
+        # Need to add 1 to port because otherwise it does not work
+        self.pp_dash_urls = [f'http://127.0.0.1:{port+1}/{group_dir_label}/'
                              'perf_prof_acc']
         self.pp_filenames = [os.path.relpath(self.pp_locations[0], group_dir)]
         self.cbar_title = "Problem-Specific Cell Shading: Relative Accuracy"
