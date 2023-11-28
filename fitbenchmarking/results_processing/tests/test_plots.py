@@ -5,7 +5,6 @@ Test plots
 import inspect
 import os
 import unittest
-from tempfile import TemporaryDirectory
 import shutil
 
 import pandas as pd
@@ -157,10 +156,11 @@ class PlotTests(unittest.TestCase):
 
         htmlfile_path = os.path.join(self.figures_dir, htmlfile_name)
         file_size_KB = os.path.getsize(htmlfile_path)/1000
+
+        # Clean up after finishing
+        shutil.rmtree(self.opts.results_dir)
         assert file_size_KB < 50
 
-    def cleanup(self):
-        shutil.rmtree(self.opts.results_dir)
 
 if __name__ == "__main__":
     unittest.main()
