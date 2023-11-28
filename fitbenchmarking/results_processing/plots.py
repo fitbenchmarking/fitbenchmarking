@@ -54,8 +54,8 @@ class Plot:
 
         :param fig: Figure to be saved
         :type fig: plotly.graph_objs._figure.Figure
-        :param destination_dir: The directory to save the figures in
-        :type destination_dir: str
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
         :param htmlfile: Name of the figure
         :type htmlfile: str
         :param options: The options for the run
