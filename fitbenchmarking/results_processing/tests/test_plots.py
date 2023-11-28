@@ -18,6 +18,8 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.core.results_output import \
     create_directories, create_index_page
 
+from tempfile import TemporaryDirectory
+
 
 def load_mock_result():
     """
@@ -55,11 +57,9 @@ class PlotTests(unittest.TestCase):
 
         self.opts = Options()
         self.opts.use_errors = True
-        create_directories(options=self.opts,
-                           group_name='NIST_low')
+        self.opts.results_dir = TemporaryDirectory().name
 
-        self.js_dir = self.opts.results_dir+'/js'
-        self.support_dir = self.opts.results_dir + '/NIST_low/support_pages'
+        create_directories(options=self.opts, group_name='NIST_low')
         self.figures_dir = self.opts.results_dir + \
             '/NIST_low/support_pages/figures'
 
@@ -159,8 +159,6 @@ class PlotTests(unittest.TestCase):
         htmlfile_path = os.path.join(self.figures_dir, htmlfile_name)
         file_size_KB = os.path.getsize(htmlfile_path)/1000
 
-        # Clean up after finishing
-        shutil.rmtree(self.opts.results_dir)
         assert file_size_KB < 50
 
 
