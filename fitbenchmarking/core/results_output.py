@@ -830,7 +830,9 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
                 return correct_inst['accProfile'].layout()
             if table == 'perf_prof_runtime':
                 return correct_inst['runtimeProfile'].layout()
-            return ("404 Page Error!")
+            return ("404 Page Error! The path was not recognized. \n"
+                    "The path needs to end in 'perf_prof_acc' or "
+                    "'perf_prof_runtime' .")
 
         return ("404 Page Error! Path does not have the expected shape. "
                 "Please provide it in the following form:  \n"
