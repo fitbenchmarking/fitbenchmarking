@@ -6,14 +6,17 @@ import inspect
 import os
 import unittest
 from tempfile import TemporaryDirectory
+import shutil
 
 import pandas as pd
+import plotly.graph_objects as go
 
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.core.results_output import create_directories, create_index_page
 
 
 def load_mock_result():
@@ -52,17 +55,20 @@ class PlotTests(unittest.TestCase):
 
         self.opts = Options()
         self.opts.use_errors = True
-        # pylint: disable=consider-using-with
-        self.dir = TemporaryDirectory(dir=self.opts.results_dir)
-        self.dir2 = TemporaryDirectory(dir=self.opts.results_dir)
+        create_directories(options=self.opts,
+                           group_name='NIST_low')
 
-        # pylint: enable=consider-using-with
+        self.js_dir = self.opts.results_dir+'/js'
+        self.support_dir = self.opts.results_dir+'/NIST_low/support_pages'
+        self.figures_dir = self.opts.results_dir+'/NIST_low/support_pages/figures'
+
+        create_index_page(self.opts, ['NIST_low'], self.figures_dir)
+
         best = [r for r in self.fr['Fake_Test_Data']
                 if r.is_best_fit and r.problem_tag == 'prob_1'][0]
         self.plot = plots.Plot(best_result=best,
                                options=self.opts,
-                               figures_dir=self.dir.name,
-                               support_pages_dir=self.dir2.name)
+                               figures_dir=self.figures_dir)
 
         self.df = {}
         # Create a dataframe for each row
@@ -104,7 +110,7 @@ class PlotTests(unittest.TestCase):
             self.df[('Fake_Test_Data', 'prob_1')])
 
         self.assertEqual(file_name, 'start_for_prob_1.html')
-        path = os.path.join(self.dir.name, file_name)
+        path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
     def test_best_filename_return(self):
@@ -124,7 +130,7 @@ class PlotTests(unittest.TestCase):
 
         self.assertEqual(file_names['m10_[s1]_jj0'],
                          'm10_[s1]_jj0_fit_for_cf1_prob_1.html')
-        path = os.path.join(self.dir.name, file_names['m10_[s1]_jj0'])
+        path = os.path.join(self.figures_dir, file_names['m10_[s1]_jj0'])
         self.assertTrue(os.path.exists(path))
 
     def test_multivariate_plot(self):
@@ -136,9 +142,25 @@ class PlotTests(unittest.TestCase):
         with self.assertRaises(PlottingError):
             self.plot = plots.Plot(best_result=self.fr['Fake_Test_Data'][0],
                                    options=self.opts,
-                                   figures_dir=self.dir.name,
-                                   support_pages_dir=self.dir2.name)
+                                   figures_dir=self.figures_dir)
 
+    def test_write_html_with_link_plotlyjs(self):
+        """
+        Test that the function is producing output files smaller than 1KB.
+        """
+        fig = go.Figure()
+        htmlfile_name = 'figure.html'
+        self.plot.write_html_with_link_plotlyjs(fig=fig,
+                                                figures_dir=self.figures_dir,
+                                                htmlfile=htmlfile_name,
+                                                options=self.opts)
+
+        htmlfile_path = os.path.join(self.figures_dir, htmlfile_name)
+        file_size_KB = os.path.getsize(htmlfile_path)/1000
+        assert file_size_KB < 50
+
+    def cleanup(self):
+        shutil.rmtree(self.opts.results_dir)
 
 if __name__ == "__main__":
     unittest.main()
