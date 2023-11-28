@@ -12,6 +12,11 @@ Once installed, issuing the command
 
 will run the NIST average difficulty problem set on SciPy minmizers.
 
+By default, fitbenchmarking will start a Dash app in order to provide more
+interactive plots. The Dash app will keep running after fitbenchmarking
+has finished, unless it is stopped by the user. If the app is stopped,
+the more interactive plots will not be available.
+
 Running alternative problems
 ----------------------------
 
@@ -26,13 +31,13 @@ For example, to run the NIST low difficulty set from the base directory
 of the source, type into the terminal:
 
 .. code-block:: bash
-		
+
    fitbenchmarking -p examples/benchmark_problems/NIST/low_difficulty
 
 Changing the options
 --------------------
-   
-An options file can also be passed with the ``-o`` or ``--options-file`` argument. 
+
+An options file can also be passed with the ``-o`` or ``--options-file`` argument.
 For example, the template file can be run by issuing the command
 
 .. code-block:: bash
@@ -72,7 +77,7 @@ They can be changed using the arguments in the table below.
    * - *Results directory*
      - ``-r``
      - ``--results_dir``
-     - | The directory to store resulting 
+     - | The directory to store resulting
        | files in.
    * - *Debug mode*
      - ``-d``
@@ -100,60 +105,60 @@ They can be changed using the arguments in the table below.
      - ``--cost_func_type``
      - | Set the cost functions to be used.
    * - *Make plots*
-     - 
+     -
      - ``--make_plots``
      - | Use this option if you have decided
        | to create plots during runtime.
    * - *Don't make plots*
-     - 
+     -
      - ``--don't_make_plots``
      - | Use this option if you have decided
        | not to create plots during runtime.
    * - *Open results browser*
-     - 
+     -
      - ``--results_browser``
-     - | Use this option if you have decided  
+     - | Use this option if you have decided
        | to open a browser window to show the
        | results of a fit benchmark.
    * - *Don't open results browser*
-     - 
+     -
      - ``--no_results_browser``
      - | Use this option if you have decided
-       | not to open a browser window to show 
+       | not to open a browser window to show
        | the results of a fit benchmark.
    * - *Show progress bar*
-     - 
+     -
      - ``--pbar``
-     - | Use this option if you would like 
+     - | Use this option if you would like
        | to see the progress bar during runtime.
    * - *Don’t show progress bar*
-     - 
+     -
      - ``--no_pbar``
-     - | Use this option if you do not want to 
+     - | Use this option if you do not want to
        | see the progress bar during runtime.
    * - *Comparison mode*
      - ``-m``
      - ``--comparison_mode``
-     - | Select the mode for displaying values 
+     - | Select the mode for displaying values
        | in the resulting table.
    * - *Table type*
      - ``-t``
      - ``--table_type``
-     - | Select the type of table to be produced 
+     - | Select the type of table to be produced
        | in Fitbenchmarking.
    * - *Logging file name*
      - ``-f``
      - ``--logging_file_name``
      - | Specify the file path to write the logs to.
    * - *Append log*
-     - 
+     -
      - ``--append_log``
      - | Use this option if you have decided to log
-       | in append mode. If append mode is active, 
+       | in append mode. If append mode is active,
        | the log file will be extended with each
        | subsequent run.
    * - *Overwrite log*
-     - 
+     -
      - ``--overwrite_log``
      - | Use this option if you have decided not to
        | log in append mode. If append mode is not
@@ -167,18 +172,12 @@ They can be changed using the arguments in the table below.
    * - *External output*
      - ``-e``
      - ``--external_output``
-     - | Select the amount of information 
+     - | Select the amount of information
        | displayed from third-parties.
    * - *Runtime metric*
      - ``-rt``
      - ``--runtime_metric``
      - | Set the metric for the runtime.
-   * - *Dash port*
-     - ``-prt``
-     - ``--port``
-     - | Set the port for running the Dash
-     - | app, used to obtain the interactive
-     - | performance profile plots.
 
 **For example, to change the results directory:**
 
