@@ -65,7 +65,7 @@ def save_results(options, results, group_name, failed_problems,
                                                 supp_dir, options)
 
     if options.make_plots:
-        create_plots(options, results_dict, best_results, fig_dir, supp_dir)
+        create_plots(options, results_dict, best_results, fig_dir)
 
     fitting_report.create(options=options,
                           results=results,
@@ -550,8 +550,7 @@ def _find_matching_tags(tag: 'str', lst: 'List[str]'):
             if re.fullmatch(tag, match)]
 
 
-def create_plots(options, results, best_results, figures_dir,
-                 support_pages_dir):
+def create_plots(options, results, best_results, figures_dir):
     """
     Create a plot for each result and store in the figures directory
 
@@ -567,8 +566,6 @@ def create_plots(options, results, best_results, figures_dir,
 
     :param figures_dir: Path to directory to store the figures in
     :type figures_dir: str
-    :param support_pages_dir: The support_pages directory
-    :type support_pages_dir: str
     """
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
@@ -612,8 +609,7 @@ def create_plots(options, results, best_results, figures_dir,
             try:
                 plot = plots.Plot(best_result=best_dict[cf],
                                   options=options,
-                                  figures_dir=figures_dir,
-                                  support_pages_dir=support_pages_dir)
+                                  figures_dir=figures_dir)
             except PlottingError as e:
                 for result in prob_result[cf]:
                     result.figure_error = str(e)

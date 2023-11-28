@@ -40,8 +40,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
             summary_plot_path = Plot.plot_summary(categories=problem_results,
                                                   title=categorised[0][1].name,
                                                   options=options,
-                                                  figures_dir=figures_dir,
-                                                  supp_pages=support_pages_dir)
+                                                  figures_dir=figures_dir)
 
         _create_summary_page(categorised_best_results=categorised,
                              summary_plot_path=summary_plot_path,

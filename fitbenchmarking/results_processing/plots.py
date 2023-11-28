@@ -30,7 +30,7 @@ class Plot:
     summary_best_plot_line = {"width": 2}
     summary_plot_line = {"width": 1}
 
-    def __init__(self, best_result, options, figures_dir, support_pages_dir):
+    def __init__(self, best_result, options, figures_dir):
         self.result = best_result
 
         self.plots_failed = True
@@ -45,29 +45,25 @@ class Plot:
         self.options = options
 
         self.figures_dir = figures_dir
-        self.support_pages_dir = support_pages_dir
 
     @staticmethod
-    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options,
-                                      support_pages_dir):
+    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options):
         """
         Writes an html file for the figure passed as input and
         includes link to the relevant plotly.js file.
 
         :param fig: Figure to be saved
         :type fig: plotly.graph_objs._figure.Figure
-        :param figures_dir: The directory to save the figures in
-        :type figures_dir: str
+        :param destination_dir: The directory to save the figures in
+        :type destination_dir: str
         :param htmlfile: Name of the figure
         :type htmlfile: str
         :param options: The options for the run
         :type options: utils.options.Options
-        :param support_pages_dir: The support_pages directory
-        :type support_pages_dir: str
 
         :return: None
         """
-        plotly_path = get_js(options, support_pages_dir)
+        plotly_path = get_js(options, figures_dir).get('plotly')
         html_file_name = os.path.join(figures_dir, htmlfile)
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
@@ -108,8 +104,7 @@ class Plot:
         self.write_html_with_link_plotlyjs(fig,
                                            self.figures_dir,
                                            htmlfile,
-                                           self.options,
-                                           self.support_pages_dir)
+                                           self.options)
         return htmlfile
 
     @staticmethod
@@ -184,8 +179,7 @@ class Plot:
                 self.write_html_with_link_plotlyjs(fig,
                                                    self.figures_dir,
                                                    htmlfile,
-                                                   self.options,
-                                                   self.support_pages_dir)
+                                                   self.options)
 
                 htmlfiles[minimizer] = htmlfile
 
@@ -226,13 +220,11 @@ class Plot:
         self.write_html_with_link_plotlyjs(fig,
                                            self.figures_dir,
                                            html_fname,
-                                           self.options,
-                                           self.support_pages_dir)
+                                           self.options)
         return html_fname
 
     @classmethod
-    def plot_summary(cls, categories, title, options, figures_dir,
-                     supp_pages):
+    def plot_summary(cls, categories, title, options, figures_dir):
         """
         Create a comparison plot showing all fits from the results with the
         best for each category highlighted.
@@ -245,8 +237,6 @@ class Plot:
         :type options: utils.options.Options
         :param figures_dir: The directory to save the figures in
         :type figures_dir: str
-        :param supp_pages: Pat to the support_pages directory
-        :type supp_pages: str
 
         :return: The path to the new plot
         :rtype: str
@@ -319,7 +309,6 @@ class Plot:
         cls.write_html_with_link_plotlyjs(plotlyfig,
                                           figures_dir,
                                           html_fname,
-                                          options,
-                                          supp_pages)
+                                          options)
 
         return html_fname

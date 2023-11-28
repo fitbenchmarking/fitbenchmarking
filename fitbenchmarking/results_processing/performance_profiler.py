@@ -168,8 +168,7 @@ def plot(acc, runtime, fig_dir, supp_dir, options):
         Plot.write_html_with_link_plotlyjs(fig,
                                            fig_dir,
                                            this_filename_html,
-                                           options,
-                                           supp_dir)
+                                           options)
 
     return figure_path
 
