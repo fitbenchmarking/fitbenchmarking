@@ -95,7 +95,7 @@ jobs:
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
-        sudo apt install curl
+        sudo apt install -y curl
     - name: 'Running Tests'
       run: |
         ci/unit_tests.sh
