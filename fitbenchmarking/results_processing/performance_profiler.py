@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 from fitbenchmarking.results_processing.plots import Plot
 
 
-def profile(results, fig_dir, supp_dir, options):
+def profile(results, fig_dir, options):
     """
     Function that generates profiler plots
 
@@ -16,8 +16,6 @@ def profile(results, fig_dir, supp_dir, options):
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
-    :param supp_dir: path to the support_pages directory
-    :type supp_dir: str
     :param options: The options for the run
     :type options: utils.options.Options
 
@@ -25,8 +23,7 @@ def profile(results, fig_dir, supp_dir, options):
     :rtype: tuple(str, str)
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path = plot(acc_bound, runtime_bound, fig_dir,
-                     supp_dir, options)
+    plot_path = plot(acc_bound, runtime_bound, fig_dir, options)
     return plot_path
 
 
@@ -69,7 +66,7 @@ def prepare_profile_data(results):
     return acc_dict, runtime_dict
 
 
-def plot(acc, runtime, fig_dir, supp_dir, options):
+def plot(acc, runtime, fig_dir, options):
     """
     Function that generates profiler plots
 
@@ -79,8 +76,6 @@ def plot(acc, runtime, fig_dir, supp_dir, options):
     :type runtime: dict
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
-    :param supp_dir: path to the support_pages directory
-    :type supp_dir: str
     :param options: The options for the run
     :type options: utils.options.Options
 
@@ -168,8 +163,7 @@ def plot(acc, runtime, fig_dir, supp_dir, options):
         Plot.write_html_with_link_plotlyjs(fig,
                                            fig_dir,
                                            this_filename_html,
-                                           options,
-                                           supp_dir)
+                                           options)
 
     return figure_path
 
