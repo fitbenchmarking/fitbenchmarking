@@ -57,7 +57,8 @@ class PlotTests(unittest.TestCase):
         self.opts.use_errors = True
 
         # pylint: disable=consider-using-with
-        self.opts.results_dir = TemporaryDirectory().name
+        self._dir = TemporaryDirectory()
+        self.opts.results_dir = self._dir.name
         # pylint: enable=consider-using-with
 
         create_directories(options=self.opts, group_name='NIST_low')
