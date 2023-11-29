@@ -148,7 +148,7 @@ class PlotTests(unittest.TestCase):
 
     def test_write_html_with_link_plotlyjs(self):
         """
-        Test that the function is producing output files smaller than 1KB.
+        Test that the function is producing output files smaller than 50KB.
         """
         fig = go.Figure()
         htmlfile_name = 'figure.html'
