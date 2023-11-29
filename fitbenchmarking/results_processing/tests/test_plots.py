@@ -64,6 +64,8 @@ class PlotTests(unittest.TestCase):
         _, _, self.figures_dir = create_directories(options=self.opts,
                                                     group_name='NIST_low')
 
+        # This copies the js directory, and therefore plotly.js, into the
+        # results directory. This is needed as plotly.js is used in a test.
         create_index_page(self.opts, ['NIST_low'], self.figures_dir)
 
         best = [r for r in self.fr['Fake_Test_Data']
