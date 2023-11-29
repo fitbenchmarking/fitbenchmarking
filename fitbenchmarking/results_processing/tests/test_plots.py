@@ -61,9 +61,8 @@ class PlotTests(unittest.TestCase):
         self.opts.results_dir = self._dir.name
         # pylint: enable=consider-using-with
 
-        create_directories(options=self.opts, group_name='NIST_low')
-        self.figures_dir = self.opts.results_dir + \
-            '/NIST_low/support_pages/figures'
+        _, _, self.figures_dir = create_directories(options=self.opts,
+                                                    group_name='NIST_low')
 
         create_index_page(self.opts, ['NIST_low'], self.figures_dir)
 
