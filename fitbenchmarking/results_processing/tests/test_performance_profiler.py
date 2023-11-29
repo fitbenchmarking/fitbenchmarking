@@ -7,12 +7,13 @@ import os
 import unittest
 import re
 from inspect import getfile
+from tempfile import TemporaryDirectory
+
 import numpy as np
 from pandas.testing import assert_frame_equal
 from pandas import read_csv
 import pandas as pd
 import plotly.graph_objects as go
-from tempfile import TemporaryDirectory
 
 import fitbenchmarking
 from fitbenchmarking import test_files
@@ -135,7 +136,11 @@ class PerformanceProfilerTests(unittest.TestCase):
                       78.6, 230.5, 770.1]),
             ]
         self.options = Options()
-        self.temp_result = TemporaryDirectory().name
+
+        # pylint: disable=consider-using-with
+        self._dir = TemporaryDirectory()
+        self.temp_result = self._dir.name
+        # pylint: enable=consider-using-with
 
     def tearDown(self):
         """
@@ -180,7 +185,8 @@ class PerformanceProfilerTests(unittest.TestCase):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
 
-    def test_update_fig_returns_plotly_go(self):
+    @staticmethod
+    def test_update_fig_returns_plotly_go():
         """
         Test that update_fig returns a plotly graph object.
         """
@@ -287,7 +293,10 @@ class DashPerfProfileTests(unittest.TestCase):
             DashPerfProfile('runtime', data,
                             'NIST_low_difficulty')
 
-        self.temp_result = TemporaryDirectory().name
+        # pylint: disable=consider-using-with
+        self._dir = TemporaryDirectory()
+        self.temp_result = self._dir.name
+        # pylint: enable=consider-using-with
 
     def test_create_graph_returns_expected_plot(self):
         """ Test create_graph returns the expected plot. """
