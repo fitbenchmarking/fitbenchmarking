@@ -87,31 +87,31 @@ function toggle_prob_size_header() {
 /**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
-function load_offline_src(_button){
-    document.getElementById("i_frame"+_button.dataset.value2).setAttribute("src", _button.dataset.value1)
-}
-if (document.getElementById("offline_plot1")){
-    document.getElementById("offline_plot1").addEventListener("click", load_offline_src(
-        document.getElementById("offline_plot1")
-    ));
-}
-if (document.getElementById("offline_plot2")){
-    document.getElementById("offline_plot2").addEventListener("click", load_offline_src(
-        document.getElementById("offline_plot2")
-    ));
-}
+var offline_plot1 = document.getElementById("offline_plot1")
+var offline_plot2 = document.getElementById("offline_plot2")
+var online_plot1 = document.getElementById("online_plot1")
+var online_plot2 = document.getElementById("online_plot2")
 
+function load_offline_src(_button){
+    var path = _button.dataset.value1
+    var index = _button.dataset.value2
+    document.getElementById("i_frame"+index).setAttribute("src", path)
+}
+if (offline_plot1){
+    offline_plot1.addEventListener("click", load_offline_src(offline_plot1));
+}
+if (offline_plot2){
+    offline_plot2.addEventListener("click", load_offline_src(offline_plot2));
+}
 
 function load_online_src(_button){
-    document.getElementById("i_frame"+_button.dataset.value2).setAttribute("src", _button.dataset.value1)
+    var path = _button.dataset.value1
+    var index = _button.dataset.value2
+    document.getElementById("i_frame"+index).setAttribute("src", path)
 }
-if (document.getElementById("online_plot1")){
-    document.getElementById("online_plot1").addEventListener("click", load_online_src(
-        document.getElementById("online_plot1")
-    ));
+if (online_plot1){
+    online_plot1.addEventListener("click", load_online_src(online_plot1));
 }
-if (document.getElementById("online_plot2")){
-    document.getElementById("online_plot2").addEventListener("click", load_online_src(
-        document.getElementById("online_plot2")
-    ));
+if (online_plot2){
+    online_plot2.addEventListener("click", load_online_src(online_plot2));
 }
