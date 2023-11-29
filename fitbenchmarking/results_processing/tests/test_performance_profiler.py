@@ -5,12 +5,14 @@ Tests for the performance profiler file.
 import inspect
 import os
 import unittest
+import re
 from inspect import getfile
 import numpy as np
 from pandas.testing import assert_frame_equal
 from pandas import read_csv
 import pandas as pd
 import plotly.graph_objects as go
+from tempfile import TemporaryDirectory
 
 import fitbenchmarking
 from fitbenchmarking import test_files
@@ -18,6 +20,7 @@ from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.results_processing.plots import Plot
 
 
 def load_mock_results():
@@ -37,6 +40,28 @@ def load_mock_results():
     return [v
             for lst in results.values()
             for v in lst]
+
+
+def remove_ids(html_path):
+    """
+    Remove ids within html file.
+    :param html_path: path to html file
+    :type html_path: str
+
+    :return: Lines in html file, processed to remove ids
+    :rtype: list[str]
+    """
+
+    with open(html_path, 'r', encoding='utf-8') as f:
+        read_lines = f.readlines()
+
+    processed_lines = []
+    for str_i in read_lines:
+        pattern = r"\b((?:[a-z]+\S*\d+|\d\S*[a-z]+)[a-z\d_-]*)\b\w+"
+        processed_line = re.sub(pattern, '', str_i)
+        processed_lines.append(processed_line)
+
+    return processed_lines
 
 
 class PerformanceProfilerTests(unittest.TestCase):
@@ -91,6 +116,27 @@ class PerformanceProfilerTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
+        self.solvers = ['migrad [minuit]', 'simplex [minuit]',
+                        'dfogn [dfo]']
+        self.step_values = [
+            np.array([0., 1., 1.2, 1.4, 2., 5.,
+                      10.4, 15.9, 500.]),
+            np.array([0., 1., 1.5, 1.8, 5., 8.,
+                      15.4, 25.9, 600.]),
+            np.array([0., 2., 3.5, 5.8, 7., 10.,
+                      25.4, 45.9, 800.])
+            ]
+        self.solver_values = [
+            np.array([0., 5.4, 11., 20., 59.1,
+                      130.5, 300.1, 600.5, 1000]),
+            np.array([0., 1.9, 11.1, 41.5, 101.3,
+                      130.5, 200.8, 300, 5000]),
+            np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1,
+                      78.6, 230.5, 770.1]),
+            ]
+        self.options = Options()
+        self.temp_result = TemporaryDirectory().name
+
     def tearDown(self):
         """
         Removes expected acc and runtime plots
@@ -115,11 +161,9 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that the performance profiler returns the expected paths.
         """
-        options = Options()
         (acc, runtime), _ = performance_profiler.profile(self.results,
                                                          self.fig_dir,
-                                                         options)
-
+                                                         self.options)
         assert acc == "acc_profile.html"
         assert runtime == "runtime_profile.html"
 
@@ -128,18 +172,15 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that the performance profiler returns the expected dictionary
         of dataframes for plotting the profiles.
         """
-        options = Options()
         (_, _), data_dfs = performance_profiler.profile(self.results,
                                                         self.fig_dir,
-                                                        options)
-
+                                                        self.options)
         assert isinstance(data_dfs, dict)
         for df in list(data_dfs.values()):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
 
-    @staticmethod
-    def test_update_fig_returns_plotly_go():
+    def test_update_fig_returns_plotly_go(self):
         """
         Test that update_fig returns a plotly graph object.
         """
@@ -152,65 +193,121 @@ class PerformanceProfilerTests(unittest.TestCase):
                                               log_upper_limit)
         assert isinstance(fig, go.Figure)
 
-    @staticmethod
-    def test_create_plot_and_df_returns_plotly_go():
+    def test_create_plot_and_df_returns_correct_plot(self):
         """
         Test that create_plot_and_data_df returns a plotly graph object.
         """
-        step_values = [
-            np.array([0., 1., 1., 1., 1.2, 1.4, 1.6, 1.7,
-                      2., 5., 6.5, 8., 10.4, 15.9, 200., 500., 1000.]),
-            np.array([0., 1., 1., 1.6, 2., 6., 8., 15.,
-                      20., 30., 50., 80., 100., 300., 500., 600., 1200.]),
-            np.array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
-                      1., 1., 1., 1., 1., 1., 1.])
-            ]
-        solvers = ['migrad [minuit]', 'simplex [minuit]', 'dfogn [dfo]']
+        output_plot_path = self.temp_result + \
+            'for_test_create_plot.html'
+        expected_plot_path = self.expected_results_dir + \
+            '/for_test_create_plot.html'
+
         plot, _ = performance_profiler.\
-            create_plot_and_df(step_values, solvers)
+            create_plot_and_df(self.step_values, self.solvers)
+
+        Plot.write_html_with_link_plotlyjs(fig=plot,
+                                           figures_dir='',
+                                           htmlfile=output_plot_path,
+                                           options=self.options)
+
+        processed_achieved_lines = remove_ids(output_plot_path)
+        processed_exp_lines = remove_ids(expected_plot_path)
+
+        assert set(processed_exp_lines) == set(processed_achieved_lines)
         assert isinstance(plot, go.Figure)
 
-    @staticmethod
-    def test_create_plot_and_df_returns_pandas_df():
+    def test_create_plot_and_df_returns_pandas_df(self):
         """
         Test that create_plot_and_data_df returns a pandas Dataframe.
         """
-        step_values = [
-            np.array([0., 1., 1., 1., 1.2, 1.4, 1.6, 1.7,
-                      2., 5., 6.5, 8., 10.4, 15.9, 200., 500., 1000.]),
-            np.array([0., 1., 1., 1.6, 2., 6., 8., 15.,
-                      20., 30., 50., 80., 100., 300., 500., 600., 1200.]),
-            np.array([0., 1., 1., 1., 1., 1., 1., 1., 1., 1.,
-                      1., 1., 1., 1., 1., 1., 1.])
-            ]
-        solvers = ['migrad [minuit]', 'simplex [minuit]', 'dfogn [dfo]']
         _, data_df = performance_profiler.\
-            create_plot_and_df(step_values, solvers)
+            create_plot_and_df(self.step_values, self.solvers)
         assert isinstance(data_df, pd.DataFrame)
 
-    def test_create_correct_data_df(self):
+    def test_create_df_returns_correct_df(self):
         """
         Test that the performance profiler creates the expected dataframes
         to be used to build the dash plots.
         """
         expected_df = read_csv(self.expected_results_dir + "/pp_data.csv")
-        solvers = ['lm-bumps [bumps]', 'scipy-leastsq [bumps]',
-                   'dfogn [dfo] (4 failures)']
-        solver_values = [
-            np.array([0., 5.4, 11., 20., 59.1, 130.5, 300.1, 600.5, 1000]),
-            np.array([0., 1.9, 11.1, 41.5, 101.3, 130.5, 200.8, 300, 5000]),
-            np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1, 78.6, 230.5, 770.1]),
-        ]
-
-        plot_points = len(solvers) * [
+        plot_points = len(self.solvers) * [
             np.array([
                 0., 0.125, 0.25, 0.375,
                 0.5, 0.625, 0.75, 0.875,
                 1.])]
-        output_df = performance_profiler.create_df(solvers,
-                                                   solver_values,
+        output_df = performance_profiler.create_df(self.solvers,
+                                                   self.solver_values,
                                                    plot_points)
         assert_frame_equal(output_df, expected_df)
+
+    def test_get_plot_path_and_data_returns_dict_for_data(self):
+        """
+        Test that get_plot_path_and_data returns a dictionary
+        of dataframes.
+        """
+        acc = {'migrad [minuit]': [1., 2.,  5., 6.,
+                                   15., 150, 180.],
+               'simplex [minuit]': [1., 20., 100., 110.,
+                                    150., 1500, 1800.],
+               'dfogn [dfo]': [1., 50., 500., 2000.,
+                               2600., 2700, 2800.]}
+        runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5,
+                                       51.6, 10.8, 15.2],
+                   'simplex [minuit]': [6.9, 15.2, 6.5,
+                                        5.6, 7., 8.5, 6.5],
+                   'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9,
+                                   6.5,  28.3, 17.2]}
+
+        _, data_dfs = performance_profiler.\
+            get_plot_path_and_data(acc, runtime,
+                                   self.fig_dir,
+                                   self.options)
+
+        assert isinstance(data_dfs, dict)
+        for df in list(data_dfs.values()):
+            assert isinstance(df, pd.DataFrame)
+            assert not df.empty
+
+
+class DashPerfProfileTests(unittest.TestCase):
+    """
+    Test the plot object is correct.
+    """
+    def setUp(self):
+
+        self.options = Options()
+        root = os.path.dirname(getfile(fitbenchmarking))
+        self.expected_results_dir = os.path.join(
+            root, 'results_processing',
+            'tests', 'expected_results')
+
+        data = read_csv(self.expected_results_dir + "/pp_data.csv")
+
+        self.perf_profile = performance_profiler.\
+            DashPerfProfile('runtime', data,
+                            'NIST_low_difficulty')
+
+        self.temp_result = TemporaryDirectory().name
+
+    def test_create_graph_returns_expected_plot(self):
+        """ Test create_graph returns the expected plot. """
+
+        output = self.perf_profile.create_graph("Log x-axis")
+
+        output_plot_path = self.temp_result + 'obtained_plot.html'
+
+        Plot.write_html_with_link_plotlyjs(fig=output,
+                                           figures_dir='',
+                                           htmlfile=output_plot_path,
+                                           options=self.options)
+
+        expected_plot_path = self.expected_results_dir + '/dash_plot.html'
+
+        processed_exp_lines = remove_ids(expected_plot_path)
+        processed_achieved_lines = remove_ids(output_plot_path)
+
+        assert isinstance(output, go.Figure)
+        assert set(processed_exp_lines) == set(processed_achieved_lines)
 
     # pylint: enable=W0632
 
