@@ -92,7 +92,7 @@ jobs:
     - name: Installing
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
         sudo apt update
