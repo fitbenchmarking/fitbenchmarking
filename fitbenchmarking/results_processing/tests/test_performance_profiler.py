@@ -45,11 +45,11 @@ def load_mock_results():
 
 def remove_ids_and_src(html_path):
     """
-    Remove ids within html file.
+    Remove ids and src within html file.
     :param html_path: path to html file
     :type html_path: str
 
-    :return: Lines in html file, processed to remove ids and src
+    :return: Lines in html file, to be processed
     :rtype: list[str]
     """
 
@@ -118,6 +118,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
+        self.options = Options()
         self.solvers = ['migrad [minuit]', 'simplex [minuit]',
                         'dfogn [dfo]']
         self.step_values = [
@@ -136,7 +137,6 @@ class PerformanceProfilerTests(unittest.TestCase):
             np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1,
                       78.6, 230.5, 770.1]),
             ]
-        self.options = Options()
 
         # pylint: disable=consider-using-with
         self._dir = TemporaryDirectory()
@@ -153,7 +153,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_correct_prepare_profile_data(self):
         """
-        Test that prepare profile data gives the correct result
+        Test that prepare profile data gives the correct result.
         """
         acc, runtime = performance_profiler.prepare_profile_data(self.results)
 
@@ -278,7 +278,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
 class DashPerfProfileTests(unittest.TestCase):
     """
-    Test the plot object is correct.
+    Test the DashPerfProfile object is correct.
     """
     def setUp(self):
 

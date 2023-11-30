@@ -55,8 +55,8 @@ def save_results(options, results, group_name, failed_problems,
     :type unselected_minimizers: dict
 
     :return: Path to directory of group results;
-             dictionary with data for performance profile plots
-    :rtype: str, dict(pandas.DataFrame, pandas.DataFrame)
+             dictionary with dataframes for performance profile plots
+    :rtype: str; dict[str, pandas.DataFrame]
     """
     group_dir, supp_dir, fig_dir = \
         create_directories(options, group_name)
@@ -767,9 +767,9 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, group_labels) -> 
     :type options: fitbenchmarking.utils.options.Options
     :param dfs_all_prob_sets: For each problem set, dataframes to create
                               dash plots.
-    :type dfs_all_prob_sets: List of dicts
+    :type dfs_all_prob_sets: list[dict]
     :param group_labels: The group directories the results refer to.
-    :type group_labels: list
+    :type group_labels: list[str]
     """
     use_url = False
     # On Mac, need prefix for webbrowser

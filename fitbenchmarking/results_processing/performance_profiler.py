@@ -25,8 +25,8 @@ def profile(results, fig_dir, options):
     :type options: utils.options.Options
 
     :return: Path to acc and runtime profile graphs;
-             data for plotting the graphs
-    :rtype: Tuple(tuple(str, str), tuple(pd.DataFrame, pd.DataFrame))
+             dictionary of dataframes for plotting the graphs
+    :rtype: (str, str); dict[str, pandas.DataFrame]
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
     plot_path, data_dfs = get_plot_path_and_data(acc_bound,
@@ -90,7 +90,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
     :return: path to acc and runtime profile graphs;
              dictionary with dataframes for plotting the graphs
-    :rtype: list(str, str), dict(pandas.DataFrame, pandas.DataFrame)
+    :rtype: list[str]; dict[str, pandas.DataFrame]
     """
     figure_path = []
     data_dfs = {}
@@ -135,8 +135,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     return figure_path, data_dfs
 
 
-def update_fig(fig, name, use_log_plot,
-               log_upper_limit):
+def update_fig(fig, name, use_log_plot, log_upper_limit):
 
     """Update layout of plotly (or Dash) plot.
 
@@ -146,7 +145,7 @@ def update_fig(fig, name, use_log_plot,
     :type name: str
     :param use_log_plot: Whether to use a log x axis or not
     :type use_log_plot: boolean
-    :param log_upper_limit: The upper limit for the x axis if log
+    :param log_upper_limit: The upper limit for the x axis (when log)
     :type log_upper_limit: int
 
     :return: Updated plot
@@ -234,7 +233,7 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     :type solvers: list of strings
 
     :return: The perfomance profile graph; the data for plotting the graph
-    :rtype: plotly.graph_objects.Figure, pandas.DataFrame
+    :rtype: plotly.graph_objects.Figure; pandas.DataFrame
     """
 
     fig = go.Figure()
@@ -292,11 +291,11 @@ def create_df(solvers, solver_values, plot_points):
     Creates a df with performance profile data.
 
     :param solvers: The list of solvers
-    :type solvers: list of strings
+    :type solvers: list[str]
     :param solver_values: The solver values (x values) for each solver
-    :type solver_values: list of numpy arrays
+    :type solver_values: list[numpy.array]
     :param plot_points: The y values for each solver
-    :type plot_points: list of numpy arrays
+    :type plot_points: list[numpy.array]
 
     :return: Dataframe with performance profile data
     :rtype: pd.DataFrame
@@ -382,7 +381,7 @@ class DashPerfProfile():
         :type x_axis_scale: str
 
         :return: figure for the Dash plot
-        :rtype: plotly.graph_objects.Figure, pd.DataFrame
+        :rtype: plotly.graph_objects.Figure
         """
 
         fig = go.Figure()
