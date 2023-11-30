@@ -266,7 +266,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             LOGGER.debug(line.replace("\n", ""))
     os.remove(opt_file_name)
 
-    groups = []
+    group_labels = []
     result_dir = []
     cp = Checkpoint(options=options)
 
@@ -334,7 +334,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             group_results_dir = os.path.relpath(path=group_results_dir,
                                                 start=options.results_dir)
             result_dir.append(group_results_dir)
-            groups.append(label)
+            group_labels.append(label)
 
     cp.finalise()
 
@@ -354,8 +354,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     "You can also set 'results_dir' in an options file.",
                     options.results_dir)
 
-    index_page = create_index_page(options, groups, result_dir)
-    open_browser(index_page, options, dfs_all_prob_sets, groups)
+    index_page = create_index_page(options, group_labels, result_dir)
+    open_browser(index_page, options, dfs_all_prob_sets, group_labels)
 
 
 def main():

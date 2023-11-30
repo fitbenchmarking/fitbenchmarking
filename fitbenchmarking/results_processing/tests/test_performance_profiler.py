@@ -49,7 +49,7 @@ def remove_ids_and_src(html_path):
     :param html_path: path to html file
     :type html_path: str
 
-    :return: Lines in html file, processed to remove ids
+    :return: Lines in html file, processed to remove ids and src
     :rtype: list[str]
     """
 
@@ -59,9 +59,9 @@ def remove_ids_and_src(html_path):
     processed_lines = []
     for str_i in read_lines:
         pattern_for_ids = r"\b((?:[a-z]+\S*\d+|\d\S*[a-z]+)[a-z\d_-]*)\b\w+"
-        processed_line = re.sub(pattern_for_ids, '', str_i)
+        line_without_ids = re.sub(pattern_for_ids, '', str_i)
         pattern_for_src = r"\b(([A-Za-z._-]+[\\/]+){1,}([A-Za-z.\s_-]+))\b"
-        final_processed_line = re.sub(pattern_for_src, '', processed_line)
+        final_processed_line = re.sub(pattern_for_src, '', line_without_ids)
         processed_lines.append(final_processed_line)
 
     return processed_lines
@@ -109,7 +109,6 @@ class PerformanceProfilerTests(unittest.TestCase):
             self.runtime_expected[k] = [
                 v/min_runtime for v in self.runtime_expected[k]]
 
-        self.supp_pag_dir = 'support_pages'
         self.fig_dir = ''
         self.acc_name = "acc_profile.html"
         self.runtime_name = "runtime_profile.html"

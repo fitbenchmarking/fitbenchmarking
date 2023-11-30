@@ -115,8 +115,10 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             elif len(table.pp_filenames) == 2:
                 pp_index = ['1', '2']
             else:
-                raise ValueError('Diplaying more than two profiles is not'
-                                 'possible yet.')
+                # This error message is necessary because pp_index is used in
+                # the table template to display the performance profiles
+                raise ValueError('Displaying more than two profiles in a '
+                                 'single page is not possible yet.')
 
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(

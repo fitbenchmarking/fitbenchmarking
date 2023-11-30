@@ -757,7 +757,7 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
+def open_browser(output_file: str, options, dfs_all_prob_sets, group_labels) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -768,8 +768,8 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
     :param dfs_all_prob_sets: For each problem set, dataframes to create
                               dash plots.
     :type dfs_all_prob_sets: List of dicts
-    :param groups: The group directories the results refer to.
-    :type groups: list
+    :param group_labels: The group directories the results refer to.
+    :type group_labels: list
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -798,15 +798,15 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
                     "results: \n\n   %s", url)
 
     # Dash app
-    inst_all_groups = {}
-    for group, data_dfs in zip(groups, dfs_all_prob_sets):
+    profile_instances_all_groups = {}
+    for group, data_dfs in zip(group_labels, dfs_all_prob_sets):
         inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
                                               data_df=data_dfs['acc'],
                                               group_label=group),
                 'runtimeProfile': DashPerfProfile(profile_name='Runtime',
                                                   data_df=data_dfs['runtime'],
                                                   group_label=group)}
-        inst_all_groups[group] = inst
+        profile_instances_all_groups[group] = inst
 
     app = Dash(__name__, suppress_callback_exceptions=True)
 
@@ -815,7 +815,7 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
         html.Div(id='page-content', children=[]),
     ])
 
-    # Create the callback to handle mutlipage inputs
+    # Create the callback to handle multiple pages
     @app.callback(Output('page-content', 'children'),
                   [Input('url', 'pathname')])
     def display_page(pathname):
@@ -824,7 +824,7 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, groups) -> None:
         if len(splitted_path) == 3:
             _, group, table = splitted_path
 
-            correct_inst = inst_all_groups[group]
+            correct_inst = profile_instances_all_groups[group]
 
             if table == 'perf_prof_acc':
                 return correct_inst['accProfile'].layout()

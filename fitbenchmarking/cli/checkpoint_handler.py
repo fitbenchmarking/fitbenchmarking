@@ -126,7 +126,7 @@ def generate_report(options_file='', additional_options=None, debug=False):
 
     all_dirs = []
     dfs_all_prob_sets = []
-    groups = []
+    group_labels = []
     for label in results:  # pylint: disable=consider-using-dict-items
         directory, data_dfs = save_results(
             group_name=label,
@@ -139,10 +139,10 @@ def generate_report(options_file='', additional_options=None, debug=False):
 
         directory = os.path.relpath(path=directory, start=options.results_dir)
         all_dirs.append(directory)
-        groups.append(label)
+        group_labels.append(label)
 
     index_page = create_index_page(options, list(results), all_dirs)
-    open_browser(index_page, options, dfs_all_prob_sets, groups)
+    open_browser(index_page, options, dfs_all_prob_sets, group_labels)
 
 
 @exception_handler
