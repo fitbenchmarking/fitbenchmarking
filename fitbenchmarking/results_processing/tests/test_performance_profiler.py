@@ -43,7 +43,7 @@ def load_mock_results():
             for v in lst]
 
 
-def remove_ids(html_path):
+def remove_ids_and_src(html_path):
     """
     Remove ids within html file.
     :param html_path: path to html file
@@ -58,9 +58,11 @@ def remove_ids(html_path):
 
     processed_lines = []
     for str_i in read_lines:
-        pattern = r"\b((?:[a-z]+\S*\d+|\d\S*[a-z]+)[a-z\d_-]*)\b\w+"
-        processed_line = re.sub(pattern, '', str_i)
-        processed_lines.append(processed_line)
+        pattern_for_ids = r"\b((?:[a-z]+\S*\d+|\d\S*[a-z]+)[a-z\d_-]*)\b\w+"
+        processed_line = re.sub(pattern_for_ids, '', str_i)
+        pattern_for_src = r"\b(([a-z]+[\\/]+){1,}([a-z.]+))\b"
+        final_processed_line = re.sub(pattern_for_src, '', processed_line)
+        processed_lines.append(final_processed_line)
 
     return processed_lines
 
@@ -216,8 +218,8 @@ class PerformanceProfilerTests(unittest.TestCase):
                                            htmlfile=output_plot_path,
                                            options=self.options)
 
-        processed_achieved_lines = remove_ids(output_plot_path)
-        processed_exp_lines = remove_ids(expected_plot_path)
+        processed_achieved_lines = remove_ids_and_src(output_plot_path)
+        processed_exp_lines = remove_ids_and_src(expected_plot_path)
 
         assert set(processed_exp_lines) == set(processed_achieved_lines)
         assert isinstance(plot, go.Figure)
@@ -312,8 +314,8 @@ class DashPerfProfileTests(unittest.TestCase):
 
         expected_plot_path = self.expected_results_dir + '/dash_plot.html'
 
-        processed_exp_lines = remove_ids(expected_plot_path)
-        processed_achieved_lines = remove_ids(output_plot_path)
+        processed_exp_lines = remove_ids_and_src(expected_plot_path)
+        processed_achieved_lines = remove_ids_and_src(output_plot_path)
 
         assert isinstance(output, go.Figure)
         assert set(processed_exp_lines) == set(processed_achieved_lines)
