@@ -118,17 +118,16 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
         log_upper_limit = min(max_value+1, 10000)
 
         # Plot linear performance profile
-        keys = profile_plot.keys()
+        solvers = profile_plot.keys()
         fig, data_df = create_plot_and_df(step_values=step_values,
-                                          solvers=keys)
+                                          solvers=solvers)
 
         data_dfs[name] = data_df
 
         fig = update_fig(fig, name, use_log_plot,
                          log_upper_limit)
 
-        Plot.write_html_with_link_plotlyjs(fig,
-                                           fig_dir,
+        Plot.write_html_with_link_plotlyjs(fig, fig_dir,
                                            this_filename_html,
                                            options)
 
@@ -301,18 +300,16 @@ def create_df(solvers, solver_values, plot_points):
     :rtype: pd.DataFrame
     """
 
+    # Prepare data to save
     solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+    solver_values = list(np.concatenate(solver_values))
+    plot_points = list(np.concatenate(plot_points))
 
-    def flatten(list_i):
-        return [item for sublist in list_i for item in sublist]
-
-    solver_values = flatten(solver_values)
-    plot_points = flatten(plot_points)
-
-    data_dict = {}
-    data_dict['solver'] = solvers_repeated
-    data_dict['x'] = solver_values
-    data_dict['y'] = plot_points
+    data_dict = {
+        'solver': solvers_repeated,
+        'x': solver_values,
+        'y': plot_points
+    }
 
     data_df = pd.DataFrame.from_dict(data_dict)
     return data_df

@@ -175,7 +175,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_profile_returns_dict(self):
         """
-        Test that the performance profiler returns the expected dictionary
+        Test that the performance profiler returns a dictionary
         of dataframes for plotting the profiles.
         """
         (_, _), data_dfs = performance_profiler.profile(self.results,
@@ -202,7 +202,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_plot_and_df_returns_correct_plot(self):
         """
-        Test that create_plot_and_data_df returns a plotly graph object.
+        Test that create_plot_and_data_df returns the correct plot.
         """
         output_plot_path = self.temp_result + \
             'for_test_create_plot.html'
@@ -233,8 +233,8 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_df_returns_correct_df(self):
         """
-        Test that the performance profiler creates the expected dataframes
-        to be used to build the dash plots.
+        Test that create_df creates the expected dataframe to be used
+        to build the dash plots.
         """
         expected_df = read_csv(self.expected_results_dir + "/pp_data.csv")
         plot_points = len(self.solvers) * [
@@ -300,7 +300,9 @@ class DashPerfProfileTests(unittest.TestCase):
         # pylint: enable=consider-using-with
 
     def test_create_graph_returns_expected_plot(self):
-        """ Test create_graph returns the expected plot. """
+        """
+        Test create_graph returns the expected plot.
+        """
 
         output = self.perf_profile.create_graph("Log x-axis")
 

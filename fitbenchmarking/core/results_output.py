@@ -757,7 +757,8 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options, dfs_all_prob_sets, group_labels) -> None:
+def open_browser(output_file: str, options, dfs_all_prob_sets,
+                 group_labels) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -823,13 +824,12 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, group_labels) -> 
 
         if len(splitted_path) == 3:
             _, group, table = splitted_path
-
-            correct_inst = profile_instances_all_groups[group]
+            profiles_for_this_group = profile_instances_all_groups[group]
 
             if table == 'perf_prof_acc':
-                return correct_inst['accProfile'].layout()
+                return profiles_for_this_group['accProfile'].layout()
             if table == 'perf_prof_runtime':
-                return correct_inst['runtimeProfile'].layout()
+                return profiles_for_this_group['runtimeProfile'].layout()
             return ("404 Page Error! The path was not recognized. \n"
                     "The path needs to end in 'perf_prof_acc' or "
                     "'perf_prof_runtime' .")
@@ -839,5 +839,5 @@ def open_browser(output_file: str, options, dfs_all_prob_sets, group_labels) -> 
                 "ip-address:port/problem_set/performance_profile.")
 
     if options.run_dash:
-        actual_port = options.port
-        app.run(port=actual_port)
+        port = options.port
+        app.run(port=port)
