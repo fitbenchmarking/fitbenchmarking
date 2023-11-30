@@ -313,7 +313,7 @@ class Options:
     DEFAULT_RUNTIME = \
         {'runtime_metric': 'mean'}
     DEFAULT_DASH = \
-        {'port': 8054}
+        {'port': 4000}
     DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,

@@ -12,9 +12,9 @@ Port (:code:`port`)
 
 This specifies the port that the dash app should run on.
 
-Default is 8054 .
+Default is 4000 .
 
 .. code-block:: rst
 
     [DASH]
-    port: 8054
+    port: 4000
