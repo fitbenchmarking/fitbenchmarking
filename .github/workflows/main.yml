@@ -102,6 +102,9 @@ jobs:
         ci/unit_tests.sh
     - name: 'Submit Coverage'
       uses: coverallsapp/github-action@v2
+      with:
+        file: coverage.lcov
+        compare-ref: master
     - name: 'Upload Test Results'
       if: always()
       uses: actions/upload-artifact@v3
