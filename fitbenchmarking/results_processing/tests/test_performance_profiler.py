@@ -60,7 +60,7 @@ def remove_ids_and_src(html_path):
     for str_i in read_lines:
         pattern_for_ids = r"\b((?:[a-z]+\S*\d+|\d\S*[a-z]+)[a-z\d_-]*)\b\w+"
         processed_line = re.sub(pattern_for_ids, '', str_i)
-        pattern_for_src = r"\b(([a-z]+[\\/]+){1,}([a-z.]+))\b"
+        pattern_for_src = r"\b(([A-Za-z._-]+[\\/]+){1,}([A-Za-z.\s_-]+))\b"
         final_processed_line = re.sub(pattern_for_src, '', processed_line)
         processed_lines.append(final_processed_line)
 
