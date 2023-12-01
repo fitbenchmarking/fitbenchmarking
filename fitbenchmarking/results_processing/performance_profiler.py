@@ -24,9 +24,9 @@ def profile(results, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: Path to acc and runtime profile graphs;
-             dictionary of dataframes for plotting the graphs
-    :rtype: (str, str); dict[str, pandas.DataFrame]
+    :return: Path to acc and runtime profile graphs,
+             data for plotting the performance profiles
+    :rtype: (str, str), dict[str, pandas.DataFrame]
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
     plot_path, data_dfs = get_plot_path_and_data(acc_bound,
@@ -88,9 +88,9 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: path to acc and runtime profile graphs;
-             dictionary with dataframes for plotting the graphs
-    :rtype: list[str]; dict[str, pandas.DataFrame]
+    :return: path to acc and runtime profile graphs,
+             data for plotting the graphs
+    :rtype: list[str], dict[str, pandas.DataFrame]
     """
     figure_path = []
     data_dfs = {}
@@ -135,8 +135,8 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
 
 def update_fig(fig, name, use_log_plot, log_upper_limit):
-
-    """Update layout of plotly (or Dash) plot.
+    """
+    Update layout of plotly (or Dash) plot.
 
     :param fig: The performance profile plot
     :type fig: plotly.graph_objects.Figure
@@ -222,7 +222,6 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 def create_plot_and_df(step_values: 'list[np.ndarray]',
                        solvers: 'list[str]'):
-
     """
     Function to draw the profile in plotly
 
@@ -232,8 +231,8 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     :param solvers: A list of the labels for the different solvers
     :type solvers: list of strings
 
-    :return: The perfomance profile graph; the data for plotting the graph
-    :rtype: plotly.graph_objects.Figure; pandas.DataFrame
+    :return: The perfomance profile graph, the data for plotting the graph
+    :rtype: plotly.graph_objects.Figure, pandas.DataFrame
     """
 
     fig = go.Figure()
@@ -290,15 +289,15 @@ def create_df(solvers, solver_values, plot_points):
     """
     Creates a df with performance profile data.
 
-    :param solvers: The list of solvers
+    :param solvers: The names of the solvers
     :type solvers: list[str]
     :param solver_values: The solver values (x values) for each solver
     :type solver_values: list[numpy.array]
     :param plot_points: The y values for each solver
     :type plot_points: list[numpy.array]
 
-    :return: Dataframe with performance profile data
-    :rtype: pd.DataFrame
+    :return: Performance profile data
+    :rtype: pandas.DataFrame
     """
 
     # Prepare data to save
@@ -321,14 +320,14 @@ class DashPerfProfile():
     """General class for creating performance profiles."""
 
     def __init__(self, profile_name, data_df, group_label):
+        """
+        Initialises a performance profile graph.
 
-        """Initialises a performance profile graph.
-
-        :param profile_name: the name of the profile (e.g. runtime)
+        :param profile_name: The name of the profile (e.g. runtime)
         :type profile_name: str
-        :param data_df: the data for creating the graph
+        :param data_df: The data for creating the graph
         :type data_df: pandas.DataFrame
-        :param group_label: the group_dir this plot refers to
+        :param group_label: The group directory the plot belongs to
         :type group_label: str
         """
 
@@ -372,13 +371,13 @@ class DashPerfProfile():
             )(self.create_graph)
 
     def create_graph(self, x_axis_scale):
+        """
+        Creates the dash plot.
 
-        """Creates the dash plot.
-
-        :param x_axis_scale: can be either "Log x-axis" or "Linear x-axis"
+        :param x_axis_scale: Can be either "Log x-axis" or "Linear x-axis"
         :type x_axis_scale: str
 
-        :return: figure for the Dash plot
+        :return: Figure for the Dash plot
         :rtype: plotly.graph_objects.Figure
         """
 
