@@ -268,9 +268,9 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     group_labels = []
     result_dir = []
+    dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
 
-    dfs_all_prob_sets = []
     for sub_dir in problem_sets:
 
         # Create full path for the directory that holds a group of
@@ -328,7 +328,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                              failed_problems=failed_problems,
                              unselected_minimizers=unselected_minimizers)
 
-            dfs_all_prob_sets.append(data_dfs)
+            dfs_all_prob_sets[label] = data_dfs
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
@@ -355,7 +355,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     options.results_dir)
 
     index_page = create_index_page(options, group_labels, result_dir)
-    open_browser(index_page, options, dfs_all_prob_sets, group_labels)
+    open_browser(index_page, options, dfs_all_prob_sets)
 
 
 def main():

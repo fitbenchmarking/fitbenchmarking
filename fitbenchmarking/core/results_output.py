@@ -757,8 +757,7 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options, dfs_all_prob_sets,
-                 group_labels) -> None:
+def open_browser(output_file: str, options, dfs_all_prob_sets) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -767,9 +766,7 @@ def open_browser(output_file: str, options, dfs_all_prob_sets,
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
     :param dfs_all_prob_sets: For each problem set, data to create dash plots.
-    :type dfs_all_prob_sets: list[dict]
-    :param group_labels: The group directories the results refer to.
-    :type group_labels: list[str]
+    :type dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -799,7 +796,7 @@ def open_browser(output_file: str, options, dfs_all_prob_sets,
 
     # Dash app
     profile_instances_all_groups = {}
-    for group, data_dfs in zip(group_labels, dfs_all_prob_sets):
+    for group, data_dfs in dfs_all_prob_sets.items():
         inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
                                               data_df=data_dfs['acc'],
                                               group_label=group),
