@@ -205,7 +205,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that create_plot_and_data_df returns the correct plot.
         """
         output_plot_path = self.temp_result + \
-            'for_test_create_plot.html'
+            '/for_test_create_plot.html'
         expected_plot_path = self.expected_results_dir + \
             '/for_test_create_plot.html'
 
@@ -306,7 +306,7 @@ class DashPerfProfileTests(unittest.TestCase):
 
         output = self.perf_profile.create_graph("Log x-axis")
 
-        output_plot_path = self.temp_result + 'obtained_plot.html'
+        output_plot_path = self.temp_result + '/obtained_plot.html'
 
         Plot.write_html_with_link_plotlyjs(fig=output,
                                            figures_dir='',
