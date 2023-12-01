@@ -174,7 +174,7 @@ def update_fig(fig, name, use_log_plot, log_upper_limit):
         autosize=True,
         title={
             'text': graph_title,
-            'y': 0.85,
+            'y': 0.96,
             'x': 0.4,
             'xanchor': 'center'
         },
@@ -187,6 +187,7 @@ def update_fig(fig, name, use_log_plot, log_upper_limit):
         plot_bgcolor='white',
         font_family='verdana',
         font_color='#454545',
+        margin={'t': 50, 'b': 70},
     )
 
     # Update both axis to show the grid
@@ -347,10 +348,10 @@ class DashPerfProfile():
                 id=f"Log axis toggle {self.identif}",
                 options=["Log x-axis", "Linear x-axis"],
                 value="Log x-axis",
-                labelStyle={"margin-top": "1rem",
+                labelStyle={"margin-top": "1.5rem",
                             "margin-left": "1rem",
                             "margin-right": "1rem",
-                            "margin-bottom": "0rem"},
+                            "margin-bottom": "0.8rem"},
                 style={"display": "flex",
                        "font-family": "verdana",
                        "color": '#454545',
