@@ -5,7 +5,7 @@ Dash Options
 ###############
 
 The Dash section contains options that control how the Dash app is run.
-The  Dash app is used to obtain the more interactive (online) performance profile plots.
+The Dash app is used to obtain the more interactive (online) performance profile plots.
 
 Port (:code:`port`)
 -------------------------------------
