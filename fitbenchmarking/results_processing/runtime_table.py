@@ -9,8 +9,7 @@ class RuntimeTable(Table):
 
     The timing results are calculated from an average (over num_runs) using the
     `timeit <https://docs.python.org/2/library/timeit.html>`_  module
-    in python. num_runs is set in :ref:`options`. The runtime metric displayed
-    in the tables is {runtime_metric}.
+    in python. num_runs is set in :ref:`options`.
 
     """
     name = 'runtime'
