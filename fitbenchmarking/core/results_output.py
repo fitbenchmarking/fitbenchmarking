@@ -6,6 +6,7 @@ import os
 import platform
 import re
 import webbrowser
+import logging
 from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
@@ -804,6 +805,11 @@ def open_browser(output_file: str, options, dfs_all_prob_sets) -> None:
                                                   data_df=data_dfs['runtime'],
                                                   group_label=group)}
         profile_instances_all_groups[group] = inst
+
+
+    # Needed to prevent unnecessary warning in the terminal
+    log = logging.getLogger('werkzeug')
+    log.disabled = True
 
     app = Dash(__name__, suppress_callback_exceptions=True)
 
