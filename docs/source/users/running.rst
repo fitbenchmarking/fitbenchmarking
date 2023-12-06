@@ -178,6 +178,20 @@ They can be changed using the arguments in the table below.
      - ``-rt``
      - ``--runtime_metric``
      - | Set the metric for the runtime.
+   * - *Dash port*
+     -
+     - ``--port``
+     - | Set the port for Dash app.
+   * - *Run Dash app*
+     -
+     - ``--run_dash``
+     - | Use this option if you have decided
+       | to run the Dash app.
+   * - *Don't run Dash app*
+     -
+     - ``--dont_run_dash``
+     - | Use this option if you have decided
+       | not to run the Dash app.
 
 **For example, to change the results directory:**
 
