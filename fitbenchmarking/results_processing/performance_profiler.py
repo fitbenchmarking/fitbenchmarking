@@ -134,7 +134,8 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     return figure_path, data_dfs
 
 
-def update_fig(fig, name, use_log_plot, log_upper_limit):
+def update_fig(fig: go.Figure, name: str, use_log_plot: bool,
+               log_upper_limit: int) -> go.Figure:
     """
     Update layout of plotly (or Dash) plot.
 
@@ -221,15 +222,15 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 
 def create_plot_and_df(step_values: 'list[np.ndarray]',
-                       solvers: 'list[str]'):
+                       solvers: 'list[str]') -> (go.Figure, pd.DataFrame):
     """
     Function to draw the profile in plotly
 
     :param step_values: A sorted list of the values of the metric
                         being profiled
-    :type step_values: list of np.array[float]
+    :type step_values: list[numpy.array[float]]
     :param solvers: A list of the labels for the different solvers
-    :type solvers: list of strings
+    :type solvers: list[str]
 
     :return: The perfomance profile graph, the data for plotting the graph
     :rtype: plotly.graph_objects.Figure, pandas.DataFrame
@@ -285,7 +286,8 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     return fig, data_df
 
 
-def create_df(solvers, solver_values, plot_points):
+def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
+              plot_points: 'list[np.ndarray]') -> pd.DataFrame:
     """
     Creates a df with performance profile data.
 
