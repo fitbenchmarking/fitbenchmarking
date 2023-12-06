@@ -49,7 +49,7 @@ def remove_ids_and_src(html_path):
     :param html_path: path to html file
     :type html_path: str
 
-    :return: Lines in html file, to be processed
+    :return: Processed lines from html file
     :rtype: list[str]
     """
 
@@ -252,18 +252,12 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that get_plot_path_and_data returns a dictionary
         of dataframes.
         """
-        acc = {'migrad [minuit]': [1., 2.,  5., 6.,
-                                   15., 150, 180.],
-               'simplex [minuit]': [1., 20., 100., 110.,
-                                    150., 1500, 1800.],
-               'dfogn [dfo]': [1., 50., 500., 2000.,
-                               2600., 2700, 2800.]}
-        runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5,
-                                       51.6, 10.8, 15.2],
-                   'simplex [minuit]': [6.9, 15.2, 6.5,
-                                        5.6, 7., 8.5, 6.5],
-                   'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9,
-                                   6.5,  28.3, 17.2]}
+        acc = {'migrad [minuit]': [1., 2.,  5., 6., 15., 150, 180.],
+               'simplex [minuit]': [1., 20., 100., 110., 150., 900, 1800.],
+               'dfogn [dfo]': [1., 50., 500., 800., 2600., 2700, 2800.]}
+        runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5, 51.6, 10.8, 15.2],
+                   'simplex [minuit]': [6.9, 15.2, 6.5, 5.6, 7., 8.5, 6.5],
+                   'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9, 6.5,  28.3, 17.2]}
 
         _, data_dfs = performance_profiler.\
             get_plot_path_and_data(acc, runtime,
