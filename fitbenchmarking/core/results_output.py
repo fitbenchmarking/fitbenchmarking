@@ -2,25 +2,25 @@
 Functions that create the tables, support pages, figures, and indexes.
 """
 import inspect
+import logging
 import os
 import platform
 import re
 import webbrowser
-import logging
 from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
-from jinja2 import Environment, FileSystemLoader
 import pandas as pd
-from dash import Dash, html, dcc
+from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-from fitbenchmarking.results_processing.performance_profiler import \
-    DashPerfProfile
+from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
                                                 performance_profiler, plots,
                                                 problem_summary_page, tables)
+from fitbenchmarking.results_processing.performance_profiler import \
+    DashPerfProfile
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
