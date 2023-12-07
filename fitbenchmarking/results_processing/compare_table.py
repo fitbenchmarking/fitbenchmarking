@@ -48,9 +48,8 @@ class CompareTable(Table):
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
 
         self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
-                             'perf_prof_acc',
-                             f'http://127.0.0.1:{port}/{group_dir_label}/'
-                             'perf_prof_runtime']
+                             f'perf_prof_{metric}'
+                             for metric in ['acc', 'runtime']]
 
         self.colour_template = \
             'background-image: linear-gradient({0},{0},{1},{1})'
