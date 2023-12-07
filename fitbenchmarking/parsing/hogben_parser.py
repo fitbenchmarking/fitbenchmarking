@@ -1,18 +1,12 @@
 """
-This file implements a parser for Horace problem sets.
+This file implements a parser for HOGBEN problem sets.
 """
-import importlib
-import inspect
 import os
-import sys
 import typing
-import numpy as np
 import pickle
-
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-from fitbenchmarking.utils.exceptions import ParsingError
 
 
 class HogbenParser(FitbenchmarkParser):
@@ -44,7 +38,7 @@ class HogbenParser(FitbenchmarkParser):
         # pylint: disable=attribute-defined-outside-init
         self._starting_values = [dict(zip(p_names, svals))]
 
-        def fitFunction(x,*params):
+        def fitFunction(x, *params):
             if len(params) == refnx_model.parameters.nvary():
                 for idx, param in enumerate(varying_params):
                     param.value = params[idx]
