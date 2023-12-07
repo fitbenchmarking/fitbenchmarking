@@ -11,8 +11,8 @@ The output section contains options to control how results are outputted and pre
 Results directory (:code:`results_dir`)
 ---------------------------------------
 
-This is used to select where the output should be saved. If the 
-:ref:`results directory command line argument <change_results_directory>` 
+This is used to select where the output should be saved. If the
+:ref:`results directory command line argument <change_results_directory>`
 is provided, this option is overridden.
 
 Default is ``fitbenchmarking_results``
@@ -74,14 +74,14 @@ Default for ``magma`` is ``[0.2, 0.8]`` (suitability depends on colourmap)
 
     [OUTPUT]
     colour_map: magma_r
-    cmap_range: [0.2, 0.8] 
+    cmap_range: [0.2, 0.8]
 
 Colour Upper Limit (:code:`colour_ulim`)
 ----------------------------------------
 
 Controls how relatively poorly a minimizer has to perform in order to receive the `worst` colour. For example,
 a value of 100 would mean that any performance greater than or equal to 100 times worse than the best
-minimizer would receive the worst colour. This ensures that colour scale is not compromised by especially 
+minimizer would receive the worst colour. This ensures that colour scale is not compromised by especially
 poor relative results. Options are:
 
 * Any float between ``1`` and ``np.inf``
@@ -93,7 +93,7 @@ Default is ``100``
 
     [OUTPUT]
     colour_map: magma_r
-    cmap_range: [0.2, 0.8] 
+    cmap_range: [0.2, 0.8]
     colour_ulim: 100
 
 
@@ -142,3 +142,16 @@ Default is ``acc``, ``runtime``, ``compare``, ``local_min``, and ``emissions``.
                 compare
                 local_min
                 emissions
+
+Run Dash (:code:`run_dash`)
+-------------------------------
+
+This allows the user to decide whether or not to run the Dash app.
+Toggling this to False means the more interactive (online) plots will not be available.
+
+Default is ``True`` (``yes``/``no`` can also be used)
+
+.. code-block:: rst
+
+    [OUTPUT]
+    run_dash: yes
