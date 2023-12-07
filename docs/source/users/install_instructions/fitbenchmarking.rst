@@ -90,6 +90,7 @@ where valid strings ``option-x`` are:
 * ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
 * ``lmfit``-- installs the `LMFIT <https://lmfit.github.io/lmfit-py/installation.html>`_ and `emcee <https://emcee.readthedocs.io/en/stable/user/install/>`__ fitting package.
 * ``paramonte`` -- installs the `Paramonte <https://www.cdslab.org/paramonte/index.html>`__ package.
+* ``hogben`` -- installs the `HOGBEN <https://github.com/jfkcooper/HOGBEN>`__ package.
 
 
 .. |Python 3.7.1+| image:: https://img.shields.io/badge/python-3.7.1+-blue.svg
