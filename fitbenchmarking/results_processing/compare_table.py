@@ -43,7 +43,8 @@ class CompareTable(Table):
         self.name = 'compare'
         self.has_pp = True
         port = options.port
-        group_dir_label = group_dir.split('/')[-1]
+        group_dir_label = os.path.basename(group_dir)
+
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
 

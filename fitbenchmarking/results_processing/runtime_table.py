@@ -44,7 +44,8 @@ class RuntimeTable(Table):
         self.name = 'runtime'
         self.has_pp = True
         port = options.port
-        group_dir_label = group_dir.split('/')[-1]
+        group_dir_label = os.path.basename(group_dir)
+
         self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
                              f'perf_prof_runtime']
         self.pp_filenames = [os.path.relpath(self.pp_locations[1], group_dir)]

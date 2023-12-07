@@ -52,7 +52,7 @@ class EmissionsTable(Table):
         self.name = 'emissions'
         self.has_pp = True
         self.pp_filenames = [os.path.relpath(self.pp_locations[1], group_dir)]
-        self.pp_dash_urls = ['None', 'None']
+        self.pp_dash_urls = ['None']
 
         self.cbar_title = "Problem-Specific Cell Shading: Relative Emissions"
 
