@@ -766,7 +766,8 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
     :type output_file: str
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
-    :param pp_dfs_all_prob_sets: For each problem set, data to create dash plots.
+    :param pp_dfs_all_prob_sets: For each problem set, data to create
+                                 dash plots.
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
     use_url = False

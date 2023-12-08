@@ -179,8 +179,8 @@ class PerformanceProfilerTests(unittest.TestCase):
         of dataframes for plotting the profiles.
         """
         (_, _), pp_dfs = performance_profiler.profile(self.results,
-                                                        self.fig_dir,
-                                                        self.options)
+                                                      self.fig_dir,
+                                                      self.options)
         assert isinstance(pp_dfs, dict)
         for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)
