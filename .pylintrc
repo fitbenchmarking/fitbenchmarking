@@ -20,7 +20,8 @@ extension-pkg-allow-list=gofit
 disable=too-many-instance-attributes,
         invalid-name,
         too-few-public-methods,
-        duplicate-code  # This should be investigated at a later date
+        duplicate-code,  # This should be investigated at a later date
+        protected-access
 
 [REPORTS]
 # Set the output format. Available formats are text, parseable, colorized, json
