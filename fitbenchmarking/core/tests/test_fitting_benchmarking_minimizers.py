@@ -1,5 +1,5 @@
 """
-Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_minimizers
+Tests for fitbenchmarking.core.fitting_benchmarking.Fit.__loop_over_minimizers
 """
 import inspect
 import os
@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.core.fitting_benchmarking import loop_over_minimizers
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -84,7 +84,7 @@ def make_cost_function(file_name='cubic.dat', minimizers=None):
 # pylint: disable=attribute-defined-outside-init
 class LoopOverMinimizersTests(unittest.TestCase):
     """
-    loop_over_minimizers tests
+    Fit.__loop_over_minimizers tests
     """
 
     def setUp(self):
@@ -105,7 +105,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
             runtimes=[1])
         self.cp = Checkpoint(self.options)
 
-    def mock_func_call(self, *args, **kwargs):
+    def mock_func_call(self):
         """
         Mock function to be used instead of loop_over_jacobians
         """
@@ -118,13 +118,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         Tests that no minimizers are selected
         """
         self.options.algorithm_type = ["ls"]
-        results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller,
-                                 self.minimizers,
-                                 options=self.options,
-                                 grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
-        assert results_problem == []
+
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        minimizer_failed = \
+            fit._Fit__loop_over_minimizers(self.controller,
+                                           self.minimizers)
+        assert fit._results == []
         assert minimizer_failed == self.minimizers
 
     @patch(f'{FITTING_DIR}.loop_over_jacobians')
@@ -137,14 +139,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.minimizer_list = [["general"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
-        results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller,
-                                 self.minimizers,
-                                 options=self.options,
-                                 grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        minimizer_failed = \
+            fit._Fit__loop_over_minimizers(self.controller,
+                                           self.minimizers)
         assert all(isinstance(x, fitbm_result.FittingResult)
-                   for x in results_problem)
+                   for x in fit._results)
         assert minimizer_failed == ["deriv_free_algorithm"]
 
     @patch(f'{FITTING_DIR}.loop_over_jacobians')
@@ -156,14 +159,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
         loop_over_hessians.side_effect = self.mock_func_call
 
-        results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller,
-                                 self.minimizers,
-                                 options=self.options,
-                                 grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        minimizer_failed = \
+            fit._Fit__loop_over_minimizers(self.controller,
+                                           self.minimizers)
         assert all(isinstance(x, fitbm_result.FittingResult)
-                   for x in results_problem)
+                   for x in fit._results)
         assert minimizer_failed == []
 
     def test_no_bounds_minimizer(self):
@@ -175,14 +179,13 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.minimizers = ["general"]
 
-        results_problem, minimizer_failed = \
-            loop_over_minimizers(self.controller,
-                                 self.minimizers,
-                                 options=self.options,
-                                 grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+        fit = Fit(options=self.options, data_dir=FITTING_DIR, checkpointer=self.cp)
 
-        assert results_problem[0].error_flag == 4
+        minimizer_failed = \
+            fit._Fit__loop_over_minimizers(self.controller,
+                                           self.minimizers)
+
+        assert fit._results[0].error_flag == 4
         assert minimizer_failed == []
 
 
