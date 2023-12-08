@@ -82,17 +82,17 @@ class SaveResultsTests(unittest.TestCase):
 
     def test_save_results_correct_output_dict_format(self):
         """
-        Tests to check the data_dfs is correct
+        Tests to check the pp_dfs is correct
         """
         failed_problems = []
         unselected_minimizers = {}
         group_name = "group_name"
-        _, data_dfs = save_results(self.options, self.results,
-                                   group_name, failed_problems,
-                                   unselected_minimizers)
+        _, pp_dfs = save_results(self.options, self.results,
+                                 group_name, failed_problems,
+                                 unselected_minimizers)
 
-        assert isinstance(data_dfs, dict)
-        for df in list(data_dfs.values()):
+        assert isinstance(pp_dfs, dict)
+        for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
 

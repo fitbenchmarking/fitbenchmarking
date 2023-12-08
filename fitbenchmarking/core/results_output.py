@@ -67,9 +67,9 @@ def save_results(options, results, group_name, failed_problems,
 
     best_results, results_dict = preprocess_data(results)
 
-    pp_locations, data_dfs = performance_profiler.profile(results_dict,
-                                                          fig_dir,
-                                                          options)
+    pp_locations, pp_dfs = performance_profiler.profile(results_dict,
+                                                        fig_dir,
+                                                        options)
 
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir)
@@ -100,7 +100,7 @@ def save_results(options, results, group_name, failed_problems,
                                group_dir=group_dir,
                                table_descriptions=table_descriptions)
 
-    return group_dir, data_dfs
+    return group_dir, pp_dfs
 
 
 def create_directories(options, group_name):
@@ -758,7 +758,7 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options, dfs_all_prob_sets) -> None:
+def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -766,8 +766,8 @@ def open_browser(output_file: str, options, dfs_all_prob_sets) -> None:
     :type output_file: str
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
-    :param dfs_all_prob_sets: For each problem set, data to create dash plots.
-    :type dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
+    :param pp_dfs_all_prob_sets: For each problem set, data to create dash plots.
+    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -797,12 +797,12 @@ def open_browser(output_file: str, options, dfs_all_prob_sets) -> None:
 
     # Dash app
     profile_instances_all_groups = {}
-    for group, data_dfs in dfs_all_prob_sets.items():
+    for group, pp_dfs in pp_dfs_all_prob_sets.items():
         inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
-                                              data_df=data_dfs['acc'],
+                                              pp_df=pp_dfs['acc'],
                                               group_label=group),
                 'runtimeProfile': DashPerfProfile(profile_name='Runtime',
-                                                  data_df=data_dfs['runtime'],
+                                                  pp_df=pp_dfs['runtime'],
                                                   group_label=group)}
         profile_instances_all_groups[group] = inst
 

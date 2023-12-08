@@ -268,7 +268,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     group_labels = []
     result_dir = []
-    dfs_all_prob_sets = {}
+    pp_dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
 
     for sub_dir in problem_sets:
@@ -321,14 +321,14 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         else:
             LOGGER.info('Producing output for the %s problem set', label)
             # Display the runtime and accuracy results in a table
-            group_results_dir, data_dfs = \
+            group_results_dir, pp_dfs = \
                 save_results(group_name=label,
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
                              unselected_minimizers=unselected_minimizers)
 
-            dfs_all_prob_sets[label] = data_dfs
+            pp_dfs_all_prob_sets[label] = pp_dfs
 
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
@@ -355,7 +355,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     options.results_dir)
 
     index_page = create_index_page(options, group_labels, result_dir)
-    open_browser(index_page, options, dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets)
 
 
 def main():

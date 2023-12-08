@@ -178,11 +178,11 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that the performance profiler returns a dictionary
         of dataframes for plotting the profiles.
         """
-        (_, _), data_dfs = performance_profiler.profile(self.results,
+        (_, _), pp_dfs = performance_profiler.profile(self.results,
                                                         self.fig_dir,
                                                         self.options)
-        assert isinstance(data_dfs, dict)
-        for df in list(data_dfs.values()):
+        assert isinstance(pp_dfs, dict)
+        for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
 
@@ -202,7 +202,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_plot_and_df_returns_correct_plot(self):
         """
-        Test that create_plot_and_data_df returns the correct plot.
+        Test that create_plot_and_df returns the correct plot.
         """
         output_plot_path = self.temp_result + \
             '/for_test_create_plot.html'
@@ -225,11 +225,11 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_plot_and_df_returns_pandas_df(self):
         """
-        Test that create_plot_and_data_df returns a pandas Dataframe.
+        Test that create_plot_and_df returns a pandas Dataframe.
         """
-        _, data_df = performance_profiler.\
+        _, pp_df = performance_profiler.\
             create_plot_and_df(self.step_values, self.solvers)
-        assert isinstance(data_df, pd.DataFrame)
+        assert isinstance(pp_df, pd.DataFrame)
 
     def test_create_df_returns_correct_df(self):
         """
@@ -259,13 +259,13 @@ class PerformanceProfilerTests(unittest.TestCase):
                    'simplex [minuit]': [6.9, 15.2, 6.5, 5.6, 7., 8.5, 6.5],
                    'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9, 6.5,  28.3, 17.2]}
 
-        _, data_dfs = performance_profiler.\
+        _, pp_dfs = performance_profiler.\
             get_plot_path_and_data(acc, runtime,
                                    self.fig_dir,
                                    self.options)
 
-        assert isinstance(data_dfs, dict)
-        for df in list(data_dfs.values()):
+        assert isinstance(pp_dfs, dict)
+        for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
 

@@ -29,11 +29,11 @@ def profile(results, fig_dir, options):
     :rtype: (str, str), dict[str, pandas.DataFrame]
     """
     acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path, data_dfs = get_plot_path_and_data(acc_bound,
-                                                 runtime_bound,
-                                                 fig_dir,
-                                                 options)
-    return plot_path, data_dfs
+    plot_path, pp_dfs = get_plot_path_and_data(acc_bound,
+                                               runtime_bound,
+                                               fig_dir,
+                                               options)
+    return plot_path, pp_dfs
 
 
 def prepare_profile_data(results):
@@ -93,7 +93,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
     :rtype: list[str], dict[str, pandas.DataFrame]
     """
     figure_path = []
-    data_dfs = {}
+    pp_dfs = {}
     for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
         this_filename_html = os.path.join(fig_dir, f"{name}_profile.html")
 
@@ -119,10 +119,10 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
 
         # Plot linear performance profile
         solvers = profile_plot.keys()
-        fig, data_df = create_plot_and_df(step_values=step_values,
-                                          solvers=solvers)
+        fig, pp_df = create_plot_and_df(step_values=step_values,
+                                        solvers=solvers)
 
-        data_dfs[name] = data_df
+        pp_dfs[name] = pp_df
 
         fig = update_fig(fig, name, use_log_plot,
                          log_upper_limit)
@@ -131,7 +131,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
                                            this_filename_html,
                                            options)
 
-    return figure_path, data_dfs
+    return figure_path, pp_dfs
 
 
 def update_fig(fig: go.Figure, name: str, use_log_plot: bool,
@@ -279,11 +279,11 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
                        )
             )
 
-    data_df = create_df(all_solvers,
-                        all_solver_values,
-                        all_plot_points)
+    pp_df = create_df(all_solvers,
+                      all_solver_values,
+                      all_plot_points)
 
-    return fig, data_df
+    return fig, pp_df
 
 
 def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
@@ -313,27 +313,27 @@ def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
         'y': plot_points
     }
 
-    data_df = pd.DataFrame.from_dict(data_dict)
-    return data_df
+    pp_df = pd.DataFrame.from_dict(data_dict)
+    return pp_df
 
 
 class DashPerfProfile():
 
     """General class for creating performance profiles."""
 
-    def __init__(self, profile_name, data_df, group_label):
+    def __init__(self, profile_name, pp_df, group_label):
         """
         Initialises a performance profile graph.
 
         :param profile_name: The name of the profile (e.g. runtime)
         :type profile_name: str
-        :param data_df: The data for creating the graph
-        :type data_df: pandas.DataFrame
+        :param pp_df: The data for creating the graph
+        :type pp_df: pandas.DataFrame
         :param group_label: The group directory the plot belongs to
         :type group_label: str
         """
 
-        self.data = data_df
+        self.data = pp_df
         self.profile_name = profile_name
         self.group_label = group_label
         self.identif = self.group_label + '-' + self.profile_name
