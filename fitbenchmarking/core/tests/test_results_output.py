@@ -83,7 +83,7 @@ class SaveResultsTests(unittest.TestCase):
 
     def test_save_results_correct_output_dict_format(self):
         """
-        Tests to check the pp_dfs is correct
+        Test to check save_results returns a dict of pandas dataframes.
         """
         failed_problems = []
         unselected_minimizers = {}
