@@ -4,24 +4,24 @@ Tests for the performance profiler file.
 
 import inspect
 import os
-import unittest
 import re
+import unittest
 from inspect import getfile
 from tempfile import TemporaryDirectory
 
 import numpy as np
-from pandas.testing import assert_frame_equal
-from pandas import read_csv
 import pandas as pd
 import plotly.graph_objects as go
+from pandas import read_csv
+from pandas.testing import assert_frame_equal
 
 import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
+from fitbenchmarking.results_processing.plots import Plot
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.results_processing.plots import Plot
 
 
 def load_mock_results():

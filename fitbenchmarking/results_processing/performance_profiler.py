@@ -3,12 +3,11 @@ Set up performance profiles for both accuracy and runtime tables
 """
 import os
 
-import numpy as np
-import plotly.graph_objects as go
-import pandas as pd
 import dash
-from dash import html, dcc, Input, Output
-
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+from dash import Input, Output, dcc, html
 
 from fitbenchmarking.results_processing.plots import Plot
 

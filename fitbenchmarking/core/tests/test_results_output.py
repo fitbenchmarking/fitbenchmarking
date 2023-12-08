@@ -9,6 +9,7 @@ import shutil
 import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
+
 import pandas as pd
 
 from fitbenchmarking import test_files
