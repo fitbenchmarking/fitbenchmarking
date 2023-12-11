@@ -26,7 +26,8 @@ class HogbenParser(FitbenchmarkParser):
         """
 
         pf = self._parsed_func[0]
-        model = os.path.join(os.path.dirname(self._filename), "Models", pf['function'])
+        model = os.path.join(os.path.dirname(self._filename),
+                             "Models", pf['function'])
         with open(model, 'rb') as f:
             refnx_model = pickle.load(f)
 
