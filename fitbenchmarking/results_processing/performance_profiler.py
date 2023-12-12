@@ -340,8 +340,14 @@ class DashPerfProfile():
         self.set_callbacks()
 
     def layout(self):
+        """
+        Creates and returns the dash layout for the performance profile,
+        which is used in fitbenchmarking/core/results_output, in the
+        function "display_page".
 
-        """Creates and returns the layout for the performance profile."""
+        :return: Layout for the performance profile.
+        :rtype: dash.html.Div
+        """
 
         layout = html.Div([
             dcc.RadioItems(
