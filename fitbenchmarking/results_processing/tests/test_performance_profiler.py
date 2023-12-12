@@ -71,15 +71,16 @@ def remove_ids_and_src(html_path):
 
 def diff_between_htmls(expected_plot_path, output_plot_path):
     """
-    Find difference between two html files line by line.
+    Finds differences between two html files line by line.
+    Returns an empty list if no difference is found.
 
     :param expected: path to html file with expected lines
     :type expected: str
     :param achieved: path to html file with achieved lines
     :type achieved: str
 
-    :return: Differences between the two files
-    :rtype: list[str]
+    :return: Lines in the two files that present differences
+    :rtype: list[list]
     """
     act_lines = remove_ids_and_src(output_plot_path)
     exp_lines = remove_ids_and_src(expected_plot_path)
@@ -91,6 +92,13 @@ def diff_between_htmls(expected_plot_path, output_plot_path):
 
         if act_line != exp_line:
             diff.append([i, exp_line, act_line])
+
+    if diff:
+        print(f"Comparing {output_plot_path} against {expected_plot_path}\n"
+              + "\n".join([f'== Line {change[0]} ==\n'
+                           f'Expected :{change[1]}\n'
+                           f'Actual   :{change[2]}'
+                           for change in diff]))
 
     return diff
 
