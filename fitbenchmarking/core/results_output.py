@@ -808,7 +808,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         profile_instances_all_groups[group] = inst
 
     # Needed to prevent unnecessary warning in the terminal
-    # 'werkzeug' is the name of the logger
+    # 'werkzeug' is the name of the logger used by dash
     log = logging.getLogger('werkzeug')
     log.disabled = True
 
