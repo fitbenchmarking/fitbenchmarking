@@ -393,9 +393,13 @@ class DashPerfProfile():
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         linestyles = ['solid', 'dash', 'dashdot']
 
-        i = 1
         max_value = 0
-        for solver, data_one_solver in self.data.groupby('solver'):
+
+        # Setting sort to False ensures the color for each solver
+        # in the dash plot is the same as in the offline plot
+        grouped_data = self.data.groupby('solver', sort=False)
+
+        for i, (solver, data_one_solver) in enumerate(grouped_data):
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
@@ -416,7 +420,6 @@ class DashPerfProfile():
                     },
                     name=solver,
                     type='scatter'))
-            i = i+1
 
         log_upper_limit = min(max_value+1, 10000)
         use_log_plot = (x_axis_scale == 'Log x-axis')
