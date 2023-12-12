@@ -87,22 +87,8 @@ function toggle_prob_size_header() {
 /**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
-var offline_plot1 = document.getElementById("offline_plot1");
-var offline_plot2 = document.getElementById("offline_plot2");
-var online_plot1 = document.getElementById("online_plot1");
-var online_plot2 = document.getElementById("online_plot2");
-
 function load_src(_button){
     var path = _button.dataset.value1;
     var index = _button.dataset.value2;
     document.getElementById("i_frame"+index).setAttribute("src", path);
-}
-
-var plots = [online_plot1, online_plot2, offline_plot1, offline_plot2];
-
-for (var i = 0; i <= plots.length; i++); {
-    var plot = plots[i];
-    if (plot){
-        plot.addEventListener("click", load_src(plot));
-    }
 }
