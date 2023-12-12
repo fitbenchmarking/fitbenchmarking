@@ -45,7 +45,7 @@ def load_mock_results():
 
 def remove_ids_and_src(html_path):
     """
-    Remove ids and src within html file.
+    Reads html file and removes ids and src.
     :param html_path: path to html file
     :type html_path: str
 
@@ -57,14 +57,43 @@ def remove_ids_and_src(html_path):
         read_lines = f.readlines()
 
     processed_lines = []
+    pattern_for_ids = r"(?:(?:\d+[a-z]+|[a-z]+\d+)[a-z\d-]*)+[a-z0-9]+"
+    pattern_for_src = r"(?:[A-Za-z_-]+[\\/]+)+[A-Za-z_-]+\.[A-Za-z]+"
+
     for str_i in read_lines:
-        pattern_for_ids = r"(?:(?:\d+[a-z]+|[a-z]+\d+)[a-z\d-]*)+[a-z0-9]+"
         line_without_ids = re.sub(pattern_for_ids, '', str_i)
-        pattern_for_src = r"(?:[A-Za-z_-]+[\\/]+)+[A-Za-z_-]+\.[A-Za-z]+"
+
+        # Needed for the test to pass on Windows
         final_processed_line = re.sub(pattern_for_src, '', line_without_ids)
         processed_lines.append(final_processed_line)
 
     return processed_lines
+
+
+def diff_between_htmls(expected_plot_path, output_plot_path):
+    """
+    Find difference between two html files line by line.
+
+    :param expected: path to html file with expected lines
+    :type expected: str
+    :param achieved: path to html file with achieved lines
+    :type achieved: str
+
+    :return: Differences between the two files
+    :rtype: list[str]
+    """
+    act_lines = remove_ids_and_src(output_plot_path)
+    exp_lines = remove_ids_and_src(expected_plot_path)
+
+    diff = []
+    for i, (act_line, exp_line) in enumerate(zip(act_lines, exp_lines)):
+        exp_line = '' if exp_line is None else exp_line.strip('\n')
+        act_line = '' if act_line is None else act_line.strip('\n')
+
+        if act_line != exp_line:
+            diff.append([i, exp_line, act_line])
+
+    return diff
 
 
 class PerformanceProfilerTests(unittest.TestCase):
@@ -217,11 +246,8 @@ class PerformanceProfilerTests(unittest.TestCase):
                                            htmlfile=output_plot_path,
                                            options=self.options)
 
-        processed_achieved_lines = remove_ids_and_src(output_plot_path)
-        processed_exp_lines = remove_ids_and_src(expected_plot_path)
-
-        assert set(processed_exp_lines) == set(processed_achieved_lines)
-        assert isinstance(plot, go.Figure)
+        diff = diff_between_htmls(expected_plot_path, output_plot_path)
+        self.assertListEqual([], diff)
 
     def test_create_plot_and_df_returns_pandas_df(self):
         """
@@ -309,11 +335,8 @@ class DashPerfProfileTests(unittest.TestCase):
 
         expected_plot_path = self.expected_results_dir + '/dash_plot.html'
 
-        processed_exp_lines = remove_ids_and_src(expected_plot_path)
-        processed_achieved_lines = remove_ids_and_src(output_plot_path)
-
-        assert isinstance(output, go.Figure)
-        assert set(processed_exp_lines) == set(processed_achieved_lines)
+        diff = diff_between_htmls(expected_plot_path, output_plot_path)
+        self.assertListEqual([], diff)
 
     # pylint: enable=W0632
 
