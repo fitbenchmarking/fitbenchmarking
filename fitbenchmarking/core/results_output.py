@@ -823,23 +823,23 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
     @app.callback(Output('page-content', 'children'),
                   [Input('url', 'pathname')])
     def display_page(pathname):
-        splitted_path = pathname.split('/')
 
-        if len(splitted_path) == 3:
-            _, group, table = splitted_path
-            profiles_for_this_group = profile_instances_all_groups[group]
+        try:
+            _, group, table = pathname.split('/')
+        except ValueError:
+            return ("404 Page Error! Path does not have the expected shape. "
+                    "Please provide it in the following form:  \n"
+                    "ip-address:port/problem_set/performance_profile.")
 
-            if table == 'perf_prof_acc':
-                return profiles_for_this_group['accProfile'].layout()
-            if table == 'perf_prof_runtime':
-                return profiles_for_this_group['runtimeProfile'].layout()
-            return ("404 Page Error! The path was not recognized. \n"
-                    "The path needs to end in 'perf_prof_acc' or "
-                    "'perf_prof_runtime' .")
+        group_profiles = profile_instances_all_groups[group]
 
-        return ("404 Page Error! Path does not have the expected shape. "
-                "Please provide it in the following form:  \n"
-                "ip-address:port/problem_set/performance_profile.")
+        if table == 'perf_prof_acc':
+            return group_profiles['accProfile'].layout()
+        if table == 'perf_prof_runtime':
+            return group_profiles['runtimeProfile'].layout()
+        return ("404 Page Error! The path was not recognized. \n"
+                "The path needs to end in 'perf_prof_acc' or "
+                "'perf_prof_runtime' .")
 
     if options.run_dash:
         app.run(port=options.port)
