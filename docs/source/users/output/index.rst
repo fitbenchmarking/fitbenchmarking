@@ -41,6 +41,19 @@ Performance profile
 
 Below the table there is a :ref:`performance_profile`.
 
+Assuming the Dash app is running (i.e., it has not been stopped by the user), the performance
+profile is available in two versions:
+
+* an offline version, which is always available and does not depend on the status of the Dash app
+* an online version, which is more interactive than the offline version, but is only available if the Dash app is running.
+
+The default version shown in the page is the offline one. The user can switch between the two
+versions by clicking on the corresponding button above the plot. If the Dash app is off and the
+graph currently open is the offline one, then clicking on the button for the online version will
+have no effect. On the other hand, if the Dash app stops running while the online graph is shown,
+then the graph will lose its interactivity, e.g., it will not be possible to change the x-axis scale.
+
+
 Support Pages
 *************
 

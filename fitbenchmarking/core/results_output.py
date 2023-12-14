@@ -2,6 +2,7 @@
 Functions that create the tables, support pages, figures, and indexes.
 """
 import inspect
+import logging
 import os
 import platform
 import re
@@ -9,13 +10,17 @@ import webbrowser
 from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
-from jinja2 import Environment, FileSystemLoader
 import pandas as pd
+from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
+from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
 from fitbenchmarking.results_processing import (fitting_report,
                                                 performance_profiler, plots,
                                                 problem_summary_page, tables)
+from fitbenchmarking.results_processing.performance_profiler import \
+    DashPerfProfile
 from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -28,6 +33,7 @@ if TYPE_CHECKING:
 
 
 LOGGER = get_logger()
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 
 @write_file
@@ -50,8 +56,9 @@ def save_results(options, results, group_name, failed_problems,
                                   based on the algorithm_type option
     :type unselected_minimizers: dict
 
-    :return: Path to directory of group results
-    :rtype: str
+    :return: Path to directory of group results, data for building the
+             performance profile plots
+    :rtype: str, dict[str, pandas.DataFrame]
     """
     group_dir, supp_dir, fig_dir = \
         create_directories(options, group_name)
@@ -61,8 +68,9 @@ def save_results(options, results, group_name, failed_problems,
 
     best_results, results_dict = preprocess_data(results)
 
-    pp_locations = performance_profiler.profile(results_dict, fig_dir,
-                                                options)
+    pp_locations, pp_dfs = performance_profiler.profile(results_dict,
+                                                        fig_dir,
+                                                        options)
 
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir)
@@ -93,7 +101,7 @@ def save_results(options, results, group_name, failed_problems,
                                group_dir=group_dir,
                                table_descriptions=table_descriptions)
 
-    return group_dir
+    return group_dir, pp_dfs
 
 
 def create_directories(options, group_name):
@@ -751,12 +759,17 @@ def create_index_page(options: "Options", groups: "list[str]",
     return output_file
 
 
-def open_browser(output_file: str, options) -> None:
+def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
     :param output_file: The absolute path to the results index file.
     :type output_file: str
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param pp_dfs_all_prob_sets: For each problem set, data to create
+                                 dash plots.
+    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -783,3 +796,51 @@ def open_browser(output_file: str, options) -> None:
         LOGGER.info("\nINFO:\nYou have chosen not to open FitBenchmarking "
                     "results in your browser. You can use this link to see the"
                     "results: \n\n   %s", url)
+
+    # Dash app
+    profile_instances_all_groups = {}
+    for group, pp_dfs in pp_dfs_all_prob_sets.items():
+        inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
+                                              pp_df=pp_dfs['acc'],
+                                              group_label=group),
+                'runtimeProfile': DashPerfProfile(profile_name='Runtime',
+                                                  pp_df=pp_dfs['runtime'],
+                                                  group_label=group)}
+        profile_instances_all_groups[group] = inst
+
+    # Needed to prevent unnecessary warning in the terminal
+    # 'werkzeug' is the name of the logger used by dash
+    log = logging.getLogger('werkzeug')
+    log.disabled = True
+
+    app = Dash(__name__, suppress_callback_exceptions=True)
+
+    app.layout = html.Div([
+        dcc.Location(id='url', refresh=False),
+        html.Div(id='page-content', children=[]),
+    ])
+
+    # Create the callback to handle multiple pages
+    @app.callback(Output('page-content', 'children'),
+                  [Input('url', 'pathname')])
+    def display_page(pathname):
+
+        try:
+            _, group, table = pathname.split('/')
+        except ValueError:
+            return ("404 Page Error! Path does not have the expected shape. "
+                    "Please provide it in the following form:  \n"
+                    "ip-address:port/problem_set/performance_profile.")
+
+        group_profiles = profile_instances_all_groups[group]
+
+        if table == 'perf_prof_acc':
+            return group_profiles['accProfile'].layout()
+        if table == 'perf_prof_runtime':
+            return group_profiles['runtimeProfile'].layout()
+        return ("404 Page Error! The path was not recognized. \n"
+                "The path needs to end in 'perf_prof_acc' or "
+                "'perf_prof_runtime' .")
+
+    if options.run_dash:
+        app.run(port=options.port)

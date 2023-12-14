@@ -125,19 +125,22 @@ def generate_report(options_file='', additional_options=None, debug=False):
     results, unselected_minimizers, failed_problems = checkpoint.load()
 
     all_dirs = []
+    pp_dfs_all_prob_sets = {}
     for label in results:  # pylint: disable=consider-using-dict-items
-        directory = save_results(
+        directory, pp_dfs = save_results(
             group_name=label,
             results=results[label],
             options=options,
             failed_problems=failed_problems[label],
             unselected_minimizers=unselected_minimizers[label])
 
+        pp_dfs_all_prob_sets[label] = pp_dfs
+
         directory = os.path.relpath(path=directory, start=options.results_dir)
         all_dirs.append(directory)
 
     index_page = create_index_page(options, list(results), all_dirs)
-    open_browser(index_page, options)
+    open_browser(index_page, options, pp_dfs_all_prob_sets)
 
 
 @exception_handler

@@ -10,6 +10,8 @@ import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+import pandas as pd
+
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
                                                  _find_matching_tags,
@@ -67,16 +69,33 @@ class SaveResultsTests(unittest.TestCase):
         """
         shutil.rmtree(self.results_dir)
 
-    def test_save_results_correct(self):
+    def test_save_results_correct_output_path(self):
         """
         Tests to check the group_dir is correct
         """
         failed_problems = []
         unselected_minimizers = {}
         group_name = "group_name"
-        group_dir = save_results(self.options, self.results, group_name,
-                                 failed_problems, unselected_minimizers)
+        group_dir, _ = save_results(self.options, self.results,
+                                    group_name, failed_problems,
+                                    unselected_minimizers)
         self.assertEqual(group_dir, os.path.join(self.results_dir, group_name))
+
+    def test_save_results_correct_output_dict_format(self):
+        """
+        Test to check save_results returns a dict of pandas dataframes.
+        """
+        failed_problems = []
+        unselected_minimizers = {}
+        group_name = "group_name"
+        _, pp_dfs = save_results(self.options, self.results,
+                                 group_name, failed_problems,
+                                 unselected_minimizers)
+
+        assert isinstance(pp_dfs, dict)
+        for df in list(pp_dfs.values()):
+            assert isinstance(df, pd.DataFrame)
+            assert not df.empty
 
 
 class CreateDirectoriesTests(unittest.TestCase):

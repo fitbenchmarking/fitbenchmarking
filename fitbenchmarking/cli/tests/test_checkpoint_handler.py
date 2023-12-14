@@ -39,7 +39,8 @@ class TestGenerateReport(TestCase):
         cp_file = cp_dir / 'checkpoint.json'
         options = {'checkpoint_filename': str(cp_file),
                    'results_browser': False,
-                   'external_output': 'debug'}
+                   'external_output': 'debug',
+                   'run_dash': False}
 
         # Random files from each directory that should be created
         expected = [

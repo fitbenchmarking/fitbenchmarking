@@ -63,10 +63,16 @@ class LocalMinTable(Table):
         super().__init__(results, best_results, options, group_dir,
                          pp_locations, table_name)
         self.name = 'local_min'
+        port = options.port
+        group_dir_label = os.path.basename(group_dir)
 
         self.has_pp = True
         self.pp_filenames = \
             [os.path.relpath(pp, group_dir) for pp in pp_locations]
+
+        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
+                             f'perf_prof_{metric}'
+                             for metric in ['acc', 'runtime']]
 
         # Check whether any selected cost function is not a least squares
         # problem - if non least squares are present then local min table is
