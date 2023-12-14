@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
 
 LOGGER = get_logger()
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 
 @write_file
