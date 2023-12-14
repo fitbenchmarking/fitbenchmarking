@@ -152,10 +152,10 @@
                                                 data-value1="{{ dash_plot }}" data-value2="{{ index }}"
                                                 onclick="load_src(this)">Online version</button>
                                         </div>
-
-                                        <iframe width="100%" height="500" id="i_frame{{ index }}" frameborder="0" seamless="seamless"
-                                                scrolling="no" style="margin-bottom: 25px" src="{{ offline_plot }}"></iframe>
-
+                                        <div id="iframe-wrapper">
+                                            <iframe width="100%" height="500" id="i_frame{{ index }}" frameborder="0" seamless="seamless"
+                                                    scrolling="no" style="margin-bottom: 25px" src="{{ offline_plot }}"></iframe>
+                                        </div>
                                         <br>
                                     {% endfor %}
                                 </div>

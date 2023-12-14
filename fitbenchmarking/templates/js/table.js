@@ -85,10 +85,35 @@ function toggle_prob_size_header() {
 
 
 /**
+* Sets multiple attributes for an element.
+*/
+function setAttributes(el, attrs) {
+    for(var key in attrs) {
+      el.setAttribute(key, attrs[key]);
+    }
+  }
+
+/**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
 function load_src(_button){
     var path = _button.dataset.value1;
     var index = _button.dataset.value2;
-    document.getElementById("i_frame"+index).setAttribute("src", path);
+
+    var iframe = document.getElementById("i_frame"+index);
+    iframe.remove();
+
+    var new_iframe = document.createElement("iframe");
+    setAttributes(new_iframe, {
+        "id": "i_frame"+index,
+        "src": path,
+        "width": "100%",
+        "height": "500",
+        "frameborder": 0,
+        "seamless": "seamless",
+        "scrolling": "no",
+        "style": "margin-bottom: 25px",
+    });
+
+    document.getElementById("iframe-wrapper").appendChild(new_iframe);
 }
