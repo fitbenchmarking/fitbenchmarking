@@ -115,5 +115,5 @@ function load_src(_button){
         "style": "margin-bottom: 25px",
     });
 
-    document.getElementById("iframe-wrapper").appendChild(new_iframe);
+    document.getElementById("iframe-wrapper"+index).appendChild(new_iframe);
 }
