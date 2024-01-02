@@ -44,9 +44,8 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
     :type group_dir: str
     :param fig_dir: path to the directory where figures should be stored
     :type fig_dir: str
-    :param pp_locations: tuple containing the locations of the
-                         performance profiles (acc then runtime)
-    :type pp_locations: tuple(str,str)
+    :param pp_locations: the locations of the performance profiles
+    :type pp_locations: dict[str,str]
     :param failed_problems: list of failed problems to be reported in the
                             html output
     :type failed_problems: list
@@ -104,7 +103,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
 
             run_name = f"{options.run_name}: " if options.run_name else ""
 
-            with open(f'{table.file_path}csv', "w") as f:
+            with open(f'{table.file_path}csv', "w", encoding='utf-8') as f:
                 f.write(csv_table)
 
             report_failed_min = \
@@ -195,9 +194,8 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     :type group_dir: str
     :param fig_dir: path to the directory where figures should be stored
     :type fig_dir: str
-    :param pp_locations: tuple containing the locations of the
-                         performance profiles (acc then runtime)
-    :type pp_locations: tuple(str,str)
+    :param pp_locations: the locations of the performance profiles
+    :type pp_locations: dict[str,str]
     :param table_name: name of the table
     :type table_name: str
     :param suffix: table suffix

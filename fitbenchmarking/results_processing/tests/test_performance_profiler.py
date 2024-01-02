@@ -145,9 +145,22 @@ class PerformanceProfilerTests(unittest.TestCase):
             self.runtime_expected[k] = [
                 v/min_runtime for v in self.runtime_expected[k]]
 
+        min_emissions = 1.0
+        self.emissions_expected = {
+            'm00 [s0]: j:j0': [np.inf, np.inf],
+            'm00 [s0]: j:j1': [np.inf, np.inf],
+            'm01 [s0]: j:j0': [1e4, 10.0],
+            'm01 [s0]: j:j1': [1.0, 1e4],
+            'm10 [s1]: j:j0': [1e4, 1.0],
+            'm10 [s1]: j:j1': [1e2, 1e2],
+            'm11 [s1]: j:j0': [1e3, 1.0],
+            'm11 [s1]: j:j1': [1e2, 1e2],
+        }
+        for k in self.emissions_expected:
+            self.emissions_expected[k] = [
+                v/min_emissions for v in self.emissions_expected[k]]
+
         self.fig_dir = ''
-        self.acc_name = "acc_profile.html"
-        self.runtime_name = "runtime_profile.html"
 
         root = os.path.dirname(getfile(fitbenchmarking))
         self.expected_results_dir = os.path.join(
@@ -164,7 +177,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                       15.4, 25.9, 600.]),
             np.array([0., 2., 3.5, 5.8, 7., 10.,
                       25.4, 45.9, 800.])
-            ]
+        ]
         self.solver_values = [
             np.array([0., 5.4, 11., 20., 59.1,
                       130.5, 300.1, 600.5, 1000]),
@@ -172,7 +185,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                       130.5, 200.8, 300, 5000]),
             np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1,
                       78.6, 230.5, 770.1]),
-            ]
+        ]
 
         # pylint: disable=consider-using-with
         self._dir = TemporaryDirectory()
@@ -181,42 +194,45 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def tearDown(self):
         """
-        Removes expected acc and runtime plots
+        Removes expected plots
         """
-        for name in [self.acc_name, self.runtime_name]:
-            if os.path.isfile(name):
-                os.remove(name)
+        for metric in ['acc', 'runtime', 'emissions']:
+            if os.path.isfile(f"{metric}_profile.html"):
+                os.remove(f"{metric}_profile.html")
 
     def test_correct_prepare_profile_data(self):
         """
         Test that prepare profile data gives the correct result.
         """
-        acc, runtime = performance_profiler.prepare_profile_data(self.results)
+        bounds = performance_profiler.prepare_profile_data(self.results)
 
         for k, v in self.accuracy_expected.items():
-            assert np.allclose(v, acc[k])
+            assert np.allclose(v, bounds['acc'][k])
         for k, v in self.runtime_expected.items():
-            assert np.allclose(v, runtime[k])
+            assert np.allclose(v, bounds['runtime'][k])
+        for k, v in self.emissions_expected.items():
+            assert np.allclose(v, bounds['emissions'][k])
 
     # pylint: disable=W0632
     def test_correct_profile_output_paths(self):
         """
         Test that the performance profiler returns the expected paths.
         """
-        (acc, runtime), _ = performance_profiler.profile(self.results,
-                                                         self.fig_dir,
-                                                         self.options)
-        assert acc == "acc_profile.html"
-        assert runtime == "runtime_profile.html"
+        pp_locations, _ = performance_profiler.profile(self.results,
+                                                       self.fig_dir,
+                                                       self.options)
+        assert pp_locations['acc'] == "acc_profile.html"
+        assert pp_locations['runtime'] == "runtime_profile.html"
+        assert pp_locations['emissions'] == "emissions_profile.html"
 
     def test_profile_returns_dict(self):
         """
         Test that the performance profiler returns a dictionary
         of dataframes for plotting the profiles.
         """
-        (_, _), pp_dfs = performance_profiler.profile(self.results,
-                                                      self.fig_dir,
-                                                      self.options)
+        _, pp_dfs = performance_profiler.profile(self.results,
+                                                 self.fig_dir,
+                                                 self.options)
         assert isinstance(pp_dfs, dict)
         for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)
@@ -291,9 +307,13 @@ class PerformanceProfilerTests(unittest.TestCase):
         runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5, 51.6, 10.8, 15.2],
                    'simplex [minuit]': [6.9, 15.2, 6.5, 5.6, 7., 8.5, 6.5],
                    'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9, 6.5,  28.3, 17.2]}
+        emissions = {'migrad [minuit]': [0.1, 0.4, 0.3, 0.5, 0.6, 0.8, 0.2],
+                     'simplex [minuit]': [0.9, 0.2, 0.5, 0.6, 0.0, 0.5, 0.5],
+                     'dfogn [dfo]': [0.6, 0.4, 0.6, 0.9, 0.5,  0.3, 0.2]}
 
+        bounds = {'acc': acc, 'runtime': runtime, 'emissions': emissions}
         _, pp_dfs = performance_profiler.\
-            get_plot_path_and_data(acc, runtime,
+            get_plot_path_and_data(bounds,
                                    self.fig_dir,
                                    self.options)
 
@@ -307,6 +327,7 @@ class DashPerfProfileTests(unittest.TestCase):
     """
     Test the DashPerfProfile object is correct.
     """
+
     def setUp(self):
 
         self.options = Options()
