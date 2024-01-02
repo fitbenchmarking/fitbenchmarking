@@ -133,6 +133,12 @@ of the Fitbenchmarking docs. '''
                         default='',
                         help="Set the metric for the runtime.")
 
+    parser.add_argument('--port',
+                        metavar='PORT',
+                        type=int,
+                        default=0,
+                        help="Set the port for Dash.")
+
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument('--make_plots', action='store_true',
                         help="Use this option if you have decided to "
@@ -209,6 +215,14 @@ of the Fitbenchmarking docs. '''
                         action='store_true',
                         help='Load results from the checkpoint and generate'
                              'reports. Will not run any new tests.')
+
+    group4 = parser.add_mutually_exclusive_group()
+    group4.add_argument('--run_dash', action='store_true',
+                        help="Use this option if you have decided to "
+                        "run dash for interactive plots.")
+    group4.add_argument('--dont_run_dash', action='store_true',
+                        help="Use this option if you have decided not to "
+                        "run dash for interactive plots.")
     return parser
 
 
@@ -252,8 +266,9 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
             LOGGER.debug(line.replace("\n", ""))
     os.remove(opt_file_name)
 
-    groups = []
+    group_labels = []
     result_dir = []
+    pp_dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
 
     for sub_dir in problem_sets:
@@ -306,18 +321,20 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         else:
             LOGGER.info('Producing output for the %s problem set', label)
             # Display the runtime and accuracy results in a table
-            group_results_dir = \
+            group_results_dir, pp_dfs = \
                 save_results(group_name=label,
                              results=results,
                              options=options,
                              failed_problems=failed_problems,
                              unselected_minimizers=unselected_minimizers)
 
+            pp_dfs_all_prob_sets[label] = pp_dfs
+
             LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
             group_results_dir = os.path.relpath(path=group_results_dir,
                                                 start=options.results_dir)
             result_dir.append(group_results_dir)
-            groups.append(label)
+            group_labels.append(label)
 
     cp.finalise()
 
@@ -337,8 +354,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
                     "You can also set 'results_dir' in an options file.",
                     options.results_dir)
 
-    index_page = create_index_page(options, groups, result_dir)
-    open_browser(index_page, options)
+    index_page = create_index_page(options, group_labels, result_dir)
+    open_browser(index_page, options, pp_dfs_all_prob_sets)
 
 
 def main():
@@ -368,7 +385,8 @@ def main():
         'level': args.level,
         'external_output': args.external_output,
         'run_name': args.run_name,
-        'runtime_metric': args.runtime_metric
+        'runtime_metric': args.runtime_metric,
+        'port': args.port
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
@@ -384,6 +402,13 @@ def main():
         options_dictionary['results_browser'] = True
     elif args.no_results_browser:
         options_dictionary['results_browser'] = False
+
+    # Check if run_dash in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.run_dash:
+        options_dictionary['run_dash'] = True
+    elif args.dont_run_dash:
+        options_dictionary['run_dash'] = False
 
     # Check if benchmark in options.py should be overridden, and if so,
     # add to options_dictionary

@@ -16,7 +16,7 @@ class Options:
     An options class to store and handle all options for fitbenchmarking
     """
     VALID_SECTIONS = ['MINIMIZERS', 'FITTING', 'JACOBIAN', 'HESSIAN',
-                      'OUTPUT', 'LOGGING', 'RUNTIME']
+                      'OUTPUT', 'LOGGING', 'RUNTIME', 'DASH']
     VALID_MINIMIZERS = \
         {'bumps': ['amoeba',
                    'lm-bumps',
@@ -173,6 +173,7 @@ class Options:
          'comparison_mode': ['abs', 'rel', 'both'],
          'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'results_browser': [True, False],
+         'run_dash': [True, False],
          'colour_map': plt.colormaps()}
     VALID_LOGGING = \
         {'level': ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -181,6 +182,7 @@ class Options:
          'external_output': ['debug', 'display', 'log_only']}
     VALID_RUNTIME = \
         ['mean', 'minimum', 'maximum', 'first', 'median', 'harmonic', 'trim']
+    VALID_DASH = {}
 
     VALID = {'MINIMIZERS': VALID_MINIMIZERS,
              'FITTING': VALID_FITTING,
@@ -188,7 +190,8 @@ class Options:
              'HESSIAN': VALID_HESSIAN,
              'OUTPUT': VALID_OUTPUT,
              'LOGGING': VALID_LOGGING,
-             'RUNTIME': VALID_RUNTIME}
+             'RUNTIME': VALID_RUNTIME,
+             'DASH': VALID_DASH}
 
     DEFAULT_MINIMZERS = \
         {'bumps': ['amoeba',
@@ -298,6 +301,7 @@ class Options:
          'cmap_range': [0.2, 0.8],
          'comparison_mode': 'both',
          'results_browser': True,
+         'run_dash': True,
          'table_type': ['acc', 'runtime', 'compare', 'local_min', 'emissions'],
          'run_name': '',
          'checkpoint_filename': 'checkpoint.json'}
@@ -308,13 +312,16 @@ class Options:
          'external_output': 'log_only'}
     DEFAULT_RUNTIME = \
         {'runtime_metric': 'mean'}
+    DEFAULT_DASH = \
+        {'port': 4000}
     DEFAULTS = {'MINIMIZERS': DEFAULT_MINIMZERS,
                 'FITTING': DEFAULT_FITTING,
                 'JACOBIAN': DEFAULT_JACOBIAN,
                 'HESSIAN': DEFAULT_HESSIAN,
                 'OUTPUT': DEFAULT_OUTPUT,
                 'LOGGING': DEFAULT_LOGGING,
-                'RUNTIME': DEFAULT_RUNTIME}
+                'RUNTIME': DEFAULT_RUNTIME,
+                'DASH': DEFAULT_DASH}
 
     # pylint: disable=too-many-statements
     def __init__(self, file_name=None, additional_options=None):
@@ -428,6 +435,12 @@ class Options:
             self.results_browser = self.read_value(
                 output.getboolean, 'results_browser', additional_options)
 
+        if 'run_dash' in additional_options:
+            self.run_dash = additional_options['run_dash']
+        else:
+            self.run_dash = self.read_value(
+                output.getboolean, 'run_dash', additional_options)
+
         if 'pbar' in additional_options:
             self.pbar = additional_options['pbar']
         else:
@@ -461,6 +474,11 @@ class Options:
         self.runtime_metric = self.read_value(runtime.getstr,
                                               'runtime_metric',
                                               additional_options)
+
+        dash_settings = config['DASH']
+        self.port = self.read_value(dash_settings.getint,
+                                    'port',
+                                    additional_options)
 
         logging = config['LOGGING']
 
@@ -584,6 +602,7 @@ class Options:
                             'comparison_mode': self.comparison_mode,
                             'make_plots': self.make_plots,
                             'results_browser': self.results_browser,
+                            'run_dash': self.run_dash,
                             'pbar': self.pbar,
                             'table_type': list_to_string(self.table_type),
                             'run_name': self.run_name}
@@ -594,6 +613,8 @@ class Options:
                              'external_output': self.external_output}
 
         config['RUNTIME'] = {'runtime_metric': self.runtime_metric}
+
+        config['DASH'] = {'port': self.port}
 
         return config
 
