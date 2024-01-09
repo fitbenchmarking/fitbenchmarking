@@ -50,9 +50,8 @@ class Table:
         :param group_dir: path to the directory where group results should be
                           stored
         :type group_dir: str
-        :param pp_locations: tuple containing the locations of the
-                             performance profiles (acc then runtime)
-        :type pp_locations: tuple(str,str)
+        :param pp_locations: the locations of the performance profiles
+        :type pp_locations: dict[str,str]
         :param table_name: Name of the table
         :type table_name: str
         """

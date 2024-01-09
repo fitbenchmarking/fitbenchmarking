@@ -82,7 +82,9 @@ class GenerateTableTests(unittest.TestCase):
                 options=self.options,
                 group_dir="group_dir",
                 fig_dir=self.fig_dir,
-                pp_locations=["pp_1", "pp_2"],
+                pp_locations={'acc': "pp_1",
+                              'emissions': 'pp_3',
+                              'runtime': "pp_2"},
                 table_name="table_name",
                 suffix=suffix)
 
@@ -105,7 +107,9 @@ class GenerateTableTests(unittest.TestCase):
             options=self.options,
             group_dir="group_dir",
             fig_dir=self.fig_dir,
-            pp_locations=["pp_1", "pp_2"],
+            pp_locations={'acc': "pp_1",
+                          'emissions': 'pp_3',
+                          'runtime': "pp_2"},
             table_name="table_name",
             suffix="compare")
 
@@ -204,7 +208,9 @@ class CreateResultsTableTests(unittest.TestCase):
                               best_results=self.best_results,
                               group_dir=self.group_dir,
                               fig_dir=self.fig_dir,
-                              pp_locations=["pp_1", "pp_2"],
+                              pp_locations={'acc': "pp_1",
+                                            'emissions': 'pp_3',
+                                            'runtime': "pp_2"},
                               failed_problems=[],
                               unselected_minimzers={'min1': []})
         for suffix in SORTED_TABLE_NAMES:

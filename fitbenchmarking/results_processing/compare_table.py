@@ -32,9 +32,8 @@ class CompareTable(Table):
         :param group_dir: path to the directory where group results should be
                           stored
         :type group_dir: str
-        :param pp_locations: tuple containing the locations of the
-                             performance profiles (acc then runtime)
-        :type pp_locations: tuple(str,str)
+        :param pp_locations: the locations of the performance profiles
+        :type pp_locations: dict[str,str]
         :param table_name: Name of the table
         :type table_name: str
         """
@@ -46,7 +45,8 @@ class CompareTable(Table):
         group_dir_label = os.path.basename(group_dir)
 
         self.pp_filenames = \
-            [os.path.relpath(pp, group_dir) for pp in pp_locations]
+            [os.path.relpath(pp_locations[pp], group_dir)
+             for pp in ['acc', 'runtime']]
 
         self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
                              f'perf_prof_{metric}'

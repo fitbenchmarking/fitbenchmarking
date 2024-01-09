@@ -23,31 +23,34 @@ def profile(results, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: Path to acc and runtime profile graphs,
+    :return: Path to performance profile graphs,
              data for plotting the performance profiles
-    :rtype: (str, str), dict[str, pandas.DataFrame]
+    :rtype: dict[str, str], dict[str, pandas.DataFrame]
     """
-    acc_bound, runtime_bound = prepare_profile_data(results)
-    plot_path, pp_dfs = get_plot_path_and_data(acc_bound,
-                                               runtime_bound,
-                                               fig_dir,
-                                               options)
-    return plot_path, pp_dfs
+    bounds = prepare_profile_data(results)
+    plot_paths, pp_dfs = get_plot_path_and_data(bounds,
+                                                fig_dir,
+                                                options)
+    return plot_paths, pp_dfs
 
 
 def prepare_profile_data(results):
     """
-    Helper function which generates acc and runtime dictionaries which
-    contain the values for each minimizer.
+    Helper function which generates dictionaries for each metric containing
+    names of solvers as the keys and a list of floats (one for each problem)
+    as the values.
 
     :param results: The sorted results grouped by row and category
     :type results: dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
 
     :return: dictionary containing number of occurrences
-    :rtype: tuple(dict, dict)
+    :rtype: dict[str, dict[str, list[float]]]
     """
-    acc_dict = {}
-    runtime_dict = {}
+    pp_data = {
+        'acc': {},
+        'runtime': {},
+        'emissions': {}
+    }
     minimizers = []
     to_remove = set()
 
@@ -57,46 +60,47 @@ def prepare_profile_data(results):
                 key = result.modified_minimizer_name(with_software=True)
                 if len(minimizers) <= i:
                     minimizers.append(key)
-                    acc_dict[key] = []
-                    runtime_dict[key] = []
+                    for pp in pp_data.values():
+                        pp[key] = []
                 elif len(key) > len(minimizers[i]):
                     to_remove.add(minimizers[i])
-                    acc_dict[key] = acc_dict[minimizers[i]].copy()
-                    runtime_dict[key] = runtime_dict[minimizers[i]].copy()
+                    for pp in pp_data.values():
+                        pp[key] = pp[minimizers[i]].copy()
                     minimizers[i] = key
-                acc_dict[minimizers[i]].append(result.norm_acc)
-                runtime_dict[minimizers[i]].append(result.norm_runtime)
+                pp_data['acc'][minimizers[i]].append(result.norm_acc)
+                pp_data['runtime'][minimizers[i]].append(result.norm_runtime)
+                pp_data['emissions'][minimizers[i]].append(
+                    result.norm_emissions)
 
     for key in to_remove:
-        del acc_dict[key]
-        del runtime_dict[key]
+        for pp in pp_data.values():
+            del pp[key]
 
-    return acc_dict, runtime_dict
+    return pp_data
 
 
-def get_plot_path_and_data(acc, runtime, fig_dir, options):
+def get_plot_path_and_data(bounds, fig_dir, options):
     """
     Function that generates profiler plots
 
-    :param acc: acc dictionary containing number of occurrences
-    :type acc: dict
-    :param runtime: runtime dictionary containing number of occurrences
-    :type runtime: dict
+    :param bounds: For each metric, a dictionary of solver names and the list
+                   of values (one for each problem)
+    :type bounds: dict[str, dict[str, list[float]]]
     :param fig_dir: path to directory containing the figures
     :type fig_dir: str
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: path to acc and runtime profile graphs,
-             data for plotting the graphs
-    :rtype: list[str], dict[str, pandas.DataFrame]
+    :return: path to profile graphs for each metric,
+             data for plotting the graphs for each metric
+    :rtype: dict[str, str], dict[str, pandas.DataFrame]
     """
-    figure_path = []
+    figure_paths = {}
     pp_dfs = {}
-    for profile_plot, name in zip([acc, runtime], ["acc", "runtime"]):
+    for name, profile_plot in bounds.items():
         this_filename_html = os.path.join(fig_dir, f"{name}_profile.html")
 
-        figure_path.append(this_filename_html)
+        figure_paths[name] = this_filename_html
 
         step_values = []
         max_value = 0.0
@@ -130,7 +134,7 @@ def get_plot_path_and_data(acc, runtime, fig_dir, options):
                                            this_filename_html,
                                            options)
 
-    return figure_path, pp_dfs
+    return figure_paths, pp_dfs
 
 
 def update_fig(fig: go.Figure, name: str, use_log_plot: bool,
@@ -276,7 +280,7 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
                        name=solver,
                        type='scatter'
                        )
-            )
+        )
 
     pp_df = create_df(all_solvers,
                       all_solver_values,
@@ -364,18 +368,17 @@ class DashPerfProfile():
                        "font-size": "15px"}
             ),
             dcc.Graph(id=f"visual {self.identif}")
-            ],
+        ],
         )
         return layout
 
     def set_callbacks(self):
-
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
             Input(f"Log axis toggle {self.identif}", "value")
-            )(self.create_graph)
+        )(self.create_graph)
 
     def create_graph(self, x_axis_scale):
         """
