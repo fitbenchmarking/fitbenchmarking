@@ -295,7 +295,7 @@ HOGBEN Samples
 or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/HOGBEN_samples.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/HOGBEN_samples`)
-contain simulated reflectormetry data. The data supplied has been generated using the
+contain simulated reflectometry data. The data supplied has been generated using the
 `HOGBEN sample suite <https://github.com/jfkcooper/HOGBEN/blob/main/hogben/models/samples.py>.
 
 These problems have between 4 and 10 unknown parameters, and fit around 180 data points.
