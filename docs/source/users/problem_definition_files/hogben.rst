@@ -24,5 +24,5 @@ software, name, description
 
 function
   The function is defined by a refnx model, which should be provided in the pickle
-  data format. Starting values for the varying model parameters are defined within
+  data format (as described [here](https://refnx.readthedocs.io/en/v0.1.41/faq.html#can-i-save-models-objectives-to-file)). Starting values for the varying model parameters are defined within
   the model object.
