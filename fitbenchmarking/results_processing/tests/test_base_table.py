@@ -72,7 +72,9 @@ class CreateResultsDictTests(TestCase):
                            best_results=best_results,
                            options=Options(),
                            group_dir='fake',
-                           pp_locations=('no', 'pp'),
+                           pp_locations={'acc': 'no',
+                                         'runtime': 'pp',
+                                         'emissions': 'available'},
                            table_name='A table!')
 
         results_dict = table.sorted_results
@@ -106,7 +108,9 @@ class DisplayStrTests(TestCase):
                                 best_results=best_results,
                                 options=Options(),
                                 group_dir='fake',
-                                pp_locations=('no', 'pp'),
+                                pp_locations={'acc': 'no',
+                                              'runtime': 'pp',
+                                              'emissions': 'available'},
                                 table_name='A table!')
 
     def test_display_str_abs(self):
@@ -147,7 +151,9 @@ class SaveColourbarTests(TestCase):
                                 best_results=best_results,
                                 options=Options(),
                                 group_dir=self.root_directory,
-                                pp_locations=('no', 'pp'),
+                                pp_locations={'acc': 'no',
+                                              'runtime': 'pp',
+                                              'emissions': 'available'},
                                 table_name='A table!')
 
     @mock.patch("fitbenchmarking.results_processing.base_table.plt.savefig")
@@ -173,17 +179,18 @@ class TestContrastRatio(TestCase):
     """
     Tests the three functions used for calculating the contrast ratio
     """
+
     def test_calculate_luminance(self):
         """
         Tests the luminance calculation using 6 subtests
         """
         luminance_test = (
-             {'case': 'black', 'rgb': [0, 0, 0], 'output': 0},
-             {'case': 'white', 'rgb': [1, 1, 1], 'output': 1},
-             {'case': 'red', 'rgb': [1, 0, 0], 'output': 0.2126},
-             {'case': 'green', 'rgb': [0, 1, 0], 'output': 0.7152},
-             {'case': 'blue', 'rgb': [0, 0, 1], 'output': 0.0722},
-             {'case': 'purple', 'rgb': [1, 0, 1], 'output': 0.2848}
+            {'case': 'black', 'rgb': [0, 0, 0], 'output': 0},
+            {'case': 'white', 'rgb': [1, 1, 1], 'output': 1},
+            {'case': 'red', 'rgb': [1, 0, 0], 'output': 0.2126},
+            {'case': 'green', 'rgb': [0, 1, 0], 'output': 0.7152},
+            {'case': 'blue', 'rgb': [0, 0, 1], 'output': 0.0722},
+            {'case': 'purple', 'rgb': [1, 0, 1], 'output': 0.2848}
         )
         for test in luminance_test:
             with self.subTest(test['case']):
@@ -195,18 +202,18 @@ class TestContrastRatio(TestCase):
         Tests the contrast ratio calculation using 6 subtests
         """
         contrast_test = (
-             {'case': '1', 'background': [0, 0, 0],
-              'foreground': [1, 1, 1], 'output': 21.00},
-             {'case': '2', 'background': [1, 0, 0],
-              'foreground': [0, 0, 0], 'output': 5.25},
-             {'case': '3', 'background': [0, 1, 0],
-              'foreground': [0, 0, 0], 'output': 15.30},
-             {'case': '4', 'background': [0, 1, 0],
-              'foreground': [1, 1, 1], 'output': 1.37},
-             {'case': '5', 'background': [0, 0, 1],
-              'foreground': [1, 1, 1], 'output': 8.59},
-             {'case': '6', 'background': [0, 0, 1],
-              'foreground': [0, 0, 0], 'output': 2.44}
+            {'case': '1', 'background': [0, 0, 0],
+             'foreground': [1, 1, 1], 'output': 21.00},
+            {'case': '2', 'background': [1, 0, 0],
+             'foreground': [0, 0, 0], 'output': 5.25},
+            {'case': '3', 'background': [0, 1, 0],
+             'foreground': [0, 0, 0], 'output': 15.30},
+            {'case': '4', 'background': [0, 1, 0],
+             'foreground': [1, 1, 1], 'output': 1.37},
+            {'case': '5', 'background': [0, 0, 1],
+             'foreground': [1, 1, 1], 'output': 8.59},
+            {'case': '6', 'background': [0, 0, 1],
+             'foreground': [0, 0, 0], 'output': 2.44}
         )
         for test in contrast_test:
             with self.subTest(test['case']):
@@ -219,21 +226,21 @@ class TestContrastRatio(TestCase):
         Tests the function that determines the text colour
         """
         test_cases = (
-             {'case': '1',
-              'background': [0, 0, 0],
-              'output': 'rgb(255,255,255)'},
-             {'case': '2',
-              'background': [1, 1, 1],
-              'output': 'rgb(0,0,0)'},
-             {'case': '3',
-              'background': [1, 0, 0],
-              'output': 'rgb(0,0,0)'},
-             {'case': '4',
-              'background': [0, 1, 0],
-              'output': 'rgb(0,0,0)'},
-             {'case': '4',
-              'background': [0, 0, 1],
-              'output': 'rgb(255,255,255)'},
+            {'case': '1',
+             'background': [0, 0, 0],
+             'output': 'rgb(255,255,255)'},
+            {'case': '2',
+             'background': [1, 1, 1],
+             'output': 'rgb(0,0,0)'},
+            {'case': '3',
+             'background': [1, 0, 0],
+             'output': 'rgb(0,0,0)'},
+            {'case': '4',
+             'background': [0, 1, 0],
+             'output': 'rgb(0,0,0)'},
+            {'case': '4',
+             'background': [0, 0, 1],
+             'output': 'rgb(255,255,255)'},
         )
         for test in test_cases:
             with self.subTest(test['case']):
