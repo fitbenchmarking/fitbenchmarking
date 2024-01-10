@@ -55,6 +55,8 @@ class TestExamples(TestCase):
             else:
                 args = example_split
 
+            args.append('--dont_run_dash')
+
             # mock sys.argv with args taken from usage example
             with mock.patch('sys.argv', args):
                 main.main()

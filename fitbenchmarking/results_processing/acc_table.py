@@ -34,9 +34,8 @@ class AccTable(Table):
         :param group_dir: path to the directory where group results should be
                           stored
         :type group_dir: str
-        :param pp_locations: tuple containing the locations of the
-                             performance profiles (acc then runtime)
-        :type pp_locations: tuple(str,str)
+        :param pp_locations: the locations of the performance profiles
+        :type pp_locations: dict[str,str]
         :param table_name: Name of the table
         :type table_name: str
         """
@@ -44,8 +43,14 @@ class AccTable(Table):
                          pp_locations, table_name)
         self.name = 'acc'
         self.has_pp = True
-        self.pp_filenames = [os.path.relpath(self.pp_locations[0], group_dir)]
+        port = options.port
+        group_dir_label = os.path.basename(group_dir)
 
+        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
+                             'perf_prof_acc']
+        self.pp_filenames = [
+            os.path.relpath(self.pp_locations['acc'], group_dir)
+        ]
         self.cbar_title = "Problem-Specific Cell Shading: Relative Accuracy"
 
     def get_value(self, result):

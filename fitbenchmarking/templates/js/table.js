@@ -4,7 +4,7 @@
 * @param   {String} search_text   The text to search for.
 * @return  {jQuery Object}        A collection of DOM elements which matched the jQuery search.
 */
-function _find_element_from_text(class_name, search_text) { 
+function _find_element_from_text(class_name, search_text) {
     return $(class_name).filter(function() { return $(this).text() == search_text; });
 }
 
@@ -82,3 +82,13 @@ function toggle_prob_size_header() {
         $('th:nth-child(2)').hide();
     }
   }
+
+
+/**
+* Allows to switch between offline and online (Dash) performance profile plots.
+*/
+function load_src(_button){
+    var path = _button.dataset.value1;
+    var index = _button.dataset.value2;
+    document.getElementById("i_frame"+index).setAttribute("src", path);
+}
