@@ -432,10 +432,12 @@ class DashPerfProfile():
 
         :param x_axis_scale: Can be either "Log x-axis" or "Linear x-axis"
         :type x_axis_scale: str
+        :param x_axis_scale: The solvers to show in the graph
+        :type x_axis_scale: list[str]
 
         :return: Figure for the Dash plot, warning message,
                  options to be shown in dropdown
-        :rtype: plotly.graph_objects.Figure, str, list[dict]
+        :rtype: plotly.graph_objects.Figure, str, list[dict[str]]
         """
 
         fig = go.Figure()
