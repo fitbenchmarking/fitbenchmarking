@@ -410,12 +410,11 @@ class DashPerfProfile():
                        "margin-top": "1rem"}
             ),
             dcc.Graph(id=f"visual {self.identif}")
-            ],
+        ],
         )
         return layout
 
     def set_callbacks(self):
-
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
@@ -424,7 +423,7 @@ class DashPerfProfile():
             Output(f"dropdown {self.identif}", "options"),
             [Input(f"Log axis toggle {self.identif}", "value"),
              Input(f"dropdown {self.identif}", "value")]
-            )(self.create_graph)
+        )(self.create_graph)
 
     def create_graph(self, x_axis_scale, solvers):
         """
