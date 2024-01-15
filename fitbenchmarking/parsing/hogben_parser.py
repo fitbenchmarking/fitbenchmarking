@@ -16,7 +16,7 @@ class HogbenParser(FitbenchmarkParser):
 
     def _create_function(self) -> typing.Callable:
         """
-        Process the IVP formatted function into a callable.
+        Process the reflectometry model into a callable.
 
         Expected function format:
         function='function=model.pkl'
