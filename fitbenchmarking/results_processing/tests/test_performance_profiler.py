@@ -352,11 +352,14 @@ class DashPerfProfileTests(unittest.TestCase):
         Test create_graph returns the expected plot.
         """
 
-        output = self.perf_profile.create_graph("Log x-axis")
+        selected_solvers = self.perf_profile.data["solver"]
+        output_fig, _, _ = self.perf_profile.\
+            create_graph(x_axis_scale="Log x-axis",
+                         solvers=selected_solvers)
 
         output_plot_path = self.temp_result + '/obtained_plot.html'
 
-        Plot.write_html_with_link_plotlyjs(fig=output,
+        Plot.write_html_with_link_plotlyjs(fig=output_fig,
                                            figures_dir='',
                                            htmlfile=output_plot_path,
                                            options=self.options)
