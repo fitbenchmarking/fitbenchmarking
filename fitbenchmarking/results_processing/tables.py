@@ -44,8 +44,9 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
     :type group_dir: str
     :param fig_dir: path to the directory where figures should be stored
     :type fig_dir: str
-    :param pp_locations: the locations of the performance profiles
-    :type pp_locations: dict[str,str]
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
     :param failed_problems: list of failed problems to be reported in the
                             html output
     :type failed_problems: list
@@ -103,7 +104,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
 
             run_name = f"{options.run_name}: " if options.run_name else ""
 
-            with open(f'{table.file_path}csv', "w", encoding='utf-8') as f:
+            with open(f'{table.file_path}csv', "w") as f:
                 f.write(csv_table)
 
             report_failed_min = \
@@ -118,6 +119,13 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                 # the table template to display the performance profiles
                 raise ValueError('Displaying more than two profiles in a '
                                  'single page is not possible yet.')
+
+            n_solvers_large = False
+            key1 = list(results.keys())[0]
+            key11 = list(results[key1].keys())[0]
+            n_solvers = len(results[key1][key11])
+            if n_solvers > 20:
+                n_solvers_large = True
 
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(
@@ -147,7 +155,8 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     failed_problems=failed_problems,
                                     unselected_minimzers=unselected_minimzers,
                                     algorithm_type=options.algorithm_type,
-                                    report_failed_min=report_failed_min))
+                                    report_failed_min=report_failed_min,
+                                    n_solvers_large=n_solvers_large))
 
     return table_names, description
 
@@ -194,8 +203,9 @@ def generate_table(results, best_results, options, group_dir, fig_dir,
     :type group_dir: str
     :param fig_dir: path to the directory where figures should be stored
     :type fig_dir: str
-    :param pp_locations: the locations of the performance profiles
-    :type pp_locations: dict[str,str]
+    :param pp_locations: tuple containing the locations of the
+                         performance profiles (acc then runtime)
+    :type pp_locations: tuple(str,str)
     :param table_name: name of the table
     :type table_name: str
     :param suffix: table suffix

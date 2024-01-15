@@ -117,3 +117,45 @@ function load_src(_button){
 
     document.getElementById("iframe-wrapper"+index).appendChild(new_iframe);
 }
+
+
+/**
+* Allows to height of iframe to be determined based on content.
+*/
+function adaptIframeHeight(){
+
+    var button1 = document.getElementById("offline_plot1");
+    var n_solvers_large = button1.dataset.value3;
+
+    var profiles_info = document.getElementById("profiles_info");
+    var iframe1 = document.getElementById("i_frame1");
+    var src_iframe1 = iframe1.getAttribute("src");
+    var show_description = false;
+
+    // if it's a Dash plot or showing limited n solvers
+    if ((src_iframe1.startsWith("http")) || n_solvers_large === "False") {
+        iframe1.setAttribute("height", 650);
+        profiles_info.setAttribute("style", "display:block");
+        show_description = true;
+    } else {
+        iframe1.setAttribute("height", 100);
+        profiles_info.setAttribute("style", "display:none");
+        show_description = false;
+    };
+
+    try {
+        var iframe2 = document.getElementById("i_frame2");
+        var src_iframe2 = iframe2.getAttribute("src");
+
+        if ((src_iframe2.startsWith("http")) || n_solvers_large === "False") {
+            iframe2.setAttribute("height", 650);
+            profiles_info.setAttribute("style", "display:block");
+        } else {
+            iframe2.setAttribute("height", 100);
+            if (show_description !== true) {
+                profiles_info.setAttribute("style", "display:none");
+            }
+        };
+    } catch {};
+
+}

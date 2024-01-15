@@ -126,13 +126,24 @@ def get_plot_path_and_data(bounds, fig_dir, options):
                                         solvers=solvers)
 
         pp_dfs[name] = pp_df
+        max_n_solvers_offline = 15
+        if len(solvers) < max_n_solvers_offline:
+            fig = update_fig(fig, name, use_log_plot,
+                             log_upper_limit)
 
-        fig = update_fig(fig, name, use_log_plot,
-                         log_upper_limit)
+            Plot.write_html_with_link_plotlyjs(fig, fig_dir,
+                                               this_filename_html,
+                                               options)
+        else:
+            warning = '<div style="font-size: 14px !important; '\
+                      'color: #ff0000; font-family: verdana"}><body>The '\
+                      'number of solvers is too large '\
+                      f'(> {max_n_solvers_offline}) to be displayed in '\
+                      'a static offline plot. Please run Dash and use '\
+                      'the online version instead. </body></div>'
 
-        Plot.write_html_with_link_plotlyjs(fig, fig_dir,
-                                           this_filename_html,
-                                           options)
+            with open(this_filename_html, "w") as file:
+                file.write(warning)
 
     return figure_paths, pp_dfs
 
@@ -340,6 +351,15 @@ class DashPerfProfile():
         self.profile_name = profile_name
         self.group_label = group_label
         self.identif = self.group_label + '-' + self.profile_name
+
+        self.default_opt = []
+        for solver in self.data['solver'].unique():
+            self.default_opt.append({
+                "value": solver,
+                "label": solver
+            })
+
+        self.max_solvers = 15
         self.layout()
         self.set_callbacks()
 
@@ -365,30 +385,57 @@ class DashPerfProfile():
                 style={"display": "flex",
                        "font-family": "verdana",
                        "color": '#454545',
-                       "font-size": "15px"}
+                       "font-size": "14px"}
+            ),
+            dcc.Dropdown(
+                id=f'dropdown {self.identif}',
+                options=self.default_opt,
+                value=[i['label']
+                       for i in self.default_opt[:self.max_solvers]],
+                multi=True,
+                style={"font-family": "verdana",
+                       "color": '#454545',
+                       "font-size": "14px",
+                       "margin-bottom": "1rem",
+                       "margin-top": "1rem"}
+            ),
+            html.Div(
+                id=f'warning {self.identif}',
+                style={"white-space": "pre-wrap",
+                       "font-family": "verdana",
+                       "color": "red",
+                       "text-align": "center",
+                       "font-size": "13px",
+                       "margin-bottom": "1rem",
+                       "margin-top": "1rem"}
             ),
             dcc.Graph(id=f"visual {self.identif}")
-        ],
+            ],
         )
         return layout
 
     def set_callbacks(self):
+
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
-            Input(f"Log axis toggle {self.identif}", "value")
-        )(self.create_graph)
+            Output(f"warning {self.identif}", "children"),
+            Output(f"dropdown {self.identif}", "options"),
+            [Input(f"Log axis toggle {self.identif}", "value"),
+             Input(f"dropdown {self.identif}", "value")]
+            )(self.create_graph)
 
-    def create_graph(self, x_axis_scale):
+    def create_graph(self, x_axis_scale, solvers):
         """
         Creates the dash plot.
 
         :param x_axis_scale: Can be either "Log x-axis" or "Linear x-axis"
         :type x_axis_scale: str
 
-        :return: Figure for the Dash plot
-        :rtype: plotly.graph_objects.Figure
+        :return: Figure for the Dash plot, warning message,
+                 options to be shown in dropdown
+        :rtype: plotly.graph_objects.Figure, str, list[dict]
         """
 
         fig = go.Figure()
@@ -396,11 +443,13 @@ class DashPerfProfile():
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         linestyles = ['solid', 'dash', 'dashdot']
 
+        df_selected_solvers = self.data[self.data['solver'].isin(solvers)]
+
         max_value = 0
 
         # Setting sort to False ensures the color for each solver
         # in the dash plot is the same as in the offline plot
-        grouped_data = self.data.groupby('solver', sort=False)
+        grouped_data = df_selected_solvers.groupby('solver', sort=False)
 
         for i, (solver, data_one_solver) in enumerate(grouped_data):
 
@@ -429,4 +478,19 @@ class DashPerfProfile():
 
         fig = update_fig(fig, self.profile_name, use_log_plot,
                          log_upper_limit)
-        return fig
+
+        warning = ''
+        new_options = self.default_opt
+
+        if len(solvers) >= self.max_solvers:
+            warning = ('The plot is showing the max number of minimizers '
+                       f'allowed ({self.max_solvers}). Deselect some to '
+                       'select others.')
+
+            new_options = []
+            for option in self.default_opt:
+                new_options.append({"value": option['value'],
+                                    "label": option['label'],
+                                    "disabled": True})
+
+        return fig, warning, new_options
