@@ -132,7 +132,7 @@ function adaptIframeHeight(){
     var src_iframe1 = iframe1.getAttribute("src");
     var show_description = false;
 
-    // if it's a Dash plot or showing limited n solvers
+    // If it's a Dash plot or showing limited n solvers
     if ((src_iframe1.startsWith("http")) || n_solvers_large === "False") {
         iframe1.setAttribute("height", 650);
         profiles_info.setAttribute("style", "display:block");
@@ -143,6 +143,7 @@ function adaptIframeHeight(){
         show_description = false;
     };
 
+    // This is for the compare table, where there is an iframe2
     try {
         var iframe2 = document.getElementById("i_frame2");
         var src_iframe2 = iframe2.getAttribute("src");
