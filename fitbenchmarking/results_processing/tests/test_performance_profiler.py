@@ -336,7 +336,7 @@ class DashPerfProfileTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
-        data = read_csv(self.expected_results_dir + \
+        data = read_csv(self.expected_results_dir +
                         "/pp_data_more_solvers.csv")
 
         self.perf_profile = performance_profiler.\
