@@ -336,7 +336,8 @@ class DashPerfProfileTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
-        data = read_csv(self.expected_results_dir + "/pp_data.csv")
+        data = read_csv(self.expected_results_dir + \
+                        "/pp_data_more_solvers.csv")
 
         self.perf_profile = performance_profiler.\
             DashPerfProfile('runtime', data,
@@ -355,7 +356,7 @@ class DashPerfProfileTests(unittest.TestCase):
         selected_solvers = self.perf_profile.data["solver"]
         output_fig, _, _ = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
-                         solvers=selected_solvers)
+                         solvers=selected_solvers[:3])
 
         output_plot_path = self.temp_result + '/obtained_plot.html'
 
@@ -365,6 +366,30 @@ class DashPerfProfileTests(unittest.TestCase):
                                            options=self.options)
 
         expected_plot_path = self.expected_results_dir + '/dash_plot.html'
+
+        diff = diff_between_htmls(expected_plot_path, output_plot_path)
+        self.assertListEqual([], diff)
+
+    def test_create_graph_returns_expected_plot_when_large_n_solvers(self):
+        """
+        Test create_graph returns the expected plot when the
+        number of solvers exceeds 15.
+        """
+
+        selected_solvers = self.perf_profile.data["solver"]
+        output_fig, _, _ = self.perf_profile.\
+            create_graph(x_axis_scale="Log x-axis",
+                         solvers=selected_solvers)
+
+        output_plot_path = self.temp_result + '/obtained_plot.html'
+
+        Plot.write_html_with_link_plotlyjs(fig=output_fig,
+                                           figures_dir='',
+                                           htmlfile=output_plot_path,
+                                           options=self.options)
+
+        expected_plot_path = self.expected_results_dir + \
+            '/dash_plot_large_n_solvers.html'
 
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
