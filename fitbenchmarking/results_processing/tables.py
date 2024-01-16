@@ -123,7 +123,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             key1 = list(results.keys())[0]
             key11 = list(results[key1].keys())[0]
             n_solvers = len(results[key1][key11])
-            if n_solvers > 20:
+            if n_solvers > 15:
                 n_solvers_large = True
 
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
