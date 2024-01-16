@@ -99,6 +99,7 @@ function setAttributes(el, attrs) {
 function load_src(_button){
     var path = _button.dataset.value1;
     var index = _button.dataset.value2;
+    var n_solvers_large = _button.dataset.value3;
 
     var iframe = document.getElementById("i_frame"+index);
     iframe.remove();
@@ -108,14 +109,13 @@ function load_src(_button){
         "id": "i_frame"+index,
         "src": path,
         "width": "100%",
-        "height": "500",
         "frameborder": 0,
         "seamless": "seamless",
-        "scrolling": "no",
-        "style": "margin-bottom: 25px",
+        "onload":"adaptIframeHeight()",
     });
 
-    document.getElementById("iframe-wrapper"+index).appendChild(new_iframe);
+    wrapper = document.getElementById("iframe-wrapper"+index)
+    wrapper.appendChild(new_iframe);
 }
 
 
