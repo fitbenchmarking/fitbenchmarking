@@ -32,12 +32,12 @@ class HogbenParser(FitbenchmarkParser):
             refnx_model = pickle.load(f)
 
         # pylint: disable=attribute-defined-outside-init
-        self._equation = pf['function'].split('.')[0].replace('_',' ')
+        self._equation = pf['function'].split('.')[0].replace('_', ' ')
 
         varying_params = refnx_model.parameters.varying_parameters()
 
         # remove spaces and hyphens from parameter names
-        p_names = [" ".join(p.name.replace("-","").split()).replace(" ", "_")
+        p_names = [" ".join(p.name.replace("-", "").split()).replace(" ", "_")
                    for p in list(varying_params)]
         svals = np.array(varying_params)
 
