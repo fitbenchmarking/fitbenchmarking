@@ -31,9 +31,14 @@ class HogbenParser(FitbenchmarkParser):
         with open(model, 'rb') as f:
             refnx_model = pickle.load(f)
 
+        # pylint: disable=attribute-defined-outside-init
+        self._equation = pf['function'].split('.')[0].replace('_',' ')
+
         varying_params = refnx_model.parameters.varying_parameters()
 
-        p_names = [p.name for p in list(varying_params)]
+        # remove spaces and hyphens from parameter names
+        p_names = [" ".join(p.name.replace("-","").split()).replace(" ", "_")
+                   for p in list(varying_params)]
         svals = np.array(varying_params)
 
         # pylint: disable=attribute-defined-outside-init
@@ -55,7 +60,7 @@ class HogbenParser(FitbenchmarkParser):
         :return: The equation in the problem definition file.
         :rtype: str
         """
-        return None
+        return self._equation
 
     def _get_starting_values(self) -> list:
         """
