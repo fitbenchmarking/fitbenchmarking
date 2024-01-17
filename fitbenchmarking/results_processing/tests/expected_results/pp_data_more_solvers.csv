@@ -1,0 +1,415 @@
+solver,x,y
+amoeba [bumps],0.0,0.0
+amoeba [bumps],1.0,0.0625
+amoeba [bumps],1.0,0.125
+amoeba [bumps],1.0,0.1875
+amoeba [bumps],1.0,0.25
+amoeba [bumps],1.000000000000117,0.3125
+amoeba [bumps],1.0000000000001263,0.375
+amoeba [bumps],1.0000000000005171,0.4375
+amoeba [bumps],1.0000000000007665,0.5
+amoeba [bumps],1.0000000000028901,0.5625
+amoeba [bumps],1.000000000008805,0.625
+amoeba [bumps],1.0000000000089,0.6875
+amoeba [bumps],1.0000000000179483,0.75
+amoeba [bumps],1.0000000000298908,0.8125
+amoeba [bumps],1.0000000000352998,0.875
+amoeba [bumps],1.195266473378344,0.9375
+amoeba [bumps],6.206689221071594,1.0
+amoeba [bumps],1e+20,1.0
+de [bumps],0.0,0.0
+de [bumps],1.0,0.0625
+de [bumps],1.0,0.125
+de [bumps],1.0,0.1875
+de [bumps],1.0,0.25
+de [bumps],1.0000000000002582,0.3125
+de [bumps],1.0000000000003073,0.375
+de [bumps],1.000000000000596,0.4375
+de [bumps],1.000000000000743,0.5
+de [bumps],1.0000000000018063,0.5625
+de [bumps],1.0000000000019984,0.625
+de [bumps],1.9581415118689403,0.6875
+de [bumps],2.620671002408054,0.75
+de [bumps],3.992224452293897,0.8125
+de [bumps],5.254225894864798,0.875
+de [bumps],108.80121748068912,0.9375
+de [bumps],108.80121748070475,1.0
+de [bumps],1e+20,1.0
+dream [bumps],0.0,0.0
+dream [bumps],1.0001554817266936,0.0625
+dream [bumps],1.0002912912002608,0.125
+dream [bumps],1.0011049588040677,0.1875
+dream [bumps],1.0015364904786954,0.25
+dream [bumps],1.0065246622679642,0.3125
+dream [bumps],1.0088843634478217,0.375
+dream [bumps],1.0113973845091473,0.4375
+dream [bumps],1.0159461173566544,0.5
+dream [bumps],1.0603531290212846,0.5625
+dream [bumps],1.186761339885598,0.625
+dream [bumps],1.516186294276462,0.6875
+dream [bumps],1.5648245193792776,0.75
+dream [bumps],2.1112471549761134,0.8125
+dream [bumps],2.410918009736897,0.875
+dream [bumps],1327067.7607860574,0.9375
+dream [bumps],2223106.1356054926,1.0
+dream [bumps],1e+20,1.0
+lm-bumps [bumps],0.0,0.0
+lm-bumps [bumps],1.0000000000162164,0.0625
+lm-bumps [bumps],1.0000000000462066,0.125
+lm-bumps [bumps],1.0000000000873945,0.1875
+lm-bumps [bumps],1.0000000001035594,0.25
+lm-bumps [bumps],1.0000000001399014,0.3125
+lm-bumps [bumps],1.0000000001489364,0.375
+lm-bumps [bumps],1.0000000001910723,0.4375
+lm-bumps [bumps],1.0000000001955638,0.5
+lm-bumps [bumps],1.0000000011283503,0.5625
+lm-bumps [bumps],1.000000001405273,0.625
+lm-bumps [bumps],1.0000000025235052,0.6875
+lm-bumps [bumps],1.000000002714879,0.75
+lm-bumps [bumps],1.000000002731125,0.8125
+lm-bumps [bumps],1.000000003272603,0.875
+lm-bumps [bumps],1.0000000065707355,0.9375
+lm-bumps [bumps],1.0000000079285283,1.0
+lm-bumps [bumps],1e+20,1.0
+newton [bumps],0.0,0.0
+newton [bumps],1.0004034478465367,0.0625
+newton [bumps],1.000411161875192,0.125
+newton [bumps],1.0004823168658177,0.1875
+newton [bumps],1.0011410339296738,0.25
+newton [bumps],1.0021487454681512,0.3125
+newton [bumps],1.0045189684489069,0.375
+newton [bumps],1.8691295409875233,0.4375
+newton [bumps],2.4752742019847034,0.5
+newton [bumps],2.7666664915507404,0.5625
+newton [bumps],3.5657067613396456,0.625
+newton [bumps],47.2487591202954,0.6875
+newton [bumps],109.4756297641637,0.75
+newton [bumps],166.61298936402642,0.8125
+newton [bumps],297.8118189099233,0.875
+newton [bumps],1035.6088722738825,0.9375
+newton [bumps],27744.058418414,1.0
+newton [bumps],1e+20,1.0
+scipy-leastsq [bumps],0.0,0.0
+scipy-leastsq [bumps],1.0000000000034375,0.0625
+scipy-leastsq [bumps],1.0000000000045817,0.125
+scipy-leastsq [bumps],1.0000000000060267,0.1875
+scipy-leastsq [bumps],1.0000000000091314,0.25
+scipy-leastsq [bumps],1.0000000000104043,0.3125
+scipy-leastsq [bumps],1.0000000000118494,0.375
+scipy-leastsq [bumps],1.0000000000172473,0.4375
+scipy-leastsq [bumps],1.000000000018276,0.5
+scipy-leastsq [bumps],1.0000000000972196,0.5625
+scipy-leastsq [bumps],1.000000000097623,0.625
+scipy-leastsq [bumps],1.0000000002097191,0.6875
+scipy-leastsq [bumps],1.0000000002162437,0.75
+scipy-leastsq [bumps],1.0000000002239455,0.8125
+scipy-leastsq [bumps],1.0000000002285112,0.875
+scipy-leastsq [bumps],1.0000000005506469,0.9375
+scipy-leastsq [bumps],1.0000000005508605,1.0
+scipy-leastsq [bumps],1e+20,1.0
+dfogn [dfo] (4 failures),0.0,0.0
+dfogn [dfo] (4 failures),1.0,0.0625
+dfogn [dfo] (4 failures),1.0,0.125
+dfogn [dfo] (4 failures),1.0,0.1875
+dfogn [dfo] (4 failures),1.0000000000000002,0.25
+dfogn [dfo] (4 failures),1.0000000000000002,0.3125
+dfogn [dfo] (4 failures),1.0000000000000004,0.375
+dfogn [dfo] (4 failures),1.0000000000005005,0.4375
+dfogn [dfo] (4 failures),1.000000000002128,0.5
+dfogn [dfo] (4 failures),1.0000000000153084,0.5625
+dfogn [dfo] (4 failures),1.0000000090792134,0.625
+dfogn [dfo] (4 failures),1.000001160612858,0.6875
+dfogn [dfo] (4 failures),1.0020317686191016,0.75
+dfogn [dfo] (4 failures),1e+20,0.8125
+dfogn [dfo] (4 failures),1e+20,0.875
+dfogn [dfo] (4 failures),1e+20,0.9375
+dfogn [dfo] (4 failures),1e+20,1.0
+dfogn [dfo] (4 failures),1e+20,1.0
+dfols [dfo],0.0,0.0
+dfols [dfo],1.0,0.0625
+dfols [dfo],1.0,0.125
+dfols [dfo],1.0,0.1875
+dfols [dfo],1.0000000000000013,0.25
+dfols [dfo],1.0000000000000062,0.3125
+dfols [dfo],1.0000000000000073,0.375
+dfols [dfo],1.0000000000006262,0.4375
+dfols [dfo],1.0000000000156901,0.5
+dfols [dfo],1.000000000178606,0.5625
+dfols [dfo],1.0000000001830327,0.625
+dfols [dfo],1.0007094468231335,0.6875
+dfols [dfo],1.029312272877656,0.75
+dfols [dfo],1.9581415118689403,0.8125
+dfols [dfo],5.183398772793147,0.875
+dfols [dfo],297.8118189099233,0.9375
+dfols [dfo],56271.9188125019,1.0
+dfols [dfo],1e+20,1.0
+BayesianOptimizer [gradient_free] (16 failures),0.0,0.0
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.0625
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.125
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.1875
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.25
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.3125
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.375
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.4375
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.5
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.5625
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.625
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.6875
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.75
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.8125
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.875
+BayesianOptimizer [gradient_free] (16 failures),1e+20,0.9375
+BayesianOptimizer [gradient_free] (16 failures),1e+20,1.0
+BayesianOptimizer [gradient_free] (16 failures),1e+20,1.0
+DecisionTreeOptimizer [gradient_free] (16 failures),0.0,0.0
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.0625
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.125
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.1875
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.25
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.3125
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.375
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.4375
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.5
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.5625
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.625
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.6875
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.75
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.8125
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.875
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,0.9375
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,1.0
+DecisionTreeOptimizer [gradient_free] (16 failures),1e+20,1.0
+EvolutionStrategyOptimizer [gradient_free] (16 failures),0.0,0.0
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.0625
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.125
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.1875
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.25
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.3125
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.375
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.4375
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.5
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.5625
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.625
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.6875
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.75
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.8125
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.875
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,0.9375
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,1.0
+EvolutionStrategyOptimizer [gradient_free] (16 failures),1e+20,1.0
+HillClimbingOptimizer [gradient_free] (16 failures),0.0,0.0
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.125
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.25
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.375
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.625
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.75
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.875
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+HillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+ParallelTemperingOptimizer [gradient_free] (16 failures),0.0,0.0
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.125
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.25
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.375
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.5
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.625
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.75
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.875
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,1.0
+ParallelTemperingOptimizer [gradient_free] (16 failures),1e+20,1.0
+ParticleSwarmOptimizer [gradient_free] (16 failures),0.0,0.0
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.0625
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.125
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.1875
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.25
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.3125
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.375
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.4375
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.5
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.5625
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.625
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.6875
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.75
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.8125
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.875
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,0.9375
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,1.0
+ParticleSwarmOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomAnnealingOptimizer [gradient_free] (16 failures),0.0,0.0
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.125
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.25
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.375
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.5
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.625
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.75
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.875
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomAnnealingOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),0.0,0.0
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.125
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.25
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.375
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.625
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.75
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.875
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomSearchOptimizer [gradient_free] (16 failures),0.0,0.0
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.0625
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.125
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.1875
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.25
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.3125
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.375
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.4375
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.5
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.5625
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.625
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.6875
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.75
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.8125
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.875
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,0.9375
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,1.0
+RandomSearchOptimizer [gradient_free] (16 failures),1e+20,1.0
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),0.0,0.0
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.125
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.25
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.375
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.625
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.75
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.875
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),1e+20,1.0
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),0.0,0.0
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.0625
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.125
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.1875
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.25
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.3125
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.375
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.4375
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.5
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.5625
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.625
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.6875
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.75
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.8125
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.875
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,0.9375
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,1.0
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),1e+20,1.0
+TreeStructuredParzenEstimators [gradient_free] (16 failures),0.0,0.0
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.0625
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.125
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.1875
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.25
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.3125
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.375
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.4375
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.5
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.5625
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.625
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.6875
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.75
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.8125
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.875
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,0.9375
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,1.0
+TreeStructuredParzenEstimators [gradient_free] (16 failures),1e+20,1.0
+migrad [minuit],0.0,0.0
+migrad [minuit],1.0000000021700661,0.0625
+migrad [minuit],1.0000000388923231,0.125
+migrad [minuit],1.0000000873191532,0.1875
+migrad [minuit],1.0000001486201693,0.25
+migrad [minuit],1.0000001877818507,0.3125
+migrad [minuit],1.0000002426750871,0.375
+migrad [minuit],1.0000002774088361,0.4375
+migrad [minuit],1.0000010349683082,0.5
+migrad [minuit],1.0024335973704783,0.5625
+migrad [minuit],1.0024387578959641,0.625
+migrad [minuit],1.0033952013052083,0.6875
+migrad [minuit],1.0209103019376262,0.75
+migrad [minuit],1.0662604377332934,0.8125
+migrad [minuit],1.0777064886494707,0.875
+migrad [minuit],4155.077087345248,0.9375
+migrad [minuit],5691.092254473103,1.0
+migrad [minuit],1e+20,1.0
+simplex [minuit],0.0,0.0
+simplex [minuit],1.0002346974700362,0.0625
+simplex [minuit],1.0004926099823912,0.125
+simplex [minuit],1.0009508188916698,0.1875
+simplex [minuit],1.001300242826279,0.25
+simplex [minuit],1.0015105538241318,0.3125
+simplex [minuit],1.0056246077413529,0.375
+simplex [minuit],1.0173459791863644,0.4375
+simplex [minuit],1.0312940829747748,0.5
+simplex [minuit],3.727600974462424,0.5625
+simplex [minuit],7.192232921084574,0.625
+simplex [minuit],50.680088115057416,0.6875
+simplex [minuit],71.49687336766992,0.75
+simplex [minuit],267.65651461010196,0.8125
+simplex [minuit],302.4692736897528,0.875
+simplex [minuit],156657.14769768668,0.9375
+simplex [minuit],66425688.54007503,1.0
+simplex [minuit],1e+20,1.0
+lm-scipy [scipy_ls]: j:analytic,0.0,0.0
+lm-scipy [scipy_ls]: j:analytic,1.0,0.0625
+lm-scipy [scipy_ls]: j:analytic,1.0,0.125
+lm-scipy [scipy_ls]: j:analytic,1.000000000000027,0.1875
+lm-scipy [scipy_ls]: j:analytic,1.000000000000041,0.25
+lm-scipy [scipy_ls]: j:analytic,1.000000000000068,0.3125
+lm-scipy [scipy_ls]: j:analytic,1.0000000000001257,0.375
+lm-scipy [scipy_ls]: j:analytic,1.0000000000002036,0.4375
+lm-scipy [scipy_ls]: j:analytic,1.0000000000002223,0.5
+lm-scipy [scipy_ls]: j:analytic,1.000000000000266,0.5625
+lm-scipy [scipy_ls]: j:analytic,1.0000000000003824,0.625
+lm-scipy [scipy_ls]: j:analytic,1.0000000000006322,0.6875
+lm-scipy [scipy_ls]: j:analytic,1.0000000000009388,0.75
+lm-scipy [scipy_ls]: j:analytic,1.0000000000010354,0.8125
+lm-scipy [scipy_ls]: j:analytic,1.0000000000011275,0.875
+lm-scipy [scipy_ls]: j:analytic,1.000000000001461,0.9375
+lm-scipy [scipy_ls]: j:analytic,1.0000000000113807,1.0
+lm-scipy [scipy_ls]: j:analytic,1e+20,1.0

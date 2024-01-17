@@ -336,7 +336,8 @@ class DashPerfProfileTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
-        data = read_csv(self.expected_results_dir + "/pp_data.csv")
+        data = read_csv(self.expected_results_dir +
+                        "/pp_data_more_solvers.csv")
 
         self.perf_profile = performance_profiler.\
             DashPerfProfile('runtime', data,
@@ -355,7 +356,7 @@ class DashPerfProfileTests(unittest.TestCase):
         selected_solvers = self.perf_profile.data["solver"]
         output_fig, _, _ = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
-                         solvers=selected_solvers)
+                         solvers=selected_solvers[:3])
 
         output_plot_path = self.temp_result + '/obtained_plot.html'
 
@@ -368,6 +369,26 @@ class DashPerfProfileTests(unittest.TestCase):
 
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
+
+    def test_create_graph_returns_warning_when_large_n_solvers(self):
+        """
+        Test create_graph returns the expected warning and new_options
+        (for the dropdown) when the number of solvers exceeds 15.
+        """
+
+        selected_solvers = self.perf_profile.data["solver"]
+        _, warning, new_options = self.perf_profile.\
+            create_graph(x_axis_scale="Log x-axis",
+                         solvers=selected_solvers)
+
+        expec_new_options = pd.read_csv(self.expected_results_dir +
+                                        "/new_options.csv")
+        expec_new_options_list = expec_new_options.to_dict(orient='records')
+
+        assert new_options == expec_new_options_list
+        assert warning == ('The plot is showing the max number of minimizers '
+                           f'allowed ({self.perf_profile.max_solvers}). '
+                           'Deselect some to select others.')
 
     # pylint: enable=W0632
 
