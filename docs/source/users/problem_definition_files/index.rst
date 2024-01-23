@@ -20,6 +20,7 @@ More information on the supported formats can be found on the following pages.
     multifit
     nist
     horace
+    hogben
 
 Detecting problem file type
 ===========================
