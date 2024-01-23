@@ -150,18 +150,18 @@
                                                 data-value3="{{ n_solvers_large }}"
                                                 onclick="load_src(this)">Offline version</button>
                                         <button class="btn default" id="online_plot"
-                                                data-value1={{ pp_dash_urls | join("|") }}
+                                                data-value1={{ pp_dash_url }}
                                                 data-value3="{{ n_solvers_large }}"
                                                 onclick="load_src(this)">Online version</button>
                                     </div>
                                     <br>
-                                    {% for offline_plot in pp_filenames %}
-                                        <div class="iframe-wrapper">
+                                    <div class="iframe-wrapper">
+                                        {% for offline_plot in pp_filenames %}
                                             <iframe width="100%" frameborder="0" seamless="seamless"
                                                     src="{{ offline_plot }}" onload="adaptIframeHeight()"></iframe>
-                                        </div>
-                                        <br>
-                                    {% endfor %}
+                                            <br>
+                                        {% endfor %}  
+                                    </div>
                                 </div>
                                 <p id="profiles_info" style="display:block">
                                     Fits are taken from all benchmarks, so if FitBenchmarking is run with

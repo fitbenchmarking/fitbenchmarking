@@ -128,32 +128,36 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
 
             with open(f'{table.file_path}html', "w", encoding="utf-8") as f:
                 f.write(
-                    template.render(css_style_sheet=css['main'],
-                                    custom_style=css['custom'],
-                                    dropdown_style=css['dropdown'],
-                                    table_style=css['table'],
-                                    dropdown_js=js['dropdown'],
-                                    mathjax=js['mathjax'],
-                                    table_js=js['table'],
-                                    table=html['table'],
-                                    problem_dropdown=html['problem_dropdown'],
-                                    minimizer_dropdown=html['minim_dropdown'],
-                                    probsize_checkbox=html['probsize_checkb'],
-                                    table_description=description[suffix],
-                                    table_format=table_format,
-                                    result_name=table.table_title,
-                                    has_pp=bool(table.pps),
-                                    pp_filenames=[os.path.relpath(table.pp_locations[p],group_dir) for p in table.pps],
-                                    pp_dash_urls=[f'http://127.0.0.1:{options.port}/{os.path.basename(group_dir)}/'
-                                                  f'perf_prof_{p}' for p in table.pps],
-                                    cbar=cbar,
-                                    run_name=run_name,
-                                    error_message=ERROR_OPTIONS,
-                                    failed_problems=failed_problems,
-                                    unselected_minimzers=unselected_minimzers,
-                                    algorithm_type=options.algorithm_type,
-                                    report_failed_min=report_failed_min,
-                                    n_solvers_large=n_solvers_large))
+                    template.render(
+                        css_style_sheet=css['main'],
+                        custom_style=css['custom'],
+                        dropdown_style=css['dropdown'],
+                        table_style=css['table'],
+                        dropdown_js=js['dropdown'],
+                        mathjax=js['mathjax'],
+                        table_js=js['table'],
+                        table=html['table'],
+                        problem_dropdown=html['problem_dropdown'],
+                        minimizer_dropdown=html['minim_dropdown'],
+                        probsize_checkbox=html['probsize_checkb'],
+                        table_description=description[suffix],
+                        table_format=table_format,
+                        result_name=table.table_title,
+                        has_pp=bool(table.pps),
+                        pp_filenames=[
+                            os.path.relpath(table.pp_locations[p], group_dir)
+                            for p in table.pps],
+                        pp_dash_url=f'http://127.0.0.1:{options.port}/'
+                                    f'{os.path.basename(group_dir)}/'
+                                    f'pp/{"_".join(table.pps)}',
+                        cbar=cbar,
+                        run_name=run_name,
+                        error_message=ERROR_OPTIONS,
+                        failed_problems=failed_problems,
+                        unselected_minimzers=unselected_minimzers,
+                        algorithm_type=options.algorithm_type,
+                        report_failed_min=report_failed_min,
+                        n_solvers_large=n_solvers_large))
 
     return table_names, description
 

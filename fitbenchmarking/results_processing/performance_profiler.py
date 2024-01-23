@@ -379,7 +379,6 @@ class DashPerfProfile():
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
-            Output("dropdown", "options"),
             [Input("Log axis toggle", "value"),
              Input("dropdown", "value")]
         )(self.create_graph)
