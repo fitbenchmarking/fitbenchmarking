@@ -97,25 +97,23 @@ function setAttributes(el, attrs) {
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
 function load_src(_button){
-    var path = _button.dataset.value1;
-    var index = _button.dataset.value2;
-    var n_solvers_large = _button.dataset.value3;
+    var path = _button.dataset.value1.split("|");
 
-    var iframe = document.getElementById("i_frame"+index);
-    iframe.remove();
+    var iframewrappers = document.getElementsByClassName("iframe-wrapper");
 
-    var new_iframe = document.createElement("iframe");
-    setAttributes(new_iframe, {
-        "id": "i_frame"+index,
-        "src": path,
-        "width": "100%",
-        "frameborder": 0,
-        "seamless": "seamless",
-        "onload":"adaptIframeHeight()",
-    });
-
-    wrapper = document.getElementById("iframe-wrapper"+index)
-    wrapper.appendChild(new_iframe);
+    for (wrapper in iframewrappers) {
+        var iframe = iframewrappers[wrapper].children[0];
+        iframe.remove();
+        var new_iframe = document.createElement("iframe");
+        setAttributes(new_iframe, {
+            "src": path[wrapper],
+            "width": "100%",
+            "frameborder": 0,
+            "seamless": "seamless",
+            "onload":"adaptIframeHeight()",
+        });
+        iframewrappers[wrapper].appendChild(new_iframe);
+    };
 }
 
 
@@ -124,39 +122,23 @@ function load_src(_button){
 */
 function adaptIframeHeight(){
 
-    var button1 = document.getElementById("offline_plot1");
+    var button1 = document.getElementById("offline_plot");
     var n_solvers_large = button1.dataset.value3;
 
     var profiles_info = document.getElementById("profiles_info");
-    var iframe1 = document.getElementById("i_frame1");
-    var src_iframe1 = iframe1.getAttribute("src");
-    var show_description = false;
+    var iframewrappers = document.getElementsByClassName("iframe-wrapper");
 
-    // If it's a Dash plot or showing limited n solvers
-    if ((src_iframe1.startsWith("http")) || n_solvers_large === "False") {
-        iframe1.setAttribute("height", 650);
-        profiles_info.setAttribute("style", "display:block");
-        show_description = true;
-    } else {
-        iframe1.setAttribute("height", 100);
-        profiles_info.setAttribute("style", "display:none");
-        show_description = false;
-    };
+    for (wrapper in iframewrappers) {
+        var iframe = iframewrappers[wrapper].children[0];
+        var src_iframe = iframe.getAttribute("src");
 
-    // This is for the compare table, where there is an iframe2
-    try {
-        var iframe2 = document.getElementById("i_frame2");
-        var src_iframe2 = iframe2.getAttribute("src");
-
-        if ((src_iframe2.startsWith("http")) || n_solvers_large === "False") {
-            iframe2.setAttribute("height", 650);
+        // If it's a Dash plot or showing limited n solvers
+        if ((src_iframe.startsWith("http")) || n_solvers_large === "False") {
+            iframe.setAttribute("height", 650);
             profiles_info.setAttribute("style", "display:block");
         } else {
-            iframe2.setAttribute("height", 100);
-            if (show_description !== true) {
-                profiles_info.setAttribute("style", "display:none");
-            }
+            iframe.setAttribute("height", 100);
+            profiles_info.setAttribute("style", "display:none");
         };
-    } catch {};
-
+    };
 }

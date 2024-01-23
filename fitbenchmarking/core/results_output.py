@@ -820,6 +820,24 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         html.Div(id='page-content', children=[]),
     ])
 
+    max_solvers = 15
+
+    @app.callback(Output("dropdown", "options"), [Input("dropdown", "value")])
+    def update_warning(solvers):
+        if len(solvers) >= max_solvers:
+            return 'The plot is showing the max number of minimizers ' \
+                   f'allowed ({max_solvers}). Deselect some to select others.'
+        return ''
+
+    @app.callback(Output("dropdown", "options"),
+                  [Input("dropdown", "options"), Input("dropdown", "values")])
+    def check_max_solvers(opts, solvers):
+        if len(solvers) < max_solvers:
+            return opts
+        for o in opts:
+            o["disabled"] = True
+        return opts
+
     # Create the callback to handle multiple pages
     @app.callback(Output('page-content', 'children'),
                   [Input('url', 'pathname')])
@@ -834,13 +852,55 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
 
         group_profiles = profile_instances_all_groups[group]
 
+        opts = group_profiles['accProfile'].default_opt
+
+        layout = [
+            dcc.RadioItems(
+                id="Log axis toggle",
+                options=["Log x-axis", "Linear x-axis"],
+                value="Log x-axis",
+                labelStyle={"margin-top": "1.5rem",
+                            "margin-left": "1rem",
+                            "margin-right": "1rem",
+                            "margin-bottom": "0.8rem"},
+                style={"display": "flex",
+                       "font-family": "verdana",
+                       "color": '#454545',
+                       "font-size": "14px"}
+            ),
+            dcc.Dropdown(
+                id='dropdown',
+                options=opts,
+                value=[i['label']
+                       for i in opts[:max_solvers]],
+                multi=True,
+                style={"font-family": "verdana",
+                       "color": '#454545',
+                       "font-size": "14px",
+                       "margin-bottom": "1rem",
+                       "margin-top": "1rem"}
+            ),
+            html.Div(
+                id='warning',
+                style={"white-space": "pre-wrap",
+                       "font-family": "verdana",
+                       "color": "red",
+                       "text-align": "center",
+                       "font-size": "13px",
+                       "margin-bottom": "1rem",
+                       "margin-top": "1rem"}
+            ),
+        ]
+
         if table == 'perf_prof_acc':
-            return group_profiles['accProfile'].layout()
-        if table == 'perf_prof_runtime':
-            return group_profiles['runtimeProfile'].layout()
-        return ("404 Page Error! The path was not recognized. \n"
-                "The path needs to end in 'perf_prof_acc' or "
-                "'perf_prof_runtime' .")
+            layout.append(group_profiles['accProfile'].layout())
+        elif table == 'perf_prof_runtime':
+            layout.append(group_profiles['runtimeProfile'].layout())
+        else:
+            return ("404 Page Error! The path was not recognized. \n"
+                    "The path needs to end in 'perf_prof_acc' or "
+                    "'perf_prof_runtime' .")
+        return html.Div(layout)
 
     if options.run_dash:
         app.run(port=options.port)

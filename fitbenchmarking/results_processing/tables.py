@@ -109,9 +109,9 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             report_failed_min = \
                 any(minimizers for minimizers in unselected_minimzers.values())
 
-            if len(table.pp_filenames) == 1:
+            if len(table.pps) == 1:
                 pp_index = ['1']
-            elif len(table.pp_filenames) == 2:
+            elif len(table.pps) == 2:
                 pp_index = ['1', '2']
             else:
                 # This error message is necessary because pp_index is used in
@@ -142,12 +142,10 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                                     table_description=description[suffix],
                                     table_format=table_format,
                                     result_name=table.table_title,
-                                    has_pp=table.has_pp,
-                                    pp_filenames=table.pp_filenames,
-                                    pp_dash_urls=table.pp_dash_urls,
-                                    zipped_paths=zip(table.pp_filenames,
-                                                     table.pp_dash_urls,
-                                                     pp_index),
+                                    has_pp=bool(table.pps),
+                                    pp_filenames=[os.path.relpath(table.pp_locations[p],group_dir) for p in table.pps],
+                                    pp_dash_urls=[f'http://127.0.0.1:{options.port}/{os.path.basename(group_dir)}/'
+                                                  f'perf_prof_{p}' for p in table.pps],
                                     cbar=cbar,
                                     run_name=run_name,
                                     error_message=ERROR_OPTIONS,

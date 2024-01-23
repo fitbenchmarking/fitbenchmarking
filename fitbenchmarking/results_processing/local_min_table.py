@@ -35,6 +35,8 @@ class LocalMinTable(Table):
     object.
 
     """
+    name = 'local_min'
+    cbar_title = "Cell Shading: Minimum Found"
 
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
@@ -61,18 +63,7 @@ class LocalMinTable(Table):
         """
         super().__init__(results, best_results, options, group_dir,
                          pp_locations, table_name)
-        self.name = 'local_min'
-        port = options.port
-        group_dir_label = os.path.basename(group_dir)
-
-        self.has_pp = True
-        self.pp_filenames = \
-            [os.path.relpath(pp_locations[pp], group_dir)
-             for pp in ['acc', 'runtime']]
-
-        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
-                             f'perf_prof_{metric}'
-                             for metric in ['acc', 'runtime']]
+        self.pps = ['acc', 'runtime']
 
         # Check whether any selected cost function is not a least squares
         # problem - if non least squares are present then local min table is
@@ -84,7 +75,6 @@ class LocalMinTable(Table):
                     f"{cf} cost function. As a result, "
                     "this table will not be produced.")
 
-        self.cbar_title = "Cell Shading: Minimum Found"
         self.cbar_left_label = "True"
         self.cbar_right_label = "False"
 

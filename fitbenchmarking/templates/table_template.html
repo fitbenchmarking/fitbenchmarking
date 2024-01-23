@@ -140,49 +140,48 @@
                             </h2>
                             <div class="content">
                                 <div>
-                                    <p> For a more interative plot (Dash), switch to "Online version" by clicking the button below.
-                                        <b>This will only work if the Dash app is running.</b> </p>
-                                    {% for offline_plot, dash_plot, index in zipped_paths %}
-                                        <br>
-                                        <div>
-                                            <div>
-                                                <button class="btn default" id="offline_plot{{ index }}"
-                                                        data-value1="{{ offline_plot }}" data-value2="{{ index }}"
-                                                        data-value3="{{ n_solvers_large }}"
-                                                        onclick="load_src(this)">Offline version</button>
-
-                                                <button class="btn default" id="online_plot{{ index }}"
-                                                        data-value1="{{ dash_plot }}" data-value2="{{ index }}"
-                                                        data-value3="{{ n_solvers_large }}"
-                                                        onclick="load_src(this)">Online version</button>
-                                            </div>
-                                            <div id="iframe-wrapper{{ index }}">
-                                                <iframe id="i_frame{{ index }}" width="100%" frameborder="0" seamless="seamless"
-                                                        src="{{ offline_plot }}" onload="adaptIframeHeight()"></iframe>
-                                            </div>
-                                            <br>
+                                    <p>
+                                        For a more interative plot (Dash), switch to "Online version" by clicking the button below.
+                                        <b>This will only work if the Dash app is running.</b>
+                                    </p>
+                                    <div>
+                                        <button class="btn default" id="offline_plot"
+                                                data-value1={{ pp_filenames | join("|") }}
+                                                data-value3="{{ n_solvers_large }}"
+                                                onclick="load_src(this)">Offline version</button>
+                                        <button class="btn default" id="online_plot"
+                                                data-value1={{ pp_dash_urls | join("|") }}
+                                                data-value3="{{ n_solvers_large }}"
+                                                onclick="load_src(this)">Online version</button>
+                                    </div>
+                                    <br>
+                                    {% for offline_plot in pp_filenames %}
+                                        <div class="iframe-wrapper">
+                                            <iframe width="100%" frameborder="0" seamless="seamless"
+                                                    src="{{ offline_plot }}" onload="adaptIframeHeight()"></iframe>
                                         </div>
+                                        <br>
                                     {% endfor %}
                                 </div>
-
-                                    <p id="profiles_info" style="display:block">
-                                        Fits are taken from all benchmarks, so if FitBenchmarking is run with
-                                        ``n`` problems and ``m`` cost functions, the resulting profile plots will have
-                                        ``n*m`` steps on the y-axis. <br>
-                                        This is a Dolan-Moré performance profile.
-                                        The solvers appearing in the top left corner may be considered the best
-                                        performing on this test set.
-                                        See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-                                        <br>
-                                        <br>
-                                        <b>
-                                            The plot is such that lines can be removed by clicking on the respective minimizer name in the legend.
-                                            However, the whole graph highly depends on the best minimizer (the one in the top left corner), that is,
-                                            each line is computed with respect to the best minimizer and should only be compared to the latter (rather
-                                            than to any other line in the graph). Currently, if a line is removed, the graph is not recalculated, which
-                                            means care should be taken in interpreting results after having removed lines.
-                                        </b>
-                                    </p>
+                                <p id="profiles_info" style="display:block">
+                                    Fits are taken from all benchmarks, so if FitBenchmarking is run with
+                                    ``n`` problems and ``m`` cost functions, the resulting profile plots will have
+                                    ``n*m`` steps on the y-axis.
+                                    <br>
+                                    This is a Dolan-Moré performance profile.
+                                    The solvers appearing in the top left corner may be considered the best
+                                    performing on this test set.
+                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
+                                    <br>
+                                    <br>
+                                    <b>
+                                        The plot is such that lines can be removed by clicking on the respective minimizer name in the legend.
+                                        However, the whole graph highly depends on the best minimizer (the one in the top left corner), that is,
+                                        each line is computed with respect to the best minimizer and should only be compared to the latter (rather
+                                        than to any other line in the graph). Currently, if a line is removed, the graph is not recalculated, which
+                                        means care should be taken in interpreting results after having removed lines.
+                                    </b>
+                                </p>
                             </div>
                         </section>
                     {% endif %}

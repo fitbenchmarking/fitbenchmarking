@@ -359,7 +359,6 @@ class DashPerfProfile():
                 "label": solver
             })
 
-        self.max_solvers = 15
         self.layout()
         self.set_callbacks()
 
@@ -373,56 +372,16 @@ class DashPerfProfile():
         :rtype: dash.html.Div
         """
 
-        layout = html.Div([
-            dcc.RadioItems(
-                id=f"Log axis toggle {self.identif}",
-                options=["Log x-axis", "Linear x-axis"],
-                value="Log x-axis",
-                labelStyle={"margin-top": "1.5rem",
-                            "margin-left": "1rem",
-                            "margin-right": "1rem",
-                            "margin-bottom": "0.8rem"},
-                style={"display": "flex",
-                       "font-family": "verdana",
-                       "color": '#454545',
-                       "font-size": "14px"}
-            ),
-            dcc.Dropdown(
-                id=f'dropdown {self.identif}',
-                options=self.default_opt,
-                value=[i['label']
-                       for i in self.default_opt[:self.max_solvers]],
-                multi=True,
-                style={"font-family": "verdana",
-                       "color": '#454545',
-                       "font-size": "14px",
-                       "margin-bottom": "1rem",
-                       "margin-top": "1rem"}
-            ),
-            html.Div(
-                id=f'warning {self.identif}',
-                style={"white-space": "pre-wrap",
-                       "font-family": "verdana",
-                       "color": "red",
-                       "text-align": "center",
-                       "font-size": "13px",
-                       "margin-bottom": "1rem",
-                       "margin-top": "1rem"}
-            ),
-            dcc.Graph(id=f"visual {self.identif}")
-        ],
-        )
-        return layout
+        return dcc.Graph(id=f"visual {self.identif}")
 
     def set_callbacks(self):
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
-            Output(f"warning {self.identif}", "children"),
-            Output(f"dropdown {self.identif}", "options"),
-            [Input(f"Log axis toggle {self.identif}", "value"),
-             Input(f"dropdown {self.identif}", "value")]
+            Output("dropdown", "options"),
+            [Input("Log axis toggle", "value"),
+             Input("dropdown", "value")]
         )(self.create_graph)
 
     def create_graph(self, x_axis_scale, solvers):
@@ -434,7 +393,7 @@ class DashPerfProfile():
         :param solvers: The solvers to show in the graph
         :type solvers: list[str]
 
-        :return: Figure for the Dash plot, warning message,
+        :return: Figure for the Dash plot,
                  options to be shown in dropdown
         :rtype: plotly.graph_objects.Figure, str, list[dict[str]]
         """
@@ -480,18 +439,4 @@ class DashPerfProfile():
         fig = update_fig(fig, self.profile_name, use_log_plot,
                          log_upper_limit)
 
-        warning = ''
-        new_options = self.default_opt
-
-        if len(solvers) >= self.max_solvers:
-            warning = ('The plot is showing the max number of minimizers '
-                       f'allowed ({self.max_solvers}). Deselect some to '
-                       'select others.')
-
-            new_options = []
-            for option in self.default_opt:
-                new_options.append({"value": option['value'],
-                                    "label": option['label'],
-                                    "disabled": True})
-
-        return fig, warning, new_options
+        return fig
