@@ -370,29 +370,25 @@ class DashPerfProfileTests(unittest.TestCase):
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
 
-    def test_create_graph_returns_expected_plot_when_large_n_solvers(self):
+    def test_create_graph_returns_warning_when_large_n_solvers(self):
         """
-        Test create_graph returns the expected plot when the
-        number of solvers exceeds 15.
+        Test create_graph returns the expected warning and new_options
+        (for the dropdown) when the number of solvers exceeds 15.
         """
 
         selected_solvers = self.perf_profile.data["solver"]
-        output_fig, _, _ = self.perf_profile.\
+        _, warning, new_options = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
                          solvers=selected_solvers)
 
-        output_plot_path = self.temp_result + '/obtained_plot.html'
+        expec_new_options = pd.read_csv(self.expected_results_dir +
+                                        "/new_options.csv")
+        expec_new_options_list = expec_new_options.to_dict(orient='records')
 
-        Plot.write_html_with_link_plotlyjs(fig=output_fig,
-                                           figures_dir='',
-                                           htmlfile=output_plot_path,
-                                           options=self.options)
-
-        expected_plot_path = self.expected_results_dir + \
-            '/dash_plot_large_n_solvers.html'
-
-        diff = diff_between_htmls(expected_plot_path, output_plot_path)
-        self.assertListEqual([], diff)
+        assert new_options == expec_new_options_list
+        assert warning == ('The plot is showing the max number of minimizers '
+                           f'allowed ({self.perf_profile.max_solvers}). '
+                           'Deselect some to select others.')
 
     # pylint: enable=W0632
 
