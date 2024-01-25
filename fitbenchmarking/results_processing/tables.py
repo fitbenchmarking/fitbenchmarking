@@ -109,7 +109,6 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             report_failed_min = \
                 any(minimizers for minimizers in unselected_minimzers.values())
 
-
             n_solvers_large = False
             key1 = list(results.keys())[0]
             key11 = list(results[key1].keys())[0]

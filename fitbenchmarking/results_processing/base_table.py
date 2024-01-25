@@ -35,8 +35,8 @@ class Table:
     __metaclass__ = ABCMeta
     name = None
     output_string_type = {"abs": '{:.4g}',
-                                   "rel": '{:.4g}',
-                                   "both": '{0:.4g} ({1:.4g})'}
+                          "rel": '{:.4g}',
+                          "both": '{0:.4g} ({1:.4g})'}
     colour_template = 'background-color: {0}'
     cbar_title = "No colour bar description given"
 

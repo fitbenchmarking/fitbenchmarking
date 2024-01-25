@@ -13,8 +13,7 @@ class CompareTable(Table):
 
     """
     name = 'compare'
-    colour_template = \
-            'background-image: linear-gradient({0},{0},{1},{1})'
+    colour_template = 'background-image: linear-gradient({0},{0},{1},{1})'
     cbar_title = "Problem-Specific Cell Shading:\n"\
                  "Top Colour - Relative Accuracy\n"\
                  "Bottom Colour - Relative Runtime\n"
@@ -44,7 +43,6 @@ class CompareTable(Table):
         super().__init__(results, best_results, options, group_dir,
                          pp_locations, table_name)
         self.pps = ['acc', 'runtime']
-
 
     def get_value(self, result):
         """
