@@ -146,11 +146,11 @@
                                     </p>
                                     <div>
                                         <button class="btn default" id="offline_plot"
-                                                data-value1={{ pp_filenames | join("|") }}
+                                                data-value1="{{ pp_filenames | join('|') }}"
                                                 data-value3="{{ n_solvers_large }}"
                                                 onclick="load_src(this)">Offline version</button>
                                         <button class="btn default" id="online_plot"
-                                                data-value1={{ pp_dash_url }}
+                                                data-value1="{{ pp_dash_url }}"
                                                 data-value3="{{ n_solvers_large }}"
                                                 onclick="load_src(this)">Online version</button>
                                     </div>
@@ -160,7 +160,7 @@
                                             <iframe width="100%" frameborder="0" seamless="seamless"
                                                     src="{{ offline_plot }}" onload="adaptIframeHeight()"></iframe>
                                             <br>
-                                        {% endfor %}  
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <p id="profiles_info" style="display:block">
@@ -175,7 +175,8 @@
                                     <br>
                                     <br>
                                     <b>
-                                        The plot is such that lines can be removed by clicking on the respective minimizer name in the legend.
+                                        The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
+                                        or hidden by unselecting the minimizer in the legend.
                                         However, the whole graph highly depends on the best minimizer (the one in the top left corner), that is,
                                         each line is computed with respect to the best minimizer and should only be compared to the latter (rather
                                         than to any other line in the graph). Currently, if a line is removed, the graph is not recalculated, which

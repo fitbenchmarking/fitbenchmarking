@@ -129,20 +129,29 @@ function adaptIframeHeight() {
     var profiles_info = document.getElementById("profiles_info");
     var iframewrappers = document.getElementsByClassName("iframe-wrapper");
 
-    for (wrapper in iframewrappers) {
-        for (i in iframewrappers[wrapper].children) {
-            var iframe = iframewrappers[wrapper].children[i];
+    for (var i = 0; i < iframewrappers.length; i++) {
+        wrapper = iframewrappers.item(i);
+        wrapper_children = wrapper.children;
 
-            var src_iframe = iframe.getAttribute("src");
+        for (var k = 0; k < wrapper_children.length; k++) {
+            var iframe = wrapper_children[k];
+            src_iframe =  iframe.getAttribute("src");
 
-            // If it's a Dash plot or showing limited n solvers
-            if ((src_iframe.startsWith("http")) || n_solvers_large === "False") {
-                iframe.setAttribute("height", 1000);
+            var is_dash_plot = src_iframe.startsWith("http")
+            var is_compare_plot = src_iframe.split('/').pop().includes("_");
+
+            if (((is_dash_plot) || n_solvers_large === "False") & (is_compare_plot)) {
+                iframe.setAttribute("height", 1200);
                 profiles_info.setAttribute("style", "display:block");
+
+            } else if ((is_dash_plot) || n_solvers_large === "False") {
+                iframe.setAttribute("height", 650);
+                profiles_info.setAttribute("style", "display:block");
+
             } else {
                 iframe.setAttribute("height", 100);
                 profiles_info.setAttribute("style", "display:none");
             };
         };
-    };
+     };
 }
