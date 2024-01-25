@@ -375,7 +375,7 @@ class DashPerfProfileTests(unittest.TestCase):
         Test create_graph returns the expected warning and new_options
         (for the dropdown) when the number of solvers exceeds 15.
         """
-
+        max_solvers = 15
         selected_solvers = self.perf_profile.data["solver"]
         _, warning, new_options = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
@@ -387,8 +387,8 @@ class DashPerfProfileTests(unittest.TestCase):
 
         assert new_options == expec_new_options_list
         assert warning == ('The plot is showing the max number of minimizers '
-                           f'allowed ({self.perf_profile.max_solvers}). '
-                           'Deselect some to select others.')
+                           f'allowed ({max_solvers}). Deselect some to '
+                           ' select others.')
 
     # pylint: enable=W0632
 
