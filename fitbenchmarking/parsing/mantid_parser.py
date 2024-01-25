@@ -4,15 +4,72 @@ This file implements a parser for the Mantid data format.
 import typing
 
 import mantid.simpleapi as msapi
-
+from mantid.api import FunctionDomain1DVector as FDV
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-
+import numpy as np
 
 class MantidParser(FitbenchmarkParser):
     """
     Parser for a Mantid problem definition file.
     """
 
+    def parse(self):
+
+        fp = super().parse()
+
+        self._set_jacobian(fp, x_data)
+        return fp
+
+    def _set_jacobian(self, fp, x_data):
+        """
+        Sometimes mantid will give the error 
+        RuntimeError: Integration is not implemented for this function.
+        this try except tests if the error occurs and then only 
+        assigns the jacobian if it passes.
+        """
+        # need to trim x data to the correct range for Jacobian
+        i0 = 0
+        iN = len(fp.data_x)
+        if fp.start_x:
+            i0 = np.argmax(fp.data_x >= fp.start_x)
+        if fp.end_x:
+            # returns a list of lists if more than one match, otherwise an int is returned
+            iN = np.where(fp.data_x <= fp.end_x)
+            if not isinstance(iN, int):
+                iN = iN[0][-1]
+
+        x_data = fp.data_x
+        x_data = x_data[i0:iN + 1]
+        
+        # cache the x values for later
+        self._cache_x = FDV(x_data)
+        self._N_x = len(x_data)
+        self._jac = np.zeros((self._N_x, len(self._params_dict.keys())))
+
+        try:
+            _ = self._jacobian(x_data, self._params_dict.values())
+            fp.jacobian = self._jacobian
+        except RuntimeError:
+
+            return
+
+    def _jacobian(self, x, *args):
+        for param, key in zip(*args, self._params_dict.keys()):
+            self._mantid_function[key] = param
+        # get mantid Jacobian
+        J = self._mantid_function.functionDeriv(self._cache_x)
+        # set np Jacobian values
+        for i in range(self._N_x):
+            for j in range(len(self._params_dict.keys())):
+                self._jac[i, j] = J.get(i, j)
+        return self._jac
+        
+
+    def _update_params(self, *p):
+        update_dict = dict(zip(self._params_dict.keys(), p))
+        self._params_dict.update(update_dict)
+        return self._params_dict
+        
     def _create_function(self) -> typing.Callable:
         """
         Processing the function in the Mantid problem definition into a
@@ -47,8 +104,10 @@ class MantidParser(FitbenchmarkParser):
 
         # Convert to callable
         fit_function = msapi.FunctionWrapper(ifun)
-
-        # Use a wrapper to inject fixed parameters into the function
+        # need these for jacobian
+        self._mantid_function = fit_function
+        self._params_dict = params
+        ## Use a wrapper to inject fixed parameters into the function
         def wrapped(x, *p):
             # Use the full param dict from above, but update the non-fixed
             # values
@@ -56,7 +115,7 @@ class MantidParser(FitbenchmarkParser):
             all_params_dict.update(update_dict)
 
             return fit_function(x, *all_params_dict.values())
-
+        
         return wrapped
 
     def _is_multifit(self) -> bool:
@@ -108,8 +167,8 @@ class MantidParser(FitbenchmarkParser):
         """
         Sets any additional info for a fitting problem.
         """
-        self.fitting_problem.additional_info['mantid_equation'] \
-            = self._entries['function']
+        #self.fitting_problem.additional_info['mantid_equation'] \
+        #    = self._entries['function']
 
         if self.fitting_problem.multifit:
             self.fitting_problem.additional_info['mantid_ties'] \
