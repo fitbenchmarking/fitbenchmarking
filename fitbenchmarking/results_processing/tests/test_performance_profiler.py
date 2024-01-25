@@ -354,7 +354,7 @@ class DashPerfProfileTests(unittest.TestCase):
         """
 
         selected_solvers = self.perf_profile.data["solver"]
-        output_fig, _, _ = self.perf_profile.\
+        output_fig = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
                          solvers=selected_solvers[:3])
 
@@ -370,25 +370,25 @@ class DashPerfProfileTests(unittest.TestCase):
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
 
-    def test_create_graph_returns_warning_when_large_n_solvers(self):
-        """
-        Test create_graph returns the expected warning and new_options
-        (for the dropdown) when the number of solvers exceeds 15.
-        """
-        max_solvers = 15
-        selected_solvers = self.perf_profile.data["solver"]
-        _, warning, new_options = self.perf_profile.\
-            create_graph(x_axis_scale="Log x-axis",
-                         solvers=selected_solvers)
+    # def test_create_graph_returns_warning_when_large_n_solvers(self):
+    #     """
+    #     Test create_graph returns the expected warning and new_options
+    #     (for the dropdown) when the number of solvers exceeds 15.
+    #     """
+    #     max_solvers = 15
+    #     selected_solvers = self.perf_profile.data["solver"]
+    #     _, warning, new_options = self.perf_profile.\
+    #         create_graph(x_axis_scale="Log x-axis",
+    #                      solvers=selected_solvers)
 
-        expec_new_options = pd.read_csv(self.expected_results_dir +
-                                        "/new_options.csv")
-        expec_new_options_list = expec_new_options.to_dict(orient='records')
+    #     expec_new_options = pd.read_csv(self.expected_results_dir +
+    #                                     "/new_options.csv")
+    #     expec_new_options_list = expec_new_options.to_dict(orient='records')
 
-        assert new_options == expec_new_options_list
-        assert warning == ('The plot is showing the max number of minimizers '
-                           f'allowed ({max_solvers}). Deselect some to '
-                           ' select others.')
+    #     assert new_options == expec_new_options_list
+    #     assert warning == ('The plot is showing the max number of minimizers '
+    #                        f'allowed ({max_solvers}). Deselect some to '
+    #                        ' select others.')
 
     # pylint: enable=W0632
 
