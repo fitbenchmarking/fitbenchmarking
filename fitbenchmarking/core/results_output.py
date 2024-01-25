@@ -901,7 +901,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         opts = group_profiles['acc'].default_opt
         layout[1].options = opts
         layout[1].value = [i['label'] for i in opts[:max_solvers]]
-        return html.Div(new_layout),
+        return html.Div(new_layout)
 
     if options.run_dash:
         app.run(port=options.port)

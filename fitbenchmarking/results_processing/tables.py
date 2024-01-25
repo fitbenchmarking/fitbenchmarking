@@ -109,15 +109,6 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
             report_failed_min = \
                 any(minimizers for minimizers in unselected_minimzers.values())
 
-            if len(table.pps) == 1:
-                pp_index = ['1']
-            elif len(table.pps) == 2:
-                pp_index = ['1', '2']
-            else:
-                # This error message is necessary because pp_index is used in
-                # the table template to display the performance profiles
-                raise ValueError('Displaying more than two profiles in a '
-                                 'single page is not possible yet.')
 
             n_solvers_large = False
             key1 = list(results.keys())[0]

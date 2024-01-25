@@ -7,7 +7,7 @@ import dash
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from dash import Input, Output, dcc, html
+from dash import Input, Output, dcc
 
 from fitbenchmarking.results_processing.plots import Plot
 

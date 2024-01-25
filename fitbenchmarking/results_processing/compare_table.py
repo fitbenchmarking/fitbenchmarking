@@ -1,8 +1,6 @@
 """
 compare table
 """
-import os
-
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -20,7 +18,7 @@ class CompareTable(Table):
     cbar_title = "Problem-Specific Cell Shading:\n"\
                  "Top Colour - Relative Accuracy\n"\
                  "Bottom Colour - Relative Runtime\n"
-    
+
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
         """

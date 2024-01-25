@@ -1,8 +1,6 @@
 """
 Runtime table
 """
-import os
-
 from fitbenchmarking.results_processing.base_table import Table
 
 

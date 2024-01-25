@@ -1,8 +1,6 @@
 """
 compare table
 """
-import os
-
 import matplotlib.colors as clrs
 import numpy as np
 
