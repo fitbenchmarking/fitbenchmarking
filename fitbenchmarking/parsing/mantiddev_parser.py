@@ -9,17 +9,26 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 import typing
+import numpy as np
 
 import mantid.simpleapi as msapi
 from mantid.api import FunctionDomain1DVector as FDV
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
-import numpy as np
 
 
 class MantidDevParser(FitbenchmarkParser):
     """
     Parser for a Mantid problem definition file.
     """
+
+    def __init__(self, filename, options):
+        self._params_dict = None
+        self._mantid_function = None
+        self._jac = None
+        self._N_x = 0
+        self._cache_x = None
+        super().__init__(filename, options)
+
     def _set_additional_info(self) -> None:
         """
         Sets any additional info for a fitting problem.
@@ -52,10 +61,8 @@ class MantidDevParser(FitbenchmarkParser):
         if fp.start_x:
             i0 = np.argmax(fp.data_x >= fp.start_x)
         if fp.end_x:
-            """
-            returns a list of lists if more than one match,
-            otherwise an int is returned
-            """
+            # returns a list of lists if more than one match,
+            # otherwise an int is returned
             iN = np.where(fp.data_x <= fp.end_x)
             if not isinstance(iN, int):
                 iN = iN[0][-1]
@@ -75,7 +82,7 @@ class MantidDevParser(FitbenchmarkParser):
 
             return
 
-    def _jacobian(self, x, *args):
+    def _jacobian(self, _, *args):
         """
         Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect
@@ -137,7 +144,7 @@ class MantidDevParser(FitbenchmarkParser):
         self._mantid_function = fit_function
         self._params_dict = params
         # Use a wrapper to inject fixed parameters into the function
-        
+
         def wrapped(x, *p):
             """
             Use the full param dict from above, but update the non-fixed
