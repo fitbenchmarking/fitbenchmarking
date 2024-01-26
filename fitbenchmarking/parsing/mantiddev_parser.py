@@ -2,11 +2,11 @@
 This file implements a parser for the Mantid data format.
 This version is for developers. Unlike the mantid_parser
 this version removes the advantage for function evaluations
-by forcing mantid to use the same one as other software. 
-However, Mantid still has an advantage for Jacobian 
+by forcing mantid to use the same one as other software.
+However, Mantid still has an advantage for Jacobian
 evaluations - using the same problem in both mantid and
 nist formats gives mantiddev different rankings in terms of
-speed. 
+speed.
 """
 import typing
 
@@ -14,6 +14,7 @@ import mantid.simpleapi as msapi
 from mantid.api import FunctionDomain1DVector as FDV
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 import numpy as np
+
 
 class MantidDevParser(FitbenchmarkParser):
     """
@@ -23,9 +24,6 @@ class MantidDevParser(FitbenchmarkParser):
         """
         Sets any additional info for a fitting problem.
         """
-        #self.fitting_problem.additional_info['mantid_equation'] \
-        #    = self._entries['function']
-
         if self.fitting_problem.multifit:
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
@@ -41,24 +39,30 @@ class MantidDevParser(FitbenchmarkParser):
         """
         Sometimes mantid will give the error 
         RuntimeError: Integration is not implemented for this function.
-        this try except tests if the error occurs and then only 
+        this try except tests if the error occurs and then only
         assigns the jacobian if it passes.
         :param fp: fitting problem
         """
+        if self._is_multifit():
+            # currently cannot do Jacobian and multifit
+            return
         # need to trim x data to the correct range for Jacobian
         i0 = 0
         iN = len(fp.data_x)
         if fp.start_x:
             i0 = np.argmax(fp.data_x >= fp.start_x)
         if fp.end_x:
-            # returns a list of lists if more than one match, otherwise an int is returned
+            """
+            returns a list of lists if more than one match,
+            otherwise an int is returned
+            """
             iN = np.where(fp.data_x <= fp.end_x)
             if not isinstance(iN, int):
                 iN = iN[0][-1]
 
         x_data = fp.data_x
         x_data = x_data[i0:iN + 1]
-        
+
         # cache the x values for later
         self._cache_x = FDV(x_data)
         self._N_x = len(x_data)
@@ -73,7 +77,7 @@ class MantidDevParser(FitbenchmarkParser):
 
     def _jacobian(self, x, *args):
         """
-        Extracts the Jacobian from Mantid 
+        Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect
 
         :param x: the x values for the problem (assume they have not changed)
@@ -90,12 +94,11 @@ class MantidDevParser(FitbenchmarkParser):
                 self._jac[i, j] = J.get(i, j)
         return self._jac
         
-
     def _update_params(self, *p):
         update_dict = dict(zip(self._params_dict.keys(), p))
         self._params_dict.update(update_dict)
         return self._params_dict
-        
+
     def _create_function(self) -> typing.Callable:
         """
         Processing the function in the Mantid problem definition into a
@@ -135,8 +138,11 @@ class MantidDevParser(FitbenchmarkParser):
         self._params_dict = params
         ## Use a wrapper to inject fixed parameters into the function
         def wrapped(x, *p):
-            # Use the full param dict from above, but update the non-fixed
-            # values
+            """
+            Use the full param dict from above, but update the non-fixed
+            values
+            """
+
             update_dict = dict(zip(params.keys(), p))
             all_params_dict.update(update_dict)
 

@@ -5,6 +5,7 @@ files, as Mantid does an internal function evaluation.
 """
 from fitbenchmarking.parsing.mantiddev_parser import MantidDevParser
 
+
 class MantidParser(MantidDevParser):
 
     def _set_additional_info(self) -> None:
