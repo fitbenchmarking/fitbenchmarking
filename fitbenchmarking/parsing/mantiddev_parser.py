@@ -83,6 +83,7 @@ class MantidDevParser(FitbenchmarkParser):
             return
 
     def _jacobian(self, _x, *args):
+        # pylint: disable=unused-argument
         """
         Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect

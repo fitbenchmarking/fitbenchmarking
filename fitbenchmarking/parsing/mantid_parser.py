@@ -7,6 +7,9 @@ from fitbenchmarking.parsing.mantiddev_parser import MantidDevParser
 
 
 class MantidParser(MantidDevParser):
+    """
+    Parser for mantid (keeps original behaviour)
+    """
 
     def _set_additional_info(self) -> None:
         """
