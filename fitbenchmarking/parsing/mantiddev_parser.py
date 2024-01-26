@@ -37,7 +37,7 @@ class MantidDevParser(FitbenchmarkParser):
 
     def _set_jacobian(self, fp) -> None:
         """
-        Sometimes mantid will give the error 
+        Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
         this try except tests if the error occurs and then only
         assigns the jacobian if it passes.
@@ -93,7 +93,7 @@ class MantidDevParser(FitbenchmarkParser):
             for j in range(len(self._params_dict.keys())):
                 self._jac[i, j] = J.get(i, j)
         return self._jac
-        
+
     def _update_params(self, *p):
         update_dict = dict(zip(self._params_dict.keys(), p))
         self._params_dict.update(update_dict)
@@ -136,7 +136,8 @@ class MantidDevParser(FitbenchmarkParser):
         # need these for jacobian
         self._mantid_function = fit_function
         self._params_dict = params
-        ## Use a wrapper to inject fixed parameters into the function
+        # Use a wrapper to inject fixed parameters into the function
+        
         def wrapped(x, *p):
             """
             Use the full param dict from above, but update the non-fixed
@@ -147,7 +148,7 @@ class MantidDevParser(FitbenchmarkParser):
             all_params_dict.update(update_dict)
 
             return fit_function(x, *all_params_dict.values())
-        
+
         return wrapped
 
     def _is_multifit(self) -> bool:

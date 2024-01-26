@@ -70,12 +70,13 @@ class ParserFactory:
                                 'Check the input is correct and try '
                                 'again.') from e
 
+        check_name = f'{parser_name.lower()}parser' == str(m.__name__.lower())
         classes = getmembers(module, lambda m: (isclass(m)
                                                 and not isabstract(m)
                                                 and issubclass(m, Parser)
                                                 and m is not Parser
-                                                and f'{parser_name.lower()}parser' == str(m.__name__.lower())))
-                                    
+                                                and check_name))
+
         return classes[0][1]
 
 

@@ -18,7 +18,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
-JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
+JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'mantid', 'mantiddev']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
@@ -57,7 +57,9 @@ def generate_test_cases():
     # get all parsers
     test_dir = os.path.dirname(__file__)
     if TEST_TYPE == "all":
-        formats = ['cutest', 'nist', 'mantid', 'ivp', 'sasview', 'hogben', 'mantiddev']
+        formats = ['cutest', 'nist', 'mantid',
+                   'ivp', 'sasview',
+                   'hogben', 'mantiddev']
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
