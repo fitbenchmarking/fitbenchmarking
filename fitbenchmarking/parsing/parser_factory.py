@@ -74,9 +74,8 @@ class ParserFactory:
                                                 and not isabstract(m)
                                                 and issubclass(m, Parser)
                                                 and m is not Parser
-                                                and parser_name.lower()
-                                                in str(m.__name__.lower())))
-
+                                                and f'{parser_name.lower()}parser' == str(m.__name__.lower())))
+                                    
         return classes[0][1]
 
 
