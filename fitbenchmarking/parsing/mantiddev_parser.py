@@ -82,12 +82,12 @@ class MantidDevParser(FitbenchmarkParser):
 
             return
 
-    def _jacobian(self, _, *args):
+    def _jacobian(self, _x, *args):
         """
         Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect
 
-        :param x: the x values for the problem (assume they have not changed)
+        :param _x: the x values for the problem (assume they have not changed)
         :param args: the input parameters for the fit
         :return a matrix of the Jacobian
         """
