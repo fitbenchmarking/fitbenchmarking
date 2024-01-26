@@ -500,5 +500,26 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertEqual(self.results[4].min_runtime, fastest.runtime)
 
 
+# class RunDashAppTests(unittest.TestCase):
+#     """
+#     Tests for the run_dash_app function.
+#     """
+
+#     def setUp(self):
+#         """
+#         Setup function for run_dash_app tests.
+#         """
+
+#     def test_update_warning(self):
+#         """
+#         Test update_warning returns expected warnings.
+#         """
+
+#     def test_check_max_solvers(self):
+#         """
+#         Test check_max_solvers returns expected dropdown options.
+#         """
+
+
 if __name__ == "__main__":
     unittest.main()

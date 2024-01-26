@@ -797,7 +797,21 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
                     "results in your browser. You can use this link to see the"
                     "results: \n\n   %s", url)
 
-    # Dash app
+    if options.run_dash:
+        run_dash_app(options, pp_dfs_all_prob_sets)
+
+
+def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
+    """
+    Runs the Dash app to produce the interactive performance profile
+    plots.
+
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param pp_dfs_all_prob_sets: For each problem set, data to create
+                                 dash plots.
+    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
+    """
 
     layout = [
         dcc.RadioItems(
@@ -882,7 +896,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         except ValueError:
             return ("404 Page Error! Path does not have the expected shape. "
                     "Please provide it in the following form:  \n"
-                    "ip-address:port/problem_set/performance_profile.")
+                    "ip-address:port/problem_set/plot/performance_profile.")
 
         if plot != "pp":
             return f"404 Page Error! Plot type '{plot}' not available."
@@ -903,5 +917,4 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         layout[1].value = [i['label'] for i in opts[:max_solvers]]
         return html.Div(new_layout)
 
-    if options.run_dash:
-        app.run(port=options.port)
+    app.run(port=options.port)
