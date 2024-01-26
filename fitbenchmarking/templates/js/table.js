@@ -135,23 +135,26 @@ function adaptIframeHeight() {
 
         for (var k = 0; k < wrapper_children.length; k++) {
             var iframe = wrapper_children[k];
-            src_iframe =  iframe.getAttribute("src");
+            // This try/catch is necessary to avoid the problem where
+            // we try and set up the height of the iframe before it exixts
+            // which would result in the height of the second iframe in the
+            // compare table not being set at all
+            try{
+                src_iframe =  iframe.getAttribute("src");
 
-            var is_dash_plot = src_iframe.startsWith("http")
-            var is_compare_plot = src_iframe.split('/').pop().includes("_");
+                var is_dash_plot = src_iframe.startsWith("http");
+                var pp_name = src_iframe.split('/').pop();
 
-            if (((is_dash_plot) || n_solvers_large === "False") & (is_compare_plot)) {
-                iframe.setAttribute("height", 1200);
-                profiles_info.setAttribute("style", "display:block");
+                if ((is_dash_plot) || n_solvers_large === "False") {
+                    number_of_pps = pp_name.split('+').length;
+                    iframe.setAttribute("height", number_of_pps*650);
+                    profiles_info.setAttribute("style", "display:block");
 
-            } else if ((is_dash_plot) || n_solvers_large === "False") {
-                iframe.setAttribute("height", 650);
-                profiles_info.setAttribute("style", "display:block");
-
-            } else {
-                iframe.setAttribute("height", 100);
-                profiles_info.setAttribute("style", "display:none");
-            };
+                } else {
+                    iframe.setAttribute("height", 100);
+                    profiles_info.setAttribute("style", "display:none");
+                };
+            } catch {};
         };
      };
 }

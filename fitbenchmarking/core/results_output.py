@@ -891,12 +891,12 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
 
         new_layout = layout
         try:
-            for metric in metric_str.split('_'):
+            for metric in metric_str.split('+'):
                 new_layout = new_layout + [group_profiles[metric].layout()]
         except KeyError:
             return ("404 Page Error! The path was not recognized. \n"
                     "The path needs to end in a list of table names "
-                    "separated by '_'.")
+                    "separated by '+'.")
 
         opts = group_profiles['acc'].default_opt
         layout[1].options = opts
