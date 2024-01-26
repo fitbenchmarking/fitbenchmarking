@@ -18,7 +18,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
-JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'mantid', 'mantiddev']
+JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
