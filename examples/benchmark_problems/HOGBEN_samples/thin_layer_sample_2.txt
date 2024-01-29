@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'HOGBEN'
+name = 'thin_layer_sample_2'
+description = '3-layer sample with thin layers'
+input_file = 'thin_layer_sample_2.txt'
+function = 'function=thin_layer_sample_2_model.pkl'
+plot_scale = 'logY'
