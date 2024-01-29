@@ -801,6 +801,95 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         run_dash_app(options, pp_dfs_all_prob_sets)
 
 
+def update_warning(solvers, max_solvers):
+    """
+    Give a warning if the number of solvers is above the maximum
+    that can be displayed.
+
+    :param solvers: The solvers to be plotted
+    :type solvers: list[str]
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: The warning
+    :rtype: str
+    """
+
+    if len(solvers) >= max_solvers:
+        return 'The plot is showing the max number of minimizers ' \
+                f'allowed ({max_solvers}). Deselect some to select others.'
+    return ''
+
+
+def check_max_solvers(opts, solvers, max_solvers):
+    """
+    Check number of solvers and update the options to display in the
+    dropdown.
+
+    :param opts: The options for the dropdown to be updated
+    :type opts: dict[str]
+    :param solvers: The solvers to be plotted
+    :type solvers: list[str]
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: Options to display in the dropdown
+    :rtype: dict[str]
+    """
+    for opt in opts:
+        opt["disabled"] = len(solvers) >= max_solvers
+    return opts
+
+
+def display_page(pathname, profile_instances_all_groups,
+                 layout, max_solvers):
+
+    """
+    Update the layout of the dash app.
+
+    :param pathname: The link to the page with the Dash plot
+    :type pathname: str
+    :param profile_instances_all_groups:
+    :type profile_instances_all_groups:
+    :param layout: the layout of the Dash app
+    :type layout: Dash layout
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: The updated layout
+    :rtype: html.Div
+    """
+
+
+    try:
+        _, group, plot, metric_str = pathname.split('/')
+    except ValueError:
+        return ("404 Page Error! Path does not have the expected shape. "
+                "Please provide it in the following form:  \n"
+                "ip-address:port/problem_set/plot/performance_profile.")
+
+    if plot != "pp":
+        return f"404 Page Error! Plot type '{plot}' not available."
+
+    group_profiles = profile_instances_all_groups[group]
+
+    new_layout = layout
+
+    try:
+        for metric in metric_str.split('+'):
+            new_layout = new_layout + [group_profiles[metric].layout()]
+    except KeyError:
+        return ("404 Page Error! The path was not recognized. \n"
+                "The path needs to end in a list of table names "
+                "separated by '+'.")
+
+    opts = group_profiles['acc'].default_opt
+
+    layout[1].options = opts
+    layout[1].value = [i['label'] for i in opts[:max_solvers]]
+    return html.Div(new_layout)
+
+
 def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
     """
     Runs the Dash app to produce the interactive performance profile
@@ -872,49 +961,27 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
 
     max_solvers = 15
 
-    @app.callback(Output("warning", "children"), [Input("dropdown", "value")])
-    def update_warning(solvers):
-        if len(solvers) >= max_solvers:
-            return 'The plot is showing the max number of minimizers ' \
-                   f'allowed ({max_solvers}). Deselect some to select others.'
-        return ''
+    app.callback(
+        Output("warning", "children"),
+        [Input("dropdown", "value")])(
+            lambda x: update_warning(x, max_solvers=max_solvers)
+        )
 
-    @app.callback(Output("dropdown", "options"),
-                  [Input("dropdown", "options"), Input("dropdown", "value")])
-    def check_max_solvers(opts, solvers):
-        for o in opts:
-            o["disabled"] = len(solvers) >= max_solvers
-        return opts
+    app.callback(
+        Output("dropdown", "options"),
+        [Input("dropdown", "options"), Input("dropdown", "value")])(
+            lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers)
+        )
 
     # Create the callback to handle multiple pages
-    @app.callback(Output('page-content', 'children'),
-                  [Input('url', 'pathname')])
-    def display_page(pathname):
-
-        try:
-            _, group, plot, metric_str = pathname.split('/')
-        except ValueError:
-            return ("404 Page Error! Path does not have the expected shape. "
-                    "Please provide it in the following form:  \n"
-                    "ip-address:port/problem_set/plot/performance_profile.")
-
-        if plot != "pp":
-            return f"404 Page Error! Plot type '{plot}' not available."
-
-        group_profiles = profile_instances_all_groups[group]
-
-        new_layout = layout
-        try:
-            for metric in metric_str.split('+'):
-                new_layout = new_layout + [group_profiles[metric].layout()]
-        except KeyError:
-            return ("404 Page Error! The path was not recognized. \n"
-                    "The path needs to end in a list of table names "
-                    "separated by '+'.")
-
-        opts = group_profiles['acc'].default_opt
-        layout[1].options = opts
-        layout[1].value = [i['label'] for i in opts[:max_solvers]]
-        return html.Div(new_layout)
+    app.callback(
+        Output('page-content', 'children'),
+        [Input('url', 'pathname')])(
+            lambda x: display_page(
+                x,
+                profile_instances_all_groups=profile_instances_all_groups,
+                layout=layout,
+                max_solvers=max_solvers)
+        )
 
     app.run(port=options.port)
