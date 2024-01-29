@@ -1,0 +1,7 @@
+# FitBenchmark Problem
+software = 'HOGBEN'
+name = 'many_param_sample'
+description = '5-layer sample with many parameters'
+input_file = 'many_param_sample.txt'
+function = 'function=many_param_sample_model.pkl'
+plot_scale = 'logY'
