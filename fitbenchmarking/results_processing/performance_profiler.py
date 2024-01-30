@@ -364,12 +364,12 @@ class DashPerfProfile():
 
     def layout(self):
         """
-        Creates and returns the dash layout for the performance profile,
+        Creates and returns the dash plot for the performance profile,
         which is used in fitbenchmarking/core/results_output, in the
         function "display_page".
 
-        :return: Layout for the performance profile.
-        :rtype: dash.html.Div
+        :return: Dash plot for the performance profile.
+        :rtype: dcc.Graph
         """
 
         return dcc.Graph(id=f"visual {self.identif}")
