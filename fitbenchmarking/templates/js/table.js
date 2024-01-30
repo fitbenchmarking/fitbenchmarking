@@ -94,11 +94,34 @@ function setAttributes(el, attrs) {
 }
 
 /**
+* Allows to set iframe height.
+*/
+function set_iframe_height(path){
+
+    var button1 = document.getElementById("offline_plot");
+    var n_solvers_large = button1.dataset.value3;
+    var profiles_info = document.getElementById("profiles_info");
+
+    var is_dash_plot = path.startsWith("http");
+    var pp_name = path.split('/').pop();
+
+    if ((is_dash_plot) || n_solvers_large === "False") {
+        number_of_pps = pp_name.split('+').length;
+        iframe_height = number_of_pps*650;
+        profiles_info.setAttribute("style", "display:block");
+
+    } else {
+        iframe_height = 100;
+        profiles_info.setAttribute("style", "display:none");
+    };
+    return iframe_height;
+}
+
+/**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
 function load_src(_button) {
     var path = _button.dataset.value1.split("|");
-
     var iframewrapper = document.getElementsByClassName("iframe-wrapper")[0];
 
     var new_iframes = []
@@ -106,10 +129,10 @@ function load_src(_button) {
         var new_iframe = document.createElement("iframe");
         setAttributes(new_iframe, {
             "src": path[p],
+            "height": set_iframe_height(path[p]),
             "width": "100%",
             "frameborder": 0,
             "seamless": "seamless",
-            "onload": "adaptIframeHeight()",
         });
         new_iframes.push(new_iframe);
     };
@@ -117,44 +140,3 @@ function load_src(_button) {
     iframewrapper.replaceChildren(...new_iframes);
 }
 
-
-/**
-* Allows to height of iframe to be determined based on content.
-*/
-function adaptIframeHeight() {
-
-    var button1 = document.getElementById("offline_plot");
-    var n_solvers_large = button1.dataset.value3;
-
-    var profiles_info = document.getElementById("profiles_info");
-    var iframewrappers = document.getElementsByClassName("iframe-wrapper");
-
-    for (var i = 0; i < iframewrappers.length; i++) {
-        wrapper = iframewrappers.item(i);
-        wrapper_children = wrapper.children;
-
-        for (var k = 0; k < wrapper_children.length; k++) {
-            var iframe = wrapper_children[k];
-            // This try/catch is necessary to avoid the problem where
-            // we try and set up the height of the iframe before it exixts
-            // which would result in the height of the second iframe in the
-            // compare table not being set at all
-            try{
-                src_iframe =  iframe.getAttribute("src");
-
-                var is_dash_plot = src_iframe.startsWith("http");
-                var pp_name = src_iframe.split('/').pop();
-
-                if ((is_dash_plot) || n_solvers_large === "False") {
-                    number_of_pps = pp_name.split('+').length;
-                    iframe.setAttribute("height", number_of_pps*650);
-                    profiles_info.setAttribute("style", "display:block");
-
-                } else {
-                    iframe.setAttribute("height", 100);
-                    profiles_info.setAttribute("style", "display:none");
-                };
-            } catch {};
-        };
-     };
-}
