@@ -20,7 +20,7 @@ class PyParser(FitbenchmarkParser):
         Process the import into a callable.
 
         Expected function format:
-        function='function=model.pkl'
+        function='module=functions/py_funcs,func=model'
 
         :return: A callable function
         :rtype: callable
@@ -32,8 +32,7 @@ class PyParser(FitbenchmarkParser):
         module = import_module(os.path.basename(path))
         fun = getattr(module, pf['func'])
         sig = inspect.signature(fun)
-        # params[0] should be t
-        # parmas[1] should be x so start after.
+        # parmas[0] should be x so start after.
         p_names = list(sig.parameters.keys())[1:]
 
         # pylint: disable=attribute-defined-outside-init
