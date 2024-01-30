@@ -97,7 +97,7 @@ Points to consider
   2. Taking the posterior distributions estimated using the MCMC method, for each model parameter integrate the area under the distribution between :math:`y-2\sigma` and :math:`y+2\sigma`
      where y is the 'true' parameter value. This integral gives the probability that the MCMC parameter estimate is within :math:`2\sigma` of the scipy fit.
   3. Take the product of the calculated probabilities (a probability should be calculated for each model parameter) to give an overall probability for all
-     parameters being within the :math:`2\sigma` bounds.
+     parameters being within the :math:`2\sigma` bounds. The reciporcal of this value is displayed in the FitBenchmarking results tables.
 
 
 

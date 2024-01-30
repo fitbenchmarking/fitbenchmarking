@@ -28,8 +28,8 @@ class BumpsController(Controller):
                     'scipy-leastsq',
                     'dream'],
             'ls': ['lm-bumps', 'scipy-leastsq'],
-            'deriv_free': ['amoeba', 'de', 'dream'],
-            'general': ['amoeba', 'newton', 'de', 'dream'],
+            'deriv_free': ['amoeba', 'de'],
+            'general': ['amoeba', 'newton', 'de'],
             'simplex': ['amoeba'],
             'trust_region': ['lm-bumps', 'scipy-leastsq'],
             'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
@@ -37,8 +37,8 @@ class BumpsController(Controller):
             'bfgs': ['newton'],
             'conjugate_gradient': [],
             'steepest_descent': [],
-            'global_optimization': ['de', 'dream'],
-            'MCMC': []}
+            'global_optimization': ['de'],
+            'MCMC': ['dream']}
 
     def __init__(self, cost_func):
         """
@@ -176,5 +176,18 @@ class BumpsController(Controller):
                 result.append(self._bumps_result.x[ind])
         else:
             result = self._bumps_result.x
+
+        self.params_pdfs = {}
+        if self.minimizer == 'dream':
+            mcmc_draw = self._bumps_result.state.draw()
+            if self.fit_order != self._param_names:
+                for name in self._param_names:
+                    ind = self.fit_order.index(name)
+                    self.params_pdfs[name] = mcmc_draw.points[:,ind]
+            else:
+                self.params_pdfs = {
+                    self._param_names[i]: mcmc_draw.points[:,i].tolist()
+                    for i in range(len(self._param_names))
+                }
 
         self.final_params = result
