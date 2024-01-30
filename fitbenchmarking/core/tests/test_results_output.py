@@ -27,7 +27,7 @@ from fitbenchmarking.core.results_output import (_extract_tags,
                                                  update_warning)
 
 from fitbenchmarking.results_processing.performance_profiler import \
-DashPerfProfile
+    DashPerfProfile
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
