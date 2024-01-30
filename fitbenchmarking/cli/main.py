@@ -285,7 +285,8 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
         # generate group label/name used for problem set
         try:
-            with open(os.path.join(data_dir, 'META.txt'), 'r', encoding='utf-8') as f:
+            with open(os.path.join(data_dir, 'META.txt'), 'r',
+                      encoding='utf-8') as f:
                 label = f.readline().strip('\n')
         except IOError:
             label = sub_dir.replace('/', '_')
