@@ -849,17 +849,16 @@ def display_page(pathname, profile_instances_all_groups,
 
     :param pathname: The link to the page with the Dash plot
     :type pathname: str
-    :param profile_instances_all_groups:
-    :type profile_instances_all_groups:
-    :param layout: the layout of the Dash app
-    :type layout: Dash layout
+    :param profile_instances_all_groups: The data to be plotted
+    :type profile_instances_all_groups: dict[str[dict]]
+    :param layout: Layout of the Dash app
+    :type layout: list of dcc or html components
     :param max_solvers: Maximum number of solvers that can be plotted
     :type max_solvers: int
 
     :return: The updated layout
     :rtype: html.Div
     """
-
 
     try:
         _, group, plot, metric_str = pathname.split('/')
