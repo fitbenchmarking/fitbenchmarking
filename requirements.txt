@@ -1,7 +1,7 @@
 pytest
 pytest-cov
 coverage
-pylint
-flake8
+pylint~=2.9.5
+flake8~=3.9.2
 pylint-exit
 pandas
