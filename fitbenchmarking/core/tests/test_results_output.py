@@ -521,8 +521,8 @@ class UpdateWarningTests(unittest.TestCase):
 
     def test_warning_when_few_solvers(self):
         """
-        Test that an empty string is returned when the
-        number of solvers is small.
+        Test that an empty string is returned when the number of
+        solvers is less than the maximum allowed.
         """
         solvers = [f'Solver {i}' for i in range(3)]
         output = update_warning(solvers, self.max_solvers)
@@ -531,8 +531,8 @@ class UpdateWarningTests(unittest.TestCase):
 
     def test_warning_when_too_many_solvers(self):
         """
-        Test that a warning is returned when the number
-        of solvers exceeds the maximum allowed.
+        Test that the expected warning is returned when the number of
+        solvers exceeds the maximum allowed.
         """
         solvers = [f'Solver {i}' for i in range(20)]
         output = update_warning(solvers, self.max_solvers)
@@ -608,14 +608,14 @@ class DisplayPageTests(unittest.TestCase):
         self.max_solvers = 4
         group = "NIST_low_difficulty"
 
-        expected_df = pd.DataFrame.from_dict({
+        pp_df = pd.DataFrame.from_dict({
             'solver': ['solver1', 'solver1', 'solver1',
                        'solver2', 'solver2', 'solver2'],
             'x': [20.0, 30.5, 41.0, 10.0, 50.5, 70.0],
             'y': [0.0, 0.5, 1.0, 0.0, 0.5, 1.0]
         }, orient='columns')
 
-        pp_dfs = {'acc': expected_df, 'runtime': expected_df}
+        pp_dfs = {'acc': pp_df, 'runtime': pp_df}
 
         self.profile_instances_all_groups = {
             group: {
@@ -644,8 +644,8 @@ class DisplayPageTests(unittest.TestCase):
 
     def test_layout_returned_when_one_plot(self):
         """
-        Test that one plot is returned when the pathname refers to
-        one plot only.
+        Test that the expected layout components are returned when the
+        pathname refers to one plot only.
         """
         pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc"
         output_div = display_page(pathname,
@@ -659,8 +659,8 @@ class DisplayPageTests(unittest.TestCase):
 
     def test_layout_returned_when_two_plots(self):
         """
-        Test that two plots are returned when the pathname refers to
-        two plots.
+        Test that the expected layout components are returned when the
+        pathname refers to two plots.
         """
         pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
         output_div = display_page(pathname,

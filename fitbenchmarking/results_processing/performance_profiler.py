@@ -392,9 +392,8 @@ class DashPerfProfile():
         :param solvers: The solvers to show in the graph
         :type solvers: list[str]
 
-        :return: Figure for the Dash plot,
-                 options to be shown in dropdown
-        :rtype: plotly.graph_objects.Figure, str, list[dict[str]]
+        :return: Figure for the Dash plot
+        :rtype: plotly.graph_objects.Figure
         """
 
         fig = go.Figure()
