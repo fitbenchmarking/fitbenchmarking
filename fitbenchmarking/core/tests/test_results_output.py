@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 
 import pandas as pd
-from dash import Dash, dcc, html
+from dash import dcc, html
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
@@ -652,7 +652,7 @@ class DisplayPageTests(unittest.TestCase):
                                   self.profile_instances_all_groups,
                                   self.layout,
                                   self.max_solvers)
-        output_ids = [i for i in output_div]
+        output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy']
         self.assertEqual(output_ids, expected_ids)
@@ -667,7 +667,7 @@ class DisplayPageTests(unittest.TestCase):
                                   self.profile_instances_all_groups,
                                   self.layout,
                                   self.max_solvers)
-        output_ids = [i for i in output_div]
+        output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy',
                         'visual NIST_low_difficulty-Runtime']
