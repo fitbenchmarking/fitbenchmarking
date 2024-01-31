@@ -92,17 +92,19 @@ jobs:
     - name: Installing
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade -r requirements.txt
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
+        sudo apt update
+        sudo apt install -y curl
     - name: 'Running Tests'
       run: |
         ci/unit_tests.sh
     - name: 'Submit Coverage'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        coveralls --service=github
+      uses: coverallsapp/github-action@v2
+      with:
+        file: coverage.lcov
+        compare-ref: master
     - name: 'Upload Test Results'
       if: always()
       uses: actions/upload-artifact@v3

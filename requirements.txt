@@ -1,8 +1,7 @@
-pytest==6.2.4
-pytest-cov==2.12.1
-coveralls==3.2.0
-coverage==5.3
-pylint==2.9.5
-flake8==3.9.2
-pylint-exit==1.2.0
-pandas==1.4.0
+pytest
+pytest-cov
+coverage
+pylint~=2.9.5
+flake8~=3.9.2
+pylint-exit
+pandas
