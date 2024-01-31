@@ -8,6 +8,9 @@ All code submitted must meet certain standards, outlined below, before
 it can be merged into the master branch.  It is the contributor's
 job to ensure that the following is satisfied, and the reviewer's
 role to check that these guidelines have been followed.
+The contributor may wish to make use of git pre-commits to help adhere to
+these guidelines. Instructions for using pre-commit are at the bottom of this
+document.
 
 The workflow to be used for submitting new code/issues is described in
 :ref:`workflow`.
@@ -52,3 +55,15 @@ Code should use the logging in ``utils.log``. This uses Python's built in
 `logging module <https://docs.python.org/3.8/library/logging.html>`__,
 and should be used in place of any print statements to ensure that persistent
 logs are kept after runs.
+
+==========
+Pre-commit
+==========
+
+Pre-commit runs checks at the point of committing code to ensure simple
+problems are spotted before running the CI.
+This covers sorting imports, fixing indentation, removing trailing whitespace,
+and checking the linting.
+
+Pre-commit will be installed as part of Step 4 in :ref:`_install_instructions`
+but will need to be activated with ``pre-commit install``.
