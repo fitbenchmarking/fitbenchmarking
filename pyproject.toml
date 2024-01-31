@@ -93,6 +93,7 @@ omit = [
 ]
 
 [tool.hatch.build]
+packages = ['fitbenchmarking']
 include = [
     'fonts/FiraSans/*/*',
     'fonts/FontAwesome/*',
@@ -147,3 +148,4 @@ output-format = 'colorised'
 ignored-argument-names = "arg|args|kwargs"
 
 [tool.versioningit]
+default-version = '0.0.0dev1'
