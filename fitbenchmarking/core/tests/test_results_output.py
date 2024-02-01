@@ -11,15 +11,23 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 
 import pandas as pd
+from dash import dcc, html
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
                                                  _find_matching_tags,
                                                  _process_best_results,
+                                                 check_max_solvers,
                                                  create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 preprocess_data, save_results)
+                                                 display_page,
+                                                 preprocess_data,
+                                                 save_results,
+                                                 update_warning)
+
+from fitbenchmarking.results_processing.performance_profiler import \
+    DashPerfProfile
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
@@ -498,6 +506,172 @@ class ProcessBestResultsTests(unittest.TestCase):
         self.assertEqual(self.results[2].min_runtime, fastest.runtime)
         self.assertEqual(self.results[3].min_runtime, fastest.runtime)
         self.assertEqual(self.results[4].min_runtime, fastest.runtime)
+
+
+class UpdateWarningTests(unittest.TestCase):
+    """
+    Tests for the update_warning function.
+    """
+
+    def setUp(self):
+        """
+        Setup function for update_warning tests.
+        """
+        self.max_solvers = 15
+
+    def test_warning_when_few_solvers(self):
+        """
+        Test that an empty string is returned when the number of
+        solvers is less than the maximum allowed.
+        """
+        solvers = [f'Solver {i}' for i in range(3)]
+        output = update_warning(solvers, self.max_solvers)
+        expected_output = ''
+        self.assertEqual(output, expected_output)
+
+    def test_warning_when_too_many_solvers(self):
+        """
+        Test that the expected warning is returned when the number of
+        solvers exceeds the maximum allowed.
+        """
+        solvers = [f'Solver {i}' for i in range(20)]
+        output = update_warning(solvers, self.max_solvers)
+        expected_output = 'The plot is showing the max number ' \
+                          f'of minimizers allowed ({self.max_solvers}). '\
+                          'Deselect some to select others.'
+        self.assertEqual(output, expected_output)
+
+
+class CheckMaxSolversTests(unittest.TestCase):
+    """
+    Tests for the check_max_solvers function.
+    """
+
+    def setUp(self):
+        """
+        Setup function for check_max_solvers tests.
+        """
+        self.max_solvers = 4
+
+    def test_opts_disabled_when_many_solvers(self):
+        """
+        Test that options displayed in the dropdown are disabled when
+        the number of solvers exceeds the maximum allowed.
+        """
+        solvers = [f'solver{i}' for i in range(5)]
+        input_opts = [{"value": solver, "label": solver}
+                      for solver in solvers]
+
+        expec_output = [{'value': 'solver0', 'label': 'solver0',
+                         'disabled': True},
+                        {'value': 'solver1', 'label': 'solver1',
+                         'disabled': True},
+                        {'value': 'solver2', 'label': 'solver2',
+                         'disabled': True},
+                        {'value': 'solver3', 'label': 'solver3',
+                         'disabled': True},
+                        {'value': 'solver4', 'label': 'solver4',
+                         'disabled': True}]
+
+        output = check_max_solvers(input_opts, solvers, self.max_solvers)
+        self.assertEqual(output, expec_output)
+
+    def test_opts_enabled_when_low_solvers(self):
+        """
+        Test that options displayed in the dropdown are enabled when
+        the number of solvers is less than the maximum allowed.
+        """
+        solvers = [f'solver{i}' for i in range(3)]
+        input_opts = [{"value": solver, "label": solver}
+                      for solver in solvers]
+
+        expec_output = [{'value': 'solver0', 'label': 'solver0',
+                         'disabled': False},
+                        {'value': 'solver1', 'label': 'solver1',
+                         'disabled': False},
+                        {'value': 'solver2', 'label': 'solver2',
+                         'disabled': False}]
+
+        output = check_max_solvers(input_opts, solvers, self.max_solvers)
+        self.assertEqual(output, expec_output)
+
+
+class DisplayPageTests(unittest.TestCase):
+    """
+    Tests for the display_page function.
+    """
+
+    def setUp(self):
+        """
+        Setup function for display_page tests.
+        """
+        self.max_solvers = 4
+        group = "NIST_low_difficulty"
+
+        pp_df = pd.DataFrame.from_dict({
+            'solver': ['solver1', 'solver1', 'solver1',
+                       'solver2', 'solver2', 'solver2'],
+            'x': [20.0, 30.5, 41.0, 10.0, 50.5, 70.0],
+            'y': [0.0, 0.5, 1.0, 0.0, 0.5, 1.0]
+        }, orient='columns')
+
+        pp_dfs = {'acc': pp_df, 'runtime': pp_df}
+
+        self.profile_instances_all_groups = {
+            group: {
+                'acc': DashPerfProfile(profile_name='Accuracy',
+                                       pp_df=pp_dfs['acc'],
+                                       group_label=group),
+                'runtime': DashPerfProfile(profile_name='Runtime',
+                                           pp_df=pp_dfs['runtime'],
+                                           group_label=group)
+            }
+        }
+        self.layout = [
+            dcc.RadioItems(
+                id="Log axis toggle",
+                options=["Log x-axis", "Linear x-axis"],
+                value="Log x-axis",
+            ),
+            dcc.Dropdown(
+                id='dropdown',
+                multi=True,
+            ),
+            html.Div(
+                id='warning',
+            ),
+        ]
+
+    def test_layout_returned_when_one_plot(self):
+        """
+        Test that the expected layout components are returned when the
+        pathname refers to one plot only.
+        """
+        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc"
+        output_div = display_page(pathname,
+                                  self.profile_instances_all_groups,
+                                  self.layout,
+                                  self.max_solvers)
+        output_ids = list(output_div)
+        expected_ids = ['Log axis toggle', 'dropdown', 'warning',
+                        'visual NIST_low_difficulty-Accuracy']
+        self.assertEqual(output_ids, expected_ids)
+
+    def test_layout_returned_when_two_plots(self):
+        """
+        Test that the expected layout components are returned when the
+        pathname refers to two plots.
+        """
+        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
+        output_div = display_page(pathname,
+                                  self.profile_instances_all_groups,
+                                  self.layout,
+                                  self.max_solvers)
+        output_ids = list(output_div)
+        expected_ids = ['Log axis toggle', 'dropdown', 'warning',
+                        'visual NIST_low_difficulty-Accuracy',
+                        'visual NIST_low_difficulty-Runtime']
+        self.assertEqual(output_ids, expected_ids)
 
 
 if __name__ == "__main__":
