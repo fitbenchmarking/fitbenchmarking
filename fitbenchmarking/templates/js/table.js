@@ -5,7 +5,7 @@
 * @return  {jQuery Object}        A collection of DOM elements which matched the jQuery search.
 */
 function _find_element_from_text(class_name, search_text) {
-    return $(class_name).filter(function() { return $(this).text() == search_text; });
+    return $(class_name).filter(function () { return $(this).text() == search_text; });
 }
 
 /**
@@ -16,9 +16,9 @@ function _find_element_from_text(class_name, search_text) {
 function _adjust_colspan(header, increment) {
     var colspan = parseInt(header.attr('colspan'));
     if (isNaN(colspan)) {
-        var new_colspan = increment ? 1: 0;
+        var new_colspan = increment ? 1 : 0;
     } else {
-        var new_colspan = increment ? colspan + 1: colspan - 1;
+        var new_colspan = increment ? colspan + 1 : colspan - 1;
         header.attr('colspan', new_colspan);
     }
 
@@ -62,7 +62,7 @@ function toggle_minimizer(software, minimizer) {
     // Toggle the data cells in a column
     var table_id = software_header.parent().parent().parent().attr("id");
 
-    minimizer_text.each(function() {
+    minimizer_text.each(function () {
         var column_num = parseInt($(this).attr('col')) + 3;
         $("#" + table_id + " tr > td:nth-child(" + column_num + ")").toggle();
     });
@@ -76,44 +76,67 @@ function toggle_prob_size_header() {
     var checkBox = document.getElementById("checkbox_prob_size");
 
     // If the checkbox is checked, display the problem size header column, otherwise hide it.
-    if (checkBox.checked == true){
+    if (checkBox.checked == true) {
         $('th:nth-child(2)').show();
     } else {
         $('th:nth-child(2)').hide();
     }
-  }
+}
 
 
 /**
 * Sets multiple attributes for an element.
 */
 function setAttributes(el, attrs) {
-    for(var key in attrs) {
-      el.setAttribute(key, attrs[key]);
+    for (var key in attrs) {
+        el.setAttribute(key, attrs[key]);
     }
-  }
+}
+
+/**
+* Allows to set iframe height.
+*/
+function set_iframe_height(path){
+
+    var button1 = document.getElementById("offline_plot");
+    var n_solvers_large = button1.dataset.value3;
+    var profiles_info = document.getElementById("profiles_info");
+
+    var is_dash_plot = path.startsWith("http");
+    var pp_name = path.split('/').pop();
+
+    if ((is_dash_plot) || n_solvers_large === "False") {
+        number_of_pps = pp_name.split('+').length;
+        iframe_height = number_of_pps*650;
+        profiles_info.setAttribute("style", "display:block");
+
+    } else {
+        iframe_height = 100;
+        profiles_info.setAttribute("style", "display:none");
+    };
+    return iframe_height;
+}
 
 /**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
-function load_src(_button){
-    var path = _button.dataset.value1;
-    var index = _button.dataset.value2;
+function load_src(_button) {
+    var path = _button.dataset.value1.split("|");
+    var iframewrapper = document.getElementsByClassName("iframe-wrapper")[0];
 
-    var iframe = document.getElementById("i_frame"+index);
-    iframe.remove();
+    var new_iframes = []
+    for (p in path) {
+        var new_iframe = document.createElement("iframe");
+        setAttributes(new_iframe, {
+            "src": path[p],
+            "height": set_iframe_height(path[p]),
+            "width": "100%",
+            "frameborder": 0,
+            "seamless": "seamless",
+        });
+        new_iframes.push(new_iframe);
+    };
 
-    var new_iframe = document.createElement("iframe");
-    setAttributes(new_iframe, {
-        "id": "i_frame"+index,
-        "src": path,
-        "width": "100%",
-        "height": "500",
-        "frameborder": 0,
-        "seamless": "seamless",
-        "scrolling": "no",
-        "style": "margin-bottom: 25px",
-    });
-
-    document.getElementById("iframe-wrapper"+index).appendChild(new_iframe);
+    iframewrapper.replaceChildren(...new_iframes);
 }
+
