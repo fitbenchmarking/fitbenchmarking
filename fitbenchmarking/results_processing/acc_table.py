@@ -13,8 +13,9 @@ class AccTable(Table):
     the fitted parameters.
 
     For Bayesian fitting, accuracy results represent the reciporcal of the
-    confidence that the fitted parameter values are within :math:`2\sigma`
-    of the expected parameter values (calculated using scipy.optimize.curve_fit).
+    confidence that the fitted parameter values are within :math:`2 \sigma`
+    of the expected parameter values (calculated using
+    scipy.optimize.curve_fit).
 
     """
 
