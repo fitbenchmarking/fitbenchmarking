@@ -32,7 +32,7 @@ class Parser:
         Called when used as a context manager.
         Opens the file ready for parsing.
         """
-        self.file = open(self._filename, 'r')
+        self.file = open(self._filename, 'r', encoding="utf-8")
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

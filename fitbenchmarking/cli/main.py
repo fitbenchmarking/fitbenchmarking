@@ -261,7 +261,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         opt_file_name = opt_file.name
 
     LOGGER.debug("The options file used is as follows:")
-    with open(opt_file_name) as f:
+    with open(opt_file_name, encoding='utf-8') as f:
         for line in f:
             LOGGER.debug(line.replace("\n", ""))
     os.remove(opt_file_name)
@@ -279,13 +279,14 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
         test_data = glob.glob(data_dir + '/*.*')
 
-        if test_data == []:
+        if not test_data:
             LOGGER.warning('Problem set %s not found', data_dir)
             continue
 
         # generate group label/name used for problem set
         try:
-            with open(os.path.join(data_dir, 'META.txt'), 'r') as f:
+            with open(os.path.join(data_dir, 'META.txt'), 'r',
+                      encoding='utf-8') as f:
                 label = f.readline().strip('\n')
         except IOError:
             label = sub_dir.replace('/', '_')
@@ -310,7 +311,7 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         # If the results are an empty list then this means that all minimizers
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
-        if results == [] or all_dummy_results_flag is True:
+        if not results or all_dummy_results_flag:
             message = "\nWARNING: \nThe user chosen options and/or problem " \
                       " setup resulted in all minimizers and/or parsers " \
                       "raising an exception. Because of this, results for " \
