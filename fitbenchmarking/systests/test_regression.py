@@ -149,7 +149,7 @@ def diff_result(actual, expected):
     if diff != []:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out", "w") as outfile:
+        with open("actual.out", "w", encoding='utf-8') as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
