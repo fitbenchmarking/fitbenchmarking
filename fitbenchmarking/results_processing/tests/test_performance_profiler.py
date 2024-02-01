@@ -292,6 +292,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                 0.5, 0.625, 0.75, 0.875,
                 1.])]
         output_df = performance_profiler.create_df(self.solvers,
+                                                   self.solvers,
                                                    self.solver_values,
                                                    plot_points)
         assert_frame_equal(output_df, expected_df)
@@ -337,7 +338,7 @@ class DashPerfProfileTests(unittest.TestCase):
             'tests', 'expected_results')
 
         data = read_csv(self.expected_results_dir +
-                        "/pp_data_more_solvers.csv")
+                        "/pp_data.csv")
 
         self.perf_profile = performance_profiler.\
             DashPerfProfile('runtime', data,

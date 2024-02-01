@@ -262,10 +262,13 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     huge = 1.0e20  # set a large value as a proxy for infinity
 
     all_solvers = []
+    all_labels = []
     all_solver_values = []
     all_plot_points = []
 
     for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
+        solver = f"{solver}"
+        label = f"{solver}"
         plot_points = np.linspace(0.0, 1.0, solver_values.size)
         plot_points = np.append(plot_points, 1.0)
         inf_indices = np.where(solver_values > huge)
@@ -274,9 +277,10 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
             plural_ending = "s"
             if inf_indices[0].size == 1:
                 plural_ending = ""
-            solver = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
+            label = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
         solver_values = np.append(solver_values, huge)
 
+        all_labels.append(label)
         all_solvers.append(solver)
         all_solver_values.append(solver_values)
         all_plot_points.append(plot_points)
@@ -294,19 +298,23 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
         )
 
     pp_df = create_df(all_solvers,
+                      all_labels,
                       all_solver_values,
                       all_plot_points)
 
     return fig, pp_df
 
 
-def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
+def create_df(solvers: 'list[str]', labels: 'list[str]',
+              solver_values: 'list[np.ndarray]',
               plot_points: 'list[np.ndarray]') -> pd.DataFrame:
     """
     Creates a df with performance profile data.
 
     :param solvers: The names of the solvers
     :type solvers: list[str]
+    :param labels: The labels for the solvers (showing n failures)
+    :type labels: list[str]
     :param solver_values: The solver values (x values) for each solver
     :type solver_values: list[numpy.array]
     :param plot_points: The y values for each solver
@@ -318,11 +326,13 @@ def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
 
     # Prepare data to save
     solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+    labels_repeated = np.repeat(labels, len(plot_points[0]))
     solver_values = list(np.concatenate(solver_values))
     plot_points = list(np.concatenate(plot_points))
 
     data_dict = {
         'solver': solvers_repeated,
+        'label': labels_repeated,
         'x': solver_values,
         'y': plot_points
     }
@@ -409,10 +419,11 @@ class DashPerfProfile():
         # in the dash plot is the same as in the offline plot
         grouped_data = df_selected_solvers.groupby('solver', sort=False)
 
-        for i, (solver, data_one_solver) in enumerate(grouped_data):
+        for i, (_, data_one_solver) in enumerate(grouped_data):
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
+            solver_label = list(data_one_solver['label'])[0]
 
             temp_max_value = max(list(solver_values))
             if temp_max_value > max_value:
@@ -428,7 +439,7 @@ class DashPerfProfile():
                         "dash": linestyles[(i % len(linestyles))],
                         "color": colors[(i % len(colors))]
                     },
-                    name=solver,
+                    name=solver_label,
                     type='scatter'))
 
         log_upper_limit = min(max_value+1, 10000)
