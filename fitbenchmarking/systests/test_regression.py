@@ -178,10 +178,10 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
                                problem_sub_directory,
                                'acc_table.csv')
 
-    with open(expected_file, 'r') as f:
+    with open(expected_file, 'r', encoding='utf-8') as f:
         expected = f.readlines()
 
-    with open(actual_file, 'r') as f:
+    with open(actual_file, 'r', encoding='utf-8') as f:
         actual = f.readlines()
 
     return diff_result(actual, expected)
