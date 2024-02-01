@@ -1,7 +1,9 @@
 """
 Set up performance profiles for both accuracy and runtime tables
 """
+import itertools
 import os
+import random
 
 import dash
 import numpy as np
@@ -28,9 +30,14 @@ def profile(results, fig_dir, options):
     :rtype: dict[str, str], dict[str, pandas.DataFrame]
     """
     bounds = prepare_profile_data(results)
-    plot_paths, pp_dfs = get_plot_path_and_data(bounds,
-                                                fig_dir,
-                                                options)
+
+    pp_dfs = {}
+    for pp_name, pp_dict in bounds.items():
+        pp_dfs[pp_name] = pd.DataFrame.from_dict(pp_dict, orient='columns')
+
+    plot_paths = get_plot_path(bounds,
+                               fig_dir,
+                               options)
     return plot_paths, pp_dfs
 
 
@@ -79,7 +86,32 @@ def prepare_profile_data(results):
     return pp_data
 
 
-def get_plot_path_and_data(bounds, fig_dir, options):
+def compute_step_values(profile_plot):
+    """
+    Function that creates the step values for plotting
+    performance profiles.
+
+    :param profile_plot: dictionary with accuracy or runtime data
+    :type profile_plot: dict[str, list[float]]
+
+    :retur: acc or runtime values to plot,
+            maximum x value (acc or runtime)
+    :rtype: list[float], float
+    """
+    step_values = []
+    max_value = 0.0
+    for value in profile_plot.values():
+        value = np.array(value)
+        sorted_list = np.sort(_remove_nans(value))
+        max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
+        if max_in_list > max_value:
+            max_value = max_in_list
+        step_values.append(np.insert(sorted_list, 0, 0.0))
+
+    return step_values, max_value
+
+
+def get_plot_path(bounds, fig_dir, options):
     """
     Function that generates profiler plots
 
@@ -91,26 +123,16 @@ def get_plot_path_and_data(bounds, fig_dir, options):
     :param options: The options for the run
     :type options: utils.options.Options
 
-    :return: path to profile graphs for each metric,
-             data for plotting the graphs for each metric
-    :rtype: dict[str, str], dict[str, pandas.DataFrame]
+    :return: path to profile graphs for each metric
+    :rtype: dict[str, str]
     """
     figure_paths = {}
-    pp_dfs = {}
+
     for name, profile_plot in bounds.items():
         this_filename_html = os.path.join(fig_dir, f"{name}_profile.html")
 
         figure_paths[name] = this_filename_html
-
-        step_values = []
-        max_value = 0.0
-        for value in profile_plot.values():
-            value = np.array(value)
-            sorted_list = np.sort(_remove_nans(value))
-            max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
-            if max_in_list > max_value:
-                max_value = max_in_list
-            step_values.append(np.insert(sorted_list, 0, 0.0))
+        step_values, max_value = compute_step_values(profile_plot)
 
         linear_upper_limit = 10
 
@@ -122,12 +144,11 @@ def get_plot_path_and_data(bounds, fig_dir, options):
 
         # Plot linear performance profile
         solvers = profile_plot.keys()
-        fig, pp_df = create_plot_and_df(step_values=step_values,
-                                        solvers=solvers)
 
-        pp_dfs[name] = pp_df
         max_n_solvers_offline = 15
         if len(solvers) < max_n_solvers_offline:
+            fig = create_plot(step_values=step_values,
+                              solvers=solvers)
             fig = update_fig(fig, name, use_log_plot,
                              log_upper_limit)
 
@@ -145,8 +166,7 @@ def get_plot_path_and_data(bounds, fig_dir, options):
             with open(this_filename_html, "w") as file:
                 file.write(warning)
 
-    return figure_paths, pp_dfs
-
+    return figure_paths
 
 def update_fig(fig: go.Figure, name: str, use_log_plot: bool,
                log_upper_limit: int) -> go.Figure:
@@ -235,29 +255,20 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def create_plot_and_df(step_values: 'list[np.ndarray]',
-                       solvers: 'list[str]') -> (go.Figure, pd.DataFrame):
+def adjust_values_to_plot(step_values: 'list[np.ndarray]',
+                          solvers: 'list[str]'):
     """
-    Function to draw the profile in plotly
+    Function to prepare values to plot
 
     :param step_values: A sorted list of the values of the metric
                         being profiled
-    :type step_values: list[numpy.array[float]]
+    :type step_values: list[np.array[float]]
     :param solvers: A list of the labels for the different solvers
     :type solvers: list[str]
 
-    :return: The perfomance profile graph, the data for plotting the graph
-    :rtype: plotly.graph_objects.Figure, pandas.DataFrame
+    :return: Data to plot
+    :rtype: dict[str[list[float]]]
     """
-
-    fig = go.Figure()
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-
-    # Use only 3 of the possible 5 linestyles, because 5 is a factor
-    # of 10 (number of colours) and using 10 colours + 5 linestyles
-    # would not give enough line/colour combinations
-    linestyles = ['solid', 'dash', 'dashdot']
 
     huge = 1.0e20  # set a large value as a proxy for infinity
 
@@ -266,7 +277,7 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     all_solver_values = []
     all_plot_points = []
 
-    for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
+    for solver, solver_values in zip(solvers, step_values):
         solver = f"{solver}"
         label = f"{solver}"
         plot_points = np.linspace(0.0, 1.0, solver_values.size)
@@ -285,8 +296,53 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
         all_solver_values.append(solver_values)
         all_plot_points.append(plot_points)
 
+    values_for_plotting = {
+        'solvers': all_solvers,
+        'labels': all_labels,
+        'solver_vals': all_solver_values,
+        'plot_points': all_plot_points
+    }
+
+    return values_for_plotting
+
+
+def create_plot(step_values: 'list[np.ndarray]',
+                solvers: 'list[str]'):
+    """
+    Function to draw plot in plotly.
+
+    :param step_values: A sorted list of the values of the metric
+                        being profiled
+    :type step_values: list of np.array[float]
+    :param solvers: A list of the labels for the different solvers
+    :type solvers: list of strings
+
+    :return: The perfomance profile graph
+    :rtype: plotly.graph_objects.Figure
+    """
+
+    fig = go.Figure()
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
+    # Use only 3 of the possible 5 linestyles, because 5 is a factor
+    # of 10 (number of colours) and using 10 colours + 5 linestyles
+    # would not give enough line/colour combinations
+    linestyles = ['solid', 'dash', 'dashdot']
+
+    data_dict = adjust_values_to_plot(
+        step_values=step_values,
+        solvers=solvers
+    )
+
+    for i, (solver, solver_vals, plot_points) in enumerate(zip(
+                                                    data_dict['solvers'],
+                                                    data_dict['solver_vals'],
+                                                    data_dict['plot_points']
+                                                    )):
+
         fig.add_trace(
-            go.Scatter(x=solver_values,
+            go.Scatter(x=solver_vals,
                        y=plot_points,
                        mode='lines',
                        line={"shape": 'hv',
@@ -295,14 +351,9 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
                        name=solver,
                        type='scatter'
                        )
-        )
+            )
 
-    pp_df = create_df(all_solvers,
-                      all_labels,
-                      all_solver_values,
-                      all_plot_points)
-
-    return fig, pp_df
+    return fig
 
 
 def create_df(solvers: 'list[str]', labels: 'list[str]',
@@ -325,21 +376,29 @@ def create_df(solvers: 'list[str]', labels: 'list[str]',
     """
 
     # Prepare data to save
-    solvers_repeated = np.repeat(solvers, len(plot_points[0]))
-    labels_repeated = np.repeat(labels, len(plot_points[0]))
-    solver_values = list(np.concatenate(solver_values))
-    plot_points = list(np.concatenate(plot_points))
+    if len(solvers) == 0:
+        data_dict = {
+            'solver': [],
+            'label': [],
+            'x': [],
+            'y': []
+        }
 
-    data_dict = {
-        'solver': solvers_repeated,
-        'label': labels_repeated,
-        'x': solver_values,
-        'y': plot_points
-    }
+    else:
+        solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+        labels_repeated = np.repeat(labels, len(plot_points[0]))
+        solver_values = list(np.concatenate(solver_values))
+        plot_points = list(np.concatenate(plot_points))
+
+        data_dict = {
+            'solver': solvers_repeated,
+            'label': labels_repeated,
+            'x': solver_values,
+            'y': plot_points
+        }
 
     pp_df = pd.DataFrame.from_dict(data_dict)
     return pp_df
-
 
 class DashPerfProfile():
 
@@ -363,11 +422,22 @@ class DashPerfProfile():
         self.identif = self.group_label + '-' + self.profile_name
 
         self.default_opt = []
-        for solver in self.data['solver'].unique():
+        for solver in self.data.columns:
             self.default_opt.append({
                 "value": solver,
                 "label": solver
             })
+
+        self.linestyling = {}
+        self.avail_styles = {}
+
+        self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+                       '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        self.linestyles = ['solid', 'dash', 'dashdot']
+
+        for comb in list(itertools.product(self.linestyles, self.colors)):
+            comb_id = comb[0]+comb[1]
+            self.avail_styles[comb_id] = comb
 
         self.layout()
         self.set_callbacks()
@@ -393,6 +463,85 @@ class DashPerfProfile():
              Input("dropdown", "value")]
         )(self.create_graph)
 
+    def update_linestyles(self, solvers) -> None:
+        """
+        Function to determine a linestyle for each solver.
+
+        :param solvers: Solvers to be selected, max 15
+        :type solvers: list[str]
+        """
+        previous_solvers = list(self.linestyling.keys())
+
+        # If this is the first time executing the code
+        if len(previous_solvers) == 0:
+            for i, solver in enumerate(solvers):
+                linestyle = self.linestyles[(i % len(self.linestyles))]
+                linecolor = self.colors[(i % len(self.colors))]
+                self.linestyling[solver] = {
+                    'linestyle': linestyle,
+                    'linecolor': linecolor,
+                }
+                comb_id = linestyle+linecolor
+                del self.avail_styles[comb_id]
+
+        # If a solver has been added
+        elif len(solvers) > len(previous_solvers):
+
+            newly_added_solvers = set(solvers).difference(previous_solvers)
+
+            for solver in newly_added_solvers:
+                chosen_style = list(self.avail_styles.values())[-1]
+                self.linestyling[solver] = {
+                    'linestyle': chosen_style[0],
+                    'linecolor': chosen_style[1],
+                }
+                comb_id = chosen_style[0]+chosen_style[1]
+                del self.avail_styles[comb_id]
+
+        # If a solver has been removed
+        elif len(solvers) < len(previous_solvers):
+
+            solvers_to_remove = set(previous_solvers).difference(solvers)
+
+            for solver in solvers_to_remove:
+                linestyle = self.linestyling[solver]['linestyle']
+                linecolor = self.linestyling[solver]['linecolor']
+                self.avail_styles[linestyle+linecolor] = (linestyle, linecolor)
+                self.linestyling.pop(solver)
+
+    def get_data(self, solvers):
+        """
+        Function to prepare values for plotting performance profiles.
+
+        :param solvers: Solvers to be selected, max 15
+        :type solvers: list[str]
+
+        :return: Performance profile data
+        :rtype: pandas.DataFrame
+        """
+
+        df_chosen_solvers = self.data.loc[:, solvers]
+        df_chosen_solvers['min'] = df_chosen_solvers.min(axis=1)
+        df_chosen_solvers['min'].replace(to_replace=np.inf, value=1.0,
+                                         inplace=True)
+        df_chosen_solvers = df_chosen_solvers.divide(df_chosen_solvers['min'],
+                                                     axis="rows")
+        df_chosen_solvers.drop(columns=['min'])
+        new_dict = df_chosen_solvers.to_dict('list')
+
+        step_values, _ = compute_step_values(new_dict)
+
+        data_dict = adjust_values_to_plot(
+            step_values=step_values,
+            solvers=solvers
+        )
+
+        output_df = create_df(data_dict['solvers'],
+                              data_dict['labels'],
+                              data_dict['solver_vals'],
+                              data_dict['plot_points'])
+        return output_df
+
     def create_graph(self, x_axis_scale, solvers):
         """
         Creates the dash plot.
@@ -407,11 +556,9 @@ class DashPerfProfile():
         """
 
         fig = go.Figure()
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        linestyles = ['solid', 'dash', 'dashdot']
 
-        df_selected_solvers = self.data[self.data['solver'].isin(solvers)]
+        df_selected_solvers = self.get_data(solvers)
+        self.update_linestyles(df_selected_solvers['solver'].unique())
 
         max_value = 0
 
@@ -419,7 +566,7 @@ class DashPerfProfile():
         # in the dash plot is the same as in the offline plot
         grouped_data = df_selected_solvers.groupby('solver', sort=False)
 
-        for i, (_, data_one_solver) in enumerate(grouped_data):
+        for solver, data_one_solver in grouped_data:
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
@@ -436,8 +583,8 @@ class DashPerfProfile():
                     mode='lines',
                     line={
                         "shape": 'hv',
-                        "dash": linestyles[(i % len(linestyles))],
-                        "color": colors[(i % len(colors))]
+                        "dash": self.linestyling[solver]['linestyle'],
+                        "color": self.linestyling[solver]['linecolor'],
                     },
                     name=solver_label,
                     type='scatter'))
