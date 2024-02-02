@@ -285,7 +285,7 @@ def loop_over_cost_function(problem, options, start_values_index,
     return problem_results, unselected_minimizers
 
 
-def loop_over_fitting_software(cost_func, options, 
+def loop_over_fitting_software(cost_func, options,
                                start_values_index, grabbed_output,
                                checkpointer, emissions_tracker):
     """
