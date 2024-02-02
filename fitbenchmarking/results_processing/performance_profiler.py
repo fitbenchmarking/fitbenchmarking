@@ -3,7 +3,6 @@ Set up performance profiles for both accuracy and runtime tables
 """
 import itertools
 import os
-import random
 
 import dash
 import numpy as np
@@ -168,6 +167,7 @@ def get_plot_path(bounds, fig_dir, options):
 
     return figure_paths
 
+
 def update_fig(fig: go.Figure, name: str, use_log_plot: bool,
                log_upper_limit: int) -> go.Figure:
     """
@@ -267,14 +267,14 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
     :type solvers: list[str]
 
     :return: Data to plot
-    :rtype: dict[str[list[float]]]
+    :rtype: dict[str[list]]
     """
 
     huge = 1.0e20  # set a large value as a proxy for infinity
 
     all_solvers = []
     all_labels = []
-    all_solver_values = []
+    all_solvers_values = []
     all_plot_points = []
 
     for solver, solver_values in zip(solvers, step_values):
@@ -293,17 +293,17 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
 
         all_labels.append(label)
         all_solvers.append(solver)
-        all_solver_values.append(solver_values)
+        all_solvers_values.append(solver_values)
         all_plot_points.append(plot_points)
 
-    values_for_plotting = {
+    vals_to_plot = {
         'solvers': all_solvers,
         'labels': all_labels,
-        'solver_vals': all_solver_values,
+        'solver_values': all_solvers_values,
         'plot_points': all_plot_points
     }
 
-    return values_for_plotting
+    return vals_to_plot
 
 
 def create_plot(step_values: 'list[np.ndarray]',
@@ -330,19 +330,19 @@ def create_plot(step_values: 'list[np.ndarray]',
     # would not give enough line/colour combinations
     linestyles = ['solid', 'dash', 'dashdot']
 
-    data_dict = adjust_values_to_plot(
+    vals_to_plot = adjust_values_to_plot(
         step_values=step_values,
         solvers=solvers
     )
 
-    for i, (solver, solver_vals, plot_points) in enumerate(zip(
-                                                    data_dict['solvers'],
-                                                    data_dict['solver_vals'],
-                                                    data_dict['plot_points']
+    for i, (solver, solver_values, plot_points) in enumerate(zip(
+                                                    vals_to_plot['solvers'],
+                                                    vals_to_plot['solver_values'],
+                                                    vals_to_plot['plot_points']
                                                     )):
 
         fig.add_trace(
-            go.Scatter(x=solver_vals,
+            go.Scatter(x=solver_values,
                        y=plot_points,
                        mode='lines',
                        line={"shape": 'hv',
@@ -377,28 +377,23 @@ def create_df(solvers: 'list[str]', labels: 'list[str]',
 
     # Prepare data to save
     if len(solvers) == 0:
-        data_dict = {
-            'solver': [],
-            'label': [],
-            'x': [],
-            'y': []
-        }
+        pp_dict = {'solver': [], 'label': [], 'x': [], 'y': []}
+        return pd.DataFrame.from_dict(pp_dict)
 
-    else:
-        solvers_repeated = np.repeat(solvers, len(plot_points[0]))
-        labels_repeated = np.repeat(labels, len(plot_points[0]))
-        solver_values = list(np.concatenate(solver_values))
-        plot_points = list(np.concatenate(plot_points))
+    solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+    labels_repeated = np.repeat(labels, len(plot_points[0]))
+    solver_values = list(np.concatenate(solver_values))
+    plot_points = list(np.concatenate(plot_points))
 
-        data_dict = {
-            'solver': solvers_repeated,
-            'label': labels_repeated,
-            'x': solver_values,
-            'y': plot_points
-        }
+    pp_dict = {
+        'solver': solvers_repeated,
+        'label': labels_repeated,
+        'x': solver_values,
+        'y': plot_points
+    }
 
-    pp_df = pd.DataFrame.from_dict(data_dict)
-    return pp_df
+    return pd.DataFrame.from_dict(pp_dict)
+
 
 class DashPerfProfile():
 
@@ -419,7 +414,7 @@ class DashPerfProfile():
         self.data = pp_df
         self.profile_name = profile_name
         self.group_label = group_label
-        self.identif = self.group_label + '-' + self.profile_name
+        self.id = self.group_label + '-' + self.profile_name
 
         self.default_opt = []
         for solver in self.data.columns:
@@ -428,7 +423,7 @@ class DashPerfProfile():
                 "label": solver
             })
 
-        self.linestyling = {}
+        self.current_styles = {}
         self.avail_styles = {}
 
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
@@ -452,13 +447,13 @@ class DashPerfProfile():
         :rtype: dcc.Graph
         """
 
-        return dcc.Graph(id=f"visual {self.identif}")
+        return dcc.Graph(id=f"visual {self.id}")
 
     def set_callbacks(self):
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
-            Output(f"visual {self.identif}", "figure"),
+            Output(f"visual {self.id}", "figure"),
             [Input("Log axis toggle", "value"),
              Input("dropdown", "value")]
         )(self.create_graph)
@@ -470,14 +465,14 @@ class DashPerfProfile():
         :param solvers: Solvers to be selected, max 15
         :type solvers: list[str]
         """
-        previous_solvers = list(self.linestyling.keys())
+        previous_solvers = list(self.current_styles.keys())
 
         # If this is the first time executing the code
         if len(previous_solvers) == 0:
             for i, solver in enumerate(solvers):
                 linestyle = self.linestyles[(i % len(self.linestyles))]
                 linecolor = self.colors[(i % len(self.colors))]
-                self.linestyling[solver] = {
+                self.current_styles[solver] = {
                     'linestyle': linestyle,
                     'linecolor': linecolor,
                 }
@@ -491,7 +486,7 @@ class DashPerfProfile():
 
             for solver in newly_added_solvers:
                 chosen_style = list(self.avail_styles.values())[-1]
-                self.linestyling[solver] = {
+                self.current_styles[solver] = {
                     'linestyle': chosen_style[0],
                     'linecolor': chosen_style[1],
                 }
@@ -504,10 +499,10 @@ class DashPerfProfile():
             solvers_to_remove = set(previous_solvers).difference(solvers)
 
             for solver in solvers_to_remove:
-                linestyle = self.linestyling[solver]['linestyle']
-                linecolor = self.linestyling[solver]['linecolor']
+                linestyle = self.current_styles[solver]['linestyle']
+                linecolor = self.current_styles[solver]['linecolor']
                 self.avail_styles[linestyle+linecolor] = (linestyle, linecolor)
-                self.linestyling.pop(solver)
+                self.current_styles.pop(solver)
 
     def get_data(self, solvers):
         """
@@ -531,15 +526,15 @@ class DashPerfProfile():
 
         step_values, _ = compute_step_values(new_dict)
 
-        data_dict = adjust_values_to_plot(
+        vals_to_plot = adjust_values_to_plot(
             step_values=step_values,
             solvers=solvers
         )
 
-        output_df = create_df(data_dict['solvers'],
-                              data_dict['labels'],
-                              data_dict['solver_vals'],
-                              data_dict['plot_points'])
+        output_df = create_df(vals_to_plot['solvers'],
+                              vals_to_plot['labels'],
+                              vals_to_plot['solver_values'],
+                              vals_to_plot['plot_points'])
         return output_df
 
     def create_graph(self, x_axis_scale, solvers):
@@ -570,7 +565,7 @@ class DashPerfProfile():
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
-            solver_label = list(data_one_solver['label'])[0]
+            label = list(data_one_solver['label'])[0]
 
             temp_max_value = max(list(solver_values))
             if temp_max_value > max_value:
@@ -583,10 +578,10 @@ class DashPerfProfile():
                     mode='lines',
                     line={
                         "shape": 'hv',
-                        "dash": self.linestyling[solver]['linestyle'],
-                        "color": self.linestyling[solver]['linecolor'],
+                        "dash": self.current_styles[solver]['linestyle'],
+                        "color": self.current_styles[solver]['linecolor'],
                     },
-                    name=solver_label,
+                    name=label,
                     type='scatter'))
 
         log_upper_limit = min(max_value+1, 10000)
