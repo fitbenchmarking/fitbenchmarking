@@ -30,7 +30,7 @@ setup(
                       'pandas>=1.3',
                       'jinja2',
                       'configparser',
-                      'codecarbon<2.2.4',
+                      'codecarbon',
                       'dash'],
     extras_require={'DFO': ['DFO-LS', 'dfogn'],
                     'SAS': ['sasmodels',
