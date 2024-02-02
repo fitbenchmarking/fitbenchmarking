@@ -511,9 +511,15 @@ class DashPerfProfile():
         """
 
         df_chosen_solvers = self.data.loc[:, solvers]
+
+        # Find minimum acc / runtime value
         df_chosen_solvers['min'] = df_chosen_solvers.min(axis=1)
-        df_chosen_solvers['min'].replace(to_replace=np.inf, value=1.0,
+
+        # If min found is inf, set min to 1
+        df_chosen_solvers['min'].replace(to_replace=np.inf,
+                                         value=1.0,
                                          inplace=True)
+        # Divide values by min
         df_chosen_solvers = df_chosen_solvers.divide(df_chosen_solvers['min'],
                                                      axis="rows")
         # Remove min column
