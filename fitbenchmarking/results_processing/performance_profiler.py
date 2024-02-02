@@ -87,15 +87,14 @@ def prepare_profile_data(results):
 
 def compute_step_values(profile_plot):
     """
-    Function that creates the step values for plotting
-    performance profiles.
+    Creates the step values for plotting performance profiles.
 
-    :param profile_plot: dictionary with accuracy or runtime data
+    :param profile_plot: data related to the metric being profiled
     :type profile_plot: dict[str, list[float]]
 
-    :retur: acc or runtime values to plot,
-            maximum x value (acc or runtime)
-    :rtype: list[float], float
+    :return: acc or runtime or emissions values to plot,
+            maximum x value
+    :rtype: list[np.arrays(float)], float
     """
     step_values = []
     max_value = 0.0
@@ -258,16 +257,15 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 def adjust_values_to_plot(step_values: 'list[np.ndarray]',
                           solvers: 'list[str]'):
     """
-    Function to prepare values to plot
+    Prepares the values to plot
 
-    :param step_values: A sorted list of the values of the metric
-                        being profiled
+    :param step_values: Sorted values of the metric being profiled
     :type step_values: list[np.array[float]]
-    :param solvers: A list of the labels for the different solvers
+    :param solvers: The solvers to be plotted
     :type solvers: list[str]
 
     :return: Data to plot
-    :rtype: dict[str[list]]
+    :rtype: dict[str, list]
     """
 
     huge = 1.0e20  # set a large value as a proxy for infinity
@@ -311,11 +309,10 @@ def create_plot(step_values: 'list[np.ndarray]',
     """
     Function to draw plot in plotly.
 
-    :param step_values: A sorted list of the values of the metric
-                        being profiled
-    :type step_values: list of np.array[float]
-    :param solvers: A list of the labels for the different solvers
-    :type solvers: list of strings
+    :param step_values: Sorted values of the metric being profiled
+    :type step_values: list[np.array[float]]
+    :param solvers: The solvers to be plotted
+    :type solvers: list[str]
 
     :return: The perfomance profile graph
     :rtype: plotly.graph_objects.Figure
@@ -335,11 +332,11 @@ def create_plot(step_values: 'list[np.ndarray]',
         solvers=solvers
     )
 
-    for i, (solver, solver_values, plot_points) in enumerate(zip(
-                                                    vals_to_plot['solvers'],
-                                                    vals_to_plot['solver_values'],
-                                                    vals_to_plot['plot_points']
-                                                    )):
+    for i, (label, solver_values, plot_points) in enumerate(zip(
+                                                vals_to_plot['labels'],
+                                                vals_to_plot['solver_values'],
+                                                vals_to_plot['plot_points']
+                                            )):
 
         fig.add_trace(
             go.Scatter(x=solver_values,
@@ -348,7 +345,7 @@ def create_plot(step_values: 'list[np.ndarray]',
                        line={"shape": 'hv',
                              "dash": linestyles[(i % len(linestyles))],
                              "color": colors[(i % len(colors))]},
-                       name=solver,
+                       name=label,
                        type='scatter'
                        )
             )
@@ -367,15 +364,14 @@ def create_df(solvers: 'list[str]', labels: 'list[str]',
     :param labels: The labels for the solvers (showing n failures)
     :type labels: list[str]
     :param solver_values: The solver values (x values) for each solver
-    :type solver_values: list[numpy.array]
+    :type solver_values: list[np.array[float]]
     :param plot_points: The y values for each solver
-    :type plot_points: list[numpy.array]
+    :type plot_points: list[np.array[float]]
 
     :return: Performance profile data
     :rtype: pandas.DataFrame
     """
 
-    # Prepare data to save
     if len(solvers) == 0:
         pp_dict = {'solver': [], 'label': [], 'x': [], 'y': []}
         return pd.DataFrame.from_dict(pp_dict)
