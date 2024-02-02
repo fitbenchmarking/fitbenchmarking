@@ -105,6 +105,7 @@ jobs:
       with:
         file: coverage.lcov
         compare-ref: master
+        git-commit: ${{ github.event.pull_request.head.sha }}
     - name: 'Upload Test Results'
       if: always()
       uses: actions/upload-artifact@v3

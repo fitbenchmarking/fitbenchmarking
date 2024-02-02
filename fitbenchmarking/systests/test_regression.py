@@ -149,7 +149,7 @@ def diff_result(actual, expected):
     if diff != []:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out", "w") as outfile:
+        with open("actual.out", "w", encoding='utf-8') as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
@@ -178,10 +178,10 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
                                problem_sub_directory,
                                'acc_table.csv')
 
-    with open(expected_file, 'r') as f:
+    with open(expected_file, 'r', encoding='utf-8') as f:
         expected = f.readlines()
 
-    with open(actual_file, 'r') as f:
+    with open(actual_file, 'r', encoding='utf-8') as f:
         actual = f.readlines()
 
     return diff_result(actual, expected)
