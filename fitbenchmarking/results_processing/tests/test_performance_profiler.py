@@ -344,7 +344,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         expected_dict = {
             'solvers': self.solvers,
             'labels': self.solvers,
-            'solver_vals': self.solver_values,
+            'solver_values': self.solver_values,
             'plot_points': self.plot_points
         }
         output_dict = performance_profiler.\
@@ -352,8 +352,8 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         assert expected_dict.keys() == output_dict.keys()
         assert expected_dict['solvers'] == output_dict['solvers']
-        assert np.array_equal(expected_dict['solver_vals'],
-                              output_dict['solver_vals'])
+        assert np.array_equal(expected_dict['solver_values'],
+                              output_dict['solver_values'])
         assert np.array_equal(expected_dict['plot_points'],
                               output_dict['plot_points'])
 
@@ -417,8 +417,7 @@ class DashPerfProfileTests(unittest.TestCase):
         Test get_data returns correct output dataframe.
         """
         selected_solvers = self.data.columns
-        output = self.perf_profile.get_data(selected_solvers)
-        output.to_csv('boh.csv', index=False)
+        output = self.perf_profile.prepare_data(selected_solvers)
         expected_output = read_csv(self.expected_results_dir +
                                    "/dash_pp_plot_data.csv")
         assert output.equals(expected_output)
