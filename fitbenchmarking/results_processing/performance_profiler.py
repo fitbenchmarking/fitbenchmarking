@@ -292,14 +292,14 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
         all_solvers_values.append(solver_values)
         all_plot_points.append(plot_points)
 
-    vals_to_plot = {
+    data_to_plot = {
         'solvers': all_solvers,
         'labels': all_labels,
         'solver_values': all_solvers_values,
         'plot_points': all_plot_points
     }
 
-    return vals_to_plot
+    return data_to_plot
 
 
 def create_plot(step_values: 'list[np.ndarray]',
@@ -325,15 +325,15 @@ def create_plot(step_values: 'list[np.ndarray]',
     # would not give enough line/colour combinations
     linestyles = ['solid', 'dash', 'dashdot']
 
-    vals_to_plot = adjust_values_to_plot(
+    data_to_plot = adjust_values_to_plot(
         step_values=step_values,
         solvers=solvers
     )
 
     for i, (label, solver_values, plot_points) in enumerate(zip(
-                                                vals_to_plot['labels'],
-                                                vals_to_plot['solver_values'],
-                                                vals_to_plot['plot_points']
+                                                data_to_plot['labels'],
+                                                data_to_plot['solver_values'],
+                                                data_to_plot['plot_points']
                                             )):
 
         fig.add_trace(
@@ -528,15 +528,15 @@ class DashPerfProfile():
 
         step_values, _ = compute_step_values(new_dict)
 
-        vals_to_plot = adjust_values_to_plot(
+        data_to_plot = adjust_values_to_plot(
             step_values=step_values,
             solvers=solvers
         )
 
-        output_df = create_df(vals_to_plot['solvers'],
-                              vals_to_plot['labels'],
-                              vals_to_plot['solver_values'],
-                              vals_to_plot['plot_points'])
+        output_df = create_df(data_to_plot['solvers'],
+                              data_to_plot['labels'],
+                              data_to_plot['solver_values'],
+                              data_to_plot['plot_points'])
         return output_df
 
     def create_graph(self, x_axis_scale, solvers):
