@@ -317,7 +317,8 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_compute_step_values(self):
         """
-        Test compute_step_values returns correct output.
+        Test compute_step_values returns the correct step_values
+        and max_value.
         """
 
         expec_step_vals = self.step_values
@@ -339,7 +340,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_adjust_values_to_plot(self):
         """
-        Given the step values, this adjusts the values and plots them.
+        Test adjust_values_to_plot returns the correct output dict.
         """
         expected_dict = {
             'solvers': self.solvers,
@@ -352,6 +353,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         assert expected_dict.keys() == output_dict.keys()
         assert expected_dict['solvers'] == output_dict['solvers']
+        assert expected_dict['labels'] == output_dict['labels']
         assert np.array_equal(expected_dict['solver_values'],
                               output_dict['solver_values'])
         assert np.array_equal(expected_dict['plot_points'],
