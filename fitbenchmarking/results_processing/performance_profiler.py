@@ -499,7 +499,7 @@ class DashPerfProfile():
                 self.avail_styles[linestyle+linecolor] = (linestyle, linecolor)
                 self.current_styles.pop(solver)
 
-    def get_data(self, solvers):
+    def prepare_data(self, solvers):
         """
         Prepares data for plotting performance profiles in Dash.
 
@@ -515,11 +515,13 @@ class DashPerfProfile():
         # Find minimum acc / runtime value
         df_chosen_solvers['min'] = df_chosen_solvers.min(axis=1)
 
-        # If min found is inf, set min to 1
+        # If min found is inf, set min to 1 (to avoid getting nan
+        # when dividing by min)
         df_chosen_solvers['min'].replace(to_replace=np.inf,
                                          value=1.0,
                                          inplace=True)
-        # Divide values by min
+
+        # Divide values by min (thus recalculating the profile)
         df_chosen_solvers = df_chosen_solvers.divide(df_chosen_solvers['min'],
                                                      axis="rows")
         # Remove min column
@@ -554,7 +556,7 @@ class DashPerfProfile():
 
         fig = go.Figure()
 
-        df_selected_solvers = self.get_data(solvers)
+        df_selected_solvers = self.prepare_data(solvers)
         self.update_linestyles(df_selected_solvers['solver'].unique())
 
         max_value = 0

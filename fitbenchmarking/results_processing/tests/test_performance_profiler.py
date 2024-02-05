@@ -412,9 +412,9 @@ class DashPerfProfileTests(unittest.TestCase):
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
 
-    def test_get_data(self):
+    def test_prepare_data(self):
         """
-        Test get_data returns correct output dataframe.
+        Test prepare_data returns correct output dataframe.
         """
         selected_solvers = self.data.columns
         output = self.perf_profile.prepare_data(selected_solvers)
