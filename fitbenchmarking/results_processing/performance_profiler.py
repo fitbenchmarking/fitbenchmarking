@@ -34,9 +34,7 @@ def profile(results, fig_dir, options):
     for pp_name, pp_dict in bounds.items():
         pp_dfs[pp_name] = pd.DataFrame.from_dict(pp_dict, orient='columns')
 
-    plot_paths = get_plot_path(bounds,
-                               fig_dir,
-                               options)
+    plot_paths = get_plot_path(bounds, fig_dir, options)
     return plot_paths, pp_dfs
 
 
@@ -87,13 +85,13 @@ def prepare_profile_data(results):
 
 def compute_step_values(profile_plot):
     """
-    Creates the step values for plotting performance profiles.
+    Computes the step values for plotting performance profiles.
 
     :param profile_plot: data related to the metric being profiled
     :type profile_plot: dict[str, list[float]]
 
     :return: acc or runtime or emissions values to plot,
-            maximum x value
+             maximum x value
     :rtype: list[np.arrays(float)], float
     """
     step_values = []
@@ -255,9 +253,9 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 
 def adjust_values_to_plot(step_values: 'list[np.ndarray]',
-                          solvers: 'list[str]'):
+                          solvers: 'list[str]') -> 'dict[str, list]':
     """
-    Prepares the values to plot
+    Prepares the values to plot and deals with failures.
 
     :param step_values: Sorted values of the metric being profiled
     :type step_values: list[np.array[float]]
@@ -305,7 +303,7 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
 
 
 def create_plot(step_values: 'list[np.ndarray]',
-                solvers: 'list[str]'):
+                solvers: 'list[str]') -> go.Figure:
     """
     Function to draw plot in plotly.
 
@@ -357,7 +355,8 @@ def create_df(solvers: 'list[str]', labels: 'list[str]',
               solver_values: 'list[np.ndarray]',
               plot_points: 'list[np.ndarray]') -> pd.DataFrame:
     """
-    Creates a df with performance profile data.
+    Creates a pandas dataframe with performance profile data,
+    which Dash uses to plot the profiles.
 
     :param solvers: The names of the solvers
     :type solvers: list[str]
@@ -456,7 +455,7 @@ class DashPerfProfile():
 
     def update_linestyles(self, solvers) -> None:
         """
-        Function to determine a linestyle for each solver.
+        Determines a combination of linestyle and color for each solver.
 
         :param solvers: Solvers to be selected, max 15
         :type solvers: list[str]
@@ -502,7 +501,7 @@ class DashPerfProfile():
 
     def get_data(self, solvers):
         """
-        Function to prepare values for plotting performance profiles.
+        Prepares data for plotting performance profiles in Dash.
 
         :param solvers: Solvers to be selected, max 15
         :type solvers: list[str]
@@ -517,7 +516,8 @@ class DashPerfProfile():
                                          inplace=True)
         df_chosen_solvers = df_chosen_solvers.divide(df_chosen_solvers['min'],
                                                      axis="rows")
-        df_chosen_solvers.drop(columns=['min'])
+        # Remove min column
+        df_chosen_solvers.drop(columns=['min'], inplace=True)
         new_dict = df_chosen_solvers.to_dict('list')
 
         step_values, _ = compute_step_values(new_dict)
