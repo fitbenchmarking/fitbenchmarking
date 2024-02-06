@@ -463,14 +463,8 @@ class DashPerfProfile():
         # If this is the first time executing the code
         if len(previous_solvers) == 0:
             for i, solver in enumerate(solvers):
-                linestyle = self.linestyles[(i % len(self.linestyles))]
-                linecolor = self.colors[(i % len(self.colors))]
-                self.current_styles[solver] = {
-                    'linestyle': linestyle,
-                    'linecolor': linecolor,
-                }
-                comb_id = linestyle+linecolor
-                del self.avail_styles[comb_id]
+                comb = self.avail_styles.pop()
+                self.current_styles[solver] = comb
 
         # If a solver has been added
         elif len(solvers) > len(previous_solvers):
