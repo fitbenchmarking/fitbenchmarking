@@ -419,13 +419,13 @@ class DashPerfProfile():
             })
 
         self.current_styles = {}
-        self.avail_styles = {}
 
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         self.linestyles = ['solid', 'dash', 'dashdot']
 
-        self.avail_styles = list(itertools.product(self.linestyles, self.colors))
+        self.avail_styles = list(itertools.product(self.linestyles,
+                                                   self.colors))
 
         self.layout()
         self.set_callbacks()
@@ -460,30 +460,19 @@ class DashPerfProfile():
         """
         previous_solvers = list(self.current_styles.keys())
 
-        # If this is the first time executing the code
-        if len(previous_solvers) == 0:
-            for i, solver in enumerate(solvers):
+        if len(solvers) > len(previous_solvers):
+
+            newly_added_solvers = set(solvers).difference(previous_solvers)
+            for solver in newly_added_solvers:
                 comb = self.avail_styles.pop()
                 self.current_styles[solver] = comb
 
-        # If a solver has been added
-        elif len(solvers) > len(previous_solvers):
-
-            newly_added_solvers = set(solvers).difference(previous_solvers)
-
-            for solver in newly_added_solvers:
-                chosen_style = self.avail_styles.pop()
-                self.current_styles[solver] = chosen_style
-
-        # If a solver has been removed
         elif len(solvers) < len(previous_solvers):
 
             solvers_to_remove = set(previous_solvers).difference(solvers)
-
             for solver in solvers_to_remove:
                 comb = self.current_styles.pop(solver)
                 self.avail_styles.append(comb)
-                
 
     def prepare_data(self, solvers):
         """
