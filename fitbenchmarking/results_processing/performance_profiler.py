@@ -568,8 +568,8 @@ class DashPerfProfile():
                     mode='lines',
                     line={
                         "shape": 'hv',
-                        "dash": self.current_styles[solver]['linestyle'],
-                        "color": self.current_styles[solver]['linecolor'],
+                        "dash": self.current_styles[solver][0],
+                        "color": self.current_styles[solver][1],
                     },
                     name=label,
                     type='scatter'))
