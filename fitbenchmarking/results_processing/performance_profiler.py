@@ -425,9 +425,7 @@ class DashPerfProfile():
                        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         self.linestyles = ['solid', 'dash', 'dashdot']
 
-        for comb in list(itertools.product(self.linestyles, self.colors)):
-            comb_id = comb[0]+comb[1]
-            self.avail_styles[comb_id] = comb
+        self.avail_styles = list(itertools.product(self.linestyles, self.colors))
 
         self.layout()
         self.set_callbacks()
