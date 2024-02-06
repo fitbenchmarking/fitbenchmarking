@@ -150,7 +150,8 @@ class BumpsController(Controller):
         """
         result = bumpsFit(self._fit_problem,
                           method=self._minimizer,
-                          abort_test=self._check_timer_abort_test)
+                          abort_test=self._check_timer_abort_test,
+                          samples=100000) # add number of samples for dream
 
         self._bumps_result = result
         self._status = self._bumps_result.status
