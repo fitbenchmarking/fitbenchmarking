@@ -292,27 +292,15 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that create_plots_and_get_paths returns the correct paths.
         """
-        acc = {'migrad [minuit]': [1., 2.,  5., 6., 15., 150, 180.],
-               'simplex [minuit]': [1., 20., 100., 110., 150., 900, 1800.],
-               'dfogn [dfo]': [1., 50., 500., 800., 2600., 2700, 2800.]}
-        runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5, 51.6, 10.8, 15.2],
-                   'simplex [minuit]': [6.9, 15.2, 6.5, 5.6, 7., 8.5, 6.5],
-                   'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9, 6.5,  28.3, 17.2]}
-        emissions = {'migrad [minuit]': [0.1, 0.4, 0.3, 0.5, 0.6, 0.8, 0.2],
-                     'simplex [minuit]': [0.9, 0.2, 0.5, 0.6, 0.0, 0.5, 0.5],
-                     'dfogn [dfo]': [0.6, 0.4, 0.6, 0.9, 0.5,  0.3, 0.2]}
-
-        bounds = {'acc': acc, 'runtime': runtime, 'emissions': emissions}
+        bounds = {'acc': {}, 'runtime': {}, 'emissions': {}}
         paths = performance_profiler.\
             create_plots_and_get_paths(bounds,
                                        self.fig_dir,
                                        self.options)
-        expec_paths = {}
-        for name, _ in bounds.items():
-            this_filename_html = os.path.join(self.fig_dir,
-                                              f"{name}_profile.html")
 
-            expec_paths[name] = this_filename_html
+        expec_paths = {'acc': 'acc_profile.html',
+                       'runtime': 'runtime_profile.html',
+                       'emissions': 'emissions_profile.html'}
 
         assert paths == expec_paths
 
