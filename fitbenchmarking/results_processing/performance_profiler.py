@@ -472,13 +472,8 @@ class DashPerfProfile():
             newly_added_solvers = set(solvers).difference(previous_solvers)
 
             for solver in newly_added_solvers:
-                chosen_style = list(self.avail_styles.values())[-1]
-                self.current_styles[solver] = {
-                    'linestyle': chosen_style[0],
-                    'linecolor': chosen_style[1],
-                }
-                comb_id = chosen_style[0]+chosen_style[1]
-                del self.avail_styles[comb_id]
+                chosen_style = self.avail_styles.pop()
+                self.current_styles[solver] = chosen_style
 
         # If a solver has been removed
         elif len(solvers) < len(previous_solvers):
