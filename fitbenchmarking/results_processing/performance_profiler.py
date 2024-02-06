@@ -7,7 +7,7 @@ import dash
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from dash import Input, Output, dcc, html
+from dash import Input, Output, dcc
 
 from fitbenchmarking.results_processing.plots import Plot
 
@@ -126,13 +126,24 @@ def get_plot_path_and_data(bounds, fig_dir, options):
                                         solvers=solvers)
 
         pp_dfs[name] = pp_df
+        max_n_solvers_offline = 15
+        if len(solvers) < max_n_solvers_offline:
+            fig = update_fig(fig, name, use_log_plot,
+                             log_upper_limit)
 
-        fig = update_fig(fig, name, use_log_plot,
-                         log_upper_limit)
+            Plot.write_html_with_link_plotlyjs(fig, fig_dir,
+                                               this_filename_html,
+                                               options)
+        else:
+            warning = '<div style="font-size: 14px !important; '\
+                      'color: #ff0000; font-family: verdana"}><body>The '\
+                      'number of solvers is too large '\
+                      f'(> {max_n_solvers_offline}) to be displayed in '\
+                      'a static offline plot. Please run Dash and use '\
+                      'the online version instead. </body></div>'
 
-        Plot.write_html_with_link_plotlyjs(fig, fig_dir,
-                                           this_filename_html,
-                                           options)
+            with open(this_filename_html, "w") as file:
+                file.write(warning)
 
     return figure_paths, pp_dfs
 
@@ -251,10 +262,13 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
     huge = 1.0e20  # set a large value as a proxy for infinity
 
     all_solvers = []
+    all_labels = []
     all_solver_values = []
     all_plot_points = []
 
     for i, (solver, solver_values) in enumerate(zip(solvers, step_values)):
+        solver = f"{solver}"
+        label = f"{solver}"
         plot_points = np.linspace(0.0, 1.0, solver_values.size)
         plot_points = np.append(plot_points, 1.0)
         inf_indices = np.where(solver_values > huge)
@@ -263,9 +277,10 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
             plural_ending = "s"
             if inf_indices[0].size == 1:
                 plural_ending = ""
-            solver = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
+            label = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
         solver_values = np.append(solver_values, huge)
 
+        all_labels.append(label)
         all_solvers.append(solver)
         all_solver_values.append(solver_values)
         all_plot_points.append(plot_points)
@@ -283,19 +298,23 @@ def create_plot_and_df(step_values: 'list[np.ndarray]',
         )
 
     pp_df = create_df(all_solvers,
+                      all_labels,
                       all_solver_values,
                       all_plot_points)
 
     return fig, pp_df
 
 
-def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
+def create_df(solvers: 'list[str]', labels: 'list[str]',
+              solver_values: 'list[np.ndarray]',
               plot_points: 'list[np.ndarray]') -> pd.DataFrame:
     """
     Creates a df with performance profile data.
 
     :param solvers: The names of the solvers
     :type solvers: list[str]
+    :param labels: The labels for the solvers (showing n failures)
+    :type labels: list[str]
     :param solver_values: The solver values (x values) for each solver
     :type solver_values: list[numpy.array]
     :param plot_points: The y values for each solver
@@ -307,11 +326,13 @@ def create_df(solvers: 'list[str]', solver_values: 'list[np.ndarray]',
 
     # Prepare data to save
     solvers_repeated = np.repeat(solvers, len(plot_points[0]))
+    labels_repeated = np.repeat(labels, len(plot_points[0]))
     solver_values = list(np.concatenate(solver_values))
     plot_points = list(np.concatenate(plot_points))
 
     data_dict = {
         'solver': solvers_repeated,
+        'label': labels_repeated,
         'x': solver_values,
         'y': plot_points
     }
@@ -340,52 +361,46 @@ class DashPerfProfile():
         self.profile_name = profile_name
         self.group_label = group_label
         self.identif = self.group_label + '-' + self.profile_name
+
+        self.default_opt = []
+        for solver in self.data['solver'].unique():
+            self.default_opt.append({
+                "value": solver,
+                "label": solver
+            })
+
         self.layout()
         self.set_callbacks()
 
     def layout(self):
         """
-        Creates and returns the dash layout for the performance profile,
+        Creates and returns the dash plot for the performance profile,
         which is used in fitbenchmarking/core/results_output, in the
         function "display_page".
 
-        :return: Layout for the performance profile.
-        :rtype: dash.html.Div
+        :return: Dash plot for the performance profile.
+        :rtype: dcc.Graph
         """
 
-        layout = html.Div([
-            dcc.RadioItems(
-                id=f"Log axis toggle {self.identif}",
-                options=["Log x-axis", "Linear x-axis"],
-                value="Log x-axis",
-                labelStyle={"margin-top": "1.5rem",
-                            "margin-left": "1rem",
-                            "margin-right": "1rem",
-                            "margin-bottom": "0.8rem"},
-                style={"display": "flex",
-                       "font-family": "verdana",
-                       "color": '#454545',
-                       "font-size": "15px"}
-            ),
-            dcc.Graph(id=f"visual {self.identif}")
-        ],
-        )
-        return layout
+        return dcc.Graph(id=f"visual {self.identif}")
 
     def set_callbacks(self):
         """Calls callbacks on the function that creates the dash graph."""
 
         dash.callback(
             Output(f"visual {self.identif}", "figure"),
-            Input(f"Log axis toggle {self.identif}", "value")
+            [Input("Log axis toggle", "value"),
+             Input("dropdown", "value")]
         )(self.create_graph)
 
-    def create_graph(self, x_axis_scale):
+    def create_graph(self, x_axis_scale, solvers):
         """
         Creates the dash plot.
 
         :param x_axis_scale: Can be either "Log x-axis" or "Linear x-axis"
         :type x_axis_scale: str
+        :param solvers: The solvers to show in the graph
+        :type solvers: list[str]
 
         :return: Figure for the Dash plot
         :rtype: plotly.graph_objects.Figure
@@ -396,16 +411,19 @@ class DashPerfProfile():
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
         linestyles = ['solid', 'dash', 'dashdot']
 
+        df_selected_solvers = self.data[self.data['solver'].isin(solvers)]
+
         max_value = 0
 
         # Setting sort to False ensures the color for each solver
         # in the dash plot is the same as in the offline plot
-        grouped_data = self.data.groupby('solver', sort=False)
+        grouped_data = df_selected_solvers.groupby('solver', sort=False)
 
-        for i, (solver, data_one_solver) in enumerate(grouped_data):
+        for i, (_, data_one_solver) in enumerate(grouped_data):
 
             solver_values = data_one_solver['x']
             plot_points = data_one_solver['y']
+            solver_label = list(data_one_solver['label'])[0]
 
             temp_max_value = max(list(solver_values))
             if temp_max_value > max_value:
@@ -421,7 +439,7 @@ class DashPerfProfile():
                         "dash": linestyles[(i % len(linestyles))],
                         "color": colors[(i % len(colors))]
                     },
-                    name=solver,
+                    name=solver_label,
                     type='scatter'))
 
         log_upper_limit = min(max_value+1, 10000)
@@ -429,4 +447,5 @@ class DashPerfProfile():
 
         fig = update_fig(fig, self.profile_name, use_log_plot,
                          log_upper_limit)
+
         return fig

@@ -1,8 +1,6 @@
 """
 Runtime table
 """
-import os
-
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -15,43 +13,8 @@ class RuntimeTable(Table):
     in the tables is {runtime_metric}.
 
     """
-
-    def __init__(self, results, best_results, options, group_dir, pp_locations,
-                 table_name):
-        """
-        Initialise the runtime table which shows the runtime results
-
-        :param results: Results grouped by row and category (for colouring)
-        :type results:
-            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
-        :param best_results: The best results from each row/category
-        :type best_results:
-            dict[str, dict[str, utils.fitbm_result.FittingResult]],
-        :param options: Options used in fitting
-        :type options: utils.options.Options
-        :param group_dir: path to the directory where group results should be
-                          stored
-        :type group_dir: str
-        :param pp_locations: the locations of the performance profiles
-        :type pp_locations: dict[str,str]
-        :param table_name: Name of the table
-        :type table_name: str
-        """
-
-        super().__init__(results, best_results, options, group_dir,
-                         pp_locations, table_name)
-        self.name = 'runtime'
-        self.has_pp = True
-        port = options.port
-        group_dir_label = os.path.basename(group_dir)
-
-        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
-                             f'perf_prof_runtime']
-        self.pp_filenames = [
-            os.path.relpath(self.pp_locations['runtime'], group_dir)
-        ]
-
-        self.cbar_title = "Problem-Specific Cell Shading: Relative Runtime"
+    name = 'runtime'
+    cbar_title = "Problem-Specific Cell Shading: Relative Runtime"
 
     def get_value(self, result):
         """

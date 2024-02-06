@@ -33,6 +33,12 @@ class Table:
     - get_link_str
     """
     __metaclass__ = ABCMeta
+    name = None
+    output_string_type = {"abs": '{:.4g}',
+                          "rel": '{:.4g}',
+                          "both": '{0:.4g} ({1:.4g})'}
+    colour_template = 'background-color: {0}'
+    cbar_title = "No colour bar description given"
 
     def __init__(self, results, best_results, options, group_dir,
                  pp_locations, table_name):
@@ -62,19 +68,12 @@ class Table:
         self.group_dir = group_dir
         self.pp_locations = pp_locations
         self.table_name = table_name
-        self.name = None
 
-        self.output_string_type = {"abs": '{:.4g}',
-                                   "rel": '{:.4g}',
-                                   "both": '{0:.4g} ({1:.4g})'}
-        self.colour_template = 'background-color: {0}'
-
-        self.has_pp = False
         self.pp_location = ''
         self._table_title = None
         self._file_path = None
+        self.pps = [self.name]
 
-        self.cbar_title = "No colour bar description given"
         self.cbar_left_label = "Best (1)"
         self.cbar_right_label = f"Worst (>{self.options.colour_ulim})"
 

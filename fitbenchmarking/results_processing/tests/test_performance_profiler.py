@@ -292,6 +292,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                 0.5, 0.625, 0.75, 0.875,
                 1.])]
         output_df = performance_profiler.create_df(self.solvers,
+                                                   self.solvers,
                                                    self.solver_values,
                                                    plot_points)
         assert_frame_equal(output_df, expected_df)
@@ -336,7 +337,8 @@ class DashPerfProfileTests(unittest.TestCase):
             root, 'results_processing',
             'tests', 'expected_results')
 
-        data = read_csv(self.expected_results_dir + "/pp_data.csv")
+        data = read_csv(self.expected_results_dir +
+                        "/pp_data.csv")
 
         self.perf_profile = performance_profiler.\
             DashPerfProfile('runtime', data,
@@ -352,11 +354,14 @@ class DashPerfProfileTests(unittest.TestCase):
         Test create_graph returns the expected plot.
         """
 
-        output = self.perf_profile.create_graph("Log x-axis")
+        selected_solvers = self.perf_profile.data["solver"]
+        output_fig = self.perf_profile.\
+            create_graph(x_axis_scale="Log x-axis",
+                         solvers=selected_solvers[:3])
 
         output_plot_path = self.temp_result + '/obtained_plot.html'
 
-        Plot.write_html_with_link_plotlyjs(fig=output,
+        Plot.write_html_with_link_plotlyjs(fig=output_fig,
                                            figures_dir='',
                                            htmlfile=output_plot_path,
                                            options=self.options)
