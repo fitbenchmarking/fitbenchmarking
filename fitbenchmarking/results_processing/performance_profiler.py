@@ -481,10 +481,9 @@ class DashPerfProfile():
             solvers_to_remove = set(previous_solvers).difference(solvers)
 
             for solver in solvers_to_remove:
-                linestyle = self.current_styles[solver]['linestyle']
-                linecolor = self.current_styles[solver]['linecolor']
-                self.avail_styles[linestyle+linecolor] = (linestyle, linecolor)
-                self.current_styles.pop(solver)
+                comb = self.current_styles.pop(solver)
+                self.avail_styles.append(comb)
+                
 
     def prepare_data(self, solvers):
         """
