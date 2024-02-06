@@ -288,9 +288,9 @@ class PerformanceProfilerTests(unittest.TestCase):
                                                    self.plot_points)
         assert_frame_equal(output_df, expected_df)
 
-    def test_get_plot_path(self):
+    def test_create_plots_and_get_paths(self):
         """
-        Test that get_plot_path returns the correct path.
+        Test that create_plots_and_get_paths returns the correct paths.
         """
         acc = {'migrad [minuit]': [1., 2.,  5., 6., 15., 150, 180.],
                'simplex [minuit]': [1., 20., 100., 110., 150., 900, 1800.],
@@ -303,9 +303,10 @@ class PerformanceProfilerTests(unittest.TestCase):
                      'dfogn [dfo]': [0.6, 0.4, 0.6, 0.9, 0.5,  0.3, 0.2]}
 
         bounds = {'acc': acc, 'runtime': runtime, 'emissions': emissions}
-        paths = performance_profiler.get_plot_path(bounds,
-                                                   self.fig_dir,
-                                                   self.options)
+        paths = performance_profiler.\
+            create_plots_and_get_paths(bounds,
+                                       self.fig_dir,
+                                       self.options)
         expec_paths = {}
         for name, _ in bounds.items():
             this_filename_html = os.path.join(self.fig_dir,

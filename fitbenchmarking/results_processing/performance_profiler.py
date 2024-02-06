@@ -34,7 +34,7 @@ def profile(results, fig_dir, options):
     for pp_name, pp_dict in bounds.items():
         pp_dfs[pp_name] = pd.DataFrame.from_dict(pp_dict, orient='columns')
 
-    plot_paths = get_plot_path(bounds, fig_dir, options)
+    plot_paths = create_plots_and_get_paths(bounds, fig_dir, options)
     return plot_paths, pp_dfs
 
 
@@ -107,7 +107,7 @@ def compute_step_values(profile_plot):
     return step_values, max_value
 
 
-def get_plot_path(bounds, fig_dir, options):
+def create_plots_and_get_paths(bounds, fig_dir, options):
     """
     Function that generates profiler plots
 
