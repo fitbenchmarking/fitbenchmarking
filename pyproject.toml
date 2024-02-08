@@ -55,7 +55,7 @@ dev = [
     'pytest',
     'pytest-cov>=4.0.0',
     'coveralls',
-    'coverage[toml]',
+    'coverage[toml]>=6.3',
     'pylint==2.9.5',
     'flake8==3.9.2',
     'pylint-exit',
