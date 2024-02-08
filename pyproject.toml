@@ -40,7 +40,7 @@ dependencies = [
 bumps = ['bumps>=0.9.0']
 DFO = ['DFO-LS', 'dfogn']
 gofit = ['gofit']
-gradient_free = ['gradient-free-optimizers']
+"gradient_free" = ['gradient-free-optimizers']
 hogben = ['HOGBEN']
 levmar = ['levmar']
 lmfit = ['lmfit', 'emcee>=3.1.0']
