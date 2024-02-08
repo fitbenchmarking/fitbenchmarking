@@ -53,7 +53,7 @@ paramonte = ['paramonte']
 SAS = ['sasmodels', "tinycc;platform_system=='Windows'"]
 dev = [
     'pytest',
-    'pytest-cov',
+    'pytest-cov>=4.0.0',
     'coveralls',
     'coverage[toml]',
     'pylint==2.9.5',
