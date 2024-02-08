@@ -142,7 +142,7 @@ disable = [
 ]
 
 [tool.pylint.reports]
-output-format = 'colorised'
+output-format = 'colorized'
 
 [tool.pylint.variables]
 ignored-argument-names = "arg|args|kwargs"
