@@ -110,17 +110,7 @@ source = "versioningit"
 [tool.pylint.main]
 extension-pkg-allow-list = ["gofit"]
 ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
-
-[tool.pylint.design]
-max-args = 10
-max-branches = 15
-max-locals = 35
-max-public-methods = 25
-max-statements = 60
-
-[tool.pylint.imports]
-# Force import order to recognize a module as part of a third party library.
-known-third-party = [
+ignored-modules = [
     "levmar",
     "lmfit",
     "mantid",
@@ -132,6 +122,13 @@ known-third-party = [
     "ral_nlls",
     "theseus",
 ]
+
+[tool.pylint.design]
+max-args = 10
+max-branches = 15
+max-locals = 35
+max-public-methods = 25
+max-statements = 60
 
 [tool.pylint."messages control"]
 disable = [
