@@ -302,6 +302,26 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
     return data_to_plot
 
 
+def compute_linestyle_combinations() -> 'list[tuple[str]]':
+    """
+    Compute combinations of linestyles and colours
+    to be used in performance profile plots.
+
+    :return: The combinations of linestyles and colours
+    :rtype: list[tuple[str]]
+    """
+    colors = ['#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+              '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+
+    # Use only 3 of the possible 5 linestyles, because 5 is a factor
+    # of 10 (number of colours) and using 10 colours + 5 linestyles
+    # would not give enough line/colour combinations
+    linestyles = ['dashdot', 'dash', 'solid']
+
+    avail_styles = list(itertools.product(linestyles, colors))
+    return avail_styles
+
+
 def create_plot(step_values: 'list[np.ndarray]',
                 solvers: 'list[str]') -> go.Figure:
     """
@@ -317,32 +337,29 @@ def create_plot(step_values: 'list[np.ndarray]',
     """
 
     fig = go.Figure()
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-              '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-
-    # Use only 3 of the possible 5 linestyles, because 5 is a factor
-    # of 10 (number of colours) and using 10 colours + 5 linestyles
-    # would not give enough line/colour combinations
-    linestyles = ['solid', 'dash', 'dashdot']
 
     data_to_plot = adjust_values_to_plot(
         step_values=step_values,
         solvers=solvers
     )
 
-    for i, (label, solver_values, plot_points) in enumerate(zip(
+    avail_styles = compute_linestyle_combinations()
+
+    for label, solver_values, plot_points in zip(
                                                 data_to_plot['labels'],
                                                 data_to_plot['solver_values'],
                                                 data_to_plot['plot_points']
-                                            )):
+                                                ):
+
+        linestyle, colour = avail_styles.pop()
 
         fig.add_trace(
             go.Scatter(x=solver_values,
                        y=plot_points,
                        mode='lines',
                        line={"shape": 'hv',
-                             "dash": linestyles[(i % len(linestyles))],
-                             "color": colors[(i % len(colors))]},
+                             "dash": linestyle,
+                             "color": colour},
                        name=label,
                        type='scatter'
                        )
@@ -419,13 +436,7 @@ class DashPerfProfile():
             })
 
         self.current_styles = {}
-
-        self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                       '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-        self.linestyles = ['solid', 'dash', 'dashdot']
-
-        self.avail_styles = list(itertools.product(self.linestyles,
-                                                   self.colors))
+        self.avail_styles = compute_linestyle_combinations()
 
         self.layout()
         self.set_callbacks()
@@ -460,7 +471,13 @@ class DashPerfProfile():
         """
         previous_solvers = list(self.current_styles.keys())
 
-        if len(solvers) > len(previous_solvers):
+        if len(previous_solvers) == 0:
+
+            for solver in solvers:
+                comb = self.avail_styles.pop()
+                self.current_styles[solver] = comb
+
+        elif len(solvers) > len(previous_solvers):
 
             newly_added_solvers = set(solvers).difference(previous_solvers)
             for solver in newly_added_solvers:
