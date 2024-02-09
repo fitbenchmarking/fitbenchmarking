@@ -348,6 +348,20 @@ class PerformanceProfilerTests(unittest.TestCase):
         assert np.array_equal(expected_dict['plot_points'],
                               output_dict['plot_points'])
 
+    # pylint: disable=no-self-use
+    def test_compute_linestyle_combinations(self):
+        """
+        Test compute_linestyle_combinations returns expected styles.
+        """
+
+        output = performance_profiler.compute_linestyle_combinations()
+        assert isinstance(output, list)
+        for combination in output:
+            assert isinstance(combination, tuple)
+            assert isinstance(combination[0], str)
+            assert re.match(r"#[0-9a-fA-F]{6}", combination[1])
+    # pylint: enable=no-self-use
+
 
 class DashPerfProfileTests(unittest.TestCase):
     """

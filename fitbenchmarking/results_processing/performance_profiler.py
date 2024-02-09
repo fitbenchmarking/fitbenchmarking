@@ -302,20 +302,17 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
     return data_to_plot
 
 
-def compute_linestyle_combinations() -> 'list[tuple[str]]':
+def compute_linestyle_combinations() -> 'list[tuple[str, str]]':
     """
     Compute combinations of linestyles and colours
     to be used in performance profile plots.
 
     :return: The combinations of linestyles and colours
-    :rtype: list[tuple[str]]
+    :rtype: list[tuple[str, str]]
     """
     colors = ['#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
               '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
 
-    # Use only 3 of the possible 5 linestyles, because 5 is a factor
-    # of 10 (number of colours) and using 10 colours + 5 linestyles
-    # would not give enough line/colour combinations
     linestyles = ['dashdot', 'dash', 'solid']
 
     avail_styles = list(itertools.product(linestyles, colors))
