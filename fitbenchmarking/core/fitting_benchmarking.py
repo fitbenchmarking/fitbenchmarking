@@ -666,6 +666,10 @@ def perform_fit(controller, options, grabbed_output, emissions_tracker):
     # Reset the controller timer once exceptions have been handled
     controller.timer.reset()
 
+    # ensure emissions tracker has been stopped if emissions not set
+    if emissions == np.nan and emissions_tracker:
+        _ = emissions_tracker.stop_task()
+
     if controller.flag in [3, 6, 7]:
         # If there was an exception, set the runtimes and
         # cost function value to be infinite
