@@ -90,7 +90,7 @@ class Fit:
         """
         problem_group = misc.get_problem_files(self._data_dir)
 
-        problems, name_count = [], {}
+        problems, results, name_count,  = [], [], {}
 
         for p in problem_group:
             try:
@@ -127,7 +127,8 @@ class Fit:
                 LOGGER.info(info_str)
                 LOGGER.info('#' * len(info_str))
 
-                self.__loop_over_starting_values(problem)
+                results = self.__loop_over_starting_values(problem)
+                self._results.extend(results)
 
         self._checkpointer.finalise_group(self._label,
                                           self._failed_problems,
@@ -146,6 +147,7 @@ class Fit:
         """
         name = problem.name
         num_start_vals = len(problem.starting_values)
+        results = []
 
         num_start_vals_pbar = trange(num_start_vals, colour='blue',
                                      leave=False, desc="Starting values   ",
@@ -165,17 +167,20 @@ class Fit:
             #############################
             # Loops over cost functions #
             #############################
-            self.__loop_over_cost_function(problem)
+            result = self.__loop_over_cost_function(problem)
+            results.extend(result)
 
             # Checks to see if all of the minimizers from every software raised
             # an exception and record the problem name if that is the case
             software_check = [np.isinf(v.accuracy)
-                              for v in self._results]
+                              for v in results]
             if all(software_check):
                 self._failed_problems.append(problem.name)
 
             # Reset name for next loop
             problem.name = name
+        
+        return results
 
     def __loop_over_cost_function(self, problem):
         """
@@ -184,7 +189,7 @@ class Fit:
         :param problem: The problem to run fitting on
         :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
-
+        results = []
         for cf in self._options.cost_func_type:
             cost_func_cls = create_cost_func(cf)
             cost_func = cost_func_cls(problem)
@@ -198,7 +203,10 @@ class Fit:
             #######################
             # Loops over software #
             #######################
-            self.__loop_over_fitting_software(cost_func)
+            result = self.__loop_over_fitting_software(cost_func)
+            results.extend(result)
+        
+        return results
 
     def __loop_over_fitting_software(self, cost_func):
         """
@@ -211,6 +219,7 @@ class Fit:
         software = self._options.software\
             if isinstance(self._options.software, list)\
             else [self._options.software]
+        results = []
 
         software_pbar = tqdm(software, colour='yellow',
                              desc="Software          ",
@@ -235,11 +244,14 @@ class Fit:
             #########################
             # Loops over minimizers #
             #########################
-            minimizer_failed = \
+            result, minimizer_failed = \
                 self.__loop_over_minimizers(controller=controller,
                                             minimizers=minimizers)
+            results.extend(result)
 
             self._unselected_minimizers[s] = minimizer_failed
+        
+        return results
 
     def __loop_over_minimizers(self, controller, minimizers):
         """
@@ -254,8 +266,7 @@ class Fit:
         :rtype: list[str])
         """
         algorithm_type = self._options.algorithm_type
-
-        minimizer_failed = []
+        minimizer_failed, results = [], []
 
         for minimizer in minimizers:
             controller.minimizer = minimizer
@@ -289,16 +300,17 @@ class Fit:
                         dummy_result = fitbm_result.FittingResult(
                             controller=controller)
                         self._checkpointer.add_result(dummy_result)
-                        self._results.append(dummy_result)
+                        results.append(dummy_result)
                         LOGGER.warning(str(excp))
 
             if minimizer_check:
                 ########################
                 # Loops over Jacobians #
                 ########################
-                self.__loop_over_jacobians(controller)
+                result = self.__loop_over_jacobians(controller)
+                results.extend(result)
 
-        return minimizer_failed
+        return results, minimizer_failed
 
     def __loop_over_jacobians(self, controller):
         """
@@ -311,6 +323,7 @@ class Fit:
         minimizer = controller.minimizer
         jacobian_list = self._options.jac_method
         minimizer_check = minimizer in controller.jacobian_enabled_solvers
+        results = []
         try:
             for jac_method in jacobian_list:
 
@@ -340,7 +353,8 @@ class Fit:
                     #######################
                     # Loops over Hessians #
                     #######################
-                    self.__loop_over_hessians(controller)
+                    result = self.__loop_over_hessians(controller)
+                    results.extend(result)
 
                     # For minimizers that do not accept jacobians we raise an
                     # StopIteration exception to exit the loop through the
@@ -350,6 +364,8 @@ class Fit:
 
         except StopIteration:
             pass
+
+        return results
 
     def __loop_over_hessians(self, controller):
         """
@@ -363,6 +379,7 @@ class Fit:
         problem = controller.problem
         minimizer_check = minimizer in controller.hessian_enabled_solvers
         hessian_list = self._options.hes_method
+        results = []
 
         # loop over selected hessian methods
         for hes_method in hessian_list:
@@ -407,11 +424,12 @@ class Fit:
                     for i in range(len(accuracy)):
                         result_args['dataset'] = i
                         result = fitbm_result.FittingResult(**result_args)
-                        self._results.append(result)
+                        results.append(result)
                         self._checkpointer.add_result(result)
                 else:
                     result = fitbm_result.FittingResult(**result_args)
-                    self._results.append(result)
+                    results.append(result)
+                    # self._results.append(result)
                     self._checkpointer.add_result(result)
 
                 # For minimizers that do not accept hessians we raise an
@@ -419,6 +437,8 @@ class Fit:
                 # Hessians
                 if not minimizer_check:
                     break
+
+        return results
 
     def __perform_fit(self, controller):
         """
