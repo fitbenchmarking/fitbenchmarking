@@ -102,11 +102,6 @@ class MantidDevParser(FitbenchmarkParser):
                 self._jac[i, j] = J.get(i, j)
         return self._jac
 
-    def _update_params(self, *p):
-        update_dict = dict(zip(self._params_dict.keys(), p))
-        self._params_dict.update(update_dict)
-        return self._params_dict
-
     def _create_function(self) -> typing.Callable:
         """
         Processing the function in the Mantid problem definition into a
