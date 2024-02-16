@@ -179,7 +179,7 @@ class Fit:
 
             # Reset name for next loop
             problem.name = name
-        
+
         return results
 
     def __loop_over_cost_function(self, problem):
@@ -205,7 +205,7 @@ class Fit:
             #######################
             result = self.__loop_over_fitting_software(cost_func)
             results.extend(result)
-        
+
         return results
 
     def __loop_over_fitting_software(self, cost_func):
@@ -250,7 +250,7 @@ class Fit:
             results.extend(result)
 
             self._unselected_minimizers[s] = minimizer_failed
-        
+
         return results
 
     def __loop_over_minimizers(self, controller, minimizers):
