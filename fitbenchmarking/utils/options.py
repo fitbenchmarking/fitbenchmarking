@@ -145,12 +145,14 @@ class Options:
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
                       'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
                       'scipy_go', 'theseus'],
-         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
+         'jac_method': ['best_available', 'scipy', 'analytic', 'default',
+                        'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'loglike_nlls', 'poisson']}
     VALID_JACOBIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
+         'best_available': ['default'],
          'analytic': ['default'],
          'default': ['default'],
          'numdifftools': ['central',
@@ -278,12 +280,13 @@ class Options:
         {'num_runs': 5,
          'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
-         'jac_method': ['analytic'],
+         'jac_method': ['best_available'],
          'hes_method': ['analytic'],
          'cost_func_type': ['weighted_nlls'],
          'max_runtime': 600}
     DEFAULT_JACOBIAN = \
         {'analytic': ['default'],
+         'best_available': ['default'],
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
