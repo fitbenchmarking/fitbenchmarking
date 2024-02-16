@@ -1,6 +1,8 @@
 """
 Module which calculates numdifftools finite difference approximations
 """
+from functools import lru_cache
+
 import numdifftools as nd
 
 from fitbenchmarking.hessian.base_hessian import Hessian
@@ -25,8 +27,13 @@ class Numdifftools(Hessian):
         """
         x = kwargs.get("x", self.problem.data_x)
 
-        def jac_func(params):
+        @lru_cache
+        def grad(params):
             return self.jacobian.eval(params, x=x).T
+
+        def jac_func(params):
+            return grad(tuple(params))
+
         hes_func = nd.Jacobian(jac_func, method=self.method)
         hes = hes_func(params)
 
