@@ -943,7 +943,10 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                                        group_label=group),
                 'runtime': DashPerfProfile(profile_name='Runtime',
                                            pp_df=pp_dfs['runtime'],
-                                           group_label=group)}
+                                           group_label=group),
+                'emissions': DashPerfProfile(profile_name='Emissions',
+                                             pp_df=pp_dfs['emissions'],
+                                             group_label=group)}
         profile_instances_all_groups[group] = inst
 
     # Needed to prevent unnecessary warning in the terminal
