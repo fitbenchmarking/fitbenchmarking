@@ -105,7 +105,7 @@ class LoopOverMinimizersTests(unittest.TestCase):
             runtimes=[1])
         self.cp = Checkpoint(self.options)
 
-    def mock_func_call(self):
+    def mock_func_call(self, *args, **kwargs):
         """
         Mock function to be used instead of loop_over_jacobians
         """
@@ -129,15 +129,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         assert results == []
         assert minimizer_failed == self.minimizers
 
-    @patch(f'{FITTING_DIR}.loop_over_jacobians')
-    def test_run_minimzers_selected(self, loop_over_hessians):
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_jacobians')
+    def test_run_minimzers_selected(self, loop_over_jacobians):
         """
         Tests that some minimizers are selected
         """
         self.options.algorithm_type = ["general"]
         self.results = [[self.result]]
         self.minimizer_list = [["general"]]
-        loop_over_hessians.side_effect = self.mock_func_call
+        loop_over_jacobians.side_effect = self.mock_func_call
 
         fit = Fit(options=self.options,
                   data_dir=FITTING_DIR,
@@ -150,14 +150,14 @@ class LoopOverMinimizersTests(unittest.TestCase):
                    for x in results)
         assert minimizer_failed == ["deriv_free_algorithm"]
 
-    @patch(f'{FITTING_DIR}.loop_over_jacobians')
-    def test_run_minimzers_all(self, loop_over_hessians):
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_jacobians')
+    def test_run_minimzers_all(self, loop_over_jacobians):
         """
         Tests that all minimizers are selected
         """
         self.results = [[self.result], [self.result]]
         self.minimizer_list = [["general"], ["deriv_free_algorithm"]]
-        loop_over_hessians.side_effect = self.mock_func_call
+        loop_over_jacobians.side_effect = self.mock_func_call
 
         fit = Fit(options=self.options,
                   data_dir=FITTING_DIR,
