@@ -67,6 +67,14 @@ class Fit:
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
 
+    @property
+    def _unselected_minimizers(self):
+        return self.__unselected_minimizers
+
+    @_unselected_minimizers.setter
+    def _unselected_minimizers(self, value):
+        self.__unselected_minimizers = value
+
     def benchmark(self):
         """
         Call benchmarking on user input and list of paths.
@@ -144,6 +152,9 @@ class Fit:
 
         :param problem: The problem to benchmark on
         :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
+
+        :return: all results
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult]
         """
         name = problem.name
         num_start_vals = len(problem.starting_values)
@@ -188,6 +199,9 @@ class Fit:
 
         :param problem: The problem to run fitting on
         :type problem: fitbenchmarking.parsing.fitting_problem.FittingProblem
+
+        :return: all results
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult]
         """
         results = []
         for cf in self._options.cost_func_type:
@@ -215,6 +229,9 @@ class Fit:
         :param cost_func: a cost_func object containing information used
                           in fitting
         :type cost_func: CostFunction
+
+        :return: all results
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult]
         """
         software = self._options.software\
             if isinstance(self._options.software, list)\
@@ -262,8 +279,10 @@ class Fit:
         :param minimizers: array of minimizers used in fitting
         :type minimizers: list
 
-        :return: minimizers that were unselected due to algorithm_type
-        :rtype: list[str])
+        :return: all results, and
+                 minimizers that were unselected due to algorithm_type
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
+                list[str])
         """
         algorithm_type = self._options.algorithm_type
         minimizer_failed, results = [], []
@@ -318,6 +337,9 @@ class Fit:
 
         :param controller: The software controller for the fitting
         :type controller: Object derived from BaseSoftwareController
+
+        :return: a FittingResult for each run.
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult]
         """
         cost_func = controller.cost_func
         minimizer = controller.minimizer
@@ -373,6 +395,9 @@ class Fit:
 
         :param controller: The software controller for the fitting
         :type controller: Object derived from BaseSoftwareController
+
+        :return: a FittingResult for each run
+        :rtype: list[fibenchmarking.utils.fitbm_result.FittingResult],
         """
         minimizer = controller.minimizer
         cost_func = controller.cost_func
