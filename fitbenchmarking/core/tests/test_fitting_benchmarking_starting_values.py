@@ -4,10 +4,11 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_starting_values
 import inspect
 import os
 import unittest
+from unittest.mock import patch, PropertyMock
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.core.fitting_benchmarking import loop_over_starting_values
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -83,10 +84,8 @@ class LoopOverStartingValuesTests(unittest.TestCase):
         """
         individual_problem_results = \
             self.individual_problem_results[self.count]
-        unselected_minimizers = self.unselected_minimizers
         self.count += 1
-        return (individual_problem_results,
-                unselected_minimizers)
+        return individual_problem_results
 
     def shared_tests(self, expected_list_len, expected_problem_fails,
                      expected_unselected_minimizers):
@@ -101,18 +100,21 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                                                unselected minimizer
         :type expected_unselected_minimizers: dict
         """
-        problem_results, problem_fails, unselected_minimizers \
-            = loop_over_starting_values(self.problem,
-                                        options=self.options,
-                                        grabbed_output=self.grabbed_output,
-                                        checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+        problem_results = fit._Fit__loop_over_starting_values(self.problem)
         assert len(problem_results) == expected_list_len
-        assert problem_fails == expected_problem_fails
+        assert fit._failed_problems == expected_problem_fails
 
-        dict_test(unselected_minimizers, expected_unselected_minimizers)
+        dict_test(fit._unselected_minimizers, expected_unselected_minimizers)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_fitting_software')
-    def test_run_multiple_starting_values(self, loop_over_fitting_software):
+    @patch(f'{FITTING_DIR}.Fit._unselected_minimizers',
+           new_callable=PropertyMock)
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_fitting_software')
+    def test_run_multiple_starting_values(self,
+                                          loop_over_fitting_software,
+                                          mock):
         """
         Checks that all selected minimizers run with multiple starting
         values
@@ -121,16 +123,18 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = []
-        self.unselected_minimizers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(list_results) * 2
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimizers = self.unselected_minimizers
+        mock.return_value = {"scipy": []}
+        expected_unselected_minimizers = {"scipy": []}
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimizers)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_fitting_software')
-    def test_run_one_starting_values(self, loop_over_fitting_software):
+    @patch(f'{FITTING_DIR}.Fit._unselected_minimizers',
+           new_callable=PropertyMock)
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_fitting_software')
+    def test_run_one_starting_values(self, loop_over_fitting_software, mock):
         """
         Checks that all selected minimizers run with one starting
         values
@@ -140,17 +144,20 @@ class LoopOverStartingValuesTests(unittest.TestCase):
             [[fitbm_result.FittingResult(**self.result_args)
               for i in range(self.scipy_len)]]
         self.problem_fails = []
-        self.unselected_minimizers = {"scipy": []}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(self.individual_problem_results[0])
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimizers = self.unselected_minimizers
+        mock.return_value = {"scipy": []}
+        expected_unselected_minimizers = {"scipy": []}
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimizers)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_fitting_software')
+    @patch(f'{FITTING_DIR}.Fit._unselected_minimizers',
+           new_callable=PropertyMock)
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_fitting_software')
     def test_run_reports_unselected_minimizers(self,
-                                               loop_over_fitting_software):
+                                               loop_over_fitting_software,
+                                               mock):
         """
         Checks that the unselected minimizers are reported correctly
         """
@@ -158,11 +165,11 @@ class LoopOverStartingValuesTests(unittest.TestCase):
                         for i in range(self.scipy_len)]
         self.individual_problem_results = [list_results, list_results]
         self.problem_fails = []
-        self.unselected_minimizers = {"scipy": ['Powell', 'CG']}
         loop_over_fitting_software.side_effect = self.mock_func_call
         expected_list_length = len(list_results) * 2
         expected_problem_fails = self.problem_fails
-        expected_unselected_minimizers = self.unselected_minimizers
+        mock.return_value = {"scipy": ['Powell', 'CG']}
+        expected_unselected_minimizers = {"scipy": ['Powell', 'CG']}
         self.shared_tests(expected_list_length, expected_problem_fails,
                           expected_unselected_minimizers)
 

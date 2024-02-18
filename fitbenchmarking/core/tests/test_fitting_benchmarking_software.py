@@ -4,13 +4,13 @@ Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_fitting_software
 import inspect
 import os
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.core.fitting_benchmarking import \
-    loop_over_fitting_software
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import fitbm_result, output_grabber
@@ -99,18 +99,17 @@ class LoopOverSoftwareTests(unittest.TestCase):
         :param expected_minimizer_failed: expected dict of failed minimizers
         :type expected_minimizer_failed: dict
         """
-        results, unselected_minimzers = \
-            loop_over_fitting_software(
-                self.cost_func,
-                options=self.options,
-                start_values_index=self.start_values_index,
-                grabbed_output=self.grabbed_output,
-                checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        results = \
+            fit._Fit__loop_over_fitting_software(self.cost_func)
         assert len(results) == expected_list_len
 
-        dict_test(unselected_minimzers, expected_minimizer_failed)
+        dict_test(fit._unselected_minimizers, expected_minimizer_failed)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_minimizers')
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_minimizers')
     def test_run_one_software(self, loop_over_minimizers):
         """
         Checks that results are produced for one minimizer within the
@@ -127,7 +126,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_minimizers')
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_minimizers')
     def test_run_multiple_softwares(self, loop_over_minimizers):
         """
         Checks that results are produced for all minimizers within the
@@ -149,7 +148,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_minimizers')
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_minimizers')
     def test_run_software_failed_minimizers(self, loop_over_minimizers):
         """
         Checks that the failed minimizers are reported
@@ -174,7 +173,7 @@ class LoopOverSoftwareTests(unittest.TestCase):
         expected_minimizer_failed = self.minimizer_failed
         self.shared_test(expected_list_len, expected_minimizer_failed)
 
-    @unittest.mock.patch(f'{FITTING_DIR}.loop_over_minimizers')
+    @patch(f'{FITTING_DIR}.Fit._Fit__loop_over_minimizers')
     def test_run_software_all_failed_minimizers(self, loop_over_minimizers):
         """
         Tests that when all minimizers raise an exception for a problem, it
@@ -201,13 +200,11 @@ class LoopOverSoftwareTests(unittest.TestCase):
         Tests an exception is raised when an incorrect software is selected
         """
         self.options.software = ['incorrect_software']
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
         with self.assertRaises(UnsupportedMinimizerError):
-            _ = loop_over_fitting_software(
-                self.cost_func,
-                options=self.options,
-                start_values_index=self.start_values_index,
-                grabbed_output=self.grabbed_output,
-                checkpointer=self.cp)
+            _ = fit._Fit__loop_over_fitting_software(self.cost_func)
 
 
 if __name__ == "__main__":

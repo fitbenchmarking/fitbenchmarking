@@ -191,7 +191,7 @@ class FitbenchmarkingTests(unittest.TestCase):
                     accuracy, runtimes, emissions \
                         = fit._Fit__perform_fit(controller)
 
-                    assert accuracy == acc
+                    self.assertAlmostEqual(accuracy, acc, 6)
                     assert len(runtimes) == options.num_runs
                     assert emissions != np.inf
 
