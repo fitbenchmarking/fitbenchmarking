@@ -240,7 +240,7 @@ class LoopOverHessiansTests(unittest.TestCase):
         eval_confidence.assert_called_once()
 
     @run_for_test_types(TEST_TYPE, 'all')
-    @patch('fitbenchmarking.core.fitting_benchmarking.perform_fit')
+    @patch('fitbenchmarking.core.fitting_benchmarking.Fit._Fit__perform_fit')
     def test_multifit_num_results(self, perform_fit):
         """
         Test that a multifit problem produces the correct number of results.
