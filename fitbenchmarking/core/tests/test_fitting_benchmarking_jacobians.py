@@ -1,5 +1,5 @@
 """
-Tests for fitbenchmarking.core.fitting_benchmarking.loop_over_jacobians
+Tests for fitbenchmarking.core.fitting_benchmarking.Fit.__loop_over_jacobians
 """
 import inspect
 import os
@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.core.fitting_benchmarking import loop_over_jacobians
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import output_grabber
@@ -19,7 +19,7 @@ from fitbenchmarking.utils.options import Options
 # pylint: disable=unnecessary-pass
 
 # Defines the module which we mock out certain function calls for
-FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
+FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking.Fit"
 
 
 class DummyController(Controller):
@@ -108,7 +108,7 @@ class LoopOverJacobiansTests(unittest.TestCase):
         """
         return []
 
-    @patch(f'{FITTING_DIR}.loop_over_hessians')
+    @patch(f'{FITTING_DIR}._Fit__loop_over_hessians')
     def test_single_jacobian(self, loop_over_hessians):
         """
         Test to check that only one Jacobian option has been added
@@ -117,13 +117,15 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options.jac_num_method = {"scipy": ["3-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
-        _ = loop_over_jacobians(self.controller,
-                                options=self.options,
-                                grabbed_output=self.grabbed_output,
-                                checkpointer=self.cp)
+
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_jacobians(self.controller)
         loop_over_hessians.assert_called_once()
 
-    @patch(f'{FITTING_DIR}.loop_over_hessians')
+    @patch(f'{FITTING_DIR}._Fit__loop_over_hessians')
     def test_multiple_jacobian(self, loop_over_hessians):
         """
         Test to check multiple Jacobian options are set correctly
@@ -132,10 +134,12 @@ class LoopOverJacobiansTests(unittest.TestCase):
         self.options.jac_num_method = {"scipy": ["3-point", "2-point"]}
         self.controller.minimizer = "general"
         loop_over_hessians.side_effect = self.mock_func_call
-        _ = loop_over_jacobians(self.controller,
-                                options=self.options,
-                                grabbed_output=self.grabbed_output,
-                                checkpointer=self.cp)
+
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_jacobians(self.controller)
         self.assertEqual(loop_over_hessians.call_count, 2)
 
 

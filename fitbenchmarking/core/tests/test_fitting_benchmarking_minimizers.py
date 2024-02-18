@@ -123,10 +123,10 @@ class LoopOverMinimizersTests(unittest.TestCase):
                   data_dir=FITTING_DIR,
                   checkpointer=self.cp)
 
-        minimizer_failed = \
+        results, minimizer_failed = \
             fit._Fit__loop_over_minimizers(self.controller,
                                            self.minimizers)
-        assert fit._results == []
+        assert results == []
         assert minimizer_failed == self.minimizers
 
     @patch(f'{FITTING_DIR}.loop_over_jacobians')
@@ -143,11 +143,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
                   data_dir=FITTING_DIR,
                   checkpointer=self.cp)
 
-        minimizer_failed = \
+        results, minimizer_failed = \
             fit._Fit__loop_over_minimizers(self.controller,
                                            self.minimizers)
         assert all(isinstance(x, fitbm_result.FittingResult)
-                   for x in fit._results)
+                   for x in results)
         assert minimizer_failed == ["deriv_free_algorithm"]
 
     @patch(f'{FITTING_DIR}.loop_over_jacobians')
@@ -163,11 +163,11 @@ class LoopOverMinimizersTests(unittest.TestCase):
                   data_dir=FITTING_DIR,
                   checkpointer=self.cp)
 
-        minimizer_failed = \
+        results, minimizer_failed = \
             fit._Fit__loop_over_minimizers(self.controller,
                                            self.minimizers)
         assert all(isinstance(x, fitbm_result.FittingResult)
-                   for x in fit._results)
+                   for x in results)
         assert minimizer_failed == []
 
     def test_no_bounds_minimizer(self):
@@ -179,13 +179,15 @@ class LoopOverMinimizersTests(unittest.TestCase):
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.minimizers = ["general"]
 
-        fit = Fit(options=self.options, data_dir=FITTING_DIR, checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir=FITTING_DIR,
+                  checkpointer=self.cp)
 
-        minimizer_failed = \
+        results, minimizer_failed = \
             fit._Fit__loop_over_minimizers(self.controller,
                                            self.minimizers)
 
-        assert fit._results[0].error_flag == 4
+        assert results[0].error_flag == 4
         assert minimizer_failed == []
 
 

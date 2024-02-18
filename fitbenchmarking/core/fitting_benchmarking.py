@@ -454,6 +454,9 @@ class Fit:
         num_runs = self._options.num_runs
         track_emissions = 'emissions' in self._options.table_type
         emissions = np.inf
+        runtimes = [np.inf] * num_runs
+        min_time = np.inf
+        ratio = 1
 
         try:
             with self.__grabbed_output:
@@ -467,13 +470,13 @@ class Fit:
                         runtimes = timeit.Timer(
                             stmt=controller.execute
                         ).repeat(num_runs, 1)
+                        min_time = np.min(runtimes)
+                        ratio = np.max(runtimes) / min_time
                     # stop emissions tracking after all runs have completed
                     emissions = emissions_tracker.final_emissions / num_runs
 
                 controller.cleanup()
                 controller.check_attributes()
-            min_time = np.min(runtimes)
-            ratio = np.max(runtimes) / min_time
             tol = 4
             if ratio > tol:
                 warnings.warn(
@@ -488,10 +491,14 @@ class Fit:
 
             # Avoid deleting results (max runtime exception) if gotten this far
             controller.timer.reset()
-            accuracy = controller.eval_chisq(params=controller.final_params,
-                                             x=controller.data_x,
-                                             y=controller.data_y,
-                                             e=controller.data_e)
+            if controller.params_pdfs is None:
+                accuracy = controller.eval_chisq(
+                    params=controller.final_params,
+                    x=controller.data_x,
+                    y=controller.data_y,
+                    e=controller.data_e)
+            else:
+                accuracy = controller.eval_confidence()
 
             accuracy_check = any(np.isnan(n) for n in accuracy) \
                 if controller.problem.multifit else np.isnan(accuracy)

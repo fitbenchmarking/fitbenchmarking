@@ -11,7 +11,7 @@ from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.core.fitting_benchmarking import loop_over_hessians
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -117,7 +117,10 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.cp = Checkpoint(self.options)
-        self.options.table_type = ['acc', 'runtime', 'compare', 'local_min']
+        self.options.table_type = ['acc',
+                                   'runtime',
+                                   'compare',
+                                   'local_min']
 
     def tearDown(self) -> None:
         """
@@ -132,10 +135,12 @@ class LoopOverHessiansTests(unittest.TestCase):
         """
         self.options.hes_method = ["analytic"]
         self.controller.minimizer = "general"
-        _ = loop_over_hessians(self.controller,
-                               options=self.options,
-                               grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_hessians(self.controller)
         self.assertEqual(self.controller.count, 1)
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -149,10 +154,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.problem.value_ranges = {'test': (0, 1)}
         self.controller.minimizer = "deriv_free_algorithm"
 
-        _ = loop_over_hessians(self.controller,
-                               options=self.options,
-                               grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_hessians(self.controller)
         check_bounds_respected.assert_called()
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -166,10 +172,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.minimizer = "deriv_free_algorithm"
         self.controller.flag_expected = [3]
 
-        _ = loop_over_hessians(self.controller,
-                               options=self.options,
-                               grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_hessians(self.controller)
         check_bounds_respected.assert_not_called()
 
     def test_max_runtime_exceeded(self):
@@ -183,15 +190,18 @@ class LoopOverHessiansTests(unittest.TestCase):
         cost_func.problem.timer.total_elapsed_time = 5
         controller = DummyController(cost_func=cost_func)
         options = cost_func.problem.options
-        options.table_type = ['acc', 'runtime', 'compare', 'local_min']
-        grabbed_output = output_grabber.OutputGrabber(options)
+        options.table_type = ['acc',
+                              'runtime',
+                              'compare',
+                              'local_min',
+                              'emissions']
         controller.parameter_set = 0
 
         controller.minimizer = "deriv_free_algorithm"
-        results = loop_over_hessians(controller,
-                                     options=options,
-                                     grabbed_output=grabbed_output,
-                                     checkpointer=self.cp)
+        fit = Fit(options=options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+        results = fit._Fit__loop_over_hessians(controller)
         self.assertEqual(results[0].error_flag, 6)
 
     @patch.object(DummyController, "eval_chisq")
@@ -204,10 +214,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         eval_chisq.return_value = 0.001
         fit.return_value = 1
 
-        _ = loop_over_hessians(self.controller,
-                               options=self.options,
-                               grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_hessians(self.controller)
         eval_chisq.assert_called_once()
 
     @patch.object(DummyController, "eval_confidence")
@@ -221,10 +232,11 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.controller.final_params = [1, 2, 3, 4]
         eval_confidence.return_value = 0.35
 
-        _ = loop_over_hessians(self.controller,
-                               options=self.options,
-                               grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        _ = fit._Fit__loop_over_hessians(self.controller)
         eval_confidence.assert_called_once()
 
     @run_for_test_types(TEST_TYPE, 'all')
@@ -240,16 +252,15 @@ class LoopOverHessiansTests(unittest.TestCase):
         controller = DummyController(cost_func=cost_func)
         options = problem.options
         options.table_type = ['acc', 'runtime', 'compare', 'local_min']
-        grabbed_output = output_grabber.OutputGrabber(options)
         controller.final_params = [[0.1, 0.1], [0.1, 0.1]]
         controller.parameter_set = 0
         perform_fit.return_value = ([0.1, 0.2],
                                     [0.1, 0.01],
                                     [10e-3, 10e-4])
-        results = loop_over_hessians(controller=controller,
-                                     options=options,
-                                     grabbed_output=grabbed_output,
-                                     checkpointer=self.cp)
+        fit = Fit(options=options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+        results = fit._Fit__loop_over_hessians(controller=controller)
         self.assertTrue(len(results) == 2)
 
 
