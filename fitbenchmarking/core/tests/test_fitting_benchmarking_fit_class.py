@@ -17,6 +17,7 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.exceptions import FitBenchmarkException
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
@@ -77,6 +78,18 @@ def mock_loop_over_cost_func_call(problem):
     return results
 
 
+def mock_loop_over_starting_values(problem):
+    """
+    Mock function for the __loop_over_starting_values method
+    """
+    cost_func = WeightedNLLSCostFunc(problem)
+    controller = ScipyController(cost_func)
+    controller.cost_func.jacobian = Analytic(controller.cost_func.problem)
+    controller.parameter_set = 0
+    result = mock_loop_over_hessians_func_call(controller)
+    return result
+
+
 class FitbenchmarkingTests(unittest.TestCase):
     """
     Verifies the output of the Fit class when run with different options.
@@ -90,12 +103,12 @@ class FitbenchmarkingTests(unittest.TestCase):
         self.data_dir = self.root + \
             "/fitbenchmarking/benchmark_problems/NIST/average_difficulty/"
 
-    def test_benchmarking_method_end_to_end(self):
+    def test_benchmark_method(self):
         """
-        The tests checks fitbenchmarking with the default software options.
-        The /NIST/average_difficulty problem set is run with scipy_ls software.
-        The results of running the new class are matched with the orginal
-        benchmark function.
+        This regression test checks fitbenchmarking with the default
+        software options.The results of running the new class are matched
+        with the orginal benchmark function. The /NIST/average_difficulty
+        problem set is run with scipy_ls software.
         """
         results_dir = self.root + "/fitbenchmarking/core/tests/expected.json"
 
@@ -134,6 +147,53 @@ class FitbenchmarkingTests(unittest.TestCase):
                                    6)
             assert r.hess == expected['results'][ix]['hessian']
             assert r.jac == expected['results'][ix]['jacobian']
+
+    @patch(f"{FITTING_DIR}.parse_problem_file")
+    @patch(f"{FITTING_DIR}.misc.get_problem_files",
+           return_value=['problem_1', 'problem_2'])
+    def test_benchmark_method_exp(self,
+                                  get_problem_files,
+                                  mock_parse_problem_file):
+        """
+        This tests checks if FitBenchmarkException is caught
+        during the method execution and no results are returned.
+        """
+        mock_parse_problem_file.side_effect = FitBenchmarkException
+        options = Options()
+        cp = Checkpoint(options)
+        fit = Fit(options=options,
+                  data_dir=self.data_dir,
+                  checkpointer=cp)
+        results, failed_problems, _ = fit.benchmark()
+        assert results == []
+        assert failed_problems == []
+        assert get_problem_files.call_count == 1
+        assert mock_parse_problem_file.call_count == 2
+
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_starting_values",
+           side_effect=mock_loop_over_starting_values)
+    @patch(f"{FITTING_DIR}.misc.get_problem_files")
+    def test_benchmark_method_repeat_name_handling(self,
+                                                   mock_problem_files,
+                                                   mock_starting_values):
+        """
+        This tests checks if FitBenchmarkException is caught
+        during the method execution and no results are returned.
+        """
+        mock_problem_files.return_value = [self.data_dir+'ENSO.dat'] * 2
+        options = Options()
+        cp = Checkpoint(options)
+        fit = Fit(options=options,
+                  data_dir=self.data_dir,
+                  checkpointer=cp)
+        results, failed_problems, unselected_minimizers = fit.benchmark()
+        assert len(results) == 2
+        assert results[0].name == 'ENSO 1'
+        assert results[1].name == 'ENSO 2'
+        assert failed_problems == []
+        assert unselected_minimizers == {}
+        assert mock_starting_values.call_count == 2
+        assert mock_problem_files.call_count == 1
 
     def test_perform_fit_method(self):
         """
