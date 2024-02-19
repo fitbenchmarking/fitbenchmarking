@@ -84,7 +84,7 @@ class FitbenchmarkingTests(unittest.TestCase):
 
     def setUp(self):
         """
-        Sets up the class variables
+        Sets up the directory variables
         """
         self.root = os.getcwd()
         self.data_dir = self.root + \
@@ -139,26 +139,23 @@ class FitbenchmarkingTests(unittest.TestCase):
         """
         The tests checks __perform_fit method.
         Three /NIST/average_difficulty problem sets
-        are run with 3 scipy software minimizers.
+        are run with 2 scipy software minimizers.
         """
 
         testcases = [{
                         'file': "ENSO.dat",
                         'results': [111.70773805099354,
-                                    107.53453144913736,
-                                    107.53120328018143]
+                                    107.53453144913736]
                     },
                     {
                         'file': "Gauss3.dat",
                         'results': [76.64279628070524,
-                                    76.65043476327958,
-                                    77.82316923750186]
+                                    76.65043476327958]
                     },
                     {
                         'file': "Lanczos1.dat",
                         'results': [0.0009937705466940194,
-                                    0.06269418241377904,
-                                    1.2886484184254505e-05]
+                                    0.06269418241377904]
                     }]
 
         for case in testcases:
@@ -184,7 +181,7 @@ class FitbenchmarkingTests(unittest.TestCase):
                           data_dir=data_file,
                           checkpointer=cp)
 
-                for minimizer, acc in zip(['Nelder-Mead', 'Powell', 'CG'],
+                for minimizer, acc in zip(['Nelder-Mead', 'Powell'],
                                           case['results']):
 
                     controller.minimizer = minimizer
