@@ -8,6 +8,7 @@ import os
 import timeit
 import warnings
 
+from contextlib import nullcontext
 import numpy as np
 from codecarbon import EmissionsTracker
 from tqdm import tqdm, trange
@@ -477,30 +478,28 @@ class Fit:
         """
         num_runs = self._options.num_runs
         track_emissions = 'emissions' in self._options.table_type
+        emissions_tracker = EmissionsTracker()\
+            if track_emissions else nullcontext()
         emissions = np.inf
-        runtimes = [np.inf] * num_runs
-        min_time = np.inf
-        ratio = 1
 
         try:
             with self.__grabbed_output:
                 controller.validate()
                 controller.prepare()
-                if track_emissions:
-                    emissions_tracker = EmissionsTracker()
-                    with emissions_tracker:
-                        # Calls timeit repeat with
-                        # repeat = num_runs and number = 1
-                        runtimes = timeit.Timer(
-                            stmt=controller.execute
+                with emissions_tracker:
+                    # Calls timeit repeat with
+                    # repeat = num_runs and number = 1
+                    runtimes = timeit.Timer(
+                        stmt=controller.execute
                         ).repeat(num_runs, 1)
-                        min_time = np.min(runtimes)
-                        ratio = np.max(runtimes) / min_time
+                if track_emissions:
                     # stop emissions tracking after all runs have completed
                     emissions = emissions_tracker.final_emissions / num_runs
 
                 controller.cleanup()
                 controller.check_attributes()
+            min_time = np.min(runtimes)
+            ratio = np.max(runtimes) / min_time
             tol = 4
             if ratio > tol:
                 warnings.warn(
