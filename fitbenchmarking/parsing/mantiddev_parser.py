@@ -9,10 +9,11 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 import typing
-import numpy as np
 
 import mantid.simpleapi as msapi
+import numpy as np
 from mantid.api import FunctionDomain1DVector as FDV
+
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
 
@@ -22,12 +23,13 @@ class MantidDevParser(FitbenchmarkParser):
     """
 
     def __init__(self, filename, options):
+        super().__init__(filename, options)
+
         self._params_dict = None
         self._mantid_function = None
         self._jac = None
         self._N_x = 0
         self._cache_x = None
-        super().__init__(filename, options)
 
     def _set_additional_info(self) -> None:
         """
@@ -73,7 +75,6 @@ class MantidDevParser(FitbenchmarkParser):
         # cache the x values for later
         self._cache_x = FDV(x_data)
         self._N_x = len(x_data)
-        self._jac = np.zeros((self._N_x, len(self._params_dict.keys())))
 
         try:
             _ = self._jacobian(x_data, self._params_dict.values())
@@ -82,25 +83,31 @@ class MantidDevParser(FitbenchmarkParser):
 
             return
 
-    def _jacobian(self, _x, *args):
+    def _jacobian(self, _x, params):
         # pylint: disable=unused-argument
         """
         Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect
 
-        :param _x: the x values for the problem (assume they have not changed)
-        :param args: the input parameters for the fit
-        :return a matrix of the Jacobian
+        :param _x: the x values for the problem (assume they have not changed).
+                   This argument is ignored.
+        :type _x: np.array
+        :param params: the input parameters for the fit
+        :type params: list
+
+        :return: a matrix of the Jacobian
+        :rtype: np.array
         """
-        for param, key in zip(*args, self._params_dict.keys()):
+        for param, key in zip(args, self._params_dict.keys()):
             self._mantid_function[key] = param
         # get mantid Jacobian
         J = self._mantid_function.functionDeriv(self._cache_x)
         # set np Jacobian values
+        jac = np.zeros((self._N_x, len(self._params_dict.keys())))
         for i in range(self._N_x):
             for j in range(len(self._params_dict.keys())):
-                self._jac[i, j] = J.get(i, j)
-        return self._jac
+                jac[i, j] = J.get(i, j)
+        return jac
 
     def _create_function(self) -> typing.Callable:
         """
