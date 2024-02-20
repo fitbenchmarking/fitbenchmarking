@@ -3,7 +3,7 @@ Tests for fitbenchmarking.core.fitting_benchmarking.Fit
 """
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import json
 import numpy as np
 
@@ -22,7 +22,8 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               UnsupportedMinimizerError,
                                               UnknownMinimizerError,
                                               IncompatibleMinimizerError,
-                                              NoJacobianError)
+                                              NoJacobianError,
+                                              NoHessianError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -184,43 +185,115 @@ class FitbenchmarkingTests(unittest.TestCase):
                     assert len(runtimes) == options.num_runs
                     assert emissions != np.inf
 
-    def test_loop_over_hessians_method(self):
+
+class HessianTests(unittest.TestCase):
+    """
+    Verifies the output of the __loop_over_hessians method
+    in the Fit class when run with different options.
+    """
+
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        data_file = DATA_DIR + "Lanczos1.dat"
+
+        options = Options(additional_options={'software': ['scipy'],
+                                              'hes_method': ['analytic',
+                                                             'default']})
+        cp = Checkpoint(options)
+
+        parsed_problem = parse_problem_file(data_file, options)
+        parsed_problem.correct_data()
+        cost_func = WeightedNLLSCostFunc(parsed_problem)
+
+        self.controller = ScipyController(cost_func=cost_func)
+
+        self.controller.cost_func.jacobian = \
+            Analytic(self.controller.cost_func.problem)
+        self.controller.parameter_set = 0
+        self.controller.minimizer = 'Newton-CG'
+
+        self.fit = Fit(options=options,
+                       data_dir=data_file,
+                       checkpointer=cp)
+
+    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit",
+           return_value=(1, 2, 3))
+    def test_loop_over_hessians_method(self, mock):
         """
         The test checks __loop_over_hessians method.
-        Three /NIST/average_difficulty problem sets
-        are run with 2 hessian methods.
+        /NIST/average_difficulty problem set
+        is run with 2 hessian methods.
         """
+        results = self.fit._Fit__loop_over_hessians(self.controller)
+        assert len(results) == 2
+        assert all(isinstance(r, FittingResult) for r in results)
+        assert mock.call_count == 2
 
-        for file in ["ENSO.dat", "Gauss3.dat", "Lanczos1.dat"]:
+    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit",
+           return_value=(1, 2, 3))
+    @patch("fitbenchmarking.hessian.scipy_hessian.Scipy.__init__")
+    @patch("fitbenchmarking.hessian.analytic_hessian.Analytic.__init__")
+    def test_loop_over_hessians_fallback(self,
+                                         analytic,
+                                         scipy,
+                                         perform_fit):
+        """
+        The test checks __loop_over_hessians method
+        handles fallback
+        """
+        analytic.side_effect = NoHessianError
+        scipy.side_effect = NoHessianError
+        results = self.fit._Fit__loop_over_hessians(self.controller)
 
-            data_file = self.data_dir + file
+        assert len(results) == 2
+        assert all(isinstance(r, FittingResult) for r in results)
+        assert (results[0].hess is None) and (results[1].hess is None)
+        assert ((results[0].hessian_tag == '') and
+                (results[1].hessian_tag == ''))
+        assert perform_fit.call_count == 2
 
-            options = Options(additional_options={'software': ['scipy'],
-                                                  'hes_method': ['analytic',
-                                                                 'default']})
-            cp = Checkpoint(options)
+    @patch("fitbenchmarking.utils.fitbm_result.FittingResult")
+    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit",
+           return_value=([1, 1],
+                         [2, 2],
+                         [3, 3]))
+    def test_loop_over_hessians_multifit(self, perform_fit, mock):
+        """
+        The test checks __loop_over_hessians method
+        handles multfit
+        """
+        mock.return_value = FittingResult(**{
+            'controller': self.controller,
+            'accuracy': 1,
+            'runtimes': [2],
+            'emissions': 3,
+            'runtime_metric': 'mean'})
+        self.controller.problem.multifit = True
+        self.controller.final_params = [None] * 2
+        results = self.fit._Fit__loop_over_hessians(self.controller)
+        assert len(results) == 4
+        assert perform_fit.call_count == 2
+        assert mock.call_count == 4
 
-            parsed_problem = parse_problem_file(data_file, options)
-            parsed_problem.correct_data()
-            cost_func = WeightedNLLSCostFunc(parsed_problem)
+    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit",
+           return_value=(1, 2, 3))
+    def test_loop_over_hessians_minimizer_check(self,
+                                                perform_fit):
+        """
+        The test checks __loop_over_hessians method
+        handles minimizer check
+        """
+        self.controller.hessian_enabled_solvers = []
+        results = self.fit._Fit__loop_over_hessians(self.controller)
 
-            controller = ScipyController(cost_func=cost_func)
-
-            controller.cost_func.jacobian = \
-                Analytic(controller.cost_func.problem)
-            controller.parameter_set = 0
-            controller.minimizer = 'Newton-CG'
-
-            fit = Fit(options=options,
-                      data_dir=data_file,
-                      checkpointer=cp)
-
-            fit._Fit__perform_fit = MagicMock()
-            fit._Fit__perform_fit.return_value = (1, 2, 3)
-            results = fit._Fit__loop_over_hessians(controller)
-
-            assert len(results) == 2
-            assert all(isinstance(r, FittingResult) for r in results)
+        assert len(results) == 2
+        assert all(isinstance(r, FittingResult) for r in results)
+        assert (results[0].hess is None) and (results[1].hess is None)
+        assert ((results[0].hessian_tag == '') and
+                (results[1].hessian_tag == ''))
+        assert perform_fit.call_count == 2
 
 
 class JacobianTests(unittest.TestCase):
@@ -259,8 +332,8 @@ class JacobianTests(unittest.TestCase):
     def test_loop_over_jacobians_methods(self, mock):
         """
         The test checks __loop_over_jacobians method.
-        Three /NIST/average_difficulty problem sets
-        are run with 2 jacobian methods.
+        /NIST/average_difficulty problem set
+        is run with 2 jacobian methods.
         """
         results = self.fit._Fit__loop_over_jacobians(self.controller)
         assert len(results) == 2
