@@ -1,5 +1,5 @@
 """
-Tests for fitbenchmarking.core.fitting_benchmarking.Fit class
+Tests for fitbenchmarking.core.fitting_benchmarking.Fit
 """
 import os
 import unittest
@@ -21,7 +21,8 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               IncompatibleCostFunctionError,
                                               UnsupportedMinimizerError,
                                               UnknownMinimizerError,
-                                              IncompatibleMinimizerError)
+                                              IncompatibleMinimizerError,
+                                              NoJacobianError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -221,6 +222,38 @@ class FitbenchmarkingTests(unittest.TestCase):
             assert len(results) == 2
             assert all(isinstance(r, FittingResult) for r in results)
 
+
+class JacobianTests(unittest.TestCase):
+    """
+    Verifies the output of the __loop_over_jacobians method
+    in the Fit class when run with different options.
+    """
+
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        data_file = DATA_DIR + "Gauss3.dat"
+
+        options = Options(additional_options={'software': ['scipy'],
+                                              'hes_method': ['default'],
+                                              'jac_method': ['analytic',
+                                                             'default']})
+        cp = Checkpoint(options)
+
+        parsed_problem = parse_problem_file(data_file, options)
+        parsed_problem.correct_data()
+        cost_func = WeightedNLLSCostFunc(parsed_problem)
+
+        self.controller = ScipyController(cost_func=cost_func)
+
+        self.controller.parameter_set = 0
+        self.controller.minimizer = 'Newton-CG'
+
+        self.fit = Fit(options=options,
+                       data_dir=data_file,
+                       checkpointer=cp)
+
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians",
            side_effect=mock_loop_over_hessians_func_call)
     def test_loop_over_jacobians_methods(self, mock):
@@ -229,38 +262,56 @@ class FitbenchmarkingTests(unittest.TestCase):
         Three /NIST/average_difficulty problem sets
         are run with 2 jacobian methods.
         """
+        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        assert len(results) == 2
+        assert all(isinstance(r, FittingResult) for r in results)
+        assert [r.jac for r in results] == ['analytic', '']
+        assert [r.jacobian_tag for r in results] == ['analytic', '']
+        assert mock.call_count == 2
 
-        for file in ["ENSO.dat", "Gauss3.dat", "Lanczos1.dat"]:
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    @patch("fitbenchmarking.jacobian.default_jacobian.Default.__init__")
+    @patch("fitbenchmarking.jacobian.analytic_jacobian.Analytic.__init__")
+    def test_loop_over_jacobians_fallback(self,
+                                          analytic,
+                                          default,
+                                          loop_over_hessians):
+        """
+        The test checks __loop_over_jacobians method
+        handles fallback correctly.
+        """
+        analytic.side_effect = NoJacobianError
+        default.side_effect = NoJacobianError
+        loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
 
-            data_file = self.data_dir + file
+        results = self.fit._Fit__loop_over_jacobians(self.controller)
 
-            options = Options(additional_options={'software': ['scipy'],
-                                                  'hes_method': ['default'],
-                                                  'jac_method': ['analytic',
-                                                                 'default']})
-            cp = Checkpoint(options)
+        assert len(results) == 1
+        assert results[0].jac == 'scipy 2-point'
+        assert results[0].jacobian_tag == 'scipy 2-point'
 
-            parsed_problem = parse_problem_file(data_file, options)
-            parsed_problem.correct_data()
-            cost_func = WeightedNLLSCostFunc(parsed_problem)
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    def test_loop_over_jacobians_stop_iteration_1(self,
+                                                  loop_over_hessians):
+        """
+        The test checks __loop_over_jacobians method
+        handles stop_iteration correctly.
+        """
+        loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
+        self.controller.jacobian_enabled_solvers = ['']
+        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        assert len(results) == 1
 
-            controller = ScipyController(cost_func=cost_func)
-
-            controller.parameter_set = 0
-
-            fit = Fit(options=options,
-                      data_dir=data_file,
-                      checkpointer=cp)
-
-            controller.minimizer = 'Newton-CG'
-            results = fit._Fit__loop_over_jacobians(controller)
-
-            assert len(results) == 2
-            assert all(isinstance(r, FittingResult) for r in results)
-            assert [r.jac for r in results] == ['analytic', '']
-            assert [r.jacobian_tag for r in results] == ['analytic', '']
-
-        assert mock.call_count == 6
+    @patch("fitbenchmarking.jacobian.analytic_jacobian.Analytic.__init__")
+    def test_loop_over_jacobians_stop_iteration_2(self,
+                                                  analytic):
+        """
+        The test checks __loop_over_jacobians method
+        handles stop_iteration correctly.
+        """
+        analytic.side_effect = StopIteration
+        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        assert len(results) == 0
 
 
 class MinimizersTests(unittest.TestCase):
