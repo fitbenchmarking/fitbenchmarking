@@ -18,7 +18,8 @@ from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
-                                              IncompatibleCostFunctionError)
+                                              IncompatibleCostFunctionError,
+                                              UnsupportedMinimizerError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -296,30 +297,40 @@ class FitbenchmarkingTests(unittest.TestCase):
         assert mock.call_count == 3
         assert all(isinstance(r, FittingResult) for r in results)
 
+
+class SoftwareTests(unittest.TestCase):
+    """
+    Verifies the output of the __loop_over_software method
+    in the Fit class when run with different options.
+    """
+
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        self.data_file = DATA_DIR + 'ENSO.dat'
+
+        self.options = Options(additional_options={'software': ['scipy',
+                                                                'scipy_ls']})
+        self.cp = Checkpoint(self.options)
+
+        parsed_problem = parse_problem_file(self.data_file, self.options)
+        parsed_problem.correct_data()
+        self.cost_func = WeightedNLLSCostFunc(parsed_problem)
+
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_minimizers",
            side_effect=mock_loop_over_minimizers_func_call)
-    def test_fitbenchmarking_class_loop_over_software(self, mock):
+    def test_loop_over_software(self, mock):
         """
         The test checks __loop_over_software method.
         Enso.dat /NIST/average_difficulty problem set
         is run with 2 softwares.
         """
+        fit = Fit(options=self.options,
+                  data_dir=self.data_file,
+                  checkpointer=self.cp)
 
-        data_file = self.data_dir + 'ENSO.dat'
-
-        options = Options(additional_options={'software': ['scipy',
-                                                           'scipy_ls']})
-        cp = Checkpoint(options)
-
-        parsed_problem = parse_problem_file(data_file, options)
-        parsed_problem.correct_data()
-        cost_func = WeightedNLLSCostFunc(parsed_problem)
-
-        fit = Fit(options=options,
-                  data_dir=data_file,
-                  checkpointer=cp)
-
-        results = fit._Fit__loop_over_fitting_software(cost_func)
+        results = fit._Fit__loop_over_fitting_software(self.cost_func)
 
         assert mock.call_count == 2
         assert mock.call_args_list[0][1]['minimizers'] == ['Nelder-Mead',
@@ -336,6 +347,19 @@ class FitbenchmarkingTests(unittest.TestCase):
                                                            'dogbox']
         assert len(results) == 12
         assert all(isinstance(r, FittingResult) for r in results)
+
+    def test_loop_over_software_error(self):
+        """
+        The test checks __loop_over_software method.
+        handles the UnsupportedMinimizerError correctly.
+        """
+        self.options.minimizers = {}
+        fit = Fit(options=self.options,
+                  data_dir=self.data_file,
+                  checkpointer=self.cp)
+
+        with self.assertRaises(UnsupportedMinimizerError) as _:
+            fit._Fit__loop_over_fitting_software(self.cost_func)
 
 
 class CostFunctionTests(unittest.TestCase):
