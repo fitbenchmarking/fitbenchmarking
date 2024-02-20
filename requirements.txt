@@ -5,3 +5,4 @@ pylint~=2.9.5
 flake8~=3.9.2
 pylint-exit
 pandas
+iminuit>=2.25.2
