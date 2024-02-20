@@ -19,7 +19,9 @@ from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               IncompatibleCostFunctionError,
-                                              UnsupportedMinimizerError)
+                                              UnsupportedMinimizerError,
+                                              UnknownMinimizerError,
+                                              IncompatibleMinimizerError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -260,16 +262,18 @@ class FitbenchmarkingTests(unittest.TestCase):
 
         assert mock.call_count == 6
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_jacobians",
-           side_effect=mock_loop_over_jacobians_func_call)
-    def test_fitbenchmarking_class_loop_over_minimizers(self, mock):
-        """
-        The test checks __loop_over_minimizers method.
-        Enso.dat /NIST/average_difficulty problem set
-        is run with 3 minimizers.
-        """
 
-        data_file = self.data_dir + 'ENSO.dat'
+class MinimizersTests(unittest.TestCase):
+    """
+    Verifies the output of the __loop_over_minimizers method
+    in the Fit class when run with different options.
+    """
+
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        data_file = DATA_DIR + 'ENSO.dat'
 
         options = Options(additional_options={'software': ['scipy']})
         cp = Checkpoint(options)
@@ -278,24 +282,73 @@ class FitbenchmarkingTests(unittest.TestCase):
         parsed_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(parsed_problem)
 
-        controller = ScipyController(cost_func=cost_func)
+        self.controller = ScipyController(cost_func=cost_func)
 
-        controller.parameter_set = 0
+        self.controller.parameter_set = 0
 
-        fit = Fit(options=options,
-                  data_dir=data_file,
-                  checkpointer=cp)
+        self.fit = Fit(options=options,
+                       data_dir=data_file,
+                       checkpointer=cp)
 
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_jacobians",
+           side_effect=mock_loop_over_jacobians_func_call)
+    def test_loop_over_minimizers(self, mock):
+        """
+        The test checks __loop_over_minimizers method.
+        Enso.dat /NIST/average_difficulty problem set
+        is run with 3 minimizers.
+        """
         minimizers = ['Powell', 'CG', 'BFGS']
-
-        results, minimizer_failed = fit._Fit__loop_over_minimizers(controller,
-                                                                   minimizers)
-
+        results, minimizer_failed = \
+            self.fit._Fit__loop_over_minimizers(self.controller, minimizers)
         assert len(results) == 3
         assert minimizer_failed == []
         assert [r.minimizer for r in results] == minimizers
         assert mock.call_count == 3
         assert all(isinstance(r, FittingResult) for r in results)
+
+    @patch("fitbenchmarking.controllers.scipy_controller" +
+           ".ScipyController.validate_minimizer")
+    def test_unknown_minimizers_error(self, mock):
+        """
+        The test checks __loop_over_minimizers method
+        handles UnknownMinimizerError correctly.
+        """
+        mock.side_effect = UnknownMinimizerError
+        minimizers = ['Powell', 'CG', 'BFGS']
+        results, minimizer_failed = \
+            self.fit._Fit__loop_over_minimizers(self.controller, minimizers)
+        assert len(results) == 0
+        assert minimizer_failed == minimizers
+        assert mock.call_count == 3
+
+    @patch("fitbenchmarking.controllers.scipy_controller" +
+           ".ScipyController.check_minimizer_bounds")
+    def test_incompatible_minimizers_error_1(self, mock):
+        """
+        The test checks __loop_over_minimizers method.
+        handles IncompatibleMinimizerError correctly.
+        """
+        mock.side_effect = IncompatibleMinimizerError
+        self.controller.problem.value_ranges = '1'
+        results, minimizer_failed = \
+            self.fit._Fit__loop_over_minimizers(self.controller, ['Powell'])
+        assert len(results) == 1
+        assert results[0].runtime == np.inf
+        assert minimizer_failed == []
+
+    @patch("fitbenchmarking.cost_func.weighted_nlls_cost_func" +
+           ".WeightedNLLSCostFunc.validate_algorithm_type")
+    def test_incompatible_minimizers_error_2(self, mock):
+        """
+        The test checks __loop_over_minimizers method.
+        handles IncompatibleMinimizerError correctly.
+        """
+        mock.side_effect = IncompatibleMinimizerError
+        results, minimizer_failed = \
+            self.fit._Fit__loop_over_minimizers(self.controller, ['Powell'])
+        assert len(results) == 0
+        assert minimizer_failed == ['Powell']
 
 
 class SoftwareTests(unittest.TestCase):
@@ -407,18 +460,21 @@ class CostFunctionTests(unittest.TestCase):
            ".NLLSCostFunc.validate_problem")
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
            side_effect=mock_loop_over_softwares_func_call)
-    def test_loop_over_cost_function_error(self, mock, mock2):
+    def test_loop_over_cost_function_error(self,
+                                           loop_over_fitting_software,
+                                           mock):
         """
         The test checks __loop_over_cost_function method
         handles IncompatibleCostFunctionError correctly
         """
-        mock2.side_effect = IncompatibleCostFunctionError
+        mock.side_effect = IncompatibleCostFunctionError
         results = self.fit._Fit__loop_over_cost_function(self.parsed_problem)
 
         assert len(results) == 9
-        assert mock.call_count == 1
+        assert loop_over_fitting_software.call_count == 1
         assert all(isinstance(r, FittingResult) for r in results)
-        assert isinstance(mock.call_args_list[0][0][0], WeightedNLLSCostFunc)
+        assert isinstance(loop_over_fitting_software.call_args_list[0][0][0],
+                          WeightedNLLSCostFunc)
 
 
 class StartingValueTests(unittest.TestCase):

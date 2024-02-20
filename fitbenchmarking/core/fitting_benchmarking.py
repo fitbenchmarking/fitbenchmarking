@@ -67,14 +67,6 @@ class Fit:
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
 
-    @property
-    def _unselected_minimizers(self):
-        return self.__unselected_minimizers
-
-    @_unselected_minimizers.setter
-    def _unselected_minimizers(self, value):
-        self.__unselected_minimizers = value
-
     def benchmark(self):
         """
         Call benchmarking on user input and list of paths.
