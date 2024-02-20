@@ -115,18 +115,11 @@ def mock_loop_over_starting_values(problem):
     return result
 
 
-class FitbenchmarkingTests(unittest.TestCase):
+class PerformFitTests(unittest.TestCase):
     """
-    Verifies the output of the Fit class when run with different options.
+    Verifies the output of the __perform_fit method
+    in the Fit class when run with different options.
     """
-
-    def setUp(self):
-        """
-        Sets up the directory variables
-        """
-        self.root = os.getcwd()
-        self.data_dir = self.root + \
-            "/fitbenchmarking/benchmark_problems/NIST/average_difficulty/"
 
     def test_perform_fit_method(self):
         """
@@ -155,7 +148,7 @@ class FitbenchmarkingTests(unittest.TestCase):
 
             with self.subTest(case['file']):
 
-                data_file = self.data_dir + case['file']
+                data_file = DATA_DIR + case['file']
 
                 options = Options(additional_options={'software': ['scipy']})
                 cp = Checkpoint(options)
