@@ -17,7 +17,8 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.fitbm_result import FittingResult
-from fitbenchmarking.utils.exceptions import FitBenchmarkException
+from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
+                                              IncompatibleCostFunctionError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -336,16 +337,18 @@ class FitbenchmarkingTests(unittest.TestCase):
         assert len(results) == 12
         assert all(isinstance(r, FittingResult) for r in results)
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
-           side_effect=mock_loop_over_softwares_func_call)
-    def test_fitbenchmarking_class_loop_over_cost_function(self, mock):
-        """
-        The test checks __loop_over_cost_function method.
-        Enso.dat /NIST/average_difficulty problem set
-        is run with 2 cost functions.
-        """
 
-        data_file = self.data_dir + 'ENSO.dat'
+class CostFunctionTests(unittest.TestCase):
+    """
+    Verifies the output of the __loop_over_cost_function method
+    in the Fit class when run with different options.
+    """
+
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        data_file = DATA_DIR + 'ENSO.dat'
 
         options = Options(additional_options={'software': ['scipy'],
                                               'cost_func_type':
@@ -353,20 +356,45 @@ class FitbenchmarkingTests(unittest.TestCase):
                                                'weighted_nlls']})
         cp = Checkpoint(options)
 
-        parsed_problem = parse_problem_file(data_file, options)
-        parsed_problem.correct_data()
+        self.parsed_problem = parse_problem_file(data_file, options)
+        self.parsed_problem.correct_data()
 
-        fit = Fit(options=options,
-                  data_dir=data_file,
-                  checkpointer=cp)
+        self.fit = Fit(options=options,
+                       data_dir=data_file,
+                       checkpointer=cp)
 
-        results = fit._Fit__loop_over_cost_function(parsed_problem)
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
+           side_effect=mock_loop_over_softwares_func_call)
+    def test_loop_over_cost_function(self, mock):
+        """
+        The test checks __loop_over_cost_function method.
+        Enso.dat /NIST/average_difficulty problem set
+        is run with 2 cost functions.
+        """
+        results = self.fit._Fit__loop_over_cost_function(self.parsed_problem)
 
         assert len(results) == 18
         assert mock.call_count == 2
         assert all(isinstance(r, FittingResult) for r in results)
         assert isinstance(mock.call_args_list[0][0][0], NLLSCostFunc)
         assert isinstance(mock.call_args_list[1][0][0], WeightedNLLSCostFunc)
+
+    @patch("fitbenchmarking.cost_func.nlls_cost_func" +
+           ".NLLSCostFunc.validate_problem")
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
+           side_effect=mock_loop_over_softwares_func_call)
+    def test_loop_over_cost_function_error(self, mock, mock2):
+        """
+        The test checks __loop_over_cost_function method
+        handles IncompatibleCostFunctionError correctly
+        """
+        mock2.side_effect = IncompatibleCostFunctionError
+        results = self.fit._Fit__loop_over_cost_function(self.parsed_problem)
+
+        assert len(results) == 9
+        assert mock.call_count == 1
+        assert all(isinstance(r, FittingResult) for r in results)
+        assert isinstance(mock.call_args_list[0][0][0], WeightedNLLSCostFunc)
 
 
 class StartingValueTests(unittest.TestCase):
@@ -376,7 +404,7 @@ class StartingValueTests(unittest.TestCase):
     """
     def setUp(self):
         """
-        Sets up the directory variables
+        Initializes the fit class for the tests
         """
         data_file = DATA_DIR + 'ENSO.dat'
 
@@ -392,7 +420,7 @@ class StartingValueTests(unittest.TestCase):
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_cost_function",
            side_effect=mock_loop_over_cost_func_call)
-    def test_fitbenchmarking_class_loop_over_starting_values(self, mock):
+    def test_loop_over_starting_values(self, mock):
         """
         The test checks __loop_over_starting_values method.
         Enso.dat /NIST/average_difficulty problem set is used.
@@ -405,7 +433,7 @@ class StartingValueTests(unittest.TestCase):
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_cost_function",
            side_effect=mock_loop_over_cost_func_call_all_fail)
-    def test_fitbenchmarking_class_loop_over_starting_values_fail(self, mock):
+    def test_loop_over_starting_values_fail(self, mock):
         """
         The test checks that _failed_problems is updated correctly.
         """
