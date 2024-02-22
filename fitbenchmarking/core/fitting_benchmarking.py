@@ -636,7 +636,10 @@ def perform_fit(controller, options, grabbed_output, emissions_tracker):
                                              y=controller.data_y,
                                              e=controller.data_e)
         else:
-            accuracy = controller.eval_confidence()
+            if controller.eval_confidence != 0:
+                accuracy = 1/controller.eval_confidence()
+            else:
+                accuracy = np.inf
 
         accuracy_check = any(np.isnan(n) for n in accuracy) \
             if controller.problem.multifit else np.isnan(accuracy)
