@@ -8,7 +8,6 @@ import os
 import timeit
 import warnings
 
-from contextlib import nullcontext
 import numpy as np
 from codecarbon import EmissionsTracker
 from tqdm import tqdm, trange
@@ -126,6 +125,13 @@ def loop_over_benchmark_problems(problem_group, options, checkpointer):
             problems.append((p, parsed_problem))
 
     name_index = {key: 0 for key in name_count}
+
+    track_emissions = 'emissions' in options.table_type
+    if track_emissions:
+        emissions_tracker = EmissionsTracker()
+    else:
+        emissions_tracker = None
+
     LOGGER.info('Running problems')
 
     if options.pbar:
@@ -156,14 +162,19 @@ def loop_over_benchmark_problems(problem_group, options, checkpointer):
                 loop_over_starting_values(problem,
                                           options=options,
                                           grabbed_output=grabbed_output,
-                                          checkpointer=checkpointer)
+                                          checkpointer=checkpointer,
+                                          emissions_tracker=emissions_tracker)
             results.extend(problem_results)
             failed_problems.extend(problem_fails)
+
+            if emissions_tracker:
+                _ = emissions_tracker.stop()
 
     return results, failed_problems, unselected_minimizers
 
 
-def loop_over_starting_values(problem, options, grabbed_output, checkpointer):
+def loop_over_starting_values(problem, options, grabbed_output, checkpointer,
+                              emissions_tracker):
     """
     Loops over starting values from the fitting problem.
 
@@ -209,7 +220,8 @@ def loop_over_starting_values(problem, options, grabbed_output, checkpointer):
                                     options=options,
                                     start_values_index=index,
                                     grabbed_output=grabbed_output,
-                                    checkpointer=checkpointer)
+                                    checkpointer=checkpointer,
+                                    emissions_tracker=emissions_tracker)
 
         # Checks to see if all of the minimizers from every software raised an
         # exception and record the problem name if that is the case
@@ -226,7 +238,7 @@ def loop_over_starting_values(problem, options, grabbed_output, checkpointer):
 
 
 def loop_over_cost_function(problem, options, start_values_index,
-                            grabbed_output, checkpointer):
+                            grabbed_output, checkpointer, emissions_tracker):
     """
     Run benchmarking for each cost function given in options.
 
@@ -266,14 +278,16 @@ def loop_over_cost_function(problem, options, start_values_index,
                                        options=options,
                                        start_values_index=start_values_index,
                                        grabbed_output=grabbed_output,
-                                       checkpointer=checkpointer)
+                                       checkpointer=checkpointer,
+                                       emissions_tracker=emissions_tracker)
         problem_results.extend(individual_problem_results)
 
     return problem_results, unselected_minimizers
 
 
-def loop_over_fitting_software(cost_func, options, start_values_index,
-                               grabbed_output, checkpointer):
+def loop_over_fitting_software(cost_func, options,
+                               start_values_index, grabbed_output,
+                               checkpointer, emissions_tracker):
     """
     Loops over fitting software selected in the options
 
@@ -330,7 +344,8 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
                                  minimizers=minimizers,
                                  options=options,
                                  grabbed_output=grabbed_output,
-                                 checkpointer=checkpointer)
+                                 checkpointer=checkpointer,
+                                 emissions_tracker=emissions_tracker)
 
         unselected_minimizers[s] = minimizer_failed
         results.extend(problem_result)
@@ -338,7 +353,7 @@ def loop_over_fitting_software(cost_func, options, start_values_index,
 
 
 def loop_over_minimizers(controller, minimizers, options, grabbed_output,
-                         checkpointer):
+                         checkpointer, emissions_tracker):
     """
     Loops over minimizers in fitting software
 
@@ -404,13 +419,15 @@ def loop_over_minimizers(controller, minimizers, options, grabbed_output,
             results = loop_over_jacobians(controller,
                                           options=options,
                                           grabbed_output=grabbed_output,
-                                          checkpointer=checkpointer)
+                                          checkpointer=checkpointer,
+                                          emissions_tracker=emissions_tracker)
             results_problem.extend(results)
 
     return results_problem, minimizer_failed
 
 
-def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
+def loop_over_jacobians(controller, options, grabbed_output, checkpointer,
+                        emissions_tracker):
     """
     Loops over Jacobians set from the options file
 
@@ -460,10 +477,13 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
                 #######################
                 # Loops over Hessians #
                 #######################
-                new_result = loop_over_hessians(controller,
-                                                options=options,
-                                                grabbed_output=grabbed_output,
-                                                checkpointer=checkpointer)
+                new_result = loop_over_hessians(
+                    controller,
+                    options=options,
+                    grabbed_output=grabbed_output,
+                    checkpointer=checkpointer,
+                    emissions_tracker=emissions_tracker
+                )
 
                 results.extend(new_result)
                 # For minimizers that do not accept jacobians we raise an
@@ -478,7 +498,8 @@ def loop_over_jacobians(controller, options, grabbed_output, checkpointer):
     return results
 
 
-def loop_over_hessians(controller, options, grabbed_output, checkpointer):
+def loop_over_hessians(controller, options, grabbed_output, checkpointer,
+                       emissions_tracker):
     """
     Loops over Hessians set from the options file
 
@@ -533,7 +554,7 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
 
             # Perform the fit a number of times specified by num_runs
             accuracy, runtimes, emissions = perform_fit(
-                controller, options, grabbed_output)
+                controller, options, grabbed_output, emissions_tracker)
             result_args = {'controller': controller,
                            'accuracy': accuracy,
                            'runtimes': runtimes,
@@ -561,7 +582,7 @@ def loop_over_hessians(controller, options, grabbed_output, checkpointer):
     return new_result
 
 
-def perform_fit(controller, options, grabbed_output):
+def perform_fit(controller, options, grabbed_output, emissions_tracker):
     """
     Performs a fit using the provided controller and its data. It
     will be run a number of times specified by num_runs.
@@ -577,24 +598,19 @@ def perform_fit(controller, options, grabbed_output):
     """
     num_runs = options.num_runs
 
-    track_emissions = 'emissions' in options.table_type
-    if track_emissions:
-        emissions_tracker = EmissionsTracker()
-    else:
-        emissions_tracker = nullcontext()
-    emissions = np.inf
+    emissions = np.nan
     try:
         with grabbed_output:
             controller.validate()
             controller.prepare()
-            with emissions_tracker:
-                # Calls timeit repeat with repeat = num_runs and number = 1
-                runtimes = timeit.Timer(
-                    stmt=controller.execute
-                ).repeat(num_runs, 1)
-            if track_emissions:
+            if emissions_tracker:
+                emissions_tracker.start_task()
+            runtimes = timeit.Timer(
+                stmt=controller.execute
+            ).repeat(num_runs, 1)
+            if emissions_tracker:
                 # stop emissions tracking after all runs have completed
-                emissions = emissions_tracker.final_emissions / num_runs
+                emissions = emissions_tracker.stop_task().emissions / num_runs
 
             controller.cleanup()
             controller.check_attributes()
@@ -652,6 +668,10 @@ def perform_fit(controller, options, grabbed_output):
 
     # Reset the controller timer once exceptions have been handled
     controller.timer.reset()
+
+    # ensure emissions tracker has been stopped if emissions not set
+    if emissions == np.nan and emissions_tracker:
+        _ = emissions_tracker.stop_task()
 
     if controller.flag in [3, 6, 7]:
         # If there was an exception, set the runtimes and

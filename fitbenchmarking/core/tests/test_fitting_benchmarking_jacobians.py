@@ -120,7 +120,8 @@ class LoopOverJacobiansTests(unittest.TestCase):
         _ = loop_over_jacobians(self.controller,
                                 options=self.options,
                                 grabbed_output=self.grabbed_output,
-                                checkpointer=self.cp)
+                                checkpointer=self.cp,
+                                emissions_tracker=None)
         loop_over_hessians.assert_called_once()
 
     @patch(f'{FITTING_DIR}.loop_over_hessians')
@@ -135,7 +136,8 @@ class LoopOverJacobiansTests(unittest.TestCase):
         _ = loop_over_jacobians(self.controller,
                                 options=self.options,
                                 grabbed_output=self.grabbed_output,
-                                checkpointer=self.cp)
+                                checkpointer=self.cp,
+                                emissions_tracker=None)
         self.assertEqual(loop_over_hessians.call_count, 2)
 
 
