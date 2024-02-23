@@ -134,7 +134,8 @@ class Options:
                    'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
-         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
+         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton'],
+         'quickBayes': ['scipy']}
     VALID_FITTING = \
         {'algorithm_type': ['all', 'ls', 'deriv_free', 'general', 'simplex',
                             'trust_region', 'levenberg-marquardt',
@@ -144,7 +145,7 @@ class Options:
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
                       'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
-                      'scipy_go', 'theseus'],
+                      'scipy_go', 'theseus', 'quickBayes'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -273,7 +274,8 @@ class Options:
                    'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
-         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
+         'theseus': ['Levenberg_Marquardt', 'Gauss-Newton'],
+         'quickBayes': ['scipy']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],

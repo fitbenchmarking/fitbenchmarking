@@ -46,7 +46,10 @@ class quickBayesParser(FitbenchmarkParser):
         bg = FlatBG()
         fit_function = QSEFunction(bg, True, res_x, res_y, -.4, .4)
         fit_function.add_single_SE()
-        
+        fit_function.set_delta_bounds([0, -0.4], [10, 0.4])
+        fit_function.set_delta_guess([0.02, -0.06])
+        fit_function.set_func_guess([.12, -0.06, 31.5, .7])
+        fit_function.set_func_bounds([0.0, -0.4, 1, .0], [10, 0.4, 100, 1])
         # manually set stuff
         self._equation = 'qse'
         self._starting_values = [{'BGConstant':0.0,
