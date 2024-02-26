@@ -109,8 +109,8 @@ class Fit:
         LOGGER.info('Running problems')
 
         benchmark_pbar = tqdm(problems, colour='green',
-                            desc="Benchmark problems",
-                            unit="Benchmark problem", leave=True)\
+                              desc="Benchmark problems",
+                              unit="Benchmark problem", leave=True)\
             if self._options.pbar else problems
 
         name_index = {key: 0 for key in name_count}
@@ -488,7 +488,9 @@ class Fit:
                     ).repeat(num_runs, 1)
                 if self.__emissions_tracker:
                     # stop emissions tracking after all runs have completed
-                    emissions = self.__emissions_tracker.stop_task().emissions / num_runs
+                    emissions = \
+                        self.__emissions_tracker.stop_task().emissions \
+                        / num_runs
 
                 controller.cleanup()
                 controller.check_attributes()
