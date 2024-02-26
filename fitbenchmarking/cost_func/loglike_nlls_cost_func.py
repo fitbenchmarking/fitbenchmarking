@@ -41,7 +41,7 @@ class LoglikeNLLSCostFunc(BaseNLLSCostFunc):
             "gauss_newton",
             "bfgs",
             "conjugate_gradient",
-            "steepesr_descent",
+            "steepest_descent",
             "global_optimization",
         ]
 

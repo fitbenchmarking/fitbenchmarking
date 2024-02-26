@@ -8,7 +8,6 @@ import os
 import timeit
 import warnings
 
-from contextlib import nullcontext
 import numpy as np
 from codecarbon import EmissionsTracker
 from tqdm import tqdm, trange
@@ -66,6 +65,8 @@ class Fit:
         self._unselected_minimizers = {}
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
+        self.__emissions_tracker = EmissionsTracker() \
+            if 'emissions' in options.table_type else None
 
     def benchmark(self):
         """
@@ -105,9 +106,11 @@ class Fit:
                 name_count[parsed.name] = name_count.get(parsed.name, 0) + 1
                 problems.append((p, parsed))
 
+        LOGGER.info('Running problems')
+
         benchmark_pbar = tqdm(problems, colour='green',
-                              desc="Benchmark problems",
-                              unit="Benchmark problem", leave=True)\
+                            desc="Benchmark problems",
+                            unit="Benchmark problem", leave=True)\
             if self._options.pbar else problems
 
         name_index = {key: 0 for key in name_count}
@@ -129,6 +132,9 @@ class Fit:
 
                 results = self.__loop_over_starting_values(problem)
                 self._results.extend(results)
+
+                if self.__emissions_tracker:
+                    _ = self.__emissions_tracker.stop()
 
         self._checkpointer.finalise_group(self._label,
                                           self._failed_problems,
@@ -469,24 +475,20 @@ class Fit:
         :rtype: tuple(float, list[float], float)
         """
         num_runs = self._options.num_runs
-        track_emissions = 'emissions' in self._options.table_type
-        emissions_tracker = EmissionsTracker()\
-            if track_emissions else nullcontext()
-        emissions = np.inf
+        emissions = np.nan
 
         try:
             with self.__grabbed_output:
                 controller.validate()
                 controller.prepare()
-                with emissions_tracker:
-                    # Calls timeit repeat with
-                    # repeat = num_runs and number = 1
-                    runtimes = timeit.Timer(
-                        stmt=controller.execute
-                        ).repeat(num_runs, 1)
-                if track_emissions:
+                if self.__emissions_tracker:
+                    self.__emissions_tracker.start_task()
+                runtimes = timeit.Timer(
+                    stmt=controller.execute
+                    ).repeat(num_runs, 1)
+                if self.__emissions_tracker:
                     # stop emissions tracking after all runs have completed
-                    emissions = emissions_tracker.final_emissions / num_runs
+                    emissions = self.__emissions_tracker.stop_task().emissions / num_runs
 
                 controller.cleanup()
                 controller.check_attributes()
@@ -513,7 +515,10 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e)
             else:
-                accuracy = controller.eval_confidence()
+                if controller.eval_confidence != 0:
+                    accuracy = 1/controller.eval_confidence()
+                else:
+                    accuracy = np.inf
 
             accuracy_check = any(np.isnan(n) for n in accuracy) \
                 if controller.problem.multifit else np.isnan(accuracy)
@@ -543,6 +548,10 @@ class Fit:
 
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
+
+        # ensure emissions tracker has been stopped if emissions not set
+        if emissions == np.nan and self.__emissions_tracker:
+            _ = self.__emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
             # If there was an exception, set the runtimes and
