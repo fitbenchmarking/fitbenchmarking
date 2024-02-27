@@ -23,7 +23,8 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               UnknownMinimizerError,
                                               IncompatibleMinimizerError,
                                               NoJacobianError,
-                                              NoHessianError)
+                                              NoHessianError,
+                                              ValidationException)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 ROOT = os.getcwd()
@@ -115,11 +116,37 @@ def mock_loop_over_starting_values(problem):
     return result
 
 
+def set_up_controller(file, options):
+    """
+    Sets up the controller for the PerformFitTests
+    """
+    data_file = DATA_DIR + file
+
+    parsed_problem = parse_problem_file(data_file, options)
+    parsed_problem.correct_data()
+    cost_func = WeightedNLLSCostFunc(parsed_problem)
+
+    controller = ScipyController(cost_func=cost_func)
+
+    controller.cost_func.jacobian \
+        = Analytic(controller.cost_func.problem)
+    controller.parameter_set = 0
+
+    return controller
+
+
 class PerformFitTests(unittest.TestCase):
     """
     Verifies the output of the __perform_fit method
     in the Fit class when run with different options.
     """
+    def setUp(self):
+        """
+        Initializes the fit class for the tests
+        """
+        self.options = Options(additional_options={'software':
+                                                   ['scipy']})
+        self.cp = Checkpoint(self.options)
 
     def test_perform_fit_method(self):
         """
@@ -148,24 +175,11 @@ class PerformFitTests(unittest.TestCase):
 
             with self.subTest(case['file']):
 
-                data_file = DATA_DIR + case['file']
+                controller = set_up_controller(case['file'], self.options)
 
-                options = Options(additional_options={'software': ['scipy']})
-                cp = Checkpoint(options)
-
-                parsed_problem = parse_problem_file(data_file, options)
-                parsed_problem.correct_data()
-                cost_func = WeightedNLLSCostFunc(parsed_problem)
-
-                controller = ScipyController(cost_func=cost_func)
-
-                controller.cost_func.jacobian \
-                    = Analytic(controller.cost_func.problem)
-                controller.parameter_set = 0
-
-                fit = Fit(options=options,
-                          data_dir=data_file,
-                          checkpointer=cp)
+                fit = Fit(options=self.options,
+                          data_dir='test',
+                          checkpointer=self.cp)
 
                 for minimizer, acc in zip(['Nelder-Mead', 'Powell'],
                                           case['results']):
@@ -175,8 +189,55 @@ class PerformFitTests(unittest.TestCase):
                         = fit._Fit__perform_fit(controller)
 
                     self.assertAlmostEqual(accuracy, acc, 6)
-                    assert len(runtimes) == options.num_runs
+                    assert len(runtimes) == self.options.num_runs
                     assert emissions != np.inf
+
+    @patch("fitbenchmarking.controllers." +
+           "base_controller.Controller.eval_confidence",
+           return_value=2)
+    def test_eval_confidence_branches(self, mock):
+        """
+        The test checks the eval_confidence branches in
+        ___perform_fit method.
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+
+        controller.params_pdfs = 'None'
+        controller.minimizer = 'Nelder-Mead'
+
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+        accuracy, _, _ = fit._Fit__perform_fit(controller)
+        assert accuracy == 0.5
+        assert mock.call_count == 1
+
+        controller.eval_confidence = 0
+        accuracy, _, _ = fit._Fit__perform_fit(controller)
+        assert accuracy == np.inf
+
+    @patch("fitbenchmarking.controllers." +
+           "base_controller.Controller.validate")
+    def test_perform_fit_error_handling(self, mock):
+        """
+        The test checks ___perform_fit method
+        handles Exceptions correctly.
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = 'Nelder-Mead'
+
+        fit = Fit(options=self.options,
+                  data_dir='test',
+                  checkpointer=self.cp)
+
+        for exp in [ValidationException,
+                    FitBenchmarkException]:
+            mock.side_effect = exp
+            accuracy, runtimes, emissions = \
+                fit._Fit__perform_fit(controller)
+            assert accuracy == np.inf
+            assert emissions == np.inf
+            assert runtimes == [np.inf] * 5
 
 
 class HessianTests(unittest.TestCase):
@@ -193,7 +254,11 @@ class HessianTests(unittest.TestCase):
 
         options = Options(additional_options={'software': ['scipy'],
                                               'hes_method': ['analytic',
-                                                             'default']})
+                                                             'default'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
 
         parsed_problem = parse_problem_file(data_file, options)
@@ -304,7 +369,11 @@ class JacobianTests(unittest.TestCase):
         options = Options(additional_options={'software': ['scipy'],
                                               'hes_method': ['default'],
                                               'jac_method': ['analytic',
-                                                             'default']})
+                                                             'default'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
 
         parsed_problem = parse_problem_file(data_file, options)
@@ -392,7 +461,11 @@ class MinimizersTests(unittest.TestCase):
         """
         data_file = DATA_DIR + 'ENSO.dat'
 
-        options = Options(additional_options={'software': ['scipy']})
+        options = Options(additional_options={'software': ['scipy'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
 
         parsed_problem = parse_problem_file(data_file, options)
@@ -480,8 +553,14 @@ class SoftwareTests(unittest.TestCase):
         """
         self.data_file = DATA_DIR + 'ENSO.dat'
 
-        self.options = Options(additional_options={'software': ['scipy',
-                                                                'scipy_ls']})
+        self.options = Options(additional_options={'software':
+                                                   ['scipy',
+                                                    'scipy_ls'],
+                                                   'table_type':
+                                                   ['acc',
+                                                    'runtime',
+                                                    'compare',
+                                                    'local_min']})
         self.cp = Checkpoint(self.options)
 
         parsed_problem = parse_problem_file(self.data_file, self.options)
@@ -547,7 +626,11 @@ class CostFunctionTests(unittest.TestCase):
         options = Options(additional_options={'software': ['scipy'],
                                               'cost_func_type':
                                               ['nlls',
-                                               'weighted_nlls']})
+                                               'weighted_nlls'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
 
         self.parsed_problem = parse_problem_file(data_file, options)
@@ -605,7 +688,11 @@ class StartingValueTests(unittest.TestCase):
         """
         data_file = DATA_DIR + 'ENSO.dat'
 
-        options = Options(additional_options={'software': ['scipy']})
+        options = Options(additional_options={'software': ['scipy'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
 
         self.parsed_problem = parse_problem_file(data_file, options)
@@ -650,7 +737,11 @@ class BenchmarkTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        options = Options(additional_options={'software': ['scipy_ls']})
+        options = Options(additional_options={'software': ['scipy_ls'],
+                                              'table_type': ['acc',
+                                                             'runtime',
+                                                             'compare',
+                                                             'local_min']})
         cp = Checkpoint(options)
         self.fit = Fit(options=options,
                        data_dir=DATA_DIR,
