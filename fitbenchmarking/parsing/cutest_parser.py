@@ -80,6 +80,8 @@ class CutestParser(Parser):
 
         fp.function = self._function  # self._p.objcons
         fp.jacobian = self._jacobian  # self._p.lagjac
+        fp.sparse_jacobian = self._sparse_jacobian  # self._p.slagjac
+
         fp.equation = None
         fp.starting_values = self._get_starting_values()
         fp.start_x = None
@@ -125,6 +127,27 @@ class CutestParser(Parser):
         _, fx = f(np.asarray(params))
 
         return fx
+
+    def _sparse_jacobian(self, x, *params):
+        """
+        Computes sparse jac and returns it in coo format.
+
+        :param x: The data to evaluate at
+        :type x: np.array
+        :return: The result of evaluating at the given x
+        :rtype: scipy.sparse.coo_matrix
+        """
+
+        print('Computing sparse jac with slagjac.')
+        
+        os.environ["MASTSIF"] = self.mastsif_dir.name
+        fname, _, _, _ = self._setup_data(x)
+        p = _import_problem(fname)
+        g = p.slagjac
+        self._cache_g.append((x, g))
+        _, gx = g(np.asarray(params)[0])
+
+        return gx
 
     def _jacobian(self, x, *params):
         """

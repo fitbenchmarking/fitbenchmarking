@@ -276,3 +276,21 @@ class IncompatibleCostFunctionError(FitBenchmarkException):
     class_message = 'The selected cost function cannot be used with the ' \
                     'given problem'
     error_code = 29
+
+
+class NoSparseJacobianError(FitBenchmarkException):
+    """
+    Indicates that no sparse_jacobian function was not found by the parser.
+    """
+    class_message = 'Sparse_jacobian function not found. '
+    error_code = 30
+
+
+class SparseJacobianIsDenseError(FitBenchmarkException):
+    """
+    Indicates that the sparse_jacobian function submitted by the user
+    returned a result that is not in sparse format.
+    """
+    class_message = 'The result of sparse_jacobian is not in sparse format ' \
+                    'so it cannot be used as a sparsity pattern.'
+    error_code = 31

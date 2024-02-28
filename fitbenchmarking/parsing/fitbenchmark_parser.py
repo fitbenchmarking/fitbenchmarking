@@ -1,9 +1,12 @@
 """
 This file implements a parser for the Fitbenchmark data format.
 """
+import importlib
 import os
 import re
+import sys
 import typing
+
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
@@ -39,6 +42,7 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem = FittingProblem(self.options)
 
         self._parsed_func = self._parse_function()
+        self._parsed_jac_func = self._parse_jac_function()
 
         self.fitting_problem.multifit = self._is_multifit()
 
@@ -105,6 +109,9 @@ class FitbenchmarkParser(Parser):
                       for r in fit_ranges_str.split('{')[1:]]
 
         self._set_data_points(data_points, fit_ranges)
+
+        # SPARSE JAC FUNCTION
+        self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
 
         self._set_additional_info()
 
@@ -257,6 +264,56 @@ class FitbenchmarkParser(Parser):
             function_def.append(func_dict)
 
         return function_def
+
+    def _parse_jac_function(self, func: typing.Optional[str] = None):
+        """
+        Get the params from the function as a list of dicts from the data
+        file.
+
+        :param func: The function to parse. Optional, defaults to
+                     self._entries['jac_function']
+        :type func: str
+        :return: Function definition in format:
+                 [{name1: value1, name2: value2, ...}, ...]
+        :rtype: list of dict
+        """
+
+        # pylint: disable=too-many-branches, too-many-statements
+        function_def = []
+
+        if 'jac_function' not in self._entries.keys():
+            LOGGER.warning('Sparse jacobian function not found in '
+                           'def file.')
+            return
+
+        if func is None:
+            func = self._entries['jac_function']
+
+        for f in func.split(';'):
+            func_dict = self._parse_single_function(f)
+            function_def.append(func_dict)
+
+        return function_def
+
+    def _sparse_jacobian(self) -> typing.Callable:
+        """
+        Process the jac function into a callable.
+
+        :return: A callable function
+        :rtype: callable
+        """
+
+        if self._parsed_jac_func is None:
+            return   # Do we need another warning here? There is one above
+                     # Is the dosctring still fine considering this returns None?
+
+        pf = self._parsed_jac_func[0]
+        path = os.path.join(os.path.dirname(self._filename),
+                            pf['jac_module'])
+        sys.path.append(os.path.dirname(path))
+        module = importlib.import_module(os.path.basename(path))
+        func = getattr(module, pf['jac_func'])
+        return func
 
     @classmethod
     def _parse_single_function(cls, func: str) -> dict:
