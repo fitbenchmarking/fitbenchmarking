@@ -32,6 +32,7 @@ class Scipy(Jacobian):
 
         LOGGER = get_logger()
         self.jac_pattern = None
+        self.method_new = self.method
 
         if self.method.endswith("_sparse"):
 
@@ -43,19 +44,23 @@ class Scipy(Jacobian):
                     'sparse_jacobian function is None. Please provide a '
                     'sparse jacobian function.')
 
-            self.jac_pattern = self.problem.sparse_jacobian()
+            self.jac_pattern = self.problem.\
+                sparse_jacobian(self.problem.data_x, params)
 
             if not issparse(self.jac_pattern):
                 raise SparseJacobianIsDenseError()
 
+            # Remove the "_sparse" at the end
+            self.method_new = self.method[:-7]
+
         else:
             if self.problem.sparse_jacobian is not None:
-                LOGGER.info('Warning:  sparse_jacobian function found, but it '
+                LOGGER.info('Sparse_jacobian function found, but it '
                             'will not be used as the selected method is '
                             f'{self.method}.')
 
         func = self.problem.eval_model
-        jac = approx_derivative(func, params, method=self.method,
+        jac = approx_derivative(func, params, method=self.method_new,
                                 rel_step=None,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs,

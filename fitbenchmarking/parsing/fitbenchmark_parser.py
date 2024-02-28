@@ -282,8 +282,6 @@ class FitbenchmarkParser(Parser):
         function_def = []
 
         if 'jac_function' not in self._entries.keys():
-            LOGGER.warning('Sparse jacobian function not found in '
-                           'def file.')
             return
 
         if func is None:
@@ -304,8 +302,7 @@ class FitbenchmarkParser(Parser):
         """
 
         if self._parsed_jac_func is None:
-            return   # Do we need another warning here? There is one above
-                     # Is the dosctring still fine considering this returns None?
+            return
 
         pf = self._parsed_jac_func[0]
         path = os.path.join(os.path.dirname(self._filename),

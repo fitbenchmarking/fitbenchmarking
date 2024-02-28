@@ -138,8 +138,6 @@ class CutestParser(Parser):
         :rtype: scipy.sparse.coo_matrix
         """
 
-        print('Computing sparse jac with slagjac.')
-        
         os.environ["MASTSIF"] = self.mastsif_dir.name
         fname, _, _, _ = self._setup_data(x)
         p = _import_problem(fname)
