@@ -11,6 +11,11 @@ class CompareTable(Table):
     the runtime on the second line of the cell. The runtime metric displayed
     in the tables is {runtime_metric}.
 
+    For Bayesian fitting, accuracy results represent the reciporcal of the
+    confidence that the fitted parameter values are within :math:`2 \\sigma`
+    of the expected parameter values (calculated using
+    scipy.optimize.curve_fit).
+
     """
     name = 'compare'
     colour_template = 'background-image: linear-gradient({0},{0},{1},{1})'

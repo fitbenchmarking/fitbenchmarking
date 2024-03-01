@@ -66,6 +66,7 @@ class LoopOverBenchmarkProblemsTests(unittest.TestCase):
         """
         cost_func = make_cost_function()
         self.options = Options()
+        self.options.table_type = ['acc', 'runtime', 'compare', 'local_min']
         self.options.software = ["scipy"]
         scipy_len = len(self.options.minimizers["scipy"])
         bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
