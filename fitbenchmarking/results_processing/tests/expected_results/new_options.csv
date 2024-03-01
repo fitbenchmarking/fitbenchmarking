@@ -1,0 +1,24 @@
+value,label,disabled
+amoeba [bumps],amoeba [bumps],True
+de [bumps],de [bumps],True
+dream [bumps],dream [bumps],True
+lm-bumps [bumps],lm-bumps [bumps],True
+newton [bumps],newton [bumps],True
+scipy-leastsq [bumps],scipy-leastsq [bumps],True
+dfogn [dfo] (4 failures),dfogn [dfo] (4 failures),True
+dfols [dfo],dfols [dfo],True
+BayesianOptimizer [gradient_free] (16 failures),BayesianOptimizer [gradient_free] (16 failures),True
+DecisionTreeOptimizer [gradient_free] (16 failures),DecisionTreeOptimizer [gradient_free] (16 failures),True
+EvolutionStrategyOptimizer [gradient_free] (16 failures),EvolutionStrategyOptimizer [gradient_free] (16 failures),True
+HillClimbingOptimizer [gradient_free] (16 failures),HillClimbingOptimizer [gradient_free] (16 failures),True
+ParallelTemperingOptimizer [gradient_free] (16 failures),ParallelTemperingOptimizer [gradient_free] (16 failures),True
+ParticleSwarmOptimizer [gradient_free] (16 failures),ParticleSwarmOptimizer [gradient_free] (16 failures),True
+RandomAnnealingOptimizer [gradient_free] (16 failures),RandomAnnealingOptimizer [gradient_free] (16 failures),True
+RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),RandomRestartHillClimbingOptimizer [gradient_free] (16 failures),True
+RandomSearchOptimizer [gradient_free] (16 failures),RandomSearchOptimizer [gradient_free] (16 failures),True
+RepulsingHillClimbingOptimizer [gradient_free] (16 failures),RepulsingHillClimbingOptimizer [gradient_free] (16 failures),True
+SimulatedAnnealingOptimizer [gradient_free] (16 failures),SimulatedAnnealingOptimizer [gradient_free] (16 failures),True
+TreeStructuredParzenEstimators [gradient_free] (16 failures),TreeStructuredParzenEstimators [gradient_free] (16 failures),True
+migrad [minuit],migrad [minuit],True
+simplex [minuit],simplex [minuit],True
+lm-scipy [scipy_ls]: j:analytic,lm-scipy [scipy_ls]: j:analytic,True

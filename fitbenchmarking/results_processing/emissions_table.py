@@ -1,8 +1,6 @@
 """
 Emissions table
 """
-import os
-
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -22,39 +20,8 @@ class EmissionsTable(Table):
     <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
 
     """
-
-    def __init__(self, results, best_results, options, group_dir, pp_locations,
-                 table_name):
-        """
-        Initialise the emissions table which shows the average emissions
-        results
-
-        :param results: Results grouped by row and category (for colouring)
-        :type results:
-            dict[str, dict[str, list[utils.fitbm_result.FittingResult]]]
-        :param best_results: The best results from each row/category
-        :type best_results:
-            dict[str, dict[str, utils.fitbm_result.FittingResult]],
-        :param options: Options used in fitting
-        :type options: utils.options.Options
-        :param group_dir: path to the directory where group results should be
-                          stored
-        :type group_dir: str
-        :param pp_locations: the locations of the performance profiles
-        :type pp_locations: dict[str,str]
-        :param table_name: Name of the table
-        :type table_name: str
-        """
-
-        super().__init__(results, best_results, options, group_dir,
-                         pp_locations, table_name)
-        self.name = 'emissions'
-        self.has_pp = True
-        self.pp_filenames = [
-            os.path.relpath(self.pp_locations['emissions'], group_dir)]
-        self.pp_dash_urls = ['None']
-
-        self.cbar_title = "Problem-Specific Cell Shading: Relative Emissions"
+    name = 'emissions'
+    cbar_title = "Problem-Specific Cell Shading: Relative Emissions"
 
     def get_value(self, result):
         """

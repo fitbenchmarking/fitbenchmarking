@@ -1,8 +1,6 @@
 """
 compare table
 """
-import os
-
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -13,7 +11,17 @@ class CompareTable(Table):
     the runtime on the second line of the cell. The runtime metric displayed
     in the tables is {runtime_metric}.
 
+    For Bayesian fitting, accuracy results represent the reciporcal of the
+    confidence that the fitted parameter values are within :math:`2 \\sigma`
+    of the expected parameter values (calculated using
+    scipy.optimize.curve_fit).
+
     """
+    name = 'compare'
+    colour_template = 'background-image: linear-gradient({0},{0},{1},{1})'
+    cbar_title = "Problem-Specific Cell Shading:\n"\
+                 "Top Colour - Relative Accuracy\n"\
+                 "Bottom Colour - Relative Runtime\n"
 
     def __init__(self, results, best_results, options, group_dir, pp_locations,
                  table_name):
@@ -39,25 +47,7 @@ class CompareTable(Table):
         """
         super().__init__(results, best_results, options, group_dir,
                          pp_locations, table_name)
-        self.name = 'compare'
-        self.has_pp = True
-        port = options.port
-        group_dir_label = os.path.basename(group_dir)
-
-        self.pp_filenames = \
-            [os.path.relpath(pp_locations[pp], group_dir)
-             for pp in ['acc', 'runtime']]
-
-        self.pp_dash_urls = [f'http://127.0.0.1:{port}/{group_dir_label}/'
-                             f'perf_prof_{metric}'
-                             for metric in ['acc', 'runtime']]
-
-        self.colour_template = \
-            'background-image: linear-gradient({0},{0},{1},{1})'
-
-        self.cbar_title = "Problem-Specific Cell Shading:\n"\
-                          "Top Colour - Relative Accuracy\n"\
-                          "Bottom Colour - Relative Runtime\n"
+        self.pps = ['acc', 'runtime']
 
     def get_value(self, result):
         """

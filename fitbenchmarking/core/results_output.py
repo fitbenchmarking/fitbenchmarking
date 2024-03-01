@@ -797,15 +797,156 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
                     "results in your browser. You can use this link to see the"
                     "results: \n\n   %s", url)
 
-    # Dash app
+    if options.run_dash:
+        run_dash_app(options, pp_dfs_all_prob_sets)
+
+
+def update_warning(solvers, max_solvers):
+    """
+    Give a warning if the number of solvers is above the maximum
+    that can be displayed.
+
+    :param solvers: The solvers to be plotted
+    :type solvers: list[str]
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: The warning
+    :rtype: str
+    """
+
+    if len(solvers) >= max_solvers:
+        return 'The plot is showing the max number of minimizers ' \
+                f'allowed ({max_solvers}). Deselect some to select others.'
+    return ''
+
+
+def check_max_solvers(opts, solvers, max_solvers):
+    """
+    Check number of solvers and update the options to display in the
+    dropdown.
+
+    :param opts: The options for the dropdown to be updated
+    :type opts: dict[str]
+    :param solvers: The solvers to be plotted
+    :type solvers: list[str]
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: Options to display in the dropdown
+    :rtype: dict[str]
+    """
+    for opt in opts:
+        opt["disabled"] = len(solvers) >= max_solvers
+    return opts
+
+
+def display_page(pathname, profile_instances_all_groups,
+                 layout, max_solvers):
+
+    """
+    Update the layout of the dash app.
+
+    :param pathname: The link to the page with the Dash plot
+    :type pathname: str
+    :param profile_instances_all_groups: The data to be plotted
+    :type profile_instances_all_groups: dict[str[dict]]
+    :param layout: Layout of the Dash app
+    :type layout: list of dcc or html components
+    :param max_solvers: Maximum number of solvers that can be plotted
+    :type max_solvers: int
+
+    :return: The updated layout
+    :rtype: html.Div
+    """
+
+    try:
+        _, group, plot, metric_str = pathname.split('/')
+    except ValueError:
+        return ("404 Page Error! Path does not have the expected shape. "
+                "Please provide it in the following form:  \n"
+                "ip-address:port/problem_set/plot/performance_profile.")
+
+    if plot != "pp":
+        return f"404 Page Error! Plot type '{plot}' not available."
+
+    group_profiles = profile_instances_all_groups[group]
+
+    new_layout = layout
+
+    try:
+        for metric in metric_str.split('+'):
+            new_layout = new_layout + [group_profiles[metric].layout()]
+    except KeyError:
+        return ("404 Page Error! The path was not recognized. \n"
+                "The path needs to end in a list of table names "
+                "separated by '+'.")
+
+    opts = group_profiles['acc'].default_opt
+
+    layout[1].options = opts
+    layout[1].value = [i['label'] for i in opts[:max_solvers]]
+    return html.Div(new_layout)
+
+
+def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
+    """
+    Runs the Dash app to produce the interactive performance profile
+    plots.
+
+    :param options: The user options for the benchmark.
+    :type options: fitbenchmarking.utils.options.Options
+    :param pp_dfs_all_prob_sets: For each problem set, data to create
+                                 dash plots.
+    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
+    """
+
+    layout = [
+        dcc.RadioItems(
+            id="Log axis toggle",
+            options=["Log x-axis", "Linear x-axis"],
+            value="Log x-axis",
+            labelStyle={"margin-top": "1.5rem",
+                        "margin-left": "1rem",
+                        "margin-right": "1rem",
+                        "margin-bottom": "0.8rem"},
+            style={"display": "flex",
+                   "font-family": "verdana",
+                   "color": '#454545',
+                   "font-size": "14px"}
+        ),
+        dcc.Dropdown(
+            id='dropdown',
+            multi=True,
+            style={"font-family": "verdana",
+                   "color": '#454545',
+                   "font-size": "14px",
+                   "margin-bottom": "1rem",
+                   "margin-top": "1rem"}
+        ),
+        html.Div(
+            id='warning',
+            style={"white-space": "pre-wrap",
+                   "font-family": "verdana",
+                   "color": "red",
+                   "text-align": "center",
+                   "font-size": "13px",
+                   "margin-bottom": "1rem",
+                   "margin-top": "1rem"}
+        ),
+    ]
+
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
-        inst = {'accProfile': DashPerfProfile(profile_name='Accuracy',
-                                              pp_df=pp_dfs['acc'],
-                                              group_label=group),
-                'runtimeProfile': DashPerfProfile(profile_name='Runtime',
-                                                  pp_df=pp_dfs['runtime'],
-                                                  group_label=group)}
+        inst = {'acc': DashPerfProfile(profile_name='Accuracy',
+                                       pp_df=pp_dfs['acc'],
+                                       group_label=group),
+                'runtime': DashPerfProfile(profile_name='Runtime',
+                                           pp_df=pp_dfs['runtime'],
+                                           group_label=group),
+                'emissions': DashPerfProfile(profile_name='Emissions',
+                                             pp_df=pp_dfs['emissions'],
+                                             group_label=group)}
         profile_instances_all_groups[group] = inst
 
     # Needed to prevent unnecessary warning in the terminal
@@ -820,27 +961,29 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         html.Div(id='page-content', children=[]),
     ])
 
+    max_solvers = 15
+
+    app.callback(
+        Output("warning", "children"),
+        [Input("dropdown", "value")])(
+            lambda x: update_warning(x, max_solvers=max_solvers)
+        )
+
+    app.callback(
+        Output("dropdown", "options"),
+        [Input("dropdown", "options"), Input("dropdown", "value")])(
+            lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers)
+        )
+
     # Create the callback to handle multiple pages
-    @app.callback(Output('page-content', 'children'),
-                  [Input('url', 'pathname')])
-    def display_page(pathname):
+    app.callback(
+        Output('page-content', 'children'),
+        [Input('url', 'pathname')])(
+            lambda x: display_page(
+                x,
+                profile_instances_all_groups=profile_instances_all_groups,
+                layout=layout,
+                max_solvers=max_solvers)
+        )
 
-        try:
-            _, group, table = pathname.split('/')
-        except ValueError:
-            return ("404 Page Error! Path does not have the expected shape. "
-                    "Please provide it in the following form:  \n"
-                    "ip-address:port/problem_set/performance_profile.")
-
-        group_profiles = profile_instances_all_groups[group]
-
-        if table == 'perf_prof_acc':
-            return group_profiles['accProfile'].layout()
-        if table == 'perf_prof_runtime':
-            return group_profiles['runtimeProfile'].layout()
-        return ("404 Page Error! The path was not recognized. \n"
-                "The path needs to end in 'perf_prof_acc' or "
-                "'perf_prof_runtime' .")
-
-    if options.run_dash:
-        app.run(port=options.port)
+    app.run(port=options.port)

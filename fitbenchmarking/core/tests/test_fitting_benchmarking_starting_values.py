@@ -105,7 +105,8 @@ class LoopOverStartingValuesTests(unittest.TestCase):
             = loop_over_starting_values(self.problem,
                                         options=self.options,
                                         grabbed_output=self.grabbed_output,
-                                        checkpointer=self.cp)
+                                        checkpointer=self.cp,
+                                        emissions_tracker=None)
         assert len(problem_results) == expected_list_len
         assert problem_fails == expected_problem_fails
 

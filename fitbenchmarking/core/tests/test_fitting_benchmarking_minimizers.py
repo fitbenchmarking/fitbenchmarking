@@ -123,7 +123,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
                                  self.minimizers,
                                  options=self.options,
                                  grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+                                 checkpointer=self.cp,
+                                 emissions_tracker=None)
         assert results_problem == []
         assert minimizer_failed == self.minimizers
 
@@ -142,7 +143,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
                                  self.minimizers,
                                  options=self.options,
                                  grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+                                 checkpointer=self.cp,
+                                 emissions_tracker=None)
         assert all(isinstance(x, fitbm_result.FittingResult)
                    for x in results_problem)
         assert minimizer_failed == ["deriv_free_algorithm"]
@@ -161,7 +163,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
                                  self.minimizers,
                                  options=self.options,
                                  grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+                                 checkpointer=self.cp,
+                                 emissions_tracker=None)
         assert all(isinstance(x, fitbm_result.FittingResult)
                    for x in results_problem)
         assert minimizer_failed == []
@@ -180,7 +183,8 @@ class LoopOverMinimizersTests(unittest.TestCase):
                                  self.minimizers,
                                  options=self.options,
                                  grabbed_output=self.grabbed_output,
-                                 checkpointer=self.cp)
+                                 checkpointer=self.cp,
+                                 emissions_tracker=None)
 
         assert results_problem[0].error_flag == 4
         assert minimizer_failed == []
