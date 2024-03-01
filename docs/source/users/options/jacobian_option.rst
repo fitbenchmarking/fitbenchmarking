@@ -10,9 +10,11 @@ Analytic (:code:`analytic`)
 ---------------------------
 
 Analytic Jacobians can only be used for specific :ref:`problem_def`. Currently
-the supported formats are cutest and NIST. The only option is:
+the supported formats are cutest and NIST. The supported
+options are:
 
 * ``default`` - use the analytic derivative provided by a supported format.
+* ``sparse`` - use the function sparse_jacobian (either available or provided by the user) to compute the derivative.
 
 Default is ``default``
 
