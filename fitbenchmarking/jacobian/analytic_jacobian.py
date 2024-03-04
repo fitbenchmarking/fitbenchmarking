@@ -49,8 +49,7 @@ class Analytic(Jacobian):
 
             return sparse_jac
 
-        else:
-            return self.problem.jacobian(x, params)
+        return self.problem.jacobian(x, params)
 
     def name(self) -> str:
         """

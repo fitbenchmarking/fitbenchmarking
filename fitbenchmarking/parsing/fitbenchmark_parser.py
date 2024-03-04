@@ -267,8 +267,9 @@ class FitbenchmarkParser(Parser):
 
     def _parse_jac_function(self, func: typing.Optional[str] = None):
         """
-        Get the params from the function as a list of dicts from the data
-        file.
+        Get the (relative) path and the name of the jacobian function
+        from the data file. Returns a list of dicts if these have been
+        defined. Returns None otherwise.
 
         :param func: The function to parse. Optional, defaults to
                      self._entries['jac_function']
@@ -282,7 +283,7 @@ class FitbenchmarkParser(Parser):
         function_def = []
 
         if 'jac_function' not in self._entries.keys():
-            return
+            return None
 
         if func is None:
             func = self._entries['jac_function']
@@ -295,14 +296,15 @@ class FitbenchmarkParser(Parser):
 
     def _sparse_jacobian(self) -> typing.Callable:
         """
-        Process the jac function into a callable.
+        Process the jac function into a callable. Returns
+        None if this is not possible.
 
         :return: A callable function
         :rtype: callable
         """
 
         if self._parsed_jac_func is None:
-            return
+            return None
 
         pf = self._parsed_jac_func[0]
         path = os.path.join(os.path.dirname(self._filename),
