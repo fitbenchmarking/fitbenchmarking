@@ -85,7 +85,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
         for i in range(len(x)):
             jac_i = array([jac[i]])
-            hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
+            hes[:, :, i] = jac_i.T.dot(jac_i) / (4 * f[i] ** (3/2)) \
                 - hes[:, :, i] / (2 * f[i] ** (1/2))
         return hes, self.jac_res(params, **kwargs)
 
