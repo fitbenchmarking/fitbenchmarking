@@ -1,8 +1,12 @@
 """
 Module which acts as a analytic Jacobian calculator
 """
+from scipy.sparse import issparse
+
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
-from fitbenchmarking.utils.exceptions import NoJacobianError
+from fitbenchmarking.utils.exceptions import (NoJacobianError,
+                                              NoSparseJacobianError,
+                                              SparseJacobianIsDenseError)
 
 
 class Analytic(Jacobian):
@@ -27,6 +31,24 @@ class Analytic(Jacobian):
         :rtype: numpy array
         """
         x = kwargs.get("x", self.problem.data_x)
+
+        if self.method == "sparse":
+
+            if self.problem.sparse_jacobian is None:
+
+                # shall we use NoAnalyticJacobian here?
+                raise NoSparseJacobianError(
+                    f'The selected method is {self.method} but the '
+                    'sparse_jacobian function is None. Please provide a '
+                    'sparse jacobian function.')
+
+            sparse_jac = self.problem.sparse_jacobian(x, params)
+
+            if not issparse(sparse_jac):
+                raise SparseJacobianIsDenseError()
+
+            return sparse_jac
+
         return self.problem.jacobian(x, params)
 
     def name(self) -> str:

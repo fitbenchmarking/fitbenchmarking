@@ -19,6 +19,11 @@ class Scipy(Jacobian):
     # Problem formats that are incompatible with certain Scipy Jacobians
     INCOMPATIBLE_PROBLEMS = {"cs": ["mantid"]}
 
+    def __init__(self, problem):
+        super().__init__(problem)
+        self.jac_pattern = None
+        self.equiv_np_method = self.method
+
     def eval(self, params, **kwargs):
         """
         Evaluates Jacobian of problem.eval_model
@@ -31,8 +36,6 @@ class Scipy(Jacobian):
         """
 
         LOGGER = get_logger()
-        self.jac_pattern = None
-        self.method_new = self.method
 
         if self.method.endswith("_sparse"):
 
@@ -51,16 +54,17 @@ class Scipy(Jacobian):
                 raise SparseJacobianIsDenseError()
 
             # Remove the "_sparse" at the end
-            self.method_new = self.method[:-7]
+            self.equiv_np_method = self.method[:-7]
 
         else:
             if self.problem.sparse_jacobian is not None:
                 LOGGER.info('Sparse_jacobian function found, but it '
-                            'will not be used as the selected method is '
-                            f'{self.method}.')
+                            'will not be used as the selected method is %s.',
+                            self.method)
 
         func = self.problem.eval_model
-        jac = approx_derivative(func, params, method=self.method_new,
+        jac = approx_derivative(func, params,
+                                method=self.equiv_np_method,
                                 rel_step=None,
                                 bounds=(-np.inf, np.inf),
                                 kwargs=kwargs,
