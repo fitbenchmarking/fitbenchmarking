@@ -22,7 +22,7 @@ class Scipy(Jacobian):
     def __init__(self, problem):
         super().__init__(problem)
         self.jac_pattern = None
-        self.equiv_np_method = self.method
+        self.equiv_np_method = None
 
     def eval(self, params, **kwargs):
         """
@@ -34,6 +34,8 @@ class Scipy(Jacobian):
         :return: Approximation of the Jacobian
         :rtype: numpy array
         """
+
+        self.equiv_np_method = self.method
 
         LOGGER = get_logger()
 
