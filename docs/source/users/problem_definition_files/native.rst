@@ -133,7 +133,7 @@ jacobian
 
   The parser for this function allows the user to define ``f`` in the following equation:
 
-    .. math:: x' = f(x, *args)
+  .. math:: x' = f(x, *args)
 
   To do this we use a python module to define the function. As in the above
   formula, the function can take the following arguments:
