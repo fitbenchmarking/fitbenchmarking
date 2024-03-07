@@ -17,10 +17,18 @@ repos:
   hooks:
   - id: autopep8
 
-- repo: https://github.com/PyCQA/pylint
-  rev: v3.0.3
+- repo: local
   hooks:
-  - id: pylint
+    - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [python]
+      args:
+        [
+          "-rn", # Only display messages
+          "-sn", # Don't display the score
+        ]
 
 - repo: https://github.com/PyCQA/flake8
   rev: 7.0.0
