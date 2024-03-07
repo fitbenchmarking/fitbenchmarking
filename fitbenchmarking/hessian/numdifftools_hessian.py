@@ -27,12 +27,8 @@ class Numdifftools(Hessian):
         """
         x = kwargs.get("x", self.problem.data_x)
 
-        @lru_cache
-        def grad(params):
-            return self.jacobian.eval(params, x=x).T
-
         def jac_func(params):
-            return grad(tuple(params))
+            return self.jacobian.eval(params, x=x).T
 
         hes_func = nd.Jacobian(jac_func, method=self.method)
         hes = hes_func(params)
