@@ -1,8 +1,6 @@
 """
 Module which calculates numdifftools finite difference approximations
 """
-from functools import lru_cache
-
 import numdifftools as nd
 
 from fitbenchmarking.hessian.base_hessian import Hessian
