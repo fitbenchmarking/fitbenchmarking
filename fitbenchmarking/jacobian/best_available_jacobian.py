@@ -7,6 +7,9 @@ from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 class BestAvailable(Jacobian):
     """
@@ -17,6 +20,7 @@ class BestAvailable(Jacobian):
     def __init__(self, problem):
         if callable(problem.jacobian):
             self.sub_jac = Analytic(problem)
+            self.sub_jac.method = 'default'
         else:
             self.sub_jac = Scipy(problem)
             self.sub_jac.method = '2-point'
@@ -30,6 +34,9 @@ class BestAvailable(Jacobian):
         if __name in ['sub_jac', 'name']:
             return super().__setattr__(__name, __value)
         if __name == 'method':
+            if __value != "default":
+                LOGGER.warning("Method cannot be selected for best_available, "
+                               "using default of %s.", self.sub_jac.method)
             return
         return setattr(self.sub_jac, __name, __value)
 

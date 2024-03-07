@@ -151,8 +151,11 @@ def preprocess_data(results: "list[FittingResult]"):
     col_sections = ['costfun']
 
     # Find the result tags and the columns with fallback
-    all_result_tags = \
-        _get_all_result_tags(results, sort_order, col_sections)
+    all_result_tags = [_extract_tags(r,
+                                     row_sorting=sort_order[0],
+                                     col_sorting=sort_order[1],
+                                     cat_sorting=col_sections)
+                       for r in results]
 
     # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
@@ -200,68 +203,12 @@ def preprocess_data(results: "list[FittingResult]"):
 
     # Find best results
     best_results = {}
-    pprint(columns)
-    pprint(sorted_results)
     for r, row in sorted_results.items():
         best_results[r] = {}
         for c, cat in row.items():
             best_results[r][c] = _process_best_results(cat)
 
     return best_results, sorted_results
-
-
-def _get_all_result_tags(results, sort_order, cat_sorting):
-    """
-    Generate the result tags of all results without error_flag = 4
-    and find the column tags that refer to the same options but
-    differ due to jacobian and hessian fallback.
-
-    :param results: The list of results to find the tags for and
-                   check for repetition
-    :type results: list[FittingResult]
-    :param sort_order: The sort order of the tags
-    :type sort_order: list[list[str]]
-    :param cat_sorting: The components in order of importance that
-                        will be used to generate the cat tag.
-    :type cat_sorting: list[str]
-
-    :return: all results tags and the fallback column tags
-    :rtype: list[dict[str, str]], list[str]
-    """
-    all_result_tags = []
-    rows = set()
-    columns = {}
-    columns_with_errors = {}
-
-    for ix, r in enumerate(results):
-
-        # Extracting the results tags
-        result_tags = _extract_tags(r,
-                                    row_sorting=sort_order[0],
-                                    col_sorting=sort_order[1],
-                                    cat_sorting=cat_sorting)
-
-        # Error 4 means none of the jacobians ran so can't infer the
-        # jacobian names from this.
-        if r.error_flag == 4:
-            columns_with_errors[result_tags['col']] = \
-                1 + columns_with_errors.get(result_tags['col'], 0)
-            continue
-
-        # Saving the rows
-        rows.add(result_tags['row'])
-
-        # Count the occurance of each column tag
-        columns[result_tags['col']] = 1 if result_tags['col'] not in columns \
-            else columns[result_tags['col']] + 1
-
-        # Saving the index of the results
-        result_tags['result_ix'] = ix
-
-        # Saving all the result_tags
-        all_result_tags.append(result_tags)
-
-    return all_result_tags
 
 
 def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',
@@ -617,7 +564,7 @@ def update_warning(solvers, max_solvers):
 
     if len(solvers) >= max_solvers:
         return 'The plot is showing the max number of minimizers ' \
-                f'allowed ({max_solvers}). Deselect some to select others.'
+            f'allowed ({max_solvers}). Deselect some to select others.'
     return ''
 
 
@@ -643,7 +590,6 @@ def check_max_solvers(opts, solvers, max_solvers):
 
 def display_page(pathname, profile_instances_all_groups,
                  layout, max_solvers):
-
     """
     Update the layout of the dash app.
 
@@ -767,13 +713,13 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         Output("warning", "children"),
         [Input("dropdown", "value")])(
             lambda x: update_warning(x, max_solvers=max_solvers)
-        )
+    )
 
     app.callback(
         Output("dropdown", "options"),
         [Input("dropdown", "options"), Input("dropdown", "value")])(
             lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers)
-        )
+    )
 
     # Create the callback to handle multiple pages
     app.callback(
@@ -784,6 +730,6 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                 profile_instances_all_groups=profile_instances_all_groups,
                 layout=layout,
                 max_solvers=max_solvers)
-        )
+    )
 
     app.run(port=options.port)

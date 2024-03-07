@@ -17,7 +17,7 @@ def create_jacobian(jac_method):
     :param jac_method: Type of Jacobian selected from options
     :type jac_method: str
 
-    :return: Controller class for the problem
+    :return: Jacobian class for the problem
     :rtype: fitbenchmarking.jacobian.base_controller.Jacobian subclass
     """
 

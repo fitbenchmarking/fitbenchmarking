@@ -49,7 +49,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks jac_method default
         """
-        expected = ['analytic']
+        expected = ['best_available']
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
