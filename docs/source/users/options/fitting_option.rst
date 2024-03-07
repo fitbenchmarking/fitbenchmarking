@@ -119,13 +119,14 @@ Current Jacobian methods are:
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
+* ``best_available`` - uses the analytic jacobian if it is available, otherwise uses a Scipy jacobian.
 
-Default is ``analytic``
+Default is ``best_available``
 
 .. code-block:: rst
 
     [FITTING]
-    jac_method: analytic
+    jac_method: best_available
 
 .. warning::
 

@@ -6,10 +6,13 @@ Jacobian Options
 
 The Jacobian section allows you to control which methods for computing Jacobians the software uses.
 
+.. _analytic-jac:
+
 Analytic (:code:`analytic`)
 ---------------------------
 
 Analytic Jacobians can only be used for specific :ref:`problem_def`.
+If an analytic jacobian is not available, the test will be skipped.
 Currently the supported formats are CUTEst, Mantid, and NIST.
 The only option is:
 
@@ -91,3 +94,21 @@ Default is ``central``.
 
     [JACOBIAN]
     numdifftools: central
+
+Best Available (:code:`best_available`)
+---------------------------------------
+
+A flexible option which uses :ref:`analytic-jac` where available and
+:ref:`scipy-jac` with ``method=2-point`` when the analytic would fail.
+This may be useful when testing large problem sets with multiple sources.
+
+ The only option is:
+
+* ``default`` - use analytic jacobian if available, otherwise use scipy 2-point.
+
+Default is ``default``
+
+.. code-block:: rst
+
+    [JACOBIAN]
+    best_available: default
