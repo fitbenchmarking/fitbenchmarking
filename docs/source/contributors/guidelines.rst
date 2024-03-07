@@ -65,5 +65,5 @@ problems are spotted before running the CI.
 This covers sorting imports, fixing indentation, removing trailing whitespace,
 and checking the linting.
 
-Pre-commit will be installed as part of Step 4 in :ref:`_install_instructions`
+Pre-commit will be installed as part of Step 4 in :ref:`install_instructions`
 but will need to be activated with ``pre-commit install``.
