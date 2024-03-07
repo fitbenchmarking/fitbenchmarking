@@ -272,7 +272,7 @@ class FitbenchmarkParser(Parser):
         defined. Returns None otherwise.
 
         :param func: The function to parse. Optional, defaults to
-                     self._entries['jac_function']
+                     self._entries['jac']
         :type func: str
         :return: Function definition in format:
                  [{name1: value1, name2: value2, ...}, ...]
@@ -282,11 +282,11 @@ class FitbenchmarkParser(Parser):
         # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
-        if 'jac_function' not in self._entries.keys():
+        if 'jac' not in self._entries.keys():
             return None
 
         if func is None:
-            func = self._entries['jac_function']
+            func = self._entries['jac']
 
         for f in func.split(';'):
             func_dict = self._parse_single_function(f)
@@ -308,10 +308,10 @@ class FitbenchmarkParser(Parser):
 
         pf = self._parsed_jac_func[0]
         path = os.path.join(os.path.dirname(self._filename),
-                            pf['jac_module'])
+                            pf['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['jac_func'])
+        func = getattr(module, pf['sparse_jac_f'])
         return func
 
     @classmethod

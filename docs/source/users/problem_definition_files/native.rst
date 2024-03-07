@@ -144,8 +144,9 @@ jacobian
   To link to this function we use a function string with the following
   parameters:
 
-  - *jac_module*: The path to the module
-  - *jac_func*: The name of the function within the module
+  - *module*: The path to the module
+  - *dense_func*: The name of the dense jacobian function within the module
+  - *sparse_func*: The name of the sparse jacobian function within the module
 
 fit_ranges
   This specifies the region to be fit.

@@ -7,3 +7,8 @@ def many_param_sample_jac(x, params):
 
     print('Executing many_param_sample jac function')
     return None
+
+def many_param_sample_sparse_jac(x, params):
+
+    print('Executing many_param_sample sparse jac function')
+    return None
