@@ -1,0 +1,148 @@
+[build-system]
+requires = ["hatchling", "versioningit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "FitBenchmarking"
+dynamic = ["version"]
+authors = [{ name = "FitBenchmarkign Team" }]
+description = "FitBenchmarking: A tool for comparing fitting software"
+readme = "README.md"
+requires-python = ">=3.7.1"
+keywords = [
+    "benchmark",
+    "fitting",
+    "optimisation",
+    "least squares",
+    "comparison",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    'docutils',
+    'tqdm>=4.60',
+    'numpy<1.24',
+    'matplotlib>=2.0',
+    'plotly>=5.0.0',
+    'scipy>=0.18',
+    'lxml',
+    'pandas>=1.3',
+    'jinja2',
+    'configparser',
+    'codecarbon>=2.3.4',
+    'dash',
+]
+
+[project.optional-dependencies]
+bumps = ['bumps>=0.9.0']
+DFO = ['DFO-LS', 'dfogn']
+gofit = ['gofit']
+gradient-free = ['gradient-free-optimizers']
+hogben = ['HOGBEN']
+levmar = ['levmar']
+lmfit = ['lmfit', 'emcee>=3.1.0']
+mantid = ['h5py>=2.10.0,<3', 'pyyaml>=5.4.1']
+matlab = ['dill']
+minuit = ['iminuit>=2.0']
+nlopt = ['nlopt']
+numdifftools = ['numdifftools']
+paramonte = ['paramonte']
+SAS = ['sasmodels', "tinycc;platform_system=='Windows'"]
+dev = [
+    'pytest',
+    'pytest-cov>=4.0.0',
+    'coveralls',
+    'coverage[toml]>=6.3',
+    'pylint==2.9.5',
+    'flake8==3.9.2',
+    'pylint-exit',
+    'pandas',
+    'iminuit>=2.25.2',
+]
+
+[project.scripts]
+fitbenchmarking = "fitbenchmarking.cli.main:main"
+fitbenchmarking-cp = "fitbenchmarking.cli.checkpoint_handler:main"
+
+[project.urls]
+Homepage = "https://fitbenchmarking.github.io"
+Documentation = "https://fitbenchmarking.readthedocs.io/en/stable"
+Repository = "https://github.com/fitbenchmarking/fitbenchmarking"
+"Release Notes" = "https://github.com/fitbenchmarking/fitbenchmarking/releases"
+Issues = "https://github.com/fitbenchmarking/fitbenchmarking/issues"
+
+[tool.coverage.run]
+omit = ['*/tests/*', '/fitbenchmarking/cli/main.py']
+
+[tool.coverage.paths]
+source = ['fitbenchmarking/', '/home/fitbenchmarking/fitbenchmarking/']
+
+[tool.coverage.report]
+omit = [
+    '*__init__*',
+    '*/test_*',
+    '/fitbenchmarking/cli/main.py',
+    '*/matlab_mixin.py',
+    '*/matlab*_controller.py',
+    '*/horace_controller.py',
+    '*/horace_parser.py',
+    '*/matlab_engine.py',
+]
+
+[tool.hatch.build]
+packages = ['fitbenchmarking']
+include = [
+    'fonts/FiraSans/*/*',
+    'fonts/FontAwesome/*',
+    'templates/*',
+    'templates/css/*',
+    'templates/js/*',
+    'templates/js/output/chtml/fonts/woff-v2/*',
+]
+exclude = ['*mock*', '*test*']
+
+[tool.hatch.version]
+source = "versioningit"
+
+[tool.pylint.main]
+extension-pkg-allow-list = ["gofit"]
+ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
+ignored-modules = [
+    "levmar",
+    "lmfit",
+    "mantid",
+    "matlab",
+    "nlopt",
+    "PyCeres",
+    "pycutest",
+    "pygsl",
+    "ral_nlls",
+    "theseus",
+]
+
+[tool.pylint.design]
+max-args = 10
+max-branches = 15
+max-locals = 35
+max-public-methods = 25
+max-statements = 60
+
+[tool.pylint."messages control"]
+disable = [
+    "too-many-instance-attributes",
+    "invalid-name",
+    "too-few-public-methods",
+    "duplicate-code",
+]
+
+[tool.pylint.reports]
+output-format = 'colorized'
+
+[tool.pylint.variables]
+ignored-argument-names = "arg|args|kwargs"
+
+[tool.versioningit]
+default-version = '0.0.0dev1'

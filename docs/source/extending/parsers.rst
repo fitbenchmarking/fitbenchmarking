@@ -91,12 +91,12 @@ To add a new fitting problem definition type, complete the following steps:
      This will be used to verify that the problem can be run by scipy, and that
      accuracy results do not change unexpectedly in future updates.
      If the software used for the new parser is pip-installable, and the
-     installation is done via FitBenchmarking's ``setup.py``, then add the
+     installation is done via FitBenchmarking's ``pyproject.toml``, then add the
      same example to ``fitbenchmarking/test_files/default_parsers_set/``.
 
      As part of this, the ``systests/expected_results/all_parsers.csv`` file,
-      and if necessary the ``systests/expected_results/default_parsers_set.csv`` file,
-      will need to be updated. This is done by running the systests::
+     and if necessary the ``systests/expected_results/default_parsers_set.csv`` file,
+     will need to be updated. This is done by running the systests::
 
        pytest fitbenchmarking/systests
 
