@@ -111,6 +111,7 @@ class FitbenchmarkParser(Parser):
         self._set_data_points(data_points, fit_ranges)
 
         # SPARSE JAC FUNCTION
+        self.fitting_problem.jacobian = self._dense_jacobian()
         self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
 
         self._set_additional_info()
@@ -294,9 +295,29 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
+    def _dense_jacobian(self) -> typing.Callable:
+        """
+        Process the dense jac function into a callable. Returns
+        None if this is not possible.
+
+        :return: A callable function
+        :rtype: callable
+        """
+
+        if self._parsed_jac_func is None:
+            return None
+
+        pf = self._parsed_jac_func[0]
+        path = os.path.join(os.path.dirname(self._filename),
+                            pf['module'])
+        sys.path.append(os.path.dirname(path))
+        module = importlib.import_module(os.path.basename(path))
+        func = getattr(module, pf['dense_func'])
+        return func
+
     def _sparse_jacobian(self) -> typing.Callable:
         """
-        Process the jac function into a callable. Returns
+        Process the sparse jac function into a callable. Returns
         None if this is not possible.
 
         :return: A callable function
