@@ -311,7 +311,7 @@ class FitbenchmarkParser(Parser):
                             pf['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['sparse_jac_f'])
+        func = getattr(module, pf['sparse_func'])
         return func
 
     @classmethod
