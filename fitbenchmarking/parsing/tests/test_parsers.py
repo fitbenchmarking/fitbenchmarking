@@ -2,23 +2,28 @@
 This file contains tests for the parsers.
 """
 
-from importlib import import_module
-from inspect import isclass, isabstract, getmembers
-from json import load
 import os
+from importlib import import_module
+from inspect import getmembers, isabstract, isclass
+from json import load
 from unittest import TestCase
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+
 import numpy as np
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+from scipy.sparse import issparse
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.parser_factory import \
-    ParserFactory, parse_problem_file
+from fitbenchmarking.parsing.parser_factory import (ParserFactory,
+                                                    parse_problem_file)
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+
 
 OPTIONS = Options()
-JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist']
+JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'hogben']
+SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
@@ -52,6 +57,7 @@ def generate_test_cases():
               'test_factory': [],
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
+              'test_sparsej_evaluation': [],
               'test_hessian_evaluation': []}
 
     # get all parsers
@@ -109,6 +115,14 @@ def generate_test_cases():
         test_jac_eval['file_format'] = file_format
         test_jac_eval['evaluations_file'] = jac_eval
         params['test_jacobian_evaluation'].append(test_jac_eval)
+
+        sparsej_eval = os.path.join(test_dir,
+                                    file_format,
+                                    'jacobian_evaluations.json')
+        test_sparsej_eval = {}
+        test_sparsej_eval['file_format'] = file_format
+        test_sparsej_eval['evaluations_file'] = sparsej_eval
+        params['test_sparsej_evaluation'].append(test_sparsej_eval)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
@@ -233,6 +247,10 @@ class TestParsers:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.jacobian)
 
+        if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
+            # Check that the Jacobian is callable
+            assert callable(fitting_problem.jacobian)
+
         if file_format in HESSIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.hessian)
@@ -321,6 +339,37 @@ class TestParsers:
                     x = np.array(r[0])
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
+
+    def test_sparsej_evaluation(self, file_format, evaluations_file):
+        """
+        Test that the sparse Jacobian evaluation is consistent with what would be
+        expected by comparing to some precomputed values with fixed params and
+        x values.
+        """
+        # Note that this test is optional so will only run if the file_format
+        # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
+        if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
+            message = 'No function evaluations provided to test ' \
+                f'against for {file_format}'
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for r in tests:
+                    x = np.array(r[0])
+                    actual = fitting_problem.sparse_jacobian(x, r[1])
+                    assert issparse(actual)
+                    assert np.isclose(actual.todense(), r[2]).all()
 
     def test_hessian_evaluation(self, file_format, evaluations_file):
         """
