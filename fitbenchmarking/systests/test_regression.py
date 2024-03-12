@@ -57,7 +57,7 @@ class TestRegressionAll(TestCase):
         run_benchmark(self.results_dir, problem_sub_directory,
                       override_software=["mantid"],
                       jac_num_method={"scipy": ["2-point", "3-point"]},
-                      additional_options={'jac_method': 'scipy'})
+                      additional_options={'jac_method': ['scipy']})
 
         diff, msg = compare_results(problem_sub_directory, "multifit.csv")
         self.assertListEqual([], diff, msg)
