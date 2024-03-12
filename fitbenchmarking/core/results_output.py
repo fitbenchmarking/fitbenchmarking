@@ -7,7 +7,6 @@ import os
 import platform
 import re
 import webbrowser
-from pprint import pprint
 from shutil import copytree
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
 
@@ -150,17 +149,18 @@ def preprocess_data(results: "list[FittingResult]"):
     # Additional separation for categories within columns
     col_sections = ['costfun']
 
-    # Find the result tags and the columns with fallback
-    all_result_tags = [_extract_tags(r,
-                                     row_sorting=sort_order[0],
-                                     col_sorting=sort_order[1],
-                                     cat_sorting=col_sections)
-                       for r in results]
-
     # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
     columns = {}
-    for result_tags in all_result_tags:
+    for r in results:
+        # Error 4 means none of the jacobians ran so can't infer the
+        # jacobian names from this.
+        if r.error_flag == 4:
+            continue
+        result_tags = _extract_tags(r,
+                                    row_sorting=sort_order[0],
+                                    col_sorting=sort_order[1],
+                                    cat_sorting=col_sections)
         rows.add(result_tags['row'])
         cat = result_tags['cat']
         if cat not in columns:
@@ -494,7 +494,7 @@ def create_index_page(options: "Options", groups: "list[str]",
 
     run_name = f"{options.run_name}: " if options.run_name else ""
 
-    with open(output_file, "w") as fh:
+    with open(output_file, "w", encoding='utf-8') as fh:
         fh.write(template.render(
             css_style_sheet=css["main"],
             custom_style=css["custom"],
