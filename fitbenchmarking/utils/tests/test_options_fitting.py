@@ -2,8 +2,8 @@
 Test the FITTING section for the options file
 '''
 import inspect
-import shutil
 import os
+import shutil
 import unittest
 
 from fitbenchmarking.utils import exceptions
@@ -57,7 +57,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks hes_method default
         """
-        expected = ['analytic']
+        expected = ['best_available']
         actual = self.options.hes_method
         self.assertEqual(expected, actual)
 
@@ -112,7 +112,7 @@ class UserFittingOptionTests(unittest.TestCase):
         """
         opts_file = os.path.join(self.test_files_dir,
                                  f'test_{opt_name}_valid.ini')
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf-8') as f:
             f.write(config_str)
         return opts_file
 
