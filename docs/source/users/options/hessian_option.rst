@@ -6,6 +6,8 @@ Hessian Options
 
 The Hessian section allows you to control which methods for computing Hessians the software uses.
 
+.. _analytic-hes:
+
 Analytic (:code:`analytic`)
 ---------------------------
 
@@ -83,3 +85,21 @@ Default is ``central``.
 
     [HESSIAN]
     numdifftools: central
+
+Best Available (:code:`best_available`)
+---------------------------------------
+
+A flexible option which uses :ref:`analytic-hes` where available and
+:ref:`scipy-jac` with ``method=2-point`` when the analytic would fail.
+This may be useful when testing large problem sets with multiple sources.
+
+ The only option is:
+
+* ``default`` - use analytic hessian if available, otherwise use scipy 2-point.
+
+Default is ``default``
+
+.. code-block:: rst
+
+    [HESSIAN]
+    best_available: default

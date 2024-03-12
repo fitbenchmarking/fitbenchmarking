@@ -149,21 +149,18 @@ def preprocess_data(results: "list[FittingResult]"):
     # Additional separation for categories within columns
     col_sections = ['costfun']
 
-    # Find the result tags and the columns with fallback
-    all_result_tags, fallback_columns = \
-        _get_all_result_tags(results, sort_order, col_sections)
-
-    # Handle the fallback tags
-    if fallback_columns:
-        results, all_result_tags = _handle_fallback_tags(results,
-                                                         all_result_tags,
-                                                         fallback_columns,
-                                                         sort_order[1])
-
     # Generate the columns, category, and row tags and sort
     rows: Union[List[str], Set[str]] = set()
     columns = {}
-    for result_tags in all_result_tags:
+    for r in results:
+        # Error 4 means none of the jacobians ran so can't infer the
+        # jacobian names from this.
+        if r.error_flag == 4:
+            continue
+        result_tags = _extract_tags(r,
+                                    row_sorting=sort_order[0],
+                                    col_sorting=sort_order[1],
+                                    cat_sorting=col_sections)
         rows.add(result_tags['row'])
         cat = result_tags['cat']
         if cat not in columns:
@@ -212,256 +209,6 @@ def preprocess_data(results: "list[FittingResult]"):
             best_results[r][c] = _process_best_results(cat)
 
     return best_results, sorted_results
-
-
-def _handle_fallback_tags(results,
-                          all_result_tags,
-                          fallback_columns,
-                          col_order):
-    """
-    The function that relabels the fallback column tags that
-    appear when there is jacobian and hessian fallbacks for a
-    minimizer.
-
-    :param results: The list of results of benchmarking
-    :type results: list[FittingResult]
-    :param all_result_tags: A list of tags that can be used
-                            to sort the results
-    :type all_result_tags: list[dict[str, str]]
-    :param fallback_columns: The col tag of the fallback columns
-    :type fallback_columns: list[str]
-    :param col_order: The sort order of the col tags
-    :type col_order: list[str]
-
-    :return: all results and the results tags
-    :rtype: list[FittingResult], list[dict[str, str]]
-    """
-    column_rename = "best_avaliable"
-
-    # Find software and minimizer tags
-    # Find col tags with each sm_tag
-    sm_summary = {}
-    for tag in all_result_tags:
-        up = tag["col"].split(":")
-        sm = (up[col_order.index('software')],
-              up[col_order.index('minimizer')])
-        if sm not in sm_summary:
-            sm_summary[sm] = set()
-        sm_summary[sm].add(tag['col'])
-
-    update_summary = _find_tag_to_rename(all_result_tags,
-                                         sm_summary,
-                                         col_order,
-                                         fallback_columns)
-
-    for ix, tag in enumerate(all_result_tags):
-        # If tag is in fallback columns list
-        if tag['col'] in fallback_columns:
-
-            result_ix = tag["result_ix"]
-
-            # Unpack the tag
-            unpacked_column_tag = dict(zip(col_order, tag["col"].split(":")))
-            sm_tag = (unpacked_column_tag['software'],
-                      unpacked_column_tag['minimizer'])
-
-            if update_summary[sm_tag] in ['jacobian', 'both']:
-                # Update jacobian tag
-                unpacked_column_tag['jacobian'] = \
-                    results[result_ix].jacobian_tag = column_rename
-
-            if update_summary[sm_tag] in ['hessian', 'both']:
-                # Update hessian tag
-                unpacked_column_tag['hessian'] = \
-                    results[result_ix].hessian_tag = column_rename
-
-            # Update results tag
-            all_result_tags[ix]["col"] = ":".join([unpacked_column_tag[key]
-                                                   for key in col_order])
-
-    return results, all_result_tags
-
-
-def _find_tag_to_rename(all_result_tags,
-                        sm_summary,
-                        col_order,
-                        fallback_columns):
-    """
-    The function determines which of the jacobian, hessian or both
-    tags to rename for the fallback columns.
-
-    :param all_result_tags: A list of tags that can be used
-                            to sort the results
-    :type all_result_tag: list[dict[str, str]]
-    :param sm_summary: The col tags organized by software
-                       and minimizer tags
-    :type sm_summary: tuple[str, str]
-    :param col_order: The sort order of the col tags
-    :type col_order: list[str]
-    :param fallback_columns: The col tag of the fallback columns
-    :type fallback_columns: list[str]
-
-    :return: the tags to update organized by software
-             and minimizer
-    :rtype: dict[str]]
-    """
-    # Find rows
-    rows = {row['row'] for row in all_result_tags}
-
-    # Create dict to store tag update type
-    update_summary = {}
-
-    for sm, tags in sm_summary.items():
-
-        if len(tags) == 1:
-            continue
-
-        if len(tags) == 3 and tags.issubset(fallback_columns):
-            # Update both tags
-            update_summary[sm] = 'both'
-            continue
-
-        for tag in tags:
-
-            # Unpack the tag
-            unpacked_column_tag = dict(zip(col_order, tag.split(":")))
-
-            # Find jacobian and hessian matches
-            matches_summary = {}
-            for check_tag in [['jacobian'],
-                              ['hessian'],
-                              ['jacobian', 'hessian']]:
-
-                match_str = ':'. join(["[^:]*" if key in check_tag else
-                                       unpacked_column_tag[key]
-                                       for key in col_order])
-
-                # Find all matches regardless of row constraints
-                matches = [m for m in _find_matching_tags(match_str,
-                                                          fallback_columns)
-                           if m != tag]
-
-                # Find possible col tags for missing rows
-                column = [r['row'] for r in all_result_tags
-                          if r['col'] == tag]
-                missing_rows = [x for x in rows
-                                if x not in column]
-                possible_matches = {r['col'] for r in all_result_tags
-                                    if r['row'] in missing_rows}
-
-                # Find all matches that satisfy row constraints
-                matches_summary[':'.join(check_tag)] = \
-                    [m for m in matches if m in possible_matches]
-
-            # Determine which tag to update
-            rename_jac = matches_summary['jacobian'] != []
-            rename_hes = matches_summary['hessian'] != []
-            rename_both = ((not rename_jac) and (not rename_hes)) and\
-                matches_summary['jacobian:hessian'] != []
-
-            if (rename_jac and rename_hes) or rename_both:
-                # Update both tags
-                update_summary[sm] = 'both'
-            elif rename_jac:
-                # Update jacobian tag
-                update_summary[sm] = 'jacobian'
-            elif rename_hes:
-                # Update hessian tag
-                update_summary[sm] = 'hessian'
-            break
-
-    return update_summary
-
-
-def _get_all_result_tags(results, sort_order, cat_sorting):
-    """
-    Generate the result tags of all results without error_flag = 4
-    and find the column tags that refer to the same options but
-    differ due to jacobian and hessian fallback.
-
-    :param results: The list of results to find the tags for and
-                   check for repetition
-    :type results: list[FittingResult]
-    :param sort_order: The sort order of the tags
-    :type sort_order: list[list[str]]
-    :param cat_sorting: The components in order of importance that
-                        will be used to generate the cat tag.
-    :type cat_sorting: list[str]
-
-    :return: all results tags and the fallback column tags
-    :rtype: list[dict[str, str]], list[str]
-    """
-    all_result_tags = []
-    rows = set()
-    columns = {}
-    columns_with_errors = {}
-
-    for ix, r in enumerate(results):
-
-        # Extracting the results tags
-        result_tags = _extract_tags(r,
-                                    row_sorting=sort_order[0],
-                                    col_sorting=sort_order[1],
-                                    cat_sorting=cat_sorting)
-
-        # Error 4 means none of the jacobians ran so can't infer the
-        # jacobian names from this.
-        if r.error_flag == 4:
-            columns_with_errors[result_tags['col']] = \
-                1 + columns_with_errors.get(result_tags['col'], 0)
-            continue
-
-        # Saving the rows
-        rows.add(result_tags['row'])
-
-        # Count the occurance of each column tag
-        columns[result_tags['col']] = 1 if result_tags['col'] not in columns \
-            else columns[result_tags['col']] + 1
-
-        # Saving the index of the results
-        result_tags['result_ix'] = ix
-
-        # Saving all the result_tags
-        all_result_tags.append(result_tags)
-
-    # Find the expected_count
-    expected_count = len(rows)
-
-    # Process tags
-    fallback_column_tags = _find_non_full_columns(columns,
-                                                  expected_count,
-                                                  columns_with_errors)
-
-    return all_result_tags, fallback_column_tags
-
-
-def _find_non_full_columns(columns, expected_count, columns_with_errors):
-    """
-    Find columns where the number of occurrences is less than the number
-    of rows.
-
-    :param columns: The dict of column tags and their count
-    :type columns: dict[str, int]
-    :param expected_count: The expected results count for each
-                           minimizer
-    :type expected_count: int
-    :param columns_with_errors: The column tags with errors
-    :type columns_with_errors: dict[str, int]
-
-    :return: a list of the fallback column tags
-    :rtype: list[str]
-    """
-
-    # If columns with errors exist
-    for error_tag, count in columns_with_errors.items():
-        for tag in _find_matching_tags(error_tag, list(columns)):
-            columns[tag] += count
-
-    # Save the fallback columns
-    fallback_column_tags = [tag for tag in columns
-                            if columns[tag] != expected_count]
-
-    return fallback_column_tags
 
 
 def _extract_tags(result: 'FittingResult', row_sorting: 'List[str]',
@@ -747,7 +494,7 @@ def create_index_page(options: "Options", groups: "list[str]",
 
     run_name = f"{options.run_name}: " if options.run_name else ""
 
-    with open(output_file, "w") as fh:
+    with open(output_file, "w", encoding='utf-8') as fh:
         fh.write(template.render(
             css_style_sheet=css["main"],
             custom_style=css["custom"],
@@ -817,7 +564,7 @@ def update_warning(solvers, max_solvers):
 
     if len(solvers) >= max_solvers:
         return 'The plot is showing the max number of minimizers ' \
-                f'allowed ({max_solvers}). Deselect some to select others.'
+            f'allowed ({max_solvers}). Deselect some to select others.'
     return ''
 
 
@@ -843,7 +590,6 @@ def check_max_solvers(opts, solvers, max_solvers):
 
 def display_page(pathname, profile_instances_all_groups,
                  layout, max_solvers):
-
     """
     Update the layout of the dash app.
 
@@ -967,13 +713,13 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         Output("warning", "children"),
         [Input("dropdown", "value")])(
             lambda x: update_warning(x, max_solvers=max_solvers)
-        )
+    )
 
     app.callback(
         Output("dropdown", "options"),
         [Input("dropdown", "options"), Input("dropdown", "value")])(
             lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers)
-        )
+    )
 
     # Create the callback to handle multiple pages
     app.callback(
@@ -984,6 +730,6 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                 profile_instances_all_groups=profile_instances_all_groups,
                 layout=layout,
                 max_solvers=max_solvers)
-        )
+    )
 
     app.run(port=options.port)

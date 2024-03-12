@@ -2,8 +2,8 @@
 Test the HESSIAN section for the options file
 '''
 import inspect
-import shutil
 import os
+import shutil
 import unittest
 
 from fitbenchmarking.utils import exceptions
@@ -25,10 +25,13 @@ class HessianOptionTesHessians(unittest.TestCase):
         """
         Checks num_method default
         """
-        expected = {'scipy': ['2-point'],
-                    'analytic': ['default'],
-                    'numdifftools': ['central'],
-                    'default': ['default']}
+        expected = {
+            'analytic': ['default'],
+            'best_available': ['default'],
+            'default': ['default'],
+            'numdifftools': ['central'],
+            'scipy': ['2-point'],
+        }
         actual = self.options.hes_num_method
         self.assertEqual(expected, actual)
 
@@ -67,7 +70,7 @@ class UserHessianOptionTests(unittest.TestCase):
         """
         opts_file = os.path.join(self.test_files_dir,
                                  f'test_{opt_name}_valid.ini')
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf8') as f:
             f.write(config_str)
         return opts_file
 
@@ -112,10 +115,13 @@ class UserHessianOptionTests(unittest.TestCase):
         """
         Checks user set num_method is valid
         """
-        set_option = {'scipy': ['cs'],
-                      'analytic': ['default'],
-                      'numdifftools': ['central'],
-                      'default': ['default']}
+        set_option = {
+            'analytic': ['default'],
+            'best_available': ['default'],
+            'default': ['default'],
+            'numdifftools': ['central'],
+            'scipy': ['cs'],
+        }
         config_str = \
             "[HESSIAN]\nscipy: cs"
         self.shared_valid('hes_num_method', set_option, config_str)

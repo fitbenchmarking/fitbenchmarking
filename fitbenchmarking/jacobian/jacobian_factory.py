@@ -17,7 +17,7 @@ def create_jacobian(jac_method):
     :param jac_method: Type of Jacobian selected from options
     :type jac_method: str
 
-    :return: Controller class for the problem
+    :return: Jacobian class for the problem
     :rtype: fitbenchmarking.jacobian.base_controller.Jacobian subclass
     """
 
@@ -29,9 +29,12 @@ def create_jacobian(jac_method):
         raise NoJacobianError('Could not find Jacobian class with type as '
                               f'{jac_method}.') from e
 
-    classes = getmembers(module, lambda m: (isclass(m)
-                                            and not isabstract(m)
-                                            and issubclass(m, Jacobian)
-                                            and m is not Jacobian))
+    classes = getmembers(module, lambda m: (
+        isclass(m)
+        and not isabstract(m)
+        and issubclass(m, Jacobian)
+        and m is not Jacobian
+        and m.__name__.lower() == jac_method.replace('_', '')
+    ))
 
     return classes[0][1]
