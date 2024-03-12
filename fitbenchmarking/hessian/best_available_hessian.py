@@ -30,8 +30,8 @@ class BestAvailable(Hessian):
         :type jacobian: subclass of
             :class:`~fitbenchmarking.jacobian.base_jacobian`
         """
-        super().__init__(problem, jacobian)
-        if callable(self.problem.hessian):
+        # pylint: disable=super-init-not-called
+        if callable(problem.hessian):
             self.sub_hes = Analytic(problem, jacobian)
             self.sub_hes.method = 'default'
         else:
