@@ -35,7 +35,6 @@ class Analytic(Jacobian):
         if self.method == "sparse":
 
             if self.problem.sparse_jacobian is None:
-
                 raise NoSparseJacobianError(
                     f'The selected method is {self.method} but the '
                     'sparse_jacobian function is None. Please provide a '
