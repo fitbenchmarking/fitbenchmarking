@@ -12,18 +12,18 @@ from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
-
 from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.options import Options
 
 LOGGER = get_logger()
+
 
 def f(x, p1, p2):
     """
@@ -360,7 +360,7 @@ class TestBestAvailable(TestCase):
         Test that an analytic jacobian is used when jac is callable.
         """
         jac = BestAvailable(self.fitting_problem)
-        self.assertEqual(type(jac.eval.__self__), Analytic)
+        self.assertEqual(type(jac.sub_jac), Analytic)
 
     def test_eval_not_callable_jac(self):
         """
@@ -368,7 +368,7 @@ class TestBestAvailable(TestCase):
         """
         self.fitting_problem.jacobian = None
         jac = BestAvailable(self.fitting_problem)
-        self.assertEqual(type(jac.eval.__self__), Scipy)
+        self.assertEqual(type(jac.sub_jac), Scipy)
 
 
 class TestFactory(TestCase):
