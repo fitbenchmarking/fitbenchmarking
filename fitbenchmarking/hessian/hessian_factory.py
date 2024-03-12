@@ -29,12 +29,12 @@ def create_hessian(hes_method):
         raise NoHessianError('Could not find Hessian class with type as '
                              f'{hes_method}.') from e
 
-    classes = getmembers(module, lambda m: all([
-        isclass(m),
-        not isabstract(m),
-        issubclass(m, Hessian),
-        m is not Hessian,
-        m.__name__.lower() == hes_method.replace('_', ''),
-    ]))
+    classes = getmembers(module, lambda m: (
+        isclass(m)
+        and not isabstract(m)
+        and issubclass(m, Hessian)
+        and m is not Hessian
+        and m.__name__.lower() == hes_method.replace('_', '')
+    ))
 
     return classes[0][1]
