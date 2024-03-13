@@ -4,7 +4,7 @@ logs/
 .idea/
 build/build.log
 FitBenchmarking.egg-info/
-build/lib/build/
+build/lib/
 dist/
 docs/build
 docs/source/_build

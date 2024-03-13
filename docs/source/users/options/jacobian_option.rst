@@ -9,9 +9,10 @@ The Jacobian section allows you to control which methods for computing Jacobians
 Analytic (:code:`analytic`)
 ---------------------------
 
-Analytic Jacobians can only be used for specific :ref:`problem_def`. Currently
-the supported formats are cutest and NIST. The supported
-options are:
+
+Analytic Jacobians can only be used for specific :ref:`problem_def`.
+Currently the supported formats are CUTEst, Mantid, and NIST.
+The only option is:
 
 * ``default`` - use the analytic derivative provided by a supported format.
 * ``sparse`` - use the function sparse_jacobian (either available or provided by the user) to compute the derivative.
@@ -22,6 +23,10 @@ Default is ``default``
 
     [JACOBIAN]
     analytic: default
+
+.. warning::
+
+    Mantid may return an approximate jacobian, however we are unable to determine when this is the case.
 
 .. _scipy-jac:
 
