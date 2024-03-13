@@ -18,8 +18,6 @@ from fitbenchmarking.parsing.parser_factory import (ParserFactory,
                                                     parse_problem_file)
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
-
 
 OPTIONS = Options()
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'hogben']
@@ -58,6 +56,7 @@ def generate_test_cases():
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
               'test_sparsej_evaluation': [],
+              'test_sparsej_returns_none': [],
               'test_hessian_evaluation': []}
 
     # get all parsers
@@ -125,6 +124,11 @@ def generate_test_cases():
         test_sparsej_eval['file_format'] = file_format
         test_sparsej_eval['evaluations_file'] = sparsej_eval
         params['test_sparsej_evaluation'].append(test_sparsej_eval)
+
+        test_sparsej_returns_None = {}
+        test_sparsej_returns_None['file_format'] = file_format
+        test_sparsej_returns_None['evaluations_file'] = func_eval
+        params['test_sparsej_returns_none'].append(test_sparsej_returns_None)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
@@ -372,6 +376,32 @@ class TestParsers:
                     actual = fitting_problem.sparse_jacobian(x, r[1])
                     assert issparse(actual)
                     assert np.isclose(actual.todense(), r[2]).all()
+
+    def test_sparsej_returns_none(self, file_format, evaluations_file):
+        """
+        Test sparse_jacobian is None when no prob def file provided.
+        """
+        # This test focuses on 'ivp' because no 'sparse_jacobian' is
+        # defined for this problem
+        if file_format in ['ivp']:
+            message = 'No function evaluations provided to test ' \
+                f'against for {file_format}'
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for _ in tests:
+                    assert fitting_problem.sparse_jacobian is None
 
     def test_hessian_evaluation(self, file_format, evaluations_file):
         """
