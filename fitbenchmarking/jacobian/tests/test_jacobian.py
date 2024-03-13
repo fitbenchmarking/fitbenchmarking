@@ -227,14 +227,6 @@ class TestJacobianClass(TestCase):
         with self.assertRaises(NoSparseJacobianError):
             jac.eval(params=self.params)
 
-    def test_scipy_eval_calls_slagjac_when_cutest(self):
-        """
-        Test scipy eval calls slagjac with cutest
-        problems
-        """
-        # TO DO
-        return
-
     def test_numdifftools_eval(self):
         """
         Test whether numdifftools evaluation is correct
