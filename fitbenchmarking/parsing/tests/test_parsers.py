@@ -119,7 +119,7 @@ def generate_test_cases():
 
         sparsej_eval = os.path.join(test_dir,
                                     file_format,
-                                    'jacobian_evaluations.json')
+                                    'sparse_jacobian_evaluations.json')
         test_sparsej_eval = {}
         test_sparsej_eval['file_format'] = file_format
         test_sparsej_eval['evaluations_file'] = sparsej_eval
