@@ -21,7 +21,7 @@ from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'hogben']
-SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben']
+SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben', 'mantiddev']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
@@ -55,6 +55,7 @@ def generate_test_cases():
               'test_factory': [],
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
+              'test_mantid_jac_when_no_func_by_user': [],
               'test_sparsej_evaluation': [],
               'test_sparsej_returns_none': [],
               'test_hessian_evaluation': []}
@@ -116,6 +117,11 @@ def generate_test_cases():
         test_jac_eval['file_format'] = file_format
         test_jac_eval['evaluations_file'] = jac_eval
         params['test_jacobian_evaluation'].append(test_jac_eval)
+
+        test_jac_mantid = {}
+        test_jac_mantid['file_format'] = file_format
+        test_jac_mantid['evaluations_file'] = jac_eval
+        params['test_mantid_jac_when_no_func_by_user'].append(test_jac_mantid)
 
         sparsej_eval = os.path.join(test_dir,
                                     file_format,
@@ -253,6 +259,7 @@ class TestParsers:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.jacobian)
 
+        # NEED TO CHECK why this does not pass for mantid
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.sparse_jacobian)
@@ -343,6 +350,47 @@ class TestParsers:
 
                 for r in tests:
                     x = np.array(r[0])
+                    actual = fitting_problem.jacobian(x, r[1])
+                    assert np.isclose(actual, r[2]).all()
+
+    def test_mantid_jac_when_no_func_by_user(self, file_format,
+                                             evaluations_file):
+
+        """
+        Tests that, for mantid problems, when no jacobian is provided
+        by the user, the jacobian function from mantid is used.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
+        """
+        if file_format == 'mantiddev':
+            message = 'No function evaluations provided to test ' \
+                f'against for {file_format}'
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for r in tests:
+                    x = np.array(r[0])
+
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
 
