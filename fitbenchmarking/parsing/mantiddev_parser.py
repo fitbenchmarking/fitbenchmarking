@@ -98,6 +98,10 @@ class MantidDevParser(FitbenchmarkParser):
         :return: a matrix of the Jacobian
         :rtype: np.array
         """
+        if self._parsed_jac_func is not None:
+            if 'dense_func' in self._parsed_jac_func[0].keys():
+                return super()._dense_jacobian()(_x, params)
+
         for param, key in zip(params, self._params_dict.keys()):
             self._mantid_function[key] = param
         # get mantid Jacobian
