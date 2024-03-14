@@ -400,7 +400,6 @@ class TestParsers:
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
 
-
     def test_sparsej_evaluation(self, file_format, evaluations_file):
         """
         Test that the sparse Jacobian evaluation is consistent with what
@@ -445,7 +444,7 @@ class TestParsers:
 
     def test_sparsej_returns_none(self, file_format, evaluations_file):
         """
-        Test sparse_jacobian is None when no prob def file provided.
+        Test sparse_jacobian is None when no 'jac' lie in prob def file.
 
         :param file_format: The name of the file format
         :type file_format: string
@@ -482,7 +481,8 @@ class TestParsers:
 
     def test_sparsej_returns_none2(self, file_format, evaluations_file):
         """
-        Test sparse_jacobian is None when no prob def file provided.
+        Test sparse_jacobian is None when the 'jac' line in the prob def
+        file does not have 'sparse_func' specified.
 
         :param file_format: The name of the file format
         :type file_format: string
