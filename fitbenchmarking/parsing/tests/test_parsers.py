@@ -58,6 +58,7 @@ def generate_test_cases():
               'test_mantid_jac_when_no_func_by_user': [],
               'test_sparsej_evaluation': [],
               'test_sparsej_returns_none': [],
+              'test_sparsej_returns_none2': [],
               'test_hessian_evaluation': []}
 
     # get all parsers
@@ -135,6 +136,11 @@ def generate_test_cases():
         test_sparsej_returns_None['file_format'] = file_format
         test_sparsej_returns_None['evaluations_file'] = func_eval
         params['test_sparsej_returns_none'].append(test_sparsej_returns_None)
+
+        test_sparsej_returns_None2 = {}
+        test_sparsej_returns_None2['file_format'] = file_format
+        test_sparsej_returns_None2['evaluations_file'] = func_eval
+        params['test_sparsej_returns_none2'].append(test_sparsej_returns_None2)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
@@ -394,6 +400,7 @@ class TestParsers:
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
 
+
     def test_sparsej_evaluation(self, file_format, evaluations_file):
         """
         Test that the sparse Jacobian evaluation is consistent with what
@@ -451,9 +458,46 @@ class TestParsers:
                                   "test_file2": ...}
         :type evaluations_file: string
         """
-        # This test focuses on 'ivp' because no 'sparse_jacobian' is
+        # This test focuses on 'ivp' because no 'jac' line is
         # defined for this problem
         if file_format == 'ivp':
+            message = 'No function evaluations provided to test ' \
+                f'against for {file_format}'
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for _ in tests:
+                    assert fitting_problem.sparse_jacobian is None
+
+    def test_sparsej_returns_none2(self, file_format, evaluations_file):
+        """
+        Test sparse_jacobian is None when no prob def file provided.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
+        """
+        # This test focuses on 'ivp' because no 'sparse_func' is
+        # defined for this problem
+        if file_format == 'horace':
             message = 'No function evaluations provided to test ' \
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
