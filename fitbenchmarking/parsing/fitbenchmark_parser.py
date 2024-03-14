@@ -111,7 +111,11 @@ class FitbenchmarkParser(Parser):
         self._set_data_points(data_points, fit_ranges)
 
         # SPARSE JAC FUNCTION
-        self.fitting_problem.jacobian = self._jacobian()
+        if self.fitting_problem.format in ['mantid', 'mantiddev']:
+            self.fitting_problem.jacobian = self._jacobian
+        else:
+            self.fitting_problem.jacobian = self._jacobian()
+
         self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
 
         self._set_additional_info()
