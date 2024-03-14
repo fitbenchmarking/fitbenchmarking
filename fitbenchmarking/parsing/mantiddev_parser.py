@@ -39,14 +39,7 @@ class MantidDevParser(FitbenchmarkParser):
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
 
-    def parse(self):
-
-        fp = super().parse()
-
-        self._set_jacobian(fp)
-        return fp
-
-    def _set_jacobian(self, fp) -> None:
+    def _dense_jacobian(self) -> None:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
@@ -54,6 +47,7 @@ class MantidDevParser(FitbenchmarkParser):
         assigns the jacobian if it passes.
         :param fp: fitting problem
         """
+        fp = self.fitting_problem
         if self._is_multifit():
             # currently cannot do Jacobian and multifit
             return
@@ -76,12 +70,16 @@ class MantidDevParser(FitbenchmarkParser):
         self._cache_x = FDV(x_data)
         self._N_x = len(x_data)
 
+        if self._parsed_jac_func is not None:
+            if 'dense_func' in self._parsed_jac_func[0].keys():
+                return super()._dense_jacobian()
         try:
             _ = self._jacobian(x_data, self._params_dict.values())
             fp.jacobian = self._jacobian
         except RuntimeError:
-
             return
+
+        return self._jacobian
 
     def _jacobian(self, _x, params):
         # pylint: disable=unused-argument
@@ -98,9 +96,6 @@ class MantidDevParser(FitbenchmarkParser):
         :return: a matrix of the Jacobian
         :rtype: np.array
         """
-        if self._parsed_jac_func is not None:
-            if 'dense_func' in self._parsed_jac_func[0].keys():
-                return super()._dense_jacobian()(_x, params)
 
         for param, key in zip(params, self._params_dict.keys()):
             self._mantid_function[key] = param
