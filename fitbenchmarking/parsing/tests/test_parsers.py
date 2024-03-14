@@ -255,7 +255,7 @@ class TestParsers:
 
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
-            assert callable(fitting_problem.jacobian)
+            assert callable(fitting_problem.sparse_jacobian)
 
         if file_format in HESSIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
@@ -302,7 +302,7 @@ class TestParsers:
                     x = np.array(r[0])
                     actual = fitting_problem.eval_model(x=x, params=r[1])
 
-                assert np.isclose(actual, r[2]).all(),\
+                assert np.isclose(actual, r[2]).all(), \
                     print(f'Expected: {r[2]}\nReceived: {actual}')
 
     def test_jacobian_evaluation(self, file_format, evaluations_file):
@@ -348,9 +348,20 @@ class TestParsers:
 
     def test_sparsej_evaluation(self, file_format, evaluations_file):
         """
-        Test that the sparse Jacobian evaluation is consistent with what would be
-        expected by comparing to some precomputed values with fixed params and
-        x values.
+        Test that the sparse Jacobian evaluation is consistent with what
+        would be expected by comparing to some precomputed values with
+        fixed params and x values.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
         """
         # Note that this test is optional so will only run if the file_format
         # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
@@ -380,10 +391,21 @@ class TestParsers:
     def test_sparsej_returns_none(self, file_format, evaluations_file):
         """
         Test sparse_jacobian is None when no prob def file provided.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
         """
         # This test focuses on 'ivp' because no 'sparse_jacobian' is
         # defined for this problem
-        if file_format in ['ivp']:
+        if file_format == 'ivp':
             message = 'No function evaluations provided to test ' \
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
