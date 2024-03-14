@@ -307,6 +307,9 @@ class FitbenchmarkParser(Parser):
         if self._parsed_jac_func is None:
             return None
 
+        if 'dense_func' not in self._parsed_jac_func[0].keys():
+            return None
+
         pf = self._parsed_jac_func[0]
         path = os.path.join(os.path.dirname(self._filename),
                             pf['module'])
@@ -325,6 +328,9 @@ class FitbenchmarkParser(Parser):
         """
 
         if self._parsed_jac_func is None:
+            return None
+
+        if 'sparse_func' not in self._parsed_jac_func[0].keys():
             return None
 
         pf = self._parsed_jac_func[0]
