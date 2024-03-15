@@ -98,7 +98,7 @@ class CutestParser(Parser):
         # evaluation).
         # If a new x is given we will create and parse a new file
         self._cache_f = [(fp.data_x, self._p.objcons)]
-        self._cache_g = [(fp.data_x, self._p.lagjac)]
+        self._cache_g = [(fp.data_x, self._p.lagjac, self._p.slagjac)]
 
         return fp
 
@@ -128,25 +128,6 @@ class CutestParser(Parser):
 
         return fx
 
-    def _sparse_jacobian(self, x, *params):
-        """
-        Computes sparse jac and returns it in coo format.
-
-        :param x: The data to evaluate at
-        :type x: np.array
-        :return: The result of evaluating at the given x
-        :rtype: scipy.sparse.coo_matrix
-        """
-
-        os.environ["MASTSIF"] = self.mastsif_dir.name
-        fname, _, _, _ = self._setup_data(x)
-        p = _import_problem(fname)
-        g = p.slagjac
-        self._cache_g.append((x, g))
-        _, gx = g(np.asarray(params)[0])
-
-        return gx
-
     def _dense_jacobian(self, x, *params):
         """
         If these x values have been passed in before, then run the function to
@@ -160,7 +141,7 @@ class CutestParser(Parser):
         """
         os.environ["MASTSIF"] = self.mastsif_dir.name
 
-        for cx, cg in self._cache_g:
+        for cx, cg, _ in self._cache_g:
             if np.isclose(cx, x).all():
                 g = cg
                 break
@@ -168,8 +149,35 @@ class CutestParser(Parser):
             fname, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
             g = p.lagjac
-            self._cache_g.append((x, g))
+            sg = p.slagjac
+            self._cache_g.append((x, g, sg))
         _, gx = g(np.asarray(params)[0])
+
+        return gx
+
+    def _sparse_jacobian(self, x, *params):
+        """
+        Computes sparse jac and returns it in coo format.
+
+        :param x: The data to evaluate at
+        :type x: np.array
+        :return: The result of evaluating at the given x
+        :rtype: scipy.sparse.coo_matrix
+        """
+
+        os.environ["MASTSIF"] = self.mastsif_dir.name
+
+        for cx, _, csg in self._cache_g:
+            if np.isclose(cx, x).all():
+                sg = csg
+                break
+        else:
+            fname, _, _, _ = self._setup_data(x)
+            p = _import_problem(fname)
+            g = p.lagjac
+            sg = p.slagjac
+            self._cache_g.append((x, g, sg))
+        _, gx = sg(np.asarray(params)[0])
 
         return gx
 

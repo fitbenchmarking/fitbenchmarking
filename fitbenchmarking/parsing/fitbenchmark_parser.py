@@ -111,9 +111,8 @@ class FitbenchmarkParser(Parser):
         self._set_data_points(data_points, fit_ranges)
 
         # SPARSE JAC FUNCTION
-        self.fitting_problem.jacobian = self._get_jacobian('dense_func')
-        self.fitting_problem.sparse_jacobian = \
-            self._get_jacobian('sparse_func')
+        self.fitting_problem.jacobian = self._dense_jacobian()
+        self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
 
         self._set_additional_info()
 
@@ -295,6 +294,24 @@ class FitbenchmarkParser(Parser):
             function_def.append(func_dict)
 
         return function_def
+
+    def _dense_jacobian(self) -> 'Callable | None':
+        """
+        Function to help getting dense jac.
+
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('dense_func')
+
+    def _sparse_jacobian(self) -> 'Callable | None':
+        """
+        Function to help getting sparse jac.
+
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('sparse_func')
 
     def _get_jacobian(self, jac_type) -> 'Callable | None':
         """
