@@ -25,6 +25,7 @@ SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben', 'mantiddev']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
+
 # pylint: disable=no-self-use
 def pytest_generate_tests(metafunc):
     """
@@ -358,7 +359,6 @@ class TestParsers:
                     x = np.array(r[0])
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
-
 
     def test_sparsej_evaluation(self, file_format, evaluations_file):
         """
