@@ -542,50 +542,21 @@ class TestParserNoJac(TestCase):
     A class to hold the tests for cases where the user does not provide
     a jacobian function
     """
-    def gat_path_eval_file(self, file_format, filename):
-        """
-        Helper function to get path to prob def file.
-
-        :param file_format: The problem we are dealing with, e.g. 'mantid'
-        :type file_format: str
-        :param filename: The name of the file we want to read from
-        :type filename: str
-
-        :return: Path to file.
-        :rtype: str
-        """
-        test_dir = os.path.dirname(__file__)
-        eval_file = os.path.join(test_dir,
-                                 file_format,
-                                 filename)
-
-        return eval_file
 
     def test_sparsej_returns_none(self):
         """
-        Test sparse_jacobian is None when no 'jac' line in prob def file.
+        Test sparse_jacobian is None in two cases:
+         - when no 'jac' line in prob def file
+         - when there is a 'jac' line but no 'sparse_func' in it.
         """
-        prob_def_file = 'simplified_anac.txt'
-        prob_def_file_path = self.gat_path_eval_file('ivp',
-                                                     prob_def_file)
+        test_dir = os.path.dirname(__file__)
+        for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
+            prob_def_file_path = os.path.join(test_dir,
+                                              'ivp',
+                                              prob_def_file)
 
-        parser = ParserFactory.create_parser(prob_def_file_path)
-        with parser(prob_def_file_path, OPTIONS) as p:
-            fitting_problem = p.parse()
+            parser = ParserFactory.create_parser(prob_def_file_path)
+            with parser(prob_def_file_path, OPTIONS) as p:
+                fitting_problem = p.parse()
 
-        assert fitting_problem.sparse_jacobian is None
-
-    def test_sparsej_returns_none2(self):
-        """
-        Test sparse_jacobian is None when no 'sparse_func' in prob def file.
-        """
-        prob_def_file = 'simplified_anac2.txt'
-        prob_def_file_path = self.gat_path_eval_file('ivp',
-                                                     prob_def_file)
-
-        parser = ParserFactory.create_parser(prob_def_file_path)
-        with parser(prob_def_file_path, OPTIONS) as p:
-            fitting_problem = p.parse()
-
-        assert fitting_problem.sparse_jacobian is None
-
+            assert fitting_problem.sparse_jacobian is None
