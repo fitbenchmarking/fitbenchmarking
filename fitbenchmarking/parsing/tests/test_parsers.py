@@ -43,21 +43,21 @@ def pytest_generate_tests(metafunc):
                          argvals)
 
 
-def form_dict(file_format, eval):
+def form_dict(file_format, evaluations):
     """
     Helper function to form a dict with provided elements.
 
     :param file_format: The name of the file format
     :type file_format: str
-    :param eval: Path to the file containing the func/jac evaluations
-    :type eval: str
+    :param evaluations: Path to the file containing the func/jac evaluations
+    :type evaluations: str
 
     :return: Dictionary with provided elements
     :rtype: dict
     """
     test_dict = {
         'file_format': file_format,
-        'evaluations_file': eval
+        'evaluations_file': evaluations
     }
     return test_dict
 

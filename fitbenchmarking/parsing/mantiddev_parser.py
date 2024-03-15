@@ -9,7 +9,6 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 import typing
-from typing import Callable
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -40,12 +39,13 @@ class MantidDevParser(FitbenchmarkParser):
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
 
-    def _dense_jacobian(self) -> 'Callable | None':
+    def _dense_jacobian(self) -> 'typing.Callable | None':
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
         This try except tests if the error occurs and then only
         assigns the jacobian if it passes.
+        The jacobian will be None also in the case of multifit.
 
         :return: the jacobian, or None
         :rtype: Callable or None
@@ -53,7 +53,7 @@ class MantidDevParser(FitbenchmarkParser):
         fp = self.fitting_problem
         if self._is_multifit():
             # currently cannot do Jacobian and multifit
-            return
+            return None
         # need to trim x data to the correct range for Jacobian
         i0 = 0
         iN = len(fp.data_x)
