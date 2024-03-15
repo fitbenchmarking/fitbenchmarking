@@ -79,7 +79,7 @@ class CutestParser(Parser):
         fp.name = self._p.name
 
         fp.function = self._function  # self._p.objcons
-        fp.jacobian = self._jacobian  # self._p.lagjac
+        fp.jacobian = self._dense_jacobian  # self._p.lagjac
         fp.sparse_jacobian = self._sparse_jacobian  # self._p.slagjac
 
         fp.equation = None
@@ -147,7 +147,7 @@ class CutestParser(Parser):
 
         return gx
 
-    def _jacobian(self, x, *params):
+    def _dense_jacobian(self, x, *params):
         """
         If these x values have been passed in before, then run the function to
         calculate the Jacobian. Otherwise, create a new problem file, parse and
