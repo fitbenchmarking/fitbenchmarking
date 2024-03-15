@@ -39,7 +39,7 @@ class MantidDevParser(FitbenchmarkParser):
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
 
-    def _dense_jacobian(self) -> 'typing.Callable | None':
+    def _get_jacobian(self, jac_type) -> 'typing.Callable | None':
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
@@ -47,9 +47,16 @@ class MantidDevParser(FitbenchmarkParser):
         assigns the jacobian if it passes.
         The jacobian will be None also in the case of multifit.
 
+        :param jac_type: either 'dense_func' or 'sparse_func'
+        :type jac_type: str
         :return: the jacobian, or None
         :rtype: Callable or None
         """
+        # Mantid does not support sparse jacobian,
+        # so use the function from the baseclass for this
+        if jac_type == 'sparse_func':
+            return super()._get_jacobian('sparse_func')
+
         fp = self.fitting_problem
         if self._is_multifit():
             # currently cannot do Jacobian and multifit
@@ -75,7 +82,7 @@ class MantidDevParser(FitbenchmarkParser):
 
         if self._parsed_jac_func is not None:
             if 'dense_func' in self._parsed_jac_func[0].keys():
-                return super()._dense_jacobian()
+                return super()._get_jacobian('dense_func')
         try:
             _ = self._jacobian(x_data, self._params_dict.values())
             fp.jacobian = self._jacobian

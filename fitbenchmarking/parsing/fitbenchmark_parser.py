@@ -111,8 +111,9 @@ class FitbenchmarkParser(Parser):
         self._set_data_points(data_points, fit_ranges)
 
         # SPARSE JAC FUNCTION
-        self.fitting_problem.jacobian = self._dense_jacobian()
-        self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
+        self.fitting_problem.jacobian = self._get_jacobian('dense_func')
+        self.fitting_problem.sparse_jacobian = \
+            self._get_jacobian('sparse_func')
 
         self._set_additional_info()
 
@@ -295,11 +296,13 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _dense_jacobian(self) -> 'Callable | None':
+    def _get_jacobian(self, jac_type) -> 'Callable | None':
         """
-        Process the dense jac function into a callable. Returns
-        None if this is not possible.
+        Process the dense/sparse jac function into a callable.
+        Returns None if this is not possible.
 
+        :param jac_type: either 'dense_func' or 'sparse_func'
+        :type jac_type: str
         :return: A callable function or None
         :rtype: callable or None
         """
@@ -307,7 +310,7 @@ class FitbenchmarkParser(Parser):
         if self._parsed_jac_func is None:
             return None
 
-        if 'dense_func' not in self._parsed_jac_func[0].keys():
+        if jac_type not in self._parsed_jac_func[0].keys():
             return None
 
         pf = self._parsed_jac_func[0]
@@ -315,30 +318,7 @@ class FitbenchmarkParser(Parser):
                             pf['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['dense_func'])
-        return func
-
-    def _sparse_jacobian(self) -> 'Callable | None':
-        """
-        Process the sparse jac function into a callable. Returns
-        None if this is not possible.
-
-        :return: A callable function or None
-        :rtype: callable or None
-        """
-
-        if self._parsed_jac_func is None:
-            return None
-
-        if 'sparse_func' not in self._parsed_jac_func[0].keys():
-            return None
-
-        pf = self._parsed_jac_func[0]
-        path = os.path.join(os.path.dirname(self._filename),
-                            pf['module'])
-        sys.path.append(os.path.dirname(path))
-        module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['sparse_func'])
+        func = getattr(module, pf[jac_type])
         return func
 
     @classmethod
