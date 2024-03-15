@@ -43,6 +43,25 @@ def pytest_generate_tests(metafunc):
                          argvals)
 
 
+def form_dict(file_format, eval):
+    """
+    Helper function to form a dict with provided elements.
+
+    :param file_format: The name of the file format
+    :type file_format: str
+    :param eval: Path to the file containing the func/jac evaluations
+    :type eval: str
+
+    :return: Dictionary with provided elements
+    :rtype: dict
+    """
+    test_dict = {
+        'file_format': file_format,
+        'evaluations_file': eval
+    }
+    return test_dict
+
+
 def generate_test_cases():
     """
     Utility function to create the params dict for parametrising the tests.
@@ -106,48 +125,38 @@ def generate_test_cases():
         func_eval = os.path.join(test_dir,
                                  file_format,
                                  'function_evaluations.json')
-        test_func_eval = {}
-        test_func_eval['file_format'] = file_format
-        test_func_eval['evaluations_file'] = func_eval
+
+        test_func_eval = form_dict(file_format, func_eval)
         params['test_function_evaluation'].append(test_func_eval)
 
         jac_eval = os.path.join(test_dir,
                                 file_format,
                                 'jacobian_evaluations.json')
-        test_jac_eval = {}
-        test_jac_eval['file_format'] = file_format
-        test_jac_eval['evaluations_file'] = jac_eval
+
+        test_jac_eval = form_dict(file_format, jac_eval)
         params['test_jacobian_evaluation'].append(test_jac_eval)
 
-        test_jac_mantid = {}
-        test_jac_mantid['file_format'] = file_format
-        test_jac_mantid['evaluations_file'] = jac_eval
+        test_jac_mantid = form_dict(file_format, jac_eval)
         params['test_mantid_jac_when_no_func_by_user'].append(test_jac_mantid)
 
         sparsej_eval = os.path.join(test_dir,
                                     file_format,
                                     'sparse_jacobian_evaluations.json')
-        test_sparsej_eval = {}
-        test_sparsej_eval['file_format'] = file_format
-        test_sparsej_eval['evaluations_file'] = sparsej_eval
+
+        test_sparsej_eval = form_dict(file_format, sparsej_eval)
         params['test_sparsej_evaluation'].append(test_sparsej_eval)
 
-        test_sparsej_returns_None = {}
-        test_sparsej_returns_None['file_format'] = file_format
-        test_sparsej_returns_None['evaluations_file'] = func_eval
+        test_sparsej_returns_None = form_dict(file_format, func_eval)
         params['test_sparsej_returns_none'].append(test_sparsej_returns_None)
 
-        test_sparsej_returns_None2 = {}
-        test_sparsej_returns_None2['file_format'] = file_format
-        test_sparsej_returns_None2['evaluations_file'] = func_eval
+        test_sparsej_returns_None2 = form_dict(file_format, func_eval)
         params['test_sparsej_returns_none2'].append(test_sparsej_returns_None2)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
                                 'hessian_evaluations.json')
-        test_hes_eval = {}
-        test_hes_eval['file_format'] = file_format
-        test_hes_eval['evaluations_file'] = hes_eval
+
+        test_hes_eval = form_dict(file_format, hes_eval)
         params['test_hessian_evaluation'].append(test_hes_eval)
 
     return params
