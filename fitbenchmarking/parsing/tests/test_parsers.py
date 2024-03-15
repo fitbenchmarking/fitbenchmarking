@@ -500,9 +500,9 @@ class TestParserNoJac(TestCase):
     A class to hold the tests for cases where the user does not provide
     a jacobian function
     """
-    def open_eval_file(self, file_format, filename):
+    def gat_path_eval_file(self, file_format, filename):
         """
-        Helper function to get results from file and the file directory.
+        Helper function to get path to file with expected results.
 
         :param file_format: The problem we are dealing with, e.g. 'mantid'
         :type file_format: str
@@ -510,27 +510,27 @@ class TestParserNoJac(TestCase):
                          containing input parameters and results
         :type filename: str
 
-        :return: Data contained in the file, file directory.
-        :rtype: tuple(dict, str)
+        :return: Path to file.
+        :rtype: str
         """
         test_dir = os.path.dirname(__file__)
         eval_file = os.path.join(test_dir,
                                  file_format,
                                  filename)
 
-        format_dir = os.path.dirname(eval_file)
-
-        with open(eval_file, 'r') as ef:
-            results = load(ef)
-
-        return results, format_dir
+        return eval_file
 
     def test_sparsej_returns_none(self):
         """
         Test sparse_jacobian is None when no 'jac' lie in prob def file.
         """
-        results, format_dir = self.open_eval_file('ivp',
-                                                  'function_evaluations.json')
+        eval_file = self.gat_path_eval_file('ivp',
+                                                 'function_evaluations.json')
+
+        format_dir = os.path.dirname(eval_file)
+
+        with open(eval_file, 'r') as ef:
+            results = load(ef)
 
         for f, _ in results.items():
             f = os.path.join(format_dir, f)
@@ -546,8 +546,16 @@ class TestParserNoJac(TestCase):
         Test sparse_jacobian is None when the 'jac' line in the prob def
         file does not have 'sparse_func' specified.
         """
-        results, format_dir = self.open_eval_file('horace',
-                                                  'function_evaluations.json')
+        eval_file = self.gat_path_eval_file('horace',
+                                                 'function_evaluations.json')
+
+        format_dir = os.path.dirname(eval_file)
+
+        with open(eval_file, 'r') as ef:
+            results = load(ef)
+
+        for f, _ in results.items():
+            f = os.path.join(format_dir, f)
 
         for f, _ in results.items():
             f = os.path.join(format_dir, f)
@@ -564,8 +572,16 @@ class TestParserNoJac(TestCase):
         Tests that, for mantid problems, when no jacobian is provided
         by the user, the jacobian function from mantid is used.
         """
-        results, format_dir = self.open_eval_file('mantiddev',
-                                                  'jacobian_evaluations.json')
+        eval_file = self.gat_path_eval_file('mantiddev',
+                                                 'jacobian_evaluations.json')
+
+        format_dir = os.path.dirname(eval_file)
+
+        with open(eval_file, 'r') as ef:
+            results = load(ef)
+
+        for f, _ in results.items():
+            f = os.path.join(format_dir, f)
 
         for f, tests in results.items():
             f = os.path.join(format_dir, f)
