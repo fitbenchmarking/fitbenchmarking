@@ -1,5 +1,5 @@
 # FitBenchmark Problem
-software = 'Mantid'
+software = 'Mantiddev'
 name = 'Basic MultiFit'
 description = 'This is meaningless data designed to test the parser works.'
 input_file = ['multifit1.txt','multifit2.txt']

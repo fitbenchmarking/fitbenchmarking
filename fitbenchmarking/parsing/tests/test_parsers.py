@@ -18,12 +18,10 @@ from fitbenchmarking.parsing.parser_factory import (ParserFactory,
                                                     parse_problem_file)
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
-
 
 OPTIONS = Options()
 JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'hogben']
-SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben']
+SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben', 'mantiddev']
 HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
@@ -45,6 +43,25 @@ def pytest_generate_tests(metafunc):
                          argvals)
 
 
+def form_dict(file_format, evaluations):
+    """
+    Helper function to form a dict with provided elements.
+
+    :param file_format: The name of the file format
+    :type file_format: str
+    :param evaluations: Path to the file containing the func/jac evaluations
+    :type evaluations: str
+
+    :return: Dictionary with provided elements
+    :rtype: dict
+    """
+    test_dict = {
+        'file_format': file_format,
+        'evaluations_file': evaluations
+    }
+    return test_dict
+
+
 def generate_test_cases():
     """
     Utility function to create the params dict for parametrising the tests.
@@ -58,12 +75,15 @@ def generate_test_cases():
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
               'test_sparsej_evaluation': [],
+              'test_mantid_jac_when_no_func_by_user': [],
               'test_hessian_evaluation': []}
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
     if TEST_TYPE == "all":
-        formats = ['cutest', 'nist', 'mantid', 'ivp', 'sasview', 'hogben']
+        formats = ['cutest', 'nist', 'mantid',
+                   'ivp', 'sasview',
+                   'hogben', 'mantiddev']
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
@@ -103,33 +123,32 @@ def generate_test_cases():
         func_eval = os.path.join(test_dir,
                                  file_format,
                                  'function_evaluations.json')
-        test_func_eval = {}
-        test_func_eval['file_format'] = file_format
-        test_func_eval['evaluations_file'] = func_eval
+
+        test_func_eval = form_dict(file_format, func_eval)
         params['test_function_evaluation'].append(test_func_eval)
 
         jac_eval = os.path.join(test_dir,
                                 file_format,
                                 'jacobian_evaluations.json')
-        test_jac_eval = {}
-        test_jac_eval['file_format'] = file_format
-        test_jac_eval['evaluations_file'] = jac_eval
+
+        test_jac_eval = form_dict(file_format, jac_eval)
         params['test_jacobian_evaluation'].append(test_jac_eval)
 
         sparsej_eval = os.path.join(test_dir,
                                     file_format,
-                                    'jacobian_evaluations.json')
-        test_sparsej_eval = {}
-        test_sparsej_eval['file_format'] = file_format
-        test_sparsej_eval['evaluations_file'] = sparsej_eval
+                                    'sparse_jacobian_evaluations.json')
+
+        test_sparsej_eval = form_dict(file_format, sparsej_eval)
         params['test_sparsej_evaluation'].append(test_sparsej_eval)
+
+        test_jac_mantid = form_dict(file_format, jac_eval)
+        params['test_mantid_jac_when_no_func_by_user'].append(test_jac_mantid)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
                                 'hessian_evaluations.json')
-        test_hes_eval = {}
-        test_hes_eval['file_format'] = file_format
-        test_hes_eval['evaluations_file'] = hes_eval
+
+        test_hes_eval = form_dict(file_format, hes_eval)
         params['test_hessian_evaluation'].append(test_hes_eval)
 
     return params
@@ -247,9 +266,10 @@ class TestParsers:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.jacobian)
 
+        # NEED TO CHECK why this does not pass for mantid
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
-            assert callable(fitting_problem.jacobian)
+            assert callable(fitting_problem.sparse_jacobian)
 
         if file_format in HESSIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
@@ -296,7 +316,7 @@ class TestParsers:
                     x = np.array(r[0])
                     actual = fitting_problem.eval_model(x=x, params=r[1])
 
-                assert np.isclose(actual, r[2]).all(),\
+                assert np.isclose(actual, r[2]).all(), \
                     print(f'Expected: {r[2]}\nReceived: {actual}')
 
     def test_jacobian_evaluation(self, file_format, evaluations_file):
@@ -342,9 +362,20 @@ class TestParsers:
 
     def test_sparsej_evaluation(self, file_format, evaluations_file):
         """
-        Test that the sparse Jacobian evaluation is consistent with what would be
-        expected by comparing to some precomputed values with fixed params and
-        x values.
+        Test that the sparse Jacobian evaluation is consistent with what
+        would be expected by comparing to some precomputed values with
+        fixed params and x values.
+
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
         """
         # Note that this test is optional so will only run if the file_format
         # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
@@ -370,6 +401,46 @@ class TestParsers:
                     actual = fitting_problem.sparse_jacobian(x, r[1])
                     assert issparse(actual)
                     assert np.isclose(actual.todense(), r[2]).all()
+
+    def test_mantid_jac_when_no_func_by_user(self, file_format,
+                                             evaluations_file):
+
+        """
+        Tests that, for mantid problems, when no jacobian is provided
+        by the user, the jacobian function from mantid is used.
+        :param file_format: The name of the file format
+        :type file_format: string
+        :param evaluations_file: Path to a json file containing tests and
+                                 results
+                                 in the following format:
+                                 {"test_file1": [[x1, params1, results1],
+                                                 [x2, params2, results2],
+                                                  ...],
+                                  "test_file2": ...}
+        :type evaluations_file: string
+        """
+        if file_format == 'mantiddev':
+            message = 'No function evaluations provided to test ' \
+                f'against for {file_format}'
+            assert (evaluations_file is not None), message
+
+            with open(evaluations_file, 'r') as ef:
+                results = load(ef)
+
+            format_dir = os.path.dirname(evaluations_file)
+
+            for f, tests in results.items():
+                f = os.path.join(format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for r in tests:
+                    x = np.array(r[0])
+
+                    actual = fitting_problem.jacobian(x, r[1])
+                    assert np.isclose(actual, r[2]).all()
 
     def test_hessian_evaluation(self, file_format, evaluations_file):
         """
@@ -464,3 +535,28 @@ class TestParserFactory(TestCase):
                                 'basic.dat')
         fitting_problem = parse_problem_file(filename, OPTIONS)
         self.assertEqual(fitting_problem.name, 'basic')
+
+
+class TestParserNoJac(TestCase):
+    """
+    A class to hold the tests for cases where the user does not provide
+    a jacobian function
+    """
+
+    def test_sparsej_returns_none(self):
+        """
+        Test sparse_jacobian is None in two cases:
+         - when no 'jac' line in prob def file
+         - when there is a 'jac' line but no 'sparse_func' in it.
+        """
+        test_dir = os.path.dirname(__file__)
+        for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
+            prob_def_file_path = os.path.join(test_dir,
+                                              'ivp',
+                                              prob_def_file)
+
+            parser = ParserFactory.create_parser(prob_def_file_path)
+            with parser(prob_def_file_path, OPTIONS) as p:
+                fitting_problem = p.parse()
+
+            assert fitting_problem.sparse_jacobian is None

@@ -5,7 +5,7 @@ import importlib
 import os
 import re
 import sys
-import typing
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -128,7 +128,7 @@ class FitbenchmarkParser(Parser):
         """
         return False
 
-    def _create_function(self) -> typing.Callable:
+    def _create_function(self) -> Callable:
         """
         Creates a python callable which is a wrapper around the fit function.
         """
@@ -242,7 +242,7 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_function(self, func: typing.Optional[str] = None):
+    def _parse_function(self, func: Optional[str] = None):
         """
         Get the params from the function as a list of dicts from the data
         file.
@@ -266,7 +266,7 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _parse_jac_function(self, func: typing.Optional[str] = None):
+    def _parse_jac_function(self, func: Optional[str] = None):
         """
         Get the (relative) path and the name of the jacobian function
         from the data file. Returns a list of dicts if these have been
@@ -295,16 +295,39 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _dense_jacobian(self) -> typing.Callable:
+    def _dense_jacobian(self) -> 'Callable | None':
         """
-        Process the dense jac function into a callable. Returns
-        None if this is not possible.
+        Function to help getting dense jac.
 
-        :return: A callable function
-        :rtype: callable
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('dense_func')
+
+    def _sparse_jacobian(self) -> 'Callable | None':
+        """
+        Function to help getting sparse jac.
+
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('sparse_func')
+
+    def _get_jacobian(self, jac_type) -> 'Callable | None':
+        """
+        Process the dense/sparse jac function into a callable.
+        Returns None if this is not possible.
+
+        :param jac_type: either 'dense_func' or 'sparse_func'
+        :type jac_type: str
+        :return: A callable function or None
+        :rtype: callable or None
         """
 
         if self._parsed_jac_func is None:
+            return None
+
+        if jac_type not in self._parsed_jac_func[0].keys():
             return None
 
         pf = self._parsed_jac_func[0]
@@ -312,27 +335,7 @@ class FitbenchmarkParser(Parser):
                             pf['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['dense_func'])
-        return func
-
-    def _sparse_jacobian(self) -> typing.Callable:
-        """
-        Process the sparse jac function into a callable. Returns
-        None if this is not possible.
-
-        :return: A callable function
-        :rtype: callable
-        """
-
-        if self._parsed_jac_func is None:
-            return None
-
-        pf = self._parsed_jac_func[0]
-        path = os.path.join(os.path.dirname(self._filename),
-                            pf['module'])
-        sys.path.append(os.path.dirname(path))
-        module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['sparse_func'])
+        func = getattr(module, pf[jac_type])
         return func
 
     @classmethod

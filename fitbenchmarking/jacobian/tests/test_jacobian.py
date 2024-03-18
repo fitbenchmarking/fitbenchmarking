@@ -68,7 +68,7 @@ def j_sparse(x, p):
     :type p: list
 
     :return: Sparse Jacobian evaluation
-    :rtype: 1D numpy array
+    :rtype: scipy.sparse.csr_matrix
     """
     return sparse.csr_matrix(j(x, p))
 
@@ -227,14 +227,6 @@ class TestJacobianClass(TestCase):
         with self.assertRaises(NoSparseJacobianError):
             jac.eval(params=self.params)
 
-    def test_scipy_eval_calls_slagjac_when_cutest(self):
-        """
-        Test scipy eval calls slagjac with cutest
-        problems
-        """
-        # TO DO
-        return
-
     def test_numdifftools_eval(self):
         """
         Test whether numdifftools evaluation is correct
@@ -266,13 +258,12 @@ class TestJacobianClass(TestCase):
         when using sparsity
         """
         jac = Analytic(self.cost_func.problem)
-        self.cost_func.jacobian = jac
         jac.method = 'sparse'
+        self.cost_func.jacobian = jac
         eval_result = self.cost_func.jac_res(params=self.params)
         actual = J(self.fitting_problem.data_x, self.params)
         self.assertTrue(np.isclose(actual, eval_result.todense()).all())
         self.assertTrue(issparse(eval_result))
-        return
 
     def test_analytic_eval_raises_error_no_sparsej(self):
         """
@@ -281,8 +272,8 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = None
         jac = Analytic(self.cost_func.problem)
-        self.cost_func.jacobian = jac
         jac.method = 'sparse'
+        self.cost_func.jacobian = jac
         with self.assertRaises(NoSparseJacobianError):
             self.cost_func.jac_res(params=self.params)
 
@@ -293,8 +284,8 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = j
         jac = Analytic(self.cost_func.problem)
-        self.cost_func.jacobian = jac
         jac.method = 'sparse'
+        self.cost_func.jacobian = jac
         with self.assertRaises(SparseJacobianIsDenseError):
             self.cost_func.jac_res(params=self.params)
 
