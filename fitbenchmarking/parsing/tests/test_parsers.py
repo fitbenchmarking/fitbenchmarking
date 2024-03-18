@@ -266,7 +266,6 @@ class TestParsers:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.jacobian)
 
-        # NEED TO CHECK why this does not pass for mantid
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.sparse_jacobian)
