@@ -265,6 +265,69 @@ class PerformFitTests(unittest.TestCase):
             assert ("ratio of the max time to the min is 5.0"
                     in str(w[-1].message))
                     
+    @patch("timeit.Timer.repeat", return_value=[1, 1, 1, 1, 5])
+    @patch("fitbenchmarking.controllers.scipy_controller." +
+           "ScipyController.cleanup", return_value=None)
+    @patch("fitbenchmarking.controllers.scipy_controller." +
+           "ScipyController.check_attributes", return_value=None)
+    def test_perform_fit_runtime_warning(self, mock1, mock2, mock3):
+        """
+        The test checks ___perform_fit method
+        creates warning correctly when the time taken 
+        by controller.execute increases too much across 
+        runs (caching).
+        """
+        with warnings.catch_warnings(record=True) as w:
+            controller = set_up_controller("ENSO.dat", self.options)
+            controller.minimizer = 'Powell'
+
+            fit = Fit(options=self.options,
+                      data_dir='test4',
+                      checkpointer=self.cp)
+
+            _ = fit._Fit__perform_fit(controller)
+            assert ("ratio of the max time to the min is 5.0"
+                    in str(w[-1].message))
+                    
+
+    @patch("fitbenchmarking.controllers." +
+           "base_controller.Controller.validate")
+    def test_perform_fit_max_runtime_error(self, mock):
+        """
+        The test checks ___perform_fit method handles
+        MaxRuntimeError correctly (i.e., sets controller.flag to 6).
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = 'Nelder-Mead'
+
+        fit = Fit(options=self.options,
+                  data_dir='test5',
+                  checkpointer=self.cp)
+
+        mock.side_effect = MaxRuntimeError
+        accuracy, runtimes, emissions = \
+            fit._Fit__perform_fit(controller)
+        assert controller.flag == 6
+        assert accuracy == np.inf
+        assert emissions == np.inf
+        assert runtimes == [np.inf] * 5
+
+    @patch("fitbenchmarking.controllers." +
+           "base_controller.Controller.check_bounds_respected")
+    def test_perform_fit_check_bounds_respected(self, mock):
+        """
+        The test checks ___perform_fit method checks the
+        function 'check_bounds_respected' is called when the 
+        problem has value ranges.
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = 'Nelder-Mead'
+        controller.problem.value_ranges = {'test': (0, 1)}
+        fit = Fit(options=self.options,
+                  data_dir='test6',
+                  checkpointer=self.cp)
+        _ = fit._Fit__perform_fit(controller)
+        assert mock.call_count == 1
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
