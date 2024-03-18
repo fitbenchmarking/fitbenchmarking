@@ -118,7 +118,7 @@ class PoissonCostFunc(CostFunc):
         for i in range(len(x)):
             jac_i = np.array([jac[i]])
             hes[:, :, i] = hes[:, :, i] - y[i] / f[i] * \
-                (hes[:, :, i] - np.matmul(jac_i.T, jac_i) / f[i])
+                (hes[:, :, i] - jac_i.T.dot(jac_i) / f[i])
         return hes, self.jac_res(params, **kwargs)
 
     def hes_cost(self, params, **kwargs):
