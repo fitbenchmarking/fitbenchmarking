@@ -91,12 +91,12 @@ class Fit:
         """
         problem_group = misc.get_problem_files(self._data_dir)
 
-        problems, results, name_count,  = [], [], {}
+        problems, name_count = [], {}
 
+        LOGGER.info('Parsing problems')
         for p in problem_group:
             try:
                 with self.__grabbed_output:
-                    LOGGER.info('Parsing problems')
                     parsed = parse_problem_file(p, self._options)
                     parsed.correct_data()
             except FitBenchmarkException as e:
@@ -115,7 +115,6 @@ class Fit:
 
         name_index = {key: 0 for key in name_count}
 
-        LOGGER.info('Running problems')
 
         with logging_redirect_tqdm(loggers=[LOGGER]):
             for i, (fname, problem) in enumerate(benchmark_pbar):
@@ -452,7 +451,6 @@ class Fit:
                 else:
                     result = fitbm_result.FittingResult(**result_args)
                     results.append(result)
-                    # self._results.append(result)
                     self._checkpointer.add_result(result)
 
                 # For minimizers that do not accept hessians we raise an
