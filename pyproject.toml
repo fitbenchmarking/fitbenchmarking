@@ -61,6 +61,7 @@ dev = [
     'pylint-exit',
     'pandas',
     'iminuit>=2.25.2',
+    'pre-commit',
 ]
 
 [project.scripts]

@@ -57,7 +57,9 @@ def generate_test_cases():
     # get all parsers
     test_dir = os.path.dirname(__file__)
     if TEST_TYPE == "all":
-        formats = ['cutest', 'nist', 'mantid', 'ivp', 'sasview', 'hogben']
+        formats = ['cutest', 'nist', 'mantid',
+                   'ivp', 'sasview',
+                   'hogben', 'mantiddev']
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
