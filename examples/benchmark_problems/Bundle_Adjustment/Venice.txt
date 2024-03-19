@@ -1,0 +1,5 @@
+# FitBenchmark Problem
+software = 'bal'
+name = 'venice'
+description = 'Images from Venice'
+input_file = 'problem-52-64053-pre.txt.bz2'
