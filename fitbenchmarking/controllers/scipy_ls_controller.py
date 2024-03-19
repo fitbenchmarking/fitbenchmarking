@@ -31,6 +31,8 @@ class ScipyLSController(Controller):
 
     jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
 
+    sparsity_enabled_solvers = ['trf', 'dogbox']
+
     def __init__(self, cost_func):
         """
         Initialise the class.

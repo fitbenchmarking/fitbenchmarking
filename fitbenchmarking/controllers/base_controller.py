@@ -85,6 +85,16 @@ class Controller:
     #: into the fitting algorithm
     hessian_enabled_solvers = []
 
+    #: Within the controller class, you must define the list
+    #: ``sparsity`_enabled_solvers`` if any of the minimizers
+    #: for the specific software offer support for sparse
+    #: jacobians.
+    #:
+    #: - ``sparsity_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow sparsity structure to be passed
+    #: into the fitting algorithm
+    sparsity_enabled_solvers = []
+
     #: A name to be used in tables. If this is set to None it will be inferred
     #: from the class name.
     controller_name = None
