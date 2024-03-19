@@ -101,7 +101,7 @@ class LocalMinTable(Table):
         if result.params is None:
             return False, np.inf
 
-        min_test = res.dot(jac)
+        min_test = jac.transpose().dot(res)
         norm_r = np.linalg.norm(res)
         norm_min_test = np.linalg.norm(min_test)
 

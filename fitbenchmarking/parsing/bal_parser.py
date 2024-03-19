@@ -34,6 +34,7 @@ def project(points, camera_params):
     r = 1 + k1 * n + k2 * n**2
     points_proj *= (r * f)[:, np.newaxis]
     return points_proj
+
 class BALParser(FitbenchmarkParser):
     """
     Parser for a Bundle Adjustment problem definition file.
@@ -76,7 +77,7 @@ class BALParser(FitbenchmarkParser):
         points_3d = np.array(params)[self.n_cameras * 9:].reshape((self.n_points, 3))
         points_proj = project(points_3d[self.point_indices],
                                    camera_params[self.camera_indices])
-        return points_proj
+        return points_proj.ravel()
 
     def _create_function(self) -> typing.Callable:
         """
@@ -119,9 +120,8 @@ class BALParser(FitbenchmarkParser):
                 _, _, x, y = file.readline().split()
                 points_2d[i] = [float(x), float(y)]
 
-        return {'x': np.zeros((n_observations,2)),
-                'y': points_2d,
-                'e': np.ones((n_observations,2))}
+        return {'x': np.zeros((n_observations*2)),
+                'y': points_2d.ravel()}
 
     def _get_equation(self) -> str:
         """
