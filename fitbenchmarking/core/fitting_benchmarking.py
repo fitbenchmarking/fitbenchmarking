@@ -9,11 +9,10 @@ fitting software.
 import os
 import timeit
 import warnings
-import uuid
+import platform
 
 import numpy as np
 from codecarbon import EmissionsTracker
-from codecarbon.emissions_tracker import TaskEmissionsTracker
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -483,15 +482,18 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if self.__emissions_tracker:
-                    task_name = uuid.uuid4().__str__()
-                    with TaskEmissionsTracker(
-                            task_name=task_name,
-                            tracker=self.__emissions_tracker):
+                    if platform.system() == 'Windows':
+                        with self.__emissions_tracker:
+                            runtimes = timeit.Timer(
+                                stmt=controller.execute
+                                ).repeat(num_runs, 1)
+                        emissions = self.__emissions_tracker.final_emissions / num_runs
+                    else: 
+                        self.__emissions_tracker.start_task()
                         runtimes = timeit.Timer(
                             stmt=controller.execute
-                            ).repeat(num_runs, 1)
-                    task_data = self._Fit__emissions_tracker._tasks[task_name]
-                    emissions = task_data.emissions_data.emissions / num_runs
+                        ).repeat(num_runs, 1)
+                        emissions = self.__emissions_tracker.stop_task().emissions / num_runs
                 else:
                     runtimes = timeit.Timer(
                         stmt=controller.execute).repeat(num_runs, 1)
