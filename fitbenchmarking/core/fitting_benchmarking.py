@@ -1,3 +1,5 @@
+# pylint: disable=W0212
+
 """
 Main module of the tool, this holds the Fit Class that calls
 methods to fit and benchmark a set of problems for a certain
@@ -7,9 +9,11 @@ fitting software.
 import os
 import timeit
 import warnings
+import uuid
 
 import numpy as np
 from codecarbon import EmissionsTracker
+from codecarbon.emissions_tracker import TaskEmissionsTracker
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -479,15 +483,18 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if self.__emissions_tracker:
-                    self.__emissions_tracker.start_task()
-                runtimes = timeit.Timer(
-                    stmt=controller.execute
-                    ).repeat(num_runs, 1)
-                if self.__emissions_tracker:
-                    # stop emissions tracking after all runs have completed
-                    emissions = \
-                        self.__emissions_tracker.stop_task().emissions \
-                        / num_runs
+                    task_name = uuid.uuid4().__str__()
+                    with TaskEmissionsTracker(
+                            task_name=task_name,
+                            tracker=self.__emissions_tracker):
+                        runtimes = timeit.Timer(
+                            stmt=controller.execute
+                            ).repeat(num_runs, 1)
+                    task_data = self._Fit__emissions_tracker._tasks[task_name]
+                    emissions = task_data.emissions_data.emissions / num_runs
+                else:
+                    runtimes = timeit.Timer(
+                        stmt=controller.execute).repeat(num_runs, 1)
 
                 controller.cleanup()
                 controller.check_attributes()

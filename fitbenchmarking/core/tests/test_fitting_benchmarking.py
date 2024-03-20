@@ -9,6 +9,7 @@ from unittest.mock import patch
 import json
 import inspect
 import warnings
+from pathlib import Path
 import numpy as np
 
 from fitbenchmarking import test_files
@@ -34,8 +35,7 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
-DATA_DIR = os.path.join(os. getcwd(),
-                        'fitbenchmarking',
+DATA_DIR = os.path.join(Path(__file__).parents[2],
                         'benchmark_problems',
                         'NIST',
                         'average_difficulty')
