@@ -463,6 +463,7 @@ class Fit:
 
         return results
 
+    # pylint: disable=too-many-branches
     def __perform_fit(self, controller):
         """
         Performs a fit using the provided controller and its data. It
@@ -476,24 +477,25 @@ class Fit:
         """
         num_runs = self._options.num_runs
         emissions = np.nan
+        tracker = self.__emissions_tracker
 
         try:
             with self.__grabbed_output:
                 controller.validate()
                 controller.prepare()
-                if self.__emissions_tracker:
+                if tracker:
                     if platform.system() == 'Windows':
-                        with self.__emissions_tracker:
+                        with tracker:
                             runtimes = timeit.Timer(
                                 stmt=controller.execute
                                 ).repeat(num_runs, 1)
-                        emissions = self.__emissions_tracker.final_emissions / num_runs
-                    else: 
-                        self.__emissions_tracker.start_task()
+                        emissions = tracker.final_emissions / num_runs
+                    else:
+                        tracker.start_task()
                         runtimes = timeit.Timer(
                             stmt=controller.execute
                         ).repeat(num_runs, 1)
-                        emissions = self.__emissions_tracker.stop_task().emissions / num_runs
+                        emissions = tracker.stop_task().emissions / num_runs
                 else:
                     runtimes = timeit.Timer(
                         stmt=controller.execute).repeat(num_runs, 1)
