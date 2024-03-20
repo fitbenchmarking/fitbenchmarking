@@ -150,7 +150,7 @@ jobs:
         python -m pip install --upgrade .[dev]
     - name: 'Running Tests'
       run: |
-      bash ci/unit_tests_default.sh
+        bash ci/unit_tests_default.sh
 
   publish-test-results:
     name: 'Publish Test Results'
