@@ -115,7 +115,6 @@ class Fit:
 
         name_index = {key: 0 for key in name_count}
 
-
         with logging_redirect_tqdm(loggers=[LOGGER]):
             for i, (fname, problem) in enumerate(benchmark_pbar):
                 # Make the name unique
