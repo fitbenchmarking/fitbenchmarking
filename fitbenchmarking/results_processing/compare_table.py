@@ -8,8 +8,7 @@ class CompareTable(Table):
     """
 
     The combined results show the accuracy in the first line of the cell and
-    the runtime on the second line of the cell. The runtime metric displayed
-    in the tables is {runtime_metric}.
+    the runtime on the second line of the cell.
 
     For Bayesian fitting, accuracy results represent the reciporcal of the
     confidence that the fitted parameter values are within :math:`2 \\sigma`

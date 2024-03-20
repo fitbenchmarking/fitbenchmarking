@@ -14,3 +14,4 @@ docs/source/contributors/module_index
 .vscode/
 .eggs/
 *.out
+powermetrics_log.txt
