@@ -6,7 +6,10 @@ import unittest
 from unittest.mock import patch
 import json
 import numpy as np
+import inspect
+import warnings
 
+from fitbenchmarking import test_files, benchmark_problems
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.core.fitting_benchmarking import Fit
@@ -24,11 +27,10 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               IncompatibleMinimizerError,
                                               NoJacobianError,
                                               NoHessianError,
-                                              ValidationException)
+                                              ValidationException,
+                                              MaxRuntimeError)
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
-import inspect
-from fitbenchmarking import benchmark_problems, test_files
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
 BENCH_PROB_DIR = os.path.dirname(inspect.getfile(benchmark_problems))
 DATA_DIR = os.path.join(BENCH_PROB_DIR, 'NIST', 'average_difficulty')
@@ -378,7 +380,7 @@ class HessianTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        data_file = DATA_DIR + "Lanczos1.dat"
+        data_file = os.path.join(DATA_DIR, 'Lanczos1.dat')
 
         options = Options(additional_options={'software': ['scipy'],
                                               'hes_method': ['analytic',
@@ -492,7 +494,7 @@ class JacobianTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        data_file = DATA_DIR + "Gauss3.dat"
+        data_file = os.path.join(DATA_DIR, 'Gauss3.dat')
 
         options = Options(additional_options={'software': ['scipy'],
                                               'hes_method': ['default'],
@@ -587,7 +589,7 @@ class MinimizersTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        data_file = DATA_DIR + 'ENSO.dat'
+        data_file = os.path.join(DATA_DIR, 'ENSO.dat')
 
         options = Options(additional_options={'software': ['scipy'],
                                               'table_type': ['acc',
@@ -679,7 +681,7 @@ class SoftwareTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        self.data_file = DATA_DIR + 'ENSO.dat'
+        self.data_file = os.path.join(DATA_DIR, 'ENSO.dat')
 
         self.options = Options(additional_options={'software':
                                                    ['scipy',
@@ -749,7 +751,7 @@ class CostFunctionTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        data_file = DATA_DIR + 'ENSO.dat'
+        data_file = os.path.join(DATA_DIR, 'ENSO.dat')
 
         options = Options(additional_options={'software': ['scipy'],
                                               'cost_func_type':
@@ -814,7 +816,7 @@ class StartingValueTests(unittest.TestCase):
         """
         Initializes the fit class for the tests
         """
-        data_file = DATA_DIR + 'ENSO.dat'
+        data_file = os.path.join(DATA_DIR, 'ENSO.dat')
 
         options = Options(additional_options={'software': ['scipy'],
                                               'table_type': ['acc',
@@ -940,7 +942,7 @@ class BenchmarkTests(unittest.TestCase):
         """
         This test checks that repeat problem manes are handles correctly
         """
-        mock_problem_files.return_value = [DATA_DIR+'ENSO.dat'] * 2
+        mock_problem_files.return_value = [os.path.join(DATA_DIR, 'ENSO.dat')] * 2
         results, failed_problems, unselected_minimizers = self.fit.benchmark()
         assert len(results) == 2
         assert results[0].name == 'ENSO 1'
