@@ -11,7 +11,7 @@ import inspect
 import warnings
 import numpy as np
 
-from fitbenchmarking import test_files, benchmark_problems
+from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.core.fitting_benchmarking import Fit
@@ -34,8 +34,11 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
-BENCH_PROB_DIR = os.path.dirname(inspect.getfile(benchmark_problems))
-DATA_DIR = os.path.join(BENCH_PROB_DIR, 'NIST', 'average_difficulty')
+DATA_DIR = os.path.join(os. getcwd(),
+                        'fitbenchmarking',
+                        'benchmark_problems',
+                        'NIST',
+                        'average_difficulty')
 
 
 def mock_loop_over_hessians_func_call(controller):
@@ -97,6 +100,8 @@ def mock_loop_over_cost_func_call(problem):
 def mock_loop_over_cost_func_call_all_fail(problem):
     """
     Mock function for the __loop_over_cost_func method
+    when an exception is raised and accuracy, runtime and
+    emissions are all np.inf.
     """
     cost_func = WeightedNLLSCostFunc(problem)
     controller = ScipyController(cost_func)
@@ -104,8 +109,8 @@ def mock_loop_over_cost_func_call_all_fail(problem):
     controller.parameter_set = 0
     result = FittingResult(**{'controller': controller,
                               'accuracy': np.inf,
-                              'runtimes': [2],
-                              'emissions': 3,
+                              'runtimes': [np.inf],
+                              'emissions': np.inf,
                               'runtime_metric': 'mean'})
     return [result]
 
@@ -814,7 +819,8 @@ class BenchmarkTests(unittest.TestCase):
                                               'table_type': ['acc',
                                                              'runtime',
                                                              'compare',
-                                                             'local_min']})
+                                                             'local_min',
+                                                             'emissions']})
         cp = Checkpoint(options)
         self.fit = Fit(options=options,
                        data_dir=DATA_DIR,
