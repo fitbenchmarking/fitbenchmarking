@@ -105,7 +105,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
                 options=self.options,
                 start_values_index=self.start_values_index,
                 grabbed_output=self.grabbed_output,
-                checkpointer=self.cp)
+                checkpointer=self.cp,
+                emissions_tracker=None)
         assert len(results) == expected_list_len
 
         dict_test(unselected_minimzers, expected_minimizer_failed)
@@ -207,7 +208,8 @@ class LoopOverSoftwareTests(unittest.TestCase):
                 options=self.options,
                 start_values_index=self.start_values_index,
                 grabbed_output=self.grabbed_output,
-                checkpointer=self.cp)
+                checkpointer=self.cp,
+                emissions_tracker=None)
 
 
 if __name__ == "__main__":

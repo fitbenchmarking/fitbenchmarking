@@ -1,13 +1,14 @@
 """
 Module which calculates SciPy finite difference approximations
 """
+from functools import lru_cache
+
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
 from fitbenchmarking.hessian.base_hessian import Hessian
 
 
-# pylint: disable=useless-super-delegation
 class Scipy(Hessian):
     """
     Implements SciPy finite difference approximations to the derivative
@@ -29,10 +30,15 @@ class Scipy(Hessian):
         """
         x = kwargs.get("x", self.problem.data_x)
         hes = np.zeros((len(params), len(params), len(x)))
-        for i, x_i in enumerate(x):
+
+        @lru_cache
+        def grad(params):
+            return self.jacobian.eval(params)
+
+        for i, _ in enumerate(x):
             # pylint: disable=cell-var-from-loop
             def grad_i(params):
-                return self.jacobian.eval(params, x=x_i).squeeze()
+                return grad(tuple(params))[i, :]
             hes[:, :, i] = approx_derivative(grad_i, params,
                                              method=self.method,
                                              rel_step=None,

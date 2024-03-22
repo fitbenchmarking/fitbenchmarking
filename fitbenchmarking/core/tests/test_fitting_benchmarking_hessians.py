@@ -117,7 +117,6 @@ class LoopOverHessiansTests(unittest.TestCase):
         self.grabbed_output = output_grabber.OutputGrabber(self.options)
         self.controller.parameter_set = 0
         self.cp = Checkpoint(self.options)
-        self.options.table_type = ['acc', 'runtime', 'compare', 'local_min']
 
     def tearDown(self) -> None:
         """
@@ -135,7 +134,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         _ = loop_over_hessians(self.controller,
                                options=self.options,
                                grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+                               checkpointer=self.cp,
+                               emissions_tracker=None)
         self.assertEqual(self.controller.count, 1)
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -152,7 +152,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         _ = loop_over_hessians(self.controller,
                                options=self.options,
                                grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+                               checkpointer=self.cp,
+                               emissions_tracker=None)
         check_bounds_respected.assert_called()
 
     @patch.object(DummyController, "check_bounds_respected")
@@ -169,7 +170,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         _ = loop_over_hessians(self.controller,
                                options=self.options,
                                grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+                               checkpointer=self.cp,
+                               emissions_tracker=None)
         check_bounds_respected.assert_not_called()
 
     def test_max_runtime_exceeded(self):
@@ -191,7 +193,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         results = loop_over_hessians(controller,
                                      options=options,
                                      grabbed_output=grabbed_output,
-                                     checkpointer=self.cp)
+                                     checkpointer=self.cp,
+                                     emissions_tracker=None)
         self.assertEqual(results[0].error_flag, 6)
 
     @patch.object(DummyController, "eval_chisq")
@@ -207,7 +210,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         _ = loop_over_hessians(self.controller,
                                options=self.options,
                                grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+                               checkpointer=self.cp,
+                               emissions_tracker=None)
         eval_chisq.assert_called_once()
 
     @patch.object(DummyController, "eval_confidence")
@@ -224,7 +228,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         _ = loop_over_hessians(self.controller,
                                options=self.options,
                                grabbed_output=self.grabbed_output,
-                               checkpointer=self.cp)
+                               checkpointer=self.cp,
+                               emissions_tracker=None)
         eval_confidence.assert_called_once()
 
     @run_for_test_types(TEST_TYPE, 'all')
@@ -249,7 +254,8 @@ class LoopOverHessiansTests(unittest.TestCase):
         results = loop_over_hessians(controller=controller,
                                      options=options,
                                      grabbed_output=grabbed_output,
-                                     checkpointer=self.cp)
+                                     checkpointer=self.cp,
+                                     emissions_tracker=None)
         self.assertTrue(len(results) == 2)
 
 

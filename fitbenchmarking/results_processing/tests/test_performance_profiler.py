@@ -171,20 +171,23 @@ class PerformanceProfilerTests(unittest.TestCase):
         self.solvers = ['migrad [minuit]', 'simplex [minuit]',
                         'dfogn [dfo]']
         self.step_values = [
-            np.array([0., 1., 1.2, 1.4, 2., 5.,
-                      10.4, 15.9, 500.]),
-            np.array([0., 1., 1.5, 1.8, 5., 8.,
-                      15.4, 25.9, 600.]),
-            np.array([0., 2., 3.5, 5.8, 7., 10.,
-                      25.4, 45.9, 800.])
+            np.array([0., 1., 1.2, 1.4, 2., 5., 10.4, 15.9, 500.]),
+            np.array([0., 1., 1.5, 1.8, 5., 8., 15.4, 25.9, 600.]),
+            np.array([0., 2., 3.5, 5.8, 7., 10., 25.4, 45.9, 800.])
         ]
+
         self.solver_values = [
-            np.array([0., 5.4, 11., 20., 59.1,
-                      130.5, 300.1, 600.5, 1000]),
-            np.array([0., 1.9, 11.1, 41.5, 101.3,
-                      130.5, 200.8, 300, 5000]),
-            np.array([0., 3.5, 7.2, 17.1, 29.6, 50.1,
-                      78.6, 230.5, 770.1]),
+            np.array([0.00e+00, 1.00e+00, 1.20e+00, 1.40e+00, 2.00e+00,
+                      5.00e+00, 1.04e+01, 1.59e+01, 5.00e+02, 1.00e+20]),
+            np.array([0.00e+00, 1.00e+00, 1.50e+00, 1.80e+00, 5.00e+00,
+                      8.00e+00, 1.54e+01, 2.59e+01, 6.00e+02, 1.00e+20]),
+            np.array([0.00e+00, 2.00e+00, 3.50e+00, 5.80e+00, 7.00e+00,
+                      1.00e+01, 2.54e+01, 4.59e+01, 8.00e+02, 1.00e+20])
+        ]
+
+        self.plot_points = len(self.solvers) * [
+            np.array([0., 0.125, 0.25, 0.375, 0.5,
+                      0.625, 0.75, 0.875, 1., 1.])
         ]
 
         # pylint: disable=consider-using-with
@@ -252,17 +255,17 @@ class PerformanceProfilerTests(unittest.TestCase):
                                               log_upper_limit)
         assert isinstance(fig, go.Figure)
 
-    def test_create_plot_and_df_returns_correct_plot(self):
+    def test_create_plot_returns_correct_plot(self):
         """
         Test that create_plot_and_df returns the correct plot.
         """
         output_plot_path = self.temp_result + \
-            '/for_test_create_plot.html'
+            '/pp_offline_plot.html'
         expected_plot_path = self.expected_results_dir + \
-            '/for_test_create_plot.html'
+            '/pp_offline_plot.html'
 
-        plot, _ = performance_profiler.\
-            create_plot_and_df(self.step_values, self.solvers)
+        plot = performance_profiler.\
+            create_plot(self.step_values, self.solvers)
 
         Plot.write_html_with_link_plotlyjs(fig=plot,
                                            figures_dir='',
@@ -272,56 +275,92 @@ class PerformanceProfilerTests(unittest.TestCase):
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
 
-    def test_create_plot_and_df_returns_pandas_df(self):
-        """
-        Test that create_plot_and_df returns a pandas Dataframe.
-        """
-        _, pp_df = performance_profiler.\
-            create_plot_and_df(self.step_values, self.solvers)
-        assert isinstance(pp_df, pd.DataFrame)
-
     def test_create_df_returns_correct_df(self):
         """
         Test that create_df creates the expected dataframe to be used
         to build the dash plots.
         """
-        expected_df = read_csv(self.expected_results_dir + "/pp_data.csv")
-        plot_points = len(self.solvers) * [
-            np.array([
-                0., 0.125, 0.25, 0.375,
-                0.5, 0.625, 0.75, 0.875,
-                1.])]
+        expected_df = read_csv(self.expected_results_dir +
+                               "/offline_pp_plot_data.csv")
         output_df = performance_profiler.create_df(self.solvers,
                                                    self.solvers,
                                                    self.solver_values,
-                                                   plot_points)
+                                                   self.plot_points)
         assert_frame_equal(output_df, expected_df)
 
-    def test_get_plot_path_and_data_returns_dict_for_data(self):
+    def test_create_plots_and_get_paths(self):
         """
-        Test that get_plot_path_and_data returns a dictionary
-        of dataframes.
+        Test that create_plots_and_get_paths returns the correct paths.
         """
-        acc = {'migrad [minuit]': [1., 2.,  5., 6., 15., 150, 180.],
-               'simplex [minuit]': [1., 20., 100., 110., 150., 900, 1800.],
-               'dfogn [dfo]': [1., 50., 500., 800., 2600., 2700, 2800.]}
-        runtime = {'migrad [minuit]': [4.6, 6.4, 1.3, 8.5, 51.6, 10.8, 15.2],
-                   'simplex [minuit]': [6.9, 15.2, 6.5, 5.6, 7., 8.5, 6.5],
-                   'dfogn [dfo]': [8.6, 7.4, 51.6, 6.9, 6.5,  28.3, 17.2]}
-        emissions = {'migrad [minuit]': [0.1, 0.4, 0.3, 0.5, 0.6, 0.8, 0.2],
-                     'simplex [minuit]': [0.9, 0.2, 0.5, 0.6, 0.0, 0.5, 0.5],
-                     'dfogn [dfo]': [0.6, 0.4, 0.6, 0.9, 0.5,  0.3, 0.2]}
+        bounds = {'acc': {}, 'runtime': {}, 'emissions': {}}
+        paths = performance_profiler.\
+            create_plots_and_get_paths(bounds,
+                                       self.fig_dir,
+                                       self.options)
 
-        bounds = {'acc': acc, 'runtime': runtime, 'emissions': emissions}
-        _, pp_dfs = performance_profiler.\
-            get_plot_path_and_data(bounds,
-                                   self.fig_dir,
-                                   self.options)
+        expec_paths = {'acc': 'acc_profile.html',
+                       'runtime': 'runtime_profile.html',
+                       'emissions': 'emissions_profile.html'}
 
-        assert isinstance(pp_dfs, dict)
-        for df in list(pp_dfs.values()):
-            assert isinstance(df, pd.DataFrame)
-            assert not df.empty
+        assert paths == expec_paths
+
+    def test_compute_step_values(self):
+        """
+        Test compute_step_values returns the correct step_values
+        and max_value.
+        """
+
+        expec_step_vals = self.step_values
+        expec_max = 800.
+
+        profile_plot = {'migrad [minuit]': [1.2, 1.4, 1., 500.,
+                                            2., 10.4, 15.9, 5.],
+                        'simplex [minuit]': [15.4, 1., 1.5, 1.8,
+                                             8., 5., 600., 25.9],
+                        'dfogn [dfo]': [3.5, 5.8, 2., 10., 7.,
+                                        45.9, 25.4, 800.]}
+
+        step_vals, max_val = performance_profiler.\
+            compute_step_values(profile_plot)
+
+        assert max_val == expec_max
+        for arr, exp_arr in zip(step_vals, expec_step_vals):
+            assert np.array_equal(arr, exp_arr)
+
+    def test_adjust_values_to_plot(self):
+        """
+        Test adjust_values_to_plot returns the correct output dict.
+        """
+        expected_dict = {
+            'solvers': self.solvers,
+            'labels': self.solvers,
+            'solver_values': self.solver_values,
+            'plot_points': self.plot_points
+        }
+        output_dict = performance_profiler.\
+            adjust_values_to_plot(self.step_values, self.solvers)
+
+        assert expected_dict.keys() == output_dict.keys()
+        assert expected_dict['solvers'] == output_dict['solvers']
+        assert expected_dict['labels'] == output_dict['labels']
+        assert np.array_equal(expected_dict['solver_values'],
+                              output_dict['solver_values'])
+        assert np.array_equal(expected_dict['plot_points'],
+                              output_dict['plot_points'])
+
+    # pylint: disable=no-self-use
+    def test_compute_linestyle_combinations(self):
+        """
+        Test compute_linestyle_combinations returns expected styles.
+        """
+
+        output = performance_profiler.compute_linestyle_combinations()
+        assert isinstance(output, list)
+        for combination in output:
+            assert isinstance(combination, tuple)
+            assert isinstance(combination[0], str)
+            assert re.match(r"#[0-9a-fA-F]{6}", combination[1])
+    # pylint: enable=no-self-use
 
 
 class DashPerfProfileTests(unittest.TestCase):
@@ -330,18 +369,25 @@ class DashPerfProfileTests(unittest.TestCase):
     """
 
     def setUp(self):
-
+        """
+        Sets up the data for the dash plot.
+        """
         self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
         self.expected_results_dir = os.path.join(
             root, 'results_processing',
             'tests', 'expected_results')
 
-        data = read_csv(self.expected_results_dir +
-                        "/pp_data.csv")
+        self.data = pd.DataFrame.from_dict({
+            'migrad [minuit]': [1.2, 1.4, 1., 500.,
+                                2., 10.4, 15.9, 5.],
+            'simplex [minuit]': [15.4, 1., 1.5, 1.8,
+                                 8., 5., 600., 25.9],
+            'dfogn [dfo]': [3.5, 5.8, 2., 10., 7.,
+                            45.9, 25.4, 800.]})
 
         self.perf_profile = performance_profiler.\
-            DashPerfProfile('runtime', data,
+            DashPerfProfile('runtime', self.data,
                             'NIST_low_difficulty')
 
         # pylint: disable=consider-using-with
@@ -354,7 +400,7 @@ class DashPerfProfileTests(unittest.TestCase):
         Test create_graph returns the expected plot.
         """
 
-        selected_solvers = self.perf_profile.data["solver"]
+        selected_solvers = self.data.columns
         output_fig = self.perf_profile.\
             create_graph(x_axis_scale="Log x-axis",
                          solvers=selected_solvers[:3])
@@ -370,6 +416,16 @@ class DashPerfProfileTests(unittest.TestCase):
 
         diff = diff_between_htmls(expected_plot_path, output_plot_path)
         self.assertListEqual([], diff)
+
+    def test_prepare_data(self):
+        """
+        Test prepare_data returns correct output dataframe.
+        """
+        selected_solvers = self.data.columns
+        output = self.perf_profile.prepare_data(selected_solvers)
+        expected_output = read_csv(self.expected_results_dir +
+                                   "/dash_pp_plot_data.csv")
+        assert output.equals(expected_output)
 
     # pylint: enable=W0632
 

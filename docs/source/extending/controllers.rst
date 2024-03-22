@@ -81,8 +81,9 @@ repository so that other can use this package.  To do this need to follow our
 6. If the software is deterministic, add the software to the regression tests in
    ``fitbenchmarking/systests/test_regression.py``. 
    
-7. If `pip` installable add to ``install_requires`` in ``setup.py`` and
-   add to the installation step in ``.github/workflows/release.yml``.
+7. If `pip` installable add to ``[project.optional-dependencies]`` in
+   ``pyproject.toml`` and add to the installation step in
+   ``.github/workflows/release.yml``.
    If not, document the installation procedure in :ref:`external-instructions`
    and update the ``FullInstall`` Docker Container -- the main developers will
    help you with this.

@@ -10,9 +10,10 @@ class AccTable(Table):
     The accuracy results are calculated by evaluating the cost function with
     the fitted parameters.
 
-    For Bayesian fitting, accuracy results represent the confidence that the
-    fitted parameter values are within 10% of the expected parameter values
-    (calculated using scipy.optimize.minimize).
+    For Bayesian fitting, accuracy results represent the reciporcal of the
+    confidence that the fitted parameter values are within :math:`2 \\sigma`
+    of the expected parameter values (calculated using
+    scipy.optimize.curve_fit).
 
     """
     name = 'acc'
