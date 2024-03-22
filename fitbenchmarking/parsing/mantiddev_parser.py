@@ -24,7 +24,6 @@ class MantidDevParser(FitbenchmarkParser):
     def __init__(self, filename, options):
         self._params_dict = None
         self._mantid_function = None
-        self._jac = None
         self._N_x = 0
         self._cache_x = None
         super().__init__(filename, options)
@@ -73,7 +72,6 @@ class MantidDevParser(FitbenchmarkParser):
         # cache the x values for later
         self._cache_x = FDV(x_data)
         self._N_x = len(x_data)
-        self._jac = np.zeros((self._N_x, len(self._params_dict.keys())))
 
         try:
             _ = self._jacobian(x_data, self._params_dict.values())
@@ -97,10 +95,11 @@ class MantidDevParser(FitbenchmarkParser):
         # get mantid Jacobian
         J = self._mantid_function.functionDeriv(self._cache_x)
         # set np Jacobian values
+        _jac = np.zeros((self._N_x, len(self._params_dict.keys())))
         for i in range(self._N_x):
             for j in range(len(self._params_dict.keys())):
-                self._jac[i, j] = J.get(i, j)
-        return self._jac
+                _jac[i, j] = J.get(i, j)
+        return _jac
 
     def _update_params(self, *p):
         update_dict = dict(zip(self._params_dict.keys(), p))

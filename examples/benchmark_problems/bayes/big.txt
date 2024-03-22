@@ -1,7 +1,0 @@
-# FitBenchmark Problem
-software = 'quickbayes'
-name = 'quickbayes'
-description = 'quadrupolar resonance in copper'
-input_file ='sample.dat'
-function = 'C:\Users\btr75544\work\fitbenchmarking\examples\benchmark_problems\bayes\data_files\resolution.dat'
-fit_ranges = {'x': [-.4, .4]}

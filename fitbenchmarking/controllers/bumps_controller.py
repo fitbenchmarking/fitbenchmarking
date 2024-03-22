@@ -151,7 +151,6 @@ class BumpsController(Controller):
         result = bumpsFit(self._fit_problem,
                           method=self._minimizer,
                           abort_test=self._check_timer_abort_test)
-
         self._bumps_result = result
         self._status = self._bumps_result.status
 
@@ -176,5 +175,5 @@ class BumpsController(Controller):
                 result.append(self._bumps_result.x[ind])
         else:
             result = self._bumps_result.x
-
+        
         self.final_params = result
