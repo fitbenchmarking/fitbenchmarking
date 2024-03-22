@@ -25,6 +25,7 @@ class FitbenchmarkParser(Parser):
     Parser for the native FitBenchmarking problem definition (FitBenchmark)
     file.
     """
+    PARAM_IGNORE_LIST = []
 
     def __init__(self, filename, options):
         super().__init__(filename, options)
@@ -162,12 +163,11 @@ class FitbenchmarkParser(Parser):
         :return: The starting values for the problem.
         :rtype: list
         """
-        # Functions can have reserved "name" keyword so ignore this
         return [
             {
-                key: val
-                for key, val in self._parsed_func[0].items()
-                if key != "name"
+                name: val
+                for name, val in self._parsed_func[0].items()
+                if name not in self.PARAM_IGNORE_LIST
             }
         ]
 

@@ -15,6 +15,7 @@ class SASViewParser(FitbenchmarkParser):
     """
     Parser for a SASView problem definition file.
     """
+    PARAM_IGNORE_LIST = ['name']
 
     def _create_function(self) -> typing.Callable:
         """

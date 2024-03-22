@@ -1,0 +1,5 @@
+# Fitbenchmark Problem
+software = 'sscanss'
+name = 'Goniometer - target 1'
+description = 'Testing the goniometer on target pose 1'
+function = 'module=data/kinematics,robot=goniometer_robot,target=g1,p1=0,p2=0,p3=0'
