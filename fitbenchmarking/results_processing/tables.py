@@ -89,8 +89,9 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                 table_format = description[options.comparison_mode]
 
             if suffix in ['runtime', 'compare']:
-                description[suffix] = description[suffix].format(
-                    runtime_metric=options.runtime_metric)
+                run_str = "The runtime metric displayed in the tables is {}."
+                description[suffix] = description[suffix] \
+                    + run_str.format(options.runtime_metric)
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, 'templates')
