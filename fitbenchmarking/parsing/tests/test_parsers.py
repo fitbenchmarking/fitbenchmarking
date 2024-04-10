@@ -533,7 +533,7 @@ class TestParserNoJac(TestCase):
             results = load(ef)
 
             for f, tests in results.items():
-                f = os.path.join(format_dir, f)
+                f = os.path.join(test_dir, format_dir, f)
 
                 parser = ParserFactory.create_parser(f)
                 with parser(f, OPTIONS) as p:
