@@ -280,7 +280,7 @@ class IncompatibleCostFunctionError(FitBenchmarkException):
 
 class NoSparseJacobianError(FitBenchmarkException):
     """
-    Indicates that no sparse_jacobian function was not found by the parser.
+    Indicates that no sparse_jacobian function was found by the parser.
     """
     class_message = 'Sparse_jacobian function not found. '
     error_code = 30
