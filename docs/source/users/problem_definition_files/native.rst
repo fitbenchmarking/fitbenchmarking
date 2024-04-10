@@ -130,7 +130,7 @@ jacobian
   This is to define a dense jacobian function, or a sparse jacobian function, or both.
   The parser for this function allows the user to define ``g`` in the following:
 
-  .. math:: \\nabla_p f(x, *args) = g(x, *args)
+  .. math:: \nabla_p f(x, *args) = g(x, *args)
 
   To do this we use a python module, where the user can define a dense jacobian function
   and a sparse jacobian function (or just one of the two). As in the above formula,
