@@ -38,7 +38,6 @@ class LmfitController(Controller):
                'leastsq'],
         'deriv_free': ['powell',
                        'cobyla',
-                       'emcee',
                        'nelder',
                        'differential_evolution'],
         'general': ['nelder',
@@ -72,7 +71,7 @@ class LmfitController(Controller):
                                 'ampgo',
                                 'shgo',
                                 'dual_annealing'],
-        'MCMC': []
+        'MCMC': ['emcee']
         }
 
     jacobian_enabled_solvers = ['cg',
@@ -112,6 +111,13 @@ class LmfitController(Controller):
         """
         return self.cost_func.eval_r(list(map(lambda name: params[name].value,
                                      self.problem.param_names)))
+    
+    def lmfit_loglike(self, params):
+        """
+        lmfit resdiuals
+        """
+        return self.cost_func.eval_loglike(list(map(lambda name: params[name].value,
+                                     self.problem.param_names)))
 
     def lmfit_jacobians(self, params):
         """
@@ -146,17 +152,20 @@ class LmfitController(Controller):
         """
         Run problem with lmfit
         """
-
-        minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
-
         kwargs = {"method": self.minimizer}
+        if self.minimizer == "emcee":
+            kwargs["progress"] = False
+            kwargs["steps"] = 10000
+            kwargs["burn"] = 300
+            minner = Minimizer(self.lmfit_loglike, self.lmfit_params)
+        else:
+            minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
+
         if self.minimizer in self.jacobian_enabled_solvers:
             kwargs["Dfun"] = self.lmfit_jacobians
         if self.cost_func.hessian and \
                 self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.cost_func.hes_cost
-        if self.minimizer == "emcee":
-            kwargs["progress"] = False
         self.lmfit_out = minner.minimize(**kwargs)
 
     def cleanup(self):
@@ -169,6 +178,9 @@ class LmfitController(Controller):
             self.flag = 0
         else:
             self.flag = 2
+
+        if self.minimizer == 'emcee':
+            self.params_pdfs = self.lmfit_out.flatchain.to_dict(orient='list')
 
         self.final_params = list(map(lambda params: params.value,
                                  self.lmfit_out.params.values()))
