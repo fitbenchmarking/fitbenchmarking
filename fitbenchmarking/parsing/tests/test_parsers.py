@@ -499,15 +499,20 @@ class TestParserNoJac(TestCase):
     a jacobian function
     """
 
+    def setUp(self):
+        """
+        Set up the tests.
+        """
+        self.test_dir = os.path.dirname(__file__)
+
     def test_sparsej_returns_none(self):
         """
         Test sparse_jacobian is None in two cases:
          - when no 'jac' line in prob def file
          - when there is a 'jac' line but no 'sparse_func' in it.
         """
-        test_dir = os.path.dirname(__file__)
         for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
-            prob_def_file_path = os.path.join(test_dir,
+            prob_def_file_path = os.path.join(self.test_dir,
                                               'ivp',
                                               prob_def_file)
 
@@ -523,11 +528,10 @@ class TestParserNoJac(TestCase):
         Tests that, for mantid problems, when no jacobian is provided
         by the user, the jacobian function from mantid is used.
         """
-        test_dir = os.path.dirname(__file__)
         evaluations_file = 'jacobian_evaluations.json'
         format_dir = 'mantiddev'
 
-        evaluations_file_path = os.path.join(test_dir,
+        evaluations_file_path = os.path.join(self.test_dir,
                                              format_dir,
                                              evaluations_file)
 
@@ -535,7 +539,7 @@ class TestParserNoJac(TestCase):
             results = load(ef)
 
             for f, tests in results.items():
-                f = os.path.join(test_dir, format_dir, f)
+                f = os.path.join(self.test_dir, format_dir, f)
 
                 parser = ParserFactory.create_parser(f)
                 with parser(f, OPTIONS) as p:
