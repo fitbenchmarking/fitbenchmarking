@@ -12,6 +12,7 @@ import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from scipy.sparse import issparse
 
+from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import (ParserFactory,
@@ -516,6 +517,7 @@ class TestParserNoJac(TestCase):
 
             assert fitting_problem.sparse_jacobian is None
 
+    @run_for_test_types(TEST_TYPE, 'all')
     def test_mantid_jac_when_no_func_by_user(self):
         """
         Tests that, for mantid problems, when no jacobian is provided
