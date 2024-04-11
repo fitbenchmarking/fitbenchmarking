@@ -3,6 +3,7 @@ Implements a controller for the lmfit fitting software.
 """
 import numpy as np
 from lmfit import Minimizer, Parameters
+
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import MissingBoundsError
 
@@ -72,7 +73,7 @@ class LmfitController(Controller):
                                 'shgo',
                                 'dual_annealing'],
         'MCMC': ['emcee']
-        }
+    }
 
     jacobian_enabled_solvers = ['cg',
                                 'bfgs',
@@ -111,13 +112,15 @@ class LmfitController(Controller):
         """
         return self.cost_func.eval_r(list(map(lambda name: params[name].value,
                                      self.problem.param_names)))
-    
+
     def lmfit_loglike(self, params):
         """
         lmfit resdiuals
         """
-        return self.cost_func.eval_loglike(list(map(lambda name: params[name].value,
-                                     self.problem.param_names)))
+        return self.cost_func.eval_loglike(
+            list(map(lambda name: params[name].value,
+                     self.problem.param_names))
+        )
 
     def lmfit_jacobians(self, params):
         """
@@ -135,8 +138,8 @@ class LmfitController(Controller):
         if (self.value_ranges is None or np.any(np.isinf(self.value_ranges))) \
            and self.minimizer in self.bound_minimizers:
             raise MissingBoundsError(
-                    f"{self.minimizer} requires finite bounds on all"
-                    " parameters")
+                f"{self.minimizer} requires finite bounds on all"
+                " parameters")
 
         for i, name in enumerate(self.problem.param_names):
             kwargs = {"name": name,
