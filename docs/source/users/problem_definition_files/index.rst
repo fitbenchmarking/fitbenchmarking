@@ -21,6 +21,7 @@ More information on the supported formats can be found on the following pages.
     nist
     horace
     hogben
+    bal
 
 Detecting problem file type
 ===========================
