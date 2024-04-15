@@ -12,6 +12,7 @@ import numpy as np
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from scipy.sparse import issparse
 
+from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import (ParserFactory,
@@ -75,7 +76,6 @@ def generate_test_cases():
               'test_function_evaluation': [],
               'test_jacobian_evaluation': [],
               'test_sparsej_evaluation': [],
-              'test_mantid_jac_when_no_func_by_user': [],
               'test_hessian_evaluation': []}
 
     # get all parsers
@@ -140,9 +140,6 @@ def generate_test_cases():
 
         test_sparsej_eval = form_dict(file_format, sparsej_eval)
         params['test_sparsej_evaluation'].append(test_sparsej_eval)
-
-        test_jac_mantid = form_dict(file_format, jac_eval)
-        params['test_mantid_jac_when_no_func_by_user'].append(test_jac_mantid)
 
         hes_eval = os.path.join(test_dir,
                                 file_format,
@@ -266,7 +263,6 @@ class TestParsers:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.jacobian)
 
-        # NEED TO CHECK why this does not pass for mantid
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
             # Check that the Jacobian is callable
             assert callable(fitting_problem.sparse_jacobian)
@@ -402,46 +398,6 @@ class TestParsers:
                     assert issparse(actual)
                     assert np.isclose(actual.todense(), r[2]).all()
 
-    def test_mantid_jac_when_no_func_by_user(self, file_format,
-                                             evaluations_file):
-
-        """
-        Tests that, for mantid problems, when no jacobian is provided
-        by the user, the jacobian function from mantid is used.
-        :param file_format: The name of the file format
-        :type file_format: string
-        :param evaluations_file: Path to a json file containing tests and
-                                 results
-                                 in the following format:
-                                 {"test_file1": [[x1, params1, results1],
-                                                 [x2, params2, results2],
-                                                  ...],
-                                  "test_file2": ...}
-        :type evaluations_file: string
-        """
-        if file_format == 'mantiddev':
-            message = 'No function evaluations provided to test ' \
-                f'against for {file_format}'
-            assert (evaluations_file is not None), message
-
-            with open(evaluations_file, 'r') as ef:
-                results = load(ef)
-
-            format_dir = os.path.dirname(evaluations_file)
-
-            for f, tests in results.items():
-                f = os.path.join(format_dir, f)
-
-                parser = ParserFactory.create_parser(f)
-                with parser(f, OPTIONS) as p:
-                    fitting_problem = p.parse()
-
-                for r in tests:
-                    x = np.array(r[0])
-
-                    actual = fitting_problem.jacobian(x, r[1])
-                    assert np.isclose(actual, r[2]).all()
-
     def test_hessian_evaluation(self, file_format, evaluations_file):
         """
         Tests that the Hessian evaluation is consistent with what would be
@@ -543,15 +499,20 @@ class TestParserNoJac(TestCase):
     a jacobian function
     """
 
+    def setUp(self):
+        """
+        Set up the tests.
+        """
+        self.test_dir = os.path.dirname(__file__)
+
     def test_sparsej_returns_none(self):
         """
         Test sparse_jacobian is None in two cases:
          - when no 'jac' line in prob def file
          - when there is a 'jac' line but no 'sparse_func' in it.
         """
-        test_dir = os.path.dirname(__file__)
         for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
-            prob_def_file_path = os.path.join(test_dir,
+            prob_def_file_path = os.path.join(self.test_dir,
                                               'ivp',
                                               prob_def_file)
 
@@ -560,3 +521,32 @@ class TestParserNoJac(TestCase):
                 fitting_problem = p.parse()
 
             assert fitting_problem.sparse_jacobian is None
+
+    @run_for_test_types(TEST_TYPE, 'all')
+    def test_mantid_jac_when_no_func_by_user(self):
+        """
+        Tests that, for mantid problems, when no jacobian is provided
+        by the user, the jacobian function from mantid is used.
+        """
+        evaluations_file = 'jacobian_evaluations.json'
+        format_dir = 'mantiddev'
+
+        evaluations_file_path = os.path.join(self.test_dir,
+                                             format_dir,
+                                             evaluations_file)
+
+        with open(evaluations_file_path, 'r') as ef:
+            results = load(ef)
+
+            for f, tests in results.items():
+                f = os.path.join(self.test_dir, format_dir, f)
+
+                parser = ParserFactory.create_parser(f)
+                with parser(f, OPTIONS) as p:
+                    fitting_problem = p.parse()
+
+                for r in tests:
+                    x = np.array(r[0])
+
+                    actual = fitting_problem.jacobian(x, r[1])
+                    assert np.isclose(actual, r[2]).all()
