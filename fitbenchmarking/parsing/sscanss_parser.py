@@ -46,13 +46,13 @@ class SScanSSParser(FitbenchmarkParser):
         Create a function for calculation the error in a forward kinematics
         transform.
         """
-        def error_func(*params):
+        def error_func(x, *params):
+            # pylint: disable=unused-argument
             cur_pose = robot.fkine(params)
             pos_diff = cur_pose[:3, 3] - target[:3, 3]
             angle_diff = SScanSSParser.emap(
                 target[:3, :3] @ cur_pose[:3, :3].transpose())
-            error = np.sum(pos_diff**2 + angle_diff**2)
-            return np.array([error])
+            return np.array(list(pos_diff) + list(angle_diff))
 
         return error_func
 
@@ -91,5 +91,8 @@ class SScanSSParser(FitbenchmarkParser):
     @staticmethod
     def _get_data_points(_filename):
         # pylint: disable=unused-argument
-        return {'x': np.array([1]),
-                'y': np.array([0])}
+        # x data is the spatial and agular coordinates for the pose
+        # y data is the error in each coord at the fit (as defined in
+        #     inverse_kinematics_error)
+        return {'x': np.array(["x", "y", "z", "alpha", "beta", "gamma"]),
+                'y': np.array([0, 0, 0, 0, 0, 0])}
