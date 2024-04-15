@@ -475,6 +475,8 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
+            if self.min_accuracy == 0:
+                self.min_accuracy = 1e-20
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             elif self.min_accuracy in [0.0, 0]:
