@@ -42,8 +42,6 @@ class Scipy(Jacobian):
         if self.method.endswith("_sparse"):
 
             if self.problem.sparse_jacobian is None:
-
-                # shall we use NoAnalyticJacobian here?
                 raise NoSparseJacobianError(
                     f'The selected method is {self.method} but the '
                     'sparse_jacobian function is None. Please provide a '

@@ -1,5 +1,5 @@
 # Fitbenchmark Problem
-software = 'Mantid'
+software = 'Mantiddev'
 name = 'start_end_x'
 description = 'This dataset has no real world application. It is used to test the parsing.'
 input_file = 'mantid_start_end_x.dat'

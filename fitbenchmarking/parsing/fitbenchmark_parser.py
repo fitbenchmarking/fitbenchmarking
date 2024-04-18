@@ -5,7 +5,7 @@ import importlib
 import os
 import re
 import sys
-import typing
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -111,6 +111,7 @@ class FitbenchmarkParser(Parser):
         self._set_data_points(data_points, fit_ranges)
 
         # SPARSE JAC FUNCTION
+        self.fitting_problem.jacobian = self._dense_jacobian()
         self.fitting_problem.sparse_jacobian = self._sparse_jacobian()
 
         self._set_additional_info()
@@ -127,7 +128,7 @@ class FitbenchmarkParser(Parser):
         """
         return False
 
-    def _create_function(self) -> typing.Callable:
+    def _create_function(self) -> Callable:
         """
         Creates a python callable which is a wrapper around the fit function.
         """
@@ -241,7 +242,7 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_function(self, func: typing.Optional[str] = None):
+    def _parse_function(self, func: Optional[str] = None):
         """
         Get the params from the function as a list of dicts from the data
         file.
@@ -265,14 +266,14 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _parse_jac_function(self, func: typing.Optional[str] = None):
+    def _parse_jac_function(self, func: Optional[str] = None):
         """
         Get the (relative) path and the name of the jacobian function
         from the data file. Returns a list of dicts if these have been
         defined. Returns None otherwise.
 
         :param func: The function to parse. Optional, defaults to
-                     self._entries['jac_function']
+                     self._entries['jac']
         :type func: str
         :return: Function definition in format:
                  [{name1: value1, name2: value2, ...}, ...]
@@ -282,11 +283,11 @@ class FitbenchmarkParser(Parser):
         # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
-        if 'jac_function' not in self._entries.keys():
+        if 'jac' not in self._entries.keys():
             return None
 
         if func is None:
-            func = self._entries['jac_function']
+            func = self._entries['jac']
 
         for f in func.split(';'):
             func_dict = self._parse_single_function(f)
@@ -294,24 +295,47 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _sparse_jacobian(self) -> typing.Callable:
+    def _dense_jacobian(self) -> 'Callable | None':
         """
-        Process the jac function into a callable. Returns
-        None if this is not possible.
+        Function to help getting dense jac.
 
-        :return: A callable function
-        :rtype: callable
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('dense_func')
+
+    def _sparse_jacobian(self) -> 'Callable | None':
+        """
+        Function to help getting sparse jac.
+
+        :return: A callable function or None
+        :rtype: callable or None
+        """
+        return self._get_jacobian('sparse_func')
+
+    def _get_jacobian(self, jac_type) -> 'Callable | None':
+        """
+        Process the dense/sparse jac function into a callable.
+        Returns None if this is not possible.
+
+        :param jac_type: either 'dense_func' or 'sparse_func'
+        :type jac_type: str
+        :return: A callable function or None
+        :rtype: callable or None
         """
 
         if self._parsed_jac_func is None:
             return None
 
+        if jac_type not in self._parsed_jac_func[0].keys():
+            return None
+
         pf = self._parsed_jac_func[0]
         path = os.path.join(os.path.dirname(self._filename),
-                            pf['jac_module'])
+                            pf['module'])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf['jac_func'])
+        func = getattr(module, pf[jac_type])
         return func
 
     @classmethod

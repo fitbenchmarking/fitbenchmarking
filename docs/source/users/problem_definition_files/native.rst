@@ -127,25 +127,26 @@ function
   The Horace functions are defined here :ref:`horace_format` .
 
 jacobian
-  This defines the sparse jacobian function that will be used in place of the jacobian
-  function when the user specifies this in the options file. This function must
-  return a matrix in sparse format (e.g. coo, csr, crs), otherwise an error will be thrown.
+  This is to define a dense jacobian function, or a sparse jacobian function, or both.
+  The parser for this function allows the user to define ``g`` in the following:
 
-  The parser for this function allows the user to define ``f`` in the following equation:
+  .. math:: \nabla_p f(x, *args) = g(x, *args)
 
-  .. math:: x' = f(x, *args)
-
-  To do this we use a python module to define the function. As in the above
-  formula, the function can take the following arguments:
+  To do this we use a python module, where the user can define a dense jacobian function
+  and a sparse jacobian function (or just one of the two). As in the above formula,
+  both functions can take the following arguments:
 
   - *x* (np.array): A value for x to evaluate at
   - *\*args* (floats): The parameters to fit
 
-  To link to this function we use a function string with the following
-  parameters:
+  To link to this functions we use a string with the following parameters:
 
-  - *jac_module*: The path to the module
-  - *jac_func*: The name of the function within the module
+  - *module*: The path to the module
+  - *dense_func*: The name of the dense jacobian function within the module
+  - *sparse_func*: The name of the sparse jacobian function within the module
+
+The sparse jacobian function provided must return a matrix in sparse format
+(e.g. coo, csr, crs), otherwise an error will be thrown.
 
 fit_ranges
   This specifies the region to be fit.
