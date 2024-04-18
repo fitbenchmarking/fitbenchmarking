@@ -1,39 +1,15 @@
 """
-This file implements a parser for the Bundle Adjustment problem in the Large (BAL) dataset.
+This file implements a parser for the Bundle
+Adjustment problem in the Large (BAL) dataset.
 """
-import typing
 import bz2
+import typing
+
 import numpy as np
 from scipy.sparse import lil_matrix
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
-def rotate(points, rot_vecs):
-    """Rotate points by given rotation vectors.
-
-    Rodrigues' rotation formula is used.
-    """
-    theta = np.linalg.norm(rot_vecs, axis=1)[:, np.newaxis]
-    with np.errstate(invalid='ignore'):
-        v = rot_vecs / theta
-        v = np.nan_to_num(v)
-    dot = np.sum(points * v, axis=1)[:, np.newaxis]
-    cos_theta = np.cos(theta)
-    sin_theta = np.sin(theta)
-    return cos_theta * points + sin_theta * np.cross(v, points) + dot * (1 - cos_theta) * v
-
-def project(points, camera_params):
-    """Convert 3-D points to 2-D by projecting onto images."""
-    points_proj = rotate(points, camera_params[:, :3])
-    points_proj += camera_params[:, 3:6]
-    points_proj = -points_proj[:, :2] / points_proj[:, 2, np.newaxis]
-    f = camera_params[:, 6]
-    k1 = camera_params[:, 7]
-    k2 = camera_params[:, 8]
-    n = np.sum(points_proj**2, axis=1)
-    r = 1 + k1 * n + k2 * n**2
-    points_proj *= (r * f)[:, np.newaxis]
-    return points_proj
 
 class BALParser(FitbenchmarkParser):
     """
@@ -52,7 +28,7 @@ class BALParser(FitbenchmarkParser):
             self.point_indices = np.empty(n_observations, dtype=int)
 
             for i in range(n_observations):
-                camera_index, point_index, x, y = file.readline().split()
+                camera_index, point_index, _, _ = file.readline().split()
                 self.camera_indices[i] = int(camera_index)
                 self.point_indices[i] = int(point_index)
 
@@ -68,19 +44,56 @@ class BALParser(FitbenchmarkParser):
 
         return camera_params, points_3d
 
+    @staticmethod
+    def rotate(points, rot_vecs):
+        """
+        Rotate points by given rotation vectors.
+
+        Rodrigues' rotation formula is used.
+        """
+        theta = np.linalg.norm(rot_vecs, axis=1)[:, np.newaxis]
+        with np.errstate(invalid='ignore'):
+            v = rot_vecs / theta
+            v = np.nan_to_num(v)
+        dot = np.sum(points * v, axis=1)[:, np.newaxis]
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        return cos_theta * points + sin_theta * \
+            np.cross(v, points) + dot * (1 - cos_theta) * v
+
+    @staticmethod
+    def project(points, camera_params):
+        """
+        Convert 3-D points to 2-D by projecting onto images.
+        """
+        points_proj = BALParser.rotate(points, camera_params[:, :3])
+        points_proj += camera_params[:, 3:6]
+        points_proj = -points_proj[:, :2] / points_proj[:, 2, np.newaxis]
+        f = camera_params[:, 6]
+        k1 = camera_params[:, 7]
+        k2 = camera_params[:, 8]
+        n = np.sum(points_proj**2, axis=1)
+        r = 1 + k1 * n + k2 * n**2
+        points_proj *= (r * f)[:, np.newaxis]
+        return points_proj
+
     def fun(self, params):
-        """Compute projected points
+        """
+        Compute projected points
 
         `params` contains camera parameters and 3-D coordinates.
         """
-        camera_params = np.array(params)[:self.n_cameras * 9].reshape((self.n_cameras, 9))
-        points_3d = np.array(params)[self.n_cameras * 9:].reshape((self.n_points, 3))
-        points_proj = project(points_3d[self.point_indices],
-                                   camera_params[self.camera_indices])
+        camera_params = np.array(
+            params)[:self.n_cameras * 9].reshape((self.n_cameras, 9))
+        points_3d = np.array(
+            params)[self.n_cameras * 9:].reshape((self.n_points, 3))
+        points_proj = BALParser.project(points_3d[self.point_indices],
+                                        camera_params[self.camera_indices])
         return points_proj.ravel()
 
     def _create_function(self) -> typing.Callable:
         """
+        Read data file and process into callable
 
         :return: A callable function
         :rtype: callable
