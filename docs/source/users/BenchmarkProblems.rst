@@ -303,8 +303,8 @@ These problems have between 4 and 10 unknown parameters, and fit around 180 data
 Bundle Adjustment in the Large (BAL)
 ====================================
 
-**Download** :download:`.zip <>`
-or :download:`.tar.gz <>`
+**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.zip>`
+or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Bundle_Adjustment`)
 contain image data, either captured at a regular rate using a Ladybug camera, or downloaded
