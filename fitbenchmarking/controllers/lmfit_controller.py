@@ -158,7 +158,6 @@ class LmfitController(Controller):
         kwargs = {"method": self.minimizer}
         if self.minimizer == "emcee":
             kwargs["progress"] = False
-            kwargs["steps"] = 10000
             kwargs["burn"] = 300
             minner = Minimizer(self.lmfit_loglike, self.lmfit_params)
         else:
