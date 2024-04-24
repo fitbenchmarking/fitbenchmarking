@@ -70,11 +70,11 @@ class quickBayesParser(FitbenchmarkParser):
         #                            'N1_f2_f2_tau': 31.5,
         #                            'N1_f2_f2_beta': .7}]
  
-        self._starting_values = [{'N1_f1_BG_constant':0.0,
-                                  'N1_f2_f1_Amplitude': .02,
-                                  'N1_f2_f1_Centre': -0.06,
-                                  'N1_f2_f2_Amplitude': .12,
-                                  'N1_f2_f2_Gamma': 0.02,
+        self._starting_values = [{'N1:f1_BG_constant':0.0,
+                                  'N1:f2_f1_Amplitude': .02,
+                                  'N1:f2_f1_Centre': -0.06,
+                                  'N1:f2_f2_Amplitude': .12,
+                                  'N1:f2_f2_Gamma': 0.02,
                                   }]
         
         self.fitting_problem._starting_values = self._starting_values
