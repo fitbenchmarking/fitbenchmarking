@@ -180,9 +180,8 @@ class FitbmResultTests(unittest.TestCase):
         """
         Tests the runtime metrics calculations within FittingResults
         """
-        controller = self.controller
         result = FittingResult(
-            controller=controller,
+            controller=self.controller,
             runtimes=runtimes,
             runtime_metric=metric)
         self.assertAlmostEqual(expected,
@@ -222,9 +221,8 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test that norm_runtime is correct when min_runtime is finite.
         """
-        controller = self.controller
         result = FittingResult(
-            controller=controller,
+            controller=self.controller,
             runtimes=runtimes,
             runtime_metric=metric)
         result.min_runtime = min_runtime
