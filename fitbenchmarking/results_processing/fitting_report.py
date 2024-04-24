@@ -26,6 +26,8 @@ def create(results, support_pages_dir, options):
     """
 
     for prob_result in results:
+        if prob_result.accuracy == float('inf'):
+            continue
         create_prob_group(prob_result,
                           support_pages_dir,
                           options)

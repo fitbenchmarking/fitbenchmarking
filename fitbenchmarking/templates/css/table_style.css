@@ -94,3 +94,8 @@ td a.dark:active {
   transition:color .3s;
   color:rgba(0, 0, 0, 0.8)
  }
+
+span.blank {
+  color: #000000;
+  background-color: #e5e4e2;
+ }
