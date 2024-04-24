@@ -27,6 +27,7 @@ class Numdifftools(Hessian):
 
         def jac_func(params):
             return self.jacobian.eval(params, x=x).T
+
         hes_func = nd.Jacobian(jac_func, method=self.method)
         hes = hes_func(params)
 

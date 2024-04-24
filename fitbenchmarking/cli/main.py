@@ -15,7 +15,7 @@ from tempfile import NamedTemporaryFile
 import fitbenchmarking
 from fitbenchmarking.cli.checkpoint_handler import generate_report
 from fitbenchmarking.cli.exception_handler import exception_handler
-from fitbenchmarking.core.fitting_benchmarking import benchmark
+from fitbenchmarking.core.fitting_benchmarking import Fit
 from fitbenchmarking.core.results_output import (create_index_page,
                                                  open_browser, save_results)
 from fitbenchmarking.utils.checkpoint import Checkpoint
@@ -293,11 +293,11 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
         LOGGER.info('Running the benchmarking on the %s problem set',
                     label)
-        results, failed_problems, unselected_minimizers = \
-            benchmark(options=options,
-                      data_dir=data_dir,
-                      label=label,
-                      checkpointer=cp)
+        fit = Fit(options=options,
+                  data_dir=data_dir,
+                  label=label,
+                  checkpointer=cp)
+        results, failed_problems, unselected_minimizers = fit.benchmark()
 
         # If a result has error flag 4 then the result contains dummy values,
         # if this is the case for all results then output should not be
