@@ -150,8 +150,8 @@ class Options:
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'loglike_nlls', 'poisson']}
     VALID_JACOBIAN = \
-        {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['default'],
+        {'scipy': ['2-point', '3-point', 'cs', '2-point_sparse'],
+         'analytic': ['default', 'sparse'],
          'default': ['default'],
          'numdifftools': ['central',
                           'complex', 'multicomplex',
