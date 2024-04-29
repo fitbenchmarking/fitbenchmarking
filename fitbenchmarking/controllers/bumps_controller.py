@@ -48,9 +48,9 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-
-        self._param_names = [name.replace('.', '_')
-                             for name in self.problem.param_names]
+        # Need unique strings that are valid python vars
+        self._param_names = [
+            f'p{i}' for (i, _) in enumerate(self.problem.param_names)]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
