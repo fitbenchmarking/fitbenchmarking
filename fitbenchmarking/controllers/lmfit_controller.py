@@ -105,13 +105,15 @@ class LmfitController(Controller):
         self.bound_minimizers = ['dual_annealing', 'differential_evolution']
         self.lmfit_out = None
         self.lmfit_params = Parameters()
+        self._param_names = [
+            f'p{i}' for (i, _) in enumerate(self.problem.param_names)]
 
     def lmfit_resdiuals(self, params):
         """
         lmfit resdiuals
         """
         return self.cost_func.eval_r(list(map(lambda name: params[name].value,
-                                     self.problem.param_names)))
+                                     self._param_names)))
 
     def lmfit_loglike(self, params):
         """
@@ -128,7 +130,7 @@ class LmfitController(Controller):
         """
         return self.cost_func.jac_cost(list(map(lambda name:
                                        params[name].value,
-                                       self.problem.param_names)))
+                                       self._param_names)))
 
     def setup(self):
         """
@@ -141,7 +143,7 @@ class LmfitController(Controller):
                 f"{self.minimizer} requires finite bounds on all"
                 " parameters")
 
-        for i, name in enumerate(self.problem.param_names):
+        for i, name in enumerate(self._param_names):
             kwargs = {"name": name,
                       "value": self.initial_params[i]}
             if self.value_ranges is not None:

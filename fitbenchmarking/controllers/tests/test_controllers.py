@@ -523,6 +523,16 @@ class DefaultControllerTests(TestCase):
         controller.lmfit_out.success = False
         self.shared_tests.check_diverged(controller)
 
+    def test_variable_names_corrected_in_controllers(self):
+        """
+        Test if variable names are corrected properly
+        within the LmfitController and BumpsController
+        """
+        for control in ([LmfitController, BumpsController]):
+            self.cost_func.param_names = ['b.1', 'b@2', 'b-3', 'b_4']
+            controller = control(self.cost_func)
+            assert controller._param_names == ['p0', 'p1', 'p2', 'p3']
+
 
 @run_for_test_types(TEST_TYPE, 'all')
 class ControllerBoundsTests(TestCase):
