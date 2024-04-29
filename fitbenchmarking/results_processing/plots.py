@@ -200,18 +200,25 @@ class Plot:
 
         fig = make_subplots(rows=len(par_names), cols=1,
                             subplot_titles=par_names)
-        scipy_fit = result.params_pdfs['scipy_pfit']
-        scipy_err = result.params_pdfs['scipy_perr']
 
-        for i, name in enumerate(par_names):
-            fig.append_trace(go.Histogram(x=result.params_pdfs[name],
-                             histnorm='probability density'), row=i+1, col=1)
-            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i],
-                          row=i+1, col=1, line_color='red')
-            fig.add_vline(x=scipy_fit[i]-2*scipy_err[i],
-                          row=i+1, col=1, line_color='red', line_dash='dash')
-            fig.add_vline(x=scipy_fit[i]+2*scipy_err[i],
-                          row=i+1, col=1, line_color='red', line_dash='dash')
+        [fig.append_trace(
+            go.Histogram(x=result.params_pdfs[name.replace('.', '_')],
+                         histnorm='probability density'), row=i+1, col=1)
+         for i, name in enumerate(par_names)]
+
+        if result.params_pdfs['scipy_pfit'] is not None:
+            scipy_fit = result.params_pdfs['scipy_pfit']
+            scipy_err = result.params_pdfs['scipy_perr']
+
+            for i, name in enumerate(par_names):
+                fig.add_vline(x=scipy_fit[i],
+                              row=i+1, col=1, line_color='red')
+                fig.add_vline(x=scipy_fit[i]-2*scipy_err[i],
+                              row=i+1, col=1, line_color='red',
+                              line_dash='dash')
+                fig.add_vline(x=scipy_fit[i]+2*scipy_err[i],
+                              row=i+1, col=1, line_color='red',
+                              line_dash='dash')
 
         fig.update_layout(showlegend=False)
 
@@ -297,7 +304,7 @@ class Plot:
 
                     plotlyfig.update_layout(
                         title=title
-                        )
+                    )
 
                 if result.plot_scale in ["loglog", "logx"]:
                     plotlyfig.update_xaxes(type="log")

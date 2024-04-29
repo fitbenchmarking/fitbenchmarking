@@ -23,7 +23,8 @@ ERROR_OPTIONS = {0: "Successfully converged",
                  4: "Solver doesn't support bounded problems",
                  5: "Solution doesn't respect parameter bounds",
                  6: "Solver has exceeded maximum allowed runtime",
-                 7: "Validation of the provided options failed"}
+                 7: "Validation of the provided options failed",
+                 8: "Confidence in fit could not be calculated"}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", 'emissions']
 

@@ -7,9 +7,9 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 import warnings
-import platform
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -488,7 +488,7 @@ class Fit:
                         with tracker:
                             runtimes = timeit.Timer(
                                 stmt=controller.execute
-                                ).repeat(num_runs, 1)
+                            ).repeat(num_runs, 1)
                         emissions = tracker.final_emissions / num_runs
                     else:
                         tracker.start_task()
@@ -525,8 +525,9 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e)
             else:
-                if controller.eval_confidence != 0:
-                    accuracy = 1/controller.eval_confidence()
+                conf = controller.eval_confidence()
+                if conf != 0:
+                    accuracy = 1/conf
                 else:
                     accuracy = np.inf
 
