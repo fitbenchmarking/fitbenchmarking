@@ -9,6 +9,7 @@ import unittest
 from typing import TYPE_CHECKING
 
 import numpy as np
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
@@ -156,138 +157,80 @@ class FitbmResultTests(unittest.TestCase):
             np.isclose(controller.final_params[1], result.params).all())
         self.assertEqual(chi_sq[1], result.accuracy)
 
-    def test_runtime_metrics(self):
+    @parameterized.expand([
+        ('mean', [0.005, 0.015, 0.01], 0.01),
+        ('mean', [1.00, 2.00, 3.00], 2.0),
+        ('mean', [3.00], 3.0),
+        ('mean', [np.inf, 2.00, 3.00], np.inf),
+        ('mean', [np.inf, np.inf, np.inf], np.inf),
+        ('minimum', [1.00, 2.00, 3.00, 4.00, 6.00], 1.00),
+        ('minimum', [0, 2.00, 3.00, 4.00, 6.00], 0),
+        ('maximum', [0, 2.00, 3.00, 4.00, 6.00], 6.00),
+        ('maximum', [0], 0),
+        ('first', [40, 100, 10], 40),
+        ('median', [0, 3.00, 2.00, 4.00, 6.00], 3.0),
+        ('median', [0, 2.00, 3.00, 4.00, 6.00, 10.0], 3.5),
+        ('harmonic', [2.00, 5.00, 4.00, 6.00], 3.58209),
+        ('harmonic', [2.00, 5.00, 4.00, 6.00, 10.0, 20.0], 4.73684),
+        ('harmonic', [0, 5.00, 4.00, 6.00, 10.0, 20.0], 0),
+        ('trim', [0, 5.00, 4.00, 6.00, 10.0, 20.0], 6.25),
+        ('trim', [1.0, 4.00, 6.00, 10.0, 20.0, 40], 10),
+    ])
+    def test_runtime_metrics(self, metric, runtimes, expected):
         """
         Tests the runtime metrics calculations within FittingResults
         """
-        testcases = [{
-                        'metric': 'mean',
-                        'runtimes':  [0.005, 0.015, 0.01],
-                        'expected':  0.01,
-                     },
-                     {
-                        'metric': 'mean',
-                        'runtimes':  [1.00, 2.00, 3.00],
-                        'expected':  2.0,
-                     },
-                     {
-                        'metric': 'mean',
-                        'runtimes':  [3.00],
-                        'expected':  3.0,
-                     },
-                     {
-                        'metric': 'mean',
-                        'runtimes':  [np.inf, 2.00, 3.00],
-                        'expected':  np.inf,
-                     },
-                     {
-                        'metric': 'mean',
-                        'runtimes':  [np.inf, np.inf, np.inf],
-                        'expected':  np.inf,
-                     },
-                     {
-                        'metric': 'minimum',
-                        'runtimes':  [1.00, 2.00, 3.00, 4.00, 6.00],
-                        'expected':  1.00,
-                     },
-                     {
-                        'metric': 'minimum',
-                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00],
-                        'expected':  0,
-                     },
-                     {
-                        'metric': 'maximum',
-                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00],
-                        'expected':  6.00,
-                     },
-                     {
-                        'metric': 'maximum',
-                        'runtimes':  [0],
-                        'expected':  0,
-                     },
-                     {
-                        'metric': 'first',
-                        'runtimes':  [0],
-                        'expected':  0,
-                     },
-                     {
-                        'metric': 'first',
-                        'runtimes':  [40, 100, 10],
-                        'expected':  40,
-                     },
-                     {
-                        'metric': 'median',
-                        'runtimes':  [0, 3.00, 2.00, 4.00, 6.00],
-                        'expected':  3.0,
-                     },
-                     {
-                        'metric': 'median',
-                        'runtimes':  [0, 2.00, 3.00, 4.00, 6.00, 10.0],
-                        'expected':  3.5,
-                     },
-                     {
-                        'metric': 'harmonic',
-                        'runtimes':  [2.00, 5.00, 4.00, 6.00],
-                        'expected':  3.58209,
-                     },
-                     {
-                        'metric': 'harmonic',
-                        'runtimes':  [2.00, 5.00, 4.00, 6.00, 10.0, 20.0],
-                        'expected':  4.73684,
-                     },
-                     {
-                        'metric': 'harmonic',
-                        'runtimes':  [0, 5.00, 4.00, 6.00, 10.0, 20.0],
-                        'expected':  0,
-                     },
-                     {
-                        'metric': 'trim',
-                        'runtimes':  [0, 5.00, 4.00, 6.00, 10.0, 20.0],
-                        'expected':  6.25,
-                     },
-                     {
-                        'metric': 'trim',
-                        'runtimes':  [1.0, 4.00, 6.00, 10.0, 20.0, 40],
-                        'expected':  10,
-                     }]
-
-        for case in testcases:
-            with self.subTest(case['runtimes']):
-                controller = self.controller
-                result = FittingResult(
-                    controller=controller,
-                    runtimes=case['runtimes'],
-                    runtime_metric=case['metric'])
-                self.assertAlmostEqual(case['expected'],
-                                       result.runtime,
-                                       places=5)
+        result = FittingResult(
+            controller=self.controller,
+            runtimes=runtimes,
+            runtime_metric=metric)
+        self.assertAlmostEqual(expected,
+                               result.runtime,
+                               places=5)
 
     def test_norm_acc_finite_min(self):
         """
-        Test that sanitised names are correct when min_acc is finite.
+        Test that norm_acc is correct when min_acc is finite.
         """
         expected = self.accuracy / self.min_accuracy
         self.assertEqual(self.result.norm_acc, expected)
 
     def test_norm_acc_infinite_min(self):
         """
-        Test that sanitised names are correct when min_acc is infinite.
+        Test that norm_acc is correct when min_acc is infinite.
         """
         expected = np.inf
         self.result.accuracy = np.inf
         self.result.min_accuracy = np.inf
         self.assertEqual(self.result.norm_acc, expected)
 
-    def test_norm_runtime_finite_min(self):
+    @parameterized.expand([
+        ('mean', [0.005, 0.015, 0.01], 0.001, 10),
+        ('minimum', [1.00, 2.00, 3.00, 4.00, 6.00], 0.05, 20),
+        ('maximum', [0, 2.00, 3.00, 4.00, 6.00], 3.00, 2),
+        ('first', [40, 100, 10], 10, 4),
+        ('median', [0, 2.00, 3.00, 4.00, 6.00, 10.0], 0.5, 7),
+        ('harmonic', [2.00, 5.00, 4.00, 6.00, 10.0, 20.0], 4.73684, 1),
+        ('trim', [0, 5.00, 4.00, 6.00, 10.0, 20.0], 0.25, 25),
+    ])
+    def test_norm_runtime_finite_min(self,
+                                     metric,
+                                     runtimes,
+                                     min_runtime,
+                                     expected):
         """
-        Test that sanitised names are correct when min_runtime is finite.
+        Test that norm_runtime is correct when min_runtime is finite.
         """
-        expected = self.runtime / self.min_runtime
-        self.assertEqual(self.result.norm_runtime, expected)
+        result = FittingResult(
+            controller=self.controller,
+            runtimes=runtimes,
+            runtime_metric=metric)
+        result.min_runtime = min_runtime
+        self.assertAlmostEqual(expected, result.norm_runtime, places=5)
 
     def test_norm_runtime_infinite_min(self):
         """
-        Test that sanitised names are correct when min_runtime is infinite.
+        Test that norm_runtime is correct when min_runtime is infinite.
         """
         expected = np.inf
         self.result.runtime = np.inf

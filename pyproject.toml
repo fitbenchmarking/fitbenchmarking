@@ -62,6 +62,7 @@ dev = [
     'pandas',
     'iminuit>=2.25.2',
     'pre-commit',
+    'parameterized',
 ]
 
 [project.scripts]
