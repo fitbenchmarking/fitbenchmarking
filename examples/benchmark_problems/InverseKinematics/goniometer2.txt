@@ -1,5 +1,0 @@
-# Fitbenchmark Problem
-software = 'sscanss'
-name = 'Goniometer - target 2'
-description = 'Testing the goniometer on target pose 2'
-function = 'module=data/kinematics,robot=goniometer_robot,target=g2,p1=0,p2=0,p3=0'
