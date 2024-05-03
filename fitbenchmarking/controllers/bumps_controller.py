@@ -2,10 +2,9 @@
 Implements a controller for the Bumps fitting software.
 """
 
+import numpy as np
 from bumps.fitters import fit as bumpsFit
 from bumps.names import Curve, FitProblem, PoissonCurve
-
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -21,24 +20,24 @@ class BumpsController(Controller):
     """
 
     algorithm_check = {
-            'all': ['amoeba',
-                    'lm-bumps',
-                    'newton',
-                    'de',
-                    'scipy-leastsq',
-                    'dream'],
-            'ls': ['lm-bumps', 'scipy-leastsq'],
-            'deriv_free': ['amoeba', 'de'],
-            'general': ['amoeba', 'newton', 'de'],
-            'simplex': ['amoeba'],
-            'trust_region': ['lm-bumps', 'scipy-leastsq'],
-            'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
-            'gauss_newton': [],
-            'bfgs': ['newton'],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['de'],
-            'MCMC': ['dream']}
+        'all': ['amoeba',
+                'lm-bumps',
+                'newton',
+                'de',
+                'scipy-leastsq',
+                'dream'],
+        'ls': ['lm-bumps', 'scipy-leastsq'],
+        'deriv_free': ['amoeba', 'de'],
+        'general': ['amoeba', 'newton', 'de'],
+        'simplex': ['amoeba'],
+        'trust_region': ['lm-bumps', 'scipy-leastsq'],
+        'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
+        'gauss_newton': [],
+        'bfgs': ['newton'],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': ['de'],
+        'MCMC': ['dream']}
 
     def __init__(self, cost_func):
         """
@@ -49,9 +48,9 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-
-        self._param_names = [name.replace('.', '_')
-                             for name in self.problem.param_names]
+        # Need unique strings that are valid python vars
+        self._param_names = [
+            f'p{i}' for (i, _) in enumerate(self.problem.param_names)]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None

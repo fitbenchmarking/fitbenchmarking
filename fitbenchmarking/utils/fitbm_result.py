@@ -356,7 +356,7 @@ class FittingResult:
         """
         Stores the normalised accuracy and updates the value
 
-        :param value: New value for norm_runtime
+        :param value: New value for norm_accuracy
         :type value: float
         """
         self._norm_acc = value
@@ -373,7 +373,7 @@ class FittingResult:
             if self.min_runtime in [np.nan, np.inf]:
                 self._norm_runtime = np.inf
             else:
-                self._norm_runtime = self.mean_runtime / self.min_runtime
+                self._norm_runtime = self.runtime / self.min_runtime
         return self._norm_runtime
 
     @norm_runtime.setter

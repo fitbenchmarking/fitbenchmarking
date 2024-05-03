@@ -57,7 +57,7 @@ class TestMain(TestCase):
     Tests for main.py
     """
 
-    @patch('fitbenchmarking.cli.main.benchmark')
+    @patch('fitbenchmarking.cli.main.Fit.benchmark')
     def test_check_no_results_produced(self, benchmark):
         """
         Checks that exception is raised if no results are produced
@@ -68,7 +68,7 @@ class TestMain(TestCase):
             main.run(['examples/benchmark_problems/simple_tests'],
                      os.path.dirname(__file__), debug=True)
 
-    @patch('fitbenchmarking.cli.main.benchmark')
+    @patch('fitbenchmarking.cli.main.Fit.benchmark')
     def test_all_dummy_results_produced(self, benchmark):
         """
         Checks that exception is raised if all dummy results
