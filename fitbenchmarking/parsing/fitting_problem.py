@@ -9,11 +9,12 @@ try:
 except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
+
 import numpy as np
 
 from fitbenchmarking.utils.debug import get_printable_table
-from fitbenchmarking.utils.exceptions import FittingProblemError, \
-    IncorrectBoundsError
+from fitbenchmarking.utils.exceptions import (FittingProblemError,
+                                              IncorrectBoundsError)
 from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
@@ -328,12 +329,14 @@ def correct_data(x, y, e, startx, endx, use_errors):
     if startx is not None and endx is not None:
         mask = np.logical_and(x >= startx,
                               x <= endx)
-        x = x[mask]
+        x: np.ndarray = x[mask]
         y = y[mask]
         if e is not None:
             e = e[mask]
 
     # Stores the indices of the sorted data
-    sorted_index = np.argsort(x)
+    sorted_index = np.argsort(x) if not isinstance(x[0], str) \
+        else np.arange(len(x))
+    print(x.dtype)
 
     return x, y, e, sorted_index

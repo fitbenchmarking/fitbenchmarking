@@ -113,13 +113,15 @@ class Fit:
             try:
                 with self.__grabbed_output:
                     parsed = parse_problem_file(p, self._options)
-                    parsed.correct_data()
+                    for fp in parsed:
+                        fp.correct_data()
             except FitBenchmarkException as e:
                 LOGGER.info("Could not parse problem from: %s", p)
                 LOGGER.warning(e)
             else:
-                name_count[parsed.name] = name_count.get(parsed.name, 0) + 1
-                problems.append((p, parsed))
+                for fp in parsed:
+                    name_count[fp.name] = name_count.get(fp.name, 0) + 1
+                    problems.append((p, fp))
 
         LOGGER.info('Running problems')
 
@@ -138,7 +140,7 @@ class Fit:
                     problem.name += f' {name_index[problem.name]}'
 
                 info_str = f" Running data from: {os.path.basename(fname)}" + \
-                    f" {i + 1}/{len(problem_group)} "
+                    f" {i + 1}/{len(problems)} "
                 LOGGER.info('\n%s', '#' * len(info_str))
                 LOGGER.info(info_str)
                 LOGGER.info('#' * len(info_str))
