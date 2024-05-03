@@ -38,7 +38,7 @@ class FitbenchmarkParser(Parser):
         Parse the Fitbenchmark problem file into a Fitting Problem.
 
         :return: The fully parsed fitting problem
-        :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
+        :rtype: Union[FittingProblem, List[FittingProblem]]
         """
         self._entries = self._get_data_problem_entries()
 

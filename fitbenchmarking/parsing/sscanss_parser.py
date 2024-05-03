@@ -10,6 +10,7 @@ from importlib import import_module
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 class SScanSSParser(FitbenchmarkParser):
@@ -18,11 +19,47 @@ class SScanSSParser(FitbenchmarkParser):
 
     Function calculates the error from a current pose to the target pose.
     """
-    PARAM_IGNORE_LIST = ['robot', 'module', 'target']
+    PARAM_IGNORE_LIST = ['robot', 'module', 'targets']
+
+    def parse(self) -> 'list[FittingProblem]':
+        template = super().parse()
+
+        out = []
+
+        pf = self._parsed_func[0]
+        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        sys.path.append(os.path.dirname(path))
+        module = import_module(os.path.basename(path))
+        robot = getattr(module, pf['robot'])
+        targets = getattr(module, pf['targets'])
+
+        for i, t in enumerate(targets):
+            fp = FittingProblem(self.options)
+            fp.multifit = template.multifit
+            fp.name = f'{template.name} - target {i+1}'
+            fp.description = (f'{template.description.rstrip().rstrip(".")}. '
+                              f'This problem is associated with target {i+1}.')
+            fp.function = self.inverse_kinematics_error(robot, t)
+            fp.format = template.format
+            fp.plot_scale = template.plot_scale
+            fp.multivariate = template.multivariate
+            fp.equation = template.equation
+            fp.starting_values = template.starting_values
+            fp.value_ranges = template.value_ranges
+            fp.data_x = template.data_x
+            fp.data_y = template.data_y
+            fp.data_e = template.data_e
+            fp.start_x = template.start_x
+            fp.end_x = template.end_x
+            out.append(fp)
+
+        return out
 
     def _create_function(self) -> typing.Callable:
         """
-        Process the forward kinematicsfor the given robot into a callable.
+        Required for base class.
+        Since this is only called to build the template, we return a dummy
+        function.
 
         Expected function format:
         function='module=robots,robot=model1,target=target1,p1=...,p2=...,etc'
@@ -30,15 +67,11 @@ class SScanSSParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+        # pylint: disable=unused-argument
+        def dummy(x, *params):
+            pass
 
-        pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
-        sys.path.append(os.path.dirname(path))
-        module = import_module(os.path.basename(path))
-        robot = getattr(module, pf['robot'])
-        target = getattr(module, pf['target'])
-
-        return self.inverse_kinematics_error(robot, target)
+        return dummy
 
     @staticmethod
     def inverse_kinematics_error(robot, target):
@@ -83,7 +116,7 @@ class SScanSSParser(FitbenchmarkParser):
         :rtype: str
         """
         pf = self._parsed_func[0]
-        return f'{pf["robot"]}_{pf["target"]}'
+        return pf["robot"]
 
     def _get_data_file(self):
         return ["no_file_required"]

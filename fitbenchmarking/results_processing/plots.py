@@ -254,6 +254,8 @@ class Plot:
                 )
 
         fig.update_layout(showlegend=False)
+        fig.update_xaxes(exponentformat="power")
+        fig.update_yaxes(exponentformat="power")
 
         html_fname = (
             f"{result.sanitised_min_name(True)}_posterior_"

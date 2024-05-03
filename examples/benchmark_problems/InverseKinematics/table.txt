@@ -1,5 +1,5 @@
 # Fitbenchmark Problem
 software = 'sscanss'
-name = 'Table - target 1'
-description = 'Testing the table on target pose 1'
-function = 'module=data/kinematics,robot=table_robot,target=t1,p1=0,p2=0,p3=0,p4=0'
+name = 'Table'
+description = 'Testing the table.'
+function = 'module=data/kinematics,robot=table_robot,targets=t_targets,p1=0,p2=0,p3=0,p4=0'

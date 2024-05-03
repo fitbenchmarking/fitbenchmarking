@@ -348,6 +348,8 @@ def correct_data(x, y, e, startx, endx, use_errors):
             e = e[mask]
 
     # Stores the indices of the sorted data
-    sorted_index = np.argsort(x)
+    sorted_index = np.argsort(x) if not isinstance(x[0], str) \
+        else np.arange(len(x))
+    print(x.dtype)
 
     return x, y, e, sorted_index
