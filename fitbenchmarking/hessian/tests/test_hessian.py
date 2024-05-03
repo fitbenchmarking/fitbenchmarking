@@ -375,14 +375,14 @@ class TestBestAvailable(TestCase):
         hes.method = "three"
         self.assertNotEqual(hes.method, "three")
 
-    def test_eval_callable_jac(self):
+    def test_eval_callable_hes(self):
         """
         Test that an analytic hessian is used when hes is callable.
         """
         hes = BestAvailable(self.fitting_problem, self.jacobian)
         self.assertEqual(type(hes.sub_hes), Analytic)
 
-    def test_eval_not_callable_jac(self):
+    def test_eval_not_callable_hes(self):
         """
         Test that a scipy hessian is used when hes is not callable.
         """
