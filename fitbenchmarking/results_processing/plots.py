@@ -260,6 +260,8 @@ class Plot:
                 )
 
         fig.update_layout(showlegend=False)
+        fig.update_xaxes(exponentformat="power")
+        fig.update_yaxes(exponentformat="power")
 
         html_fname = (
             f"{result.sanitised_min_name(True)}_posterior_"
@@ -297,6 +299,8 @@ class Plot:
         first_result = next(iter(categories.values()))[0]
 
         plotlyfig = go.Figure()
+        plotlyfig.update_xaxes(exponentformat="power")
+        plotlyfig.update_yaxes(exponentformat="power")
 
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
