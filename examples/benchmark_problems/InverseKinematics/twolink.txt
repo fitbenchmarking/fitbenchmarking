@@ -1,5 +1,5 @@
 # Fitbenchmark Problem
 software = 'sscanss'
-name = 'Two link - target 1'
-description = 'Testing the two link on target pose 1'
-function = 'module=data/kinematics,robot=twolink_robot,target=tl1,p1=0,p2=0'
+name = 'Two link'
+description = 'Testing the two link'
+function = 'module=data/kinematics,robot=twolink_robot,targets=tl_targets,p1=0,p2=0'

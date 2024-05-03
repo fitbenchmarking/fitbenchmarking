@@ -101,8 +101,10 @@ class Plot:
             error_y=self._error_dict,
             mode='markers',
             name='Data',
-            marker=self._data_marker))
-        fig.update_layout(legend=self._legend_options)
+            marker=self.data_marker))
+        fig.update_layout(legend=self.legend_options)
+        fig.update_xaxes(exponentformat="power")
+        fig.update_yaxes(exponentformat="power")
 
         if self.result.plot_scale in ["loglog", "logx"]:
             fig.update_xaxes(type="log")
@@ -177,8 +179,10 @@ class Plot:
                         error_y=self._error_dict,
                         mode='markers',
                         name='Data',
-                        marker=self._data_marker))
-                fig.update_layout(legend=self._legend_options)
+                        marker=self.data_marker))
+                fig.update_layout(legend=self.legend_options)
+                fig.update_xaxes(exponentformat="power")
+                fig.update_yaxes(exponentformat="power")
 
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
@@ -215,23 +219,17 @@ class Plot:
 
         for i, name in enumerate(par_names):
             fig.append_trace(go.Histogram(x=result.params_pdfs[name],
-                             histnorm='probability density'), row=i+1, col=1)
-
-        if result.params_pdfs['scipy_pfit'] is not None:
-            scipy_fit = result.params_pdfs['scipy_pfit']
-            scipy_err = result.params_pdfs['scipy_perr']
-
-            for i, name in enumerate(par_names):
-                fig.add_vline(x=scipy_fit[i],
-                              row=i+1, col=1, line_color='red')
-                fig.add_vline(x=scipy_fit[i]-2*scipy_err[i],
-                              row=i+1, col=1, line_color='red',
-                              line_dash='dash')
-                fig.add_vline(x=scipy_fit[i]+2*scipy_err[i],
-                              row=i+1, col=1, line_color='red',
-                              line_dash='dash')
+                             histnorm='probability density'), row=i + 1, col=1)
+            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i],
+                          row=i + 1, col=1, line_color='red')
+            fig.add_vline(x=scipy_fit[i] - 2 * scipy_err[i],
+                          row=i + 1, col=1, line_color='red', line_dash='dash')
+            fig.add_vline(x=scipy_fit[i] + 2 * scipy_err[i],
+                          row=i + 1, col=1, line_color='red', line_dash='dash')
 
         fig.update_layout(showlegend=False)
+        fig.update_xaxes(exponentformat="power")
+        fig.update_yaxes(exponentformat="power")
 
         html_fname = f'{result.sanitised_min_name(True)}_posterior_' \
             f'pdf_plot_for_{result.sanitised_name}.html'
@@ -268,15 +266,18 @@ class Plot:
         first_result = next(iter(categories.values()))[0]
 
         plotlyfig = go.Figure()
+        plotlyfig.update_xaxes(exponentformat="power")
+        plotlyfig.update_yaxes(exponentformat="power")
 
 #        # Plot data
         if "weighted_nlls" in options.cost_func_type:
-            error_y = dict(
-                type='data',
-                array=first_result.data_e,
-                color='rgb(0,0,0,0.8)',
-                thickness=1,
-                visible=True)
+            error_y = {
+                'type': 'data',
+                'array': first_result.data_e,
+                'color': 'rgb(0,0,0,0.8)',
+                'thickness': 1,
+                'visible': True,
+            }
         else:
             error_y = None
         plotlyfig.add_trace(go.Scatter(x=first_result.data_x,
