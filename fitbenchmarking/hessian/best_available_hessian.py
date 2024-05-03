@@ -87,7 +87,7 @@ class BestAvailable(Hessian):
         return self.sub_hes.__getattribute__(__name)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name in ['sub_hes', 'method', 'name', 'eval']:
+        if __name in ['sub_hes', 'name', 'eval']:
             return super().__setattr__(__name, __value)
         if __name == 'method':
             if __value != "default":

@@ -335,7 +335,7 @@ class TestHesCostFunc(TestCase):
 
 class TestBestAvailable(TestCase):
     """
-    Additional tests to check the best_available jacobian
+    Additional tests to check the best_available hessian
     """
 
     def setUp(self):
@@ -353,7 +353,7 @@ class TestBestAvailable(TestCase):
 
     def test_name(self):
         """
-        Test the name is not taken from a sub jacobian.
+        Test the name is not taken from a sub hessian.
         """
         hes = BestAvailable(self.fitting_problem, self.jacobian)
         self.assertNotEqual(hes.name(), hes.sub_hes.name())
@@ -377,14 +377,14 @@ class TestBestAvailable(TestCase):
 
     def test_eval_callable_jac(self):
         """
-        Test that an analytic jacobian is used when jac is callable.
+        Test that an analytic hessian is used when hes is callable.
         """
         hes = BestAvailable(self.fitting_problem, self.jacobian)
         self.assertEqual(type(hes.sub_hes), Analytic)
 
     def test_eval_not_callable_jac(self):
         """
-        Test that a scipy jacobian is used when jac is not callable.
+        Test that a scipy hessian is used when hes is not callable.
         """
         self.fitting_problem.hessian = None
         hes = BestAvailable(self.fitting_problem, self.jacobian)

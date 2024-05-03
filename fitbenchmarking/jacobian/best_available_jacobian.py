@@ -78,7 +78,7 @@ class BestAvailable(Jacobian):
         return self.sub_jac.__getattribute__(__name)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name in ['sub_jac', 'method', 'name', 'eval']:
+        if __name in ['sub_jac', 'name', 'eval']:
             return super().__setattr__(__name, __value)
         if __name == 'method':
             if __value != "default":

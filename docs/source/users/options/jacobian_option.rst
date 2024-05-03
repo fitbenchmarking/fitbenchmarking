@@ -12,7 +12,7 @@ Analytic (:code:`analytic`)
 ---------------------------
 
 Analytic Jacobians can only be used for specific :ref:`problem_def`.
-If an analytic jacobian is not available, the test will be skipped.
+If an analytic jacobian is not available, the benchmark will be skipped.
 Currently the supported formats are CUTEst, Mantid, and NIST.
 The only option is:
 
