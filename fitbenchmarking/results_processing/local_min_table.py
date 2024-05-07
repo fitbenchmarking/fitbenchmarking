@@ -90,7 +90,7 @@ class LocalMinTable(Table):
                  specified above) and :math:`\\frac{|| J^T r||}{||r||}`
         :rtype: bool, float
         """
-        if result.accuracy == float('inf'):
+        if np.isinf(result.accuracy):
             return None, None
         if result.r_x is None:
             return None, None
@@ -142,7 +142,8 @@ class LocalMinTable(Table):
         """
         rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
                      for local_min in vals])
-        hex_strs = ["#e5e4e2" if v is None else clrs.rgb2hex(colour)
+        hex_strs = [clrs.to_hex("whitesmoke") if v is None
+                    else clrs.rgb2hex(colour)
                     for colour, v in zip(rgba, vals)]
         text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
                     for colour in rgba]

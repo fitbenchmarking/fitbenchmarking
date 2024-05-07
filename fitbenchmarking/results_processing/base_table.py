@@ -551,19 +551,17 @@ class Table:
         """
         log_vals = np.log10(vals)
         log_llim = min(log_vals)
-        numerator_norm_vals = np.array([np.nan if
-                                        (np.isinf(val) and
-                                         np.isinf(log_llim))
-                                        else val - log_llim
-                                        for val in log_vals])
-        norm_vals = numerator_norm_vals /\
-            (log_ulim - log_llim)
+        if np.isinf(log_llim):
+            norm_vals = np.repeat(np.nan, len(vals))
+        else:
+            norm_vals = (log_vals - log_llim) \
+             / (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
         # trimming colour map according to default/user input
         norm_vals = cmap_range[0] + \
             norm_vals*(cmap_range[1] - cmap_range[0])
         rgba = cmap(norm_vals)
-        hex_strs = ["#e5e4e2" if np.isinf(v) else
+        hex_strs = [mpl.colors.to_hex("whitesmoke") if np.isinf(v) else
                     mpl.colors.rgb2hex(colour)
                     for colour, v in zip(rgba, vals)]
         text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
