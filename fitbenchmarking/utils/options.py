@@ -590,13 +590,16 @@ class Options:
 
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
-        config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type': list_to_string(
-                                 self.algorithm_type),
-                             'software': list_to_string(self.software),
-                             'jac_method': list_to_string(self.jac_method),
-                             'hes_method': list_to_string(self.hes_method),
-                             'max_runtime': self.max_runtime}
+        config['FITTING'] = {
+            'num_runs': self.num_runs,
+            'algorithm_type': list_to_string(
+                self.algorithm_type),
+            'software': list_to_string(self.software),
+            'jac_method': list_to_string(self.jac_method),
+            'hes_method': list_to_string(self.hes_method),
+            'max_runtime': self.max_runtime,
+            'cost_func_type': list_to_string(self.cost_func_type),
+        }
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.jac_num_method.items()}
         config['HESSIAN'] = {k: list_to_string(m)
