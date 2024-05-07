@@ -9,6 +9,7 @@ import shutil
 import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
+from unittest.mock import patch
 
 import pandas as pd
 from dash import dcc, html
@@ -77,29 +78,30 @@ class SaveResultsTests(unittest.TestCase):
         """
         shutil.rmtree(self.results_dir)
 
-    def test_save_results_correct_output_path(self):
+    @patch("fitbenchmarking.core.results_output.create_plots")
+    @patch("fitbenchmarking.core.results_output.fitting_report.create")
+    @patch("fitbenchmarking.core.results_output.problem_summary_page.create")
+    @patch("fitbenchmarking.core.results_output.tables.create_results_tables")
+    @patch("fitbenchmarking.core.results_output.create_problem_level_index")
+    def test_save_results(self, m1, m2, m3, m4, m5):
         """
-        Tests to check the group_dir is correct
+        Tests to check the group_dir is correct and a dict of
+        pandas dataframe is returned
         """
+        m1.return_value = None
+        m2.return_value = (None, None)
+        m3.return_value = None
+        m4.return_value = None
+        m5.return_value = None
+
         failed_problems = []
         unselected_minimizers = {}
         group_name = "group_name"
-        group_dir, _ = save_results(self.options, self.results,
-                                    group_name, failed_problems,
-                                    unselected_minimizers)
+        group_dir, pp_dfs = save_results(self.options, self.results,
+                                         group_name, failed_problems,
+                                         unselected_minimizers)
+
         self.assertEqual(group_dir, os.path.join(self.results_dir, group_name))
-
-    def test_save_results_correct_output_dict_format(self):
-        """
-        Test to check save_results returns a dict of pandas dataframes.
-        """
-        failed_problems = []
-        unselected_minimizers = {}
-        group_name = "group_name"
-        _, pp_dfs = save_results(self.options, self.results,
-                                 group_name, failed_problems,
-                                 unselected_minimizers)
-
         assert isinstance(pp_dfs, dict)
         for df in list(pp_dfs.values()):
             assert isinstance(df, pd.DataFrame)

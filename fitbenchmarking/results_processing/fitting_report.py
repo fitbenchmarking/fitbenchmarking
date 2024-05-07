@@ -6,6 +6,8 @@ Set up and build the fitting reports for various types of problems.
 import inspect
 import os
 
+import numpy as np
+
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -26,6 +28,8 @@ def create(results, support_pages_dir, options):
     """
 
     for prob_result in results:
+        if np.isinf(prob_result.accuracy):
+            continue
         create_prob_group(prob_result,
                           support_pages_dir,
                           options)
