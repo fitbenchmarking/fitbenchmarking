@@ -201,10 +201,9 @@ class Plot:
         fig = make_subplots(rows=len(par_names), cols=1,
                             subplot_titles=par_names)
 
-        [fig.append_trace(
-            go.Histogram(x=result.params_pdfs[name.replace('.', '_')],
-                         histnorm='probability density'), row=i+1, col=1)
-         for i, name in enumerate(par_names)]
+        for i, name in enumerate(par_names):
+            fig.append_trace(go.Histogram(x=result.params_pdfs[name],
+                             histnorm='probability density'), row=i+1, col=1)
 
         if result.params_pdfs['scipy_pfit'] is not None:
             scipy_fit = result.params_pdfs['scipy_pfit']

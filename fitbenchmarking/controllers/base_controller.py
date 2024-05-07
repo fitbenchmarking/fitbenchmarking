@@ -250,6 +250,8 @@ class Controller:
         """
         Computes overall confidence in MCMC fit
         """
+        self.params_pdfs['scipy_pfit'] = None
+        self.params_pdfs['scipy_perr'] = None
         try:
             popt, pcov = curve_fit(self.problem.function,
                                    xdata=self.data_x,
@@ -283,9 +285,7 @@ class Controller:
                         par_conf.append(hist[start_bin]*width)
                     else:
                         par_conf.append(sum(hist[start_bin:end_bin]*width))
-        except Exception as e:
-            self.params_pdfs['scipy_pfit'] = None
-            self.params_pdfs['scipy_perr'] = None
+        except RuntimeError as e:
             par_conf = 0
             self.flag = 8
             print("\n"+str(e))

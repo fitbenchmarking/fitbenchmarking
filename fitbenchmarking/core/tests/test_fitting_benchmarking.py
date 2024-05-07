@@ -3,35 +3,35 @@
 """
 Tests for fitbenchmarking.core.fitting_benchmarking.Fit
 """
+import inspect
+import json
 import os
 import unittest
-from unittest.mock import patch
-import json
-import inspect
 import warnings
 from pathlib import Path
+from unittest.mock import patch
+
 import numpy as np
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.core.fitting_benchmarking import Fit
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
-    WeightedNLLSCostFunc)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.checkpoint import Checkpoint
-from fitbenchmarking.utils.options import Options
-from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               IncompatibleCostFunctionError,
-                                              UnsupportedMinimizerError,
-                                              UnknownMinimizerError,
                                               IncompatibleMinimizerError,
+                                              MaxRuntimeError, NoHessianError,
                                               NoJacobianError,
-                                              NoHessianError,
-                                              ValidationException,
-                                              MaxRuntimeError)
+                                              UnknownMinimizerError,
+                                              UnsupportedMinimizerError,
+                                              ValidationException)
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
 
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
@@ -151,6 +151,7 @@ class PerformFitTests(unittest.TestCase):
     Verifies the output of the __perform_fit method
     in the Fit class when run with different options.
     """
+
     def setUp(self):
         """
         Initializes the fit class for the tests
@@ -167,20 +168,20 @@ class PerformFitTests(unittest.TestCase):
         """
 
         testcases = [{
-                        'file': "ENSO.dat",
-                        'results': [111.70773805099354,
-                                    107.53453144913736]
-                    },
-                    {
-                        'file': "Gauss3.dat",
-                        'results': [76.64279628070524,
-                                    76.65043476327958]
-                    },
-                    {
-                        'file': "Lanczos1.dat",
-                        'results': [0.0009937705466940194,
-                                    0.06269418241377904]
-                    }]
+            'file': "ENSO.dat",
+            'results': [111.70773805099354,
+                        107.53453144913736]
+        },
+            {
+            'file': "Gauss3.dat",
+            'results': [76.64279628070524,
+                        76.65043476327958]
+        },
+            {
+            'file': "Lanczos1.dat",
+            'results': [0.0009937705466940194,
+                        0.06269418241377904]
+        }]
 
         for case in testcases:
 
@@ -204,8 +205,7 @@ class PerformFitTests(unittest.TestCase):
                     assert emissions != np.inf
 
     @patch("fitbenchmarking.controllers." +
-           "base_controller.Controller.eval_confidence",
-           return_value=2)
+           "base_controller.Controller.eval_confidence")
     def test_eval_confidence_branches(self, mock):
         """
         The test checks the eval_confidence branches in
@@ -219,11 +219,12 @@ class PerformFitTests(unittest.TestCase):
         fit = Fit(options=self.options,
                   data_dir='test',
                   checkpointer=self.cp)
+        mock.return_value = 2
         accuracy, _, _ = fit._Fit__perform_fit(controller)
         assert accuracy == 0.5
         assert mock.call_count == 1
 
-        controller.eval_confidence = 0
+        mock.return_value = 0
         accuracy, _, _ = fit._Fit__perform_fit(controller)
         assert accuracy == np.inf
 
@@ -760,6 +761,7 @@ class StartingValueTests(unittest.TestCase):
     Verifies the output of the __loop_over_starting_values method
     in the Fit class when run with different options.
     """
+
     def setUp(self):
         """
         Initializes the fit class for the tests

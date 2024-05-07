@@ -526,10 +526,7 @@ class Fit:
                     e=controller.data_e)
             else:
                 conf = controller.eval_confidence()
-                if conf != 0:
-                    accuracy = 1/conf
-                else:
-                    accuracy = np.inf
+                accuracy = 1 / conf if conf != 0 else np.inf
 
             accuracy_check = any(np.isnan(n) for n in accuracy) \
                 if controller.problem.multifit else np.isnan(accuracy)
