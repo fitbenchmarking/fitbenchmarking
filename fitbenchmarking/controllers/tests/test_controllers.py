@@ -6,6 +6,7 @@ import inspect
 import os
 import platform
 from unittest import TestCase
+from unittest.mock import patch
 
 import numpy as np
 from pytest import mark
@@ -236,7 +237,18 @@ class BaseControllerTests(TestCase):
 
         self.assertAlmostEqual(controller.eval_confidence(), 0.192, 6)
 
-        controller.data_x = [np.nan]
+    @patch("fitbenchmarking.controllers.base_controller.curve_fit")
+    def test_eval_conf_failed_fit(self, mock):
+        """
+        BaseSoftwareController: Test eval_confidence function handles
+        RuntimeError correctly
+        """
+        controller = DummyController(self.cost_func)
+        controller.params_pdfs = {'A1': [4, 4, 4, 4, 4],
+                                  'A2': [3, 3.7, 3, 3, 3],
+                                  'A3': [2, 2, 2, 2.4, 2.5],
+                                  'A4': [0.5, 0.7, 1, 1, 1.2]}
+        mock.side_effect = RuntimeError
         acc = controller.eval_confidence()
         self.assertEqual(acc, 0)
         assert controller.flag == 8
