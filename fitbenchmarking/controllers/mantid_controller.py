@@ -2,9 +2,9 @@
 Implements a controller for the Mantid fitting software.
 """
 
+import numpy as np
 from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -25,32 +25,33 @@ class MantidController(Controller):
         'nlls': 'Unweighted least squares',
         'weighted_nlls': 'Least squares',
         'poisson': 'Poisson',
+        'loglike_nlls': 'Least squares'
     }
 
     algorithm_check = {
-            'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+        'all': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
+                'Conjugate gradient (Polak-Ribiere imp.)',
+                'Damped GaussNewton', 'Levenberg-Marquardt',
+                'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
+                'Trust Region', 'FABADA'],
+        'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
+               'Trust Region'],
+        'deriv_free': ['Simplex'],
+        'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
-                    'Damped GaussNewton', 'Levenberg-Marquardt',
-                    'Levenberg-MarquardtMD', 'Simplex', 'SteepestDescent',
-                    'Trust Region', 'FABADA'],
-            'ls': ['Levenberg-Marquardt', 'Levenberg-MarquardtMD',
-                   'Trust Region', 'FABADA'],
-            'deriv_free': ['Simplex', 'FABADA'],
-            'general': ['BFGS', 'Conjugate gradient (Fletcher-Reeves imp.)',
-                        'Conjugate gradient (Polak-Ribiere imp.)',
-                        'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
-            'simplex': ['Simplex'],
-            'trust_region': ['Trust Region', 'Levenberg-Marquardt',
-                             'Levenberg-MarquardtMD'],
-            'levenberg-marquardt': ['Levenberg-Marquardt',
-                                    'Levenberg-MarquardtMD'],
-            'gauss_newton': ['Damped GaussNewton'],
-            'bfgs': ['BFGS'],
-            'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
-                                   'Conjugate gradient (Polak-Ribiere imp.)'],
-            'steepest_descent': ['SteepestDescent'],
-            'global_optimization': ['FABADA'],
-            'MCMC': []}
+                    'Damped GaussNewton', 'Simplex', 'SteepestDescent'],
+        'simplex': ['Simplex'],
+        'trust_region': ['Trust Region', 'Levenberg-Marquardt',
+                         'Levenberg-MarquardtMD'],
+        'levenberg-marquardt': ['Levenberg-Marquardt',
+                                'Levenberg-MarquardtMD'],
+        'gauss_newton': ['Damped GaussNewton'],
+        'bfgs': ['BFGS'],
+        'conjugate_gradient': ['Conjugate gradient (Fletcher-Reeves imp.)',
+                               'Conjugate gradient (Polak-Ribiere imp.)'],
+        'steepest_descent': ['SteepestDescent'],
+        'global_optimization': [],
+        'MCMC': ['FABADA']}
 
     jacobian_enabled_solvers = ['BFGS',
                                 'Conjugate gradient (Fletcher-Reeves imp.)',
@@ -240,7 +241,8 @@ class MantidController(Controller):
             # to work; setting to the value in the mantid docs
             minimizer_str += (",Chain Length=100000"
                               ",Steps between values=10"
-                              ",Convergence Criteria=0.01")
+                              ",Convergence Criteria=0.01"
+                              ",PDF=1,ConvergedChain=chain")
             self._added_args['MaxIterations'] = 2000000
 
         fit_result = msapi.Fit(Function=self._mantid_function,
@@ -268,6 +270,14 @@ class MantidController(Controller):
         final_params_dict = dict(zip(
             self._mantid_results.OutputParameters.column(0),
             self._mantid_results.OutputParameters.column(1)))
+
+        if self.minimizer == 'FABADA':
+            self.params_pdfs = {}
+            n_chains = \
+                self._mantid_results.ConvergedChain.getNumberHistograms()
+            for i in range(0, n_chains-1):
+                self.params_pdfs[self._param_names[i]] = \
+                    self._mantid_results.ConvergedChain.readY(i).tolist()
 
         if not self._multi_fit:
             self.final_params = [final_params_dict[key]
