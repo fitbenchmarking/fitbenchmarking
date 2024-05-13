@@ -134,6 +134,7 @@ class Options:
                    'trust-constr',
                    'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     VALID_FITTING = \
@@ -145,7 +146,7 @@ class Options:
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
                       'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
-                      'scipy_go', 'theseus'],
+                      'scipy_leastsq', 'scipy_go', 'theseus'],
          'jac_method': ['best_available', 'scipy', 'analytic', 'default',
                         'numdifftools'],
          'hes_method': ['best_available', 'scipy', 'analytic', 'default',
@@ -277,6 +278,7 @@ class Options:
                    'SLSQP',
                    'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-scipy', 'trf', 'dogbox'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     DEFAULT_FITTING = \
