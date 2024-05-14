@@ -90,6 +90,8 @@ class LocalMinTable(Table):
                  specified above) and :math:`\\frac{|| J^T r||}{||r||}`
         :rtype: bool, float
         """
+        if np.isinf(result.accuracy):
+            return None, None
         if result.r_x is None:
             return None, None
         if result.params is None:
