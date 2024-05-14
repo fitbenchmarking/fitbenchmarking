@@ -6,17 +6,18 @@ import inspect
 import os
 import unittest
 from tempfile import TemporaryDirectory
+from unittest import mock
 
 import pandas as pd
 import plotly.graph_objects as go
 
 from fitbenchmarking import test_files
+from fitbenchmarking.core.results_output import (create_directories,
+                                                 create_index_page)
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.core.results_output import \
-    create_directories, create_index_page
 
 
 def load_mock_result():
@@ -135,6 +136,27 @@ class PlotTests(unittest.TestCase):
         self.assertEqual(file_names['m10_[s1]_jj0'],
                          'm10_[s1]_jj0_fit_for_cf1_prob_1.html')
         path = os.path.join(self.figures_dir, file_names['m10_[s1]_jj0'])
+        self.assertTrue(os.path.exists(path))
+
+    def test_plot_posteriors_create_files(self):
+        """
+        Test that plot_posteriors creates a file
+        """
+
+        self.plot.result.param_names = ['a', 'b']
+
+        result = mock.Mock()
+        result.params_pdfs = {"scipy_pfit": [1.0, 1.0], "scipy_perr": [
+            0.1, 0.2], "a": [1.5, 1.0, 1.2], "b": [0.9, 1.6, 1.1]}
+        result.sanitised_min_name.return_value = 'm10_[s1]_jj0'
+        result.sanitised_name = 'cf1_prob_1'
+
+        file_name = self.plot.plot_posteriors(result)
+
+        self.assertEqual(file_name,
+                         'm10_[s1]_jj0_posterior_'
+                         'pdf_plot_for_cf1_prob_1.html')
+        path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
     def test_multivariate_plot(self):

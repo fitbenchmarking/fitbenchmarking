@@ -1260,7 +1260,7 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, 'default', 'all')
+@run_for_test_types(TEST_TYPE, 'all')
 @mark.skipif(
     platform.system() == "Windows",
     reason="Paramonte doesn't automatically detect MPI"
@@ -1272,7 +1272,8 @@ class BayesianControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.cost_func = make_cost_func(cost_func_type='loglike_nlls')
+        self.cost_func = make_cost_func(
+            'cubic-fba-test-go.txt', cost_func_type='loglike_nlls')
         self.problem = self.cost_func.problem
         self.shared_tests = ControllerSharedTesting()
 
@@ -1283,6 +1284,39 @@ class BayesianControllerTests(TestCase):
         controller = ParamonteController(self.cost_func)
         controller.minimizer = 'paraDram_sampler'
         self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params) + 1
+
+    def test_bumps(self):
+        """
+        BumpsController: Test for output shape
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'dream'
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
+
+    def test_lmfit(self):
+        """
+        LmfitController: Test for output shape
+        """
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'emcee'
+        print(controller.initial_params)
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
+
+    def test_mantid(self):
+        """
+        MantidController: Test for output shape
+        """
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'FABADA'
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
 
 
 @run_for_test_types(TEST_TYPE, 'all')
@@ -1325,6 +1359,36 @@ class BayesianControllerBoundsTests(TestCase):
         """
         controller = ParamonteController(self.cost_func)
         controller.minimizer = 'paraDram_sampler'
+
+        self.check_bounds(controller)
+
+    def test_bumps(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'dream'
+
+        self.check_bounds(controller)
+
+    def test_lmfit(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'emcee'
+
+        self.check_bounds(controller)
+
+    def test_mantid(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'FABADA'
 
         self.check_bounds(controller)
 
