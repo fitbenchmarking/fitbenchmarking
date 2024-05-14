@@ -11,7 +11,7 @@ import timeit
 import warnings
 
 import numpy as np
-from codecarbon import TaskEmissionsTracker
+from codecarbon.emissions_tracker import TaskEmissionsTracker
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
