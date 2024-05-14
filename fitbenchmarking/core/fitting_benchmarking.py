@@ -11,7 +11,7 @@ import timeit
 import warnings
 
 import numpy as np
-from codecarbon.emissions_tracker import TaskEmissionsTracker
+from codecarbon import EmissionsTracker
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -67,7 +67,7 @@ class Fit:
         self._unselected_minimizers = {}
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
-        self.__emissions_tracker = TaskEmissionsTracker() \
+        self.__emissions_tracker = EmissionsTracker() \
             if 'emissions' in options.table_type else None
 
     def benchmark(self):
@@ -482,14 +482,23 @@ class Fit:
             with self.__grabbed_output:
                 controller.validate()
                 controller.prepare()
-                task_name = uuid.uuid4().__str__()
-                with TaskEmissionsTracker(task_name=task_name, tracker=self.__emissions_tracker):
+                if tracker:
+                    if platform.system() == 'Windows':
+                        windows_tracker = EmissionsTracker()
+                        with windows_tracker:
+                            runtimes = timeit.Timer(
+                                stmt=controller.execute
+                                ).repeat(num_runs, 1)
+                        emissions = windows_tracker.final_emissions / num_runs
+                    else:
+                        tracker.start_task()
+                        runtimes = timeit.Timer(
+                            stmt=controller.execute
+                        ).repeat(num_runs, 1)
+                        emissions = tracker.stop_task().emissions / num_runs
+                else:
                     runtimes = timeit.Timer(
-                    stmt=controller.execute
-                    ).repeat(num_runs, 1)
-                if track_emissions:
-                    emissions = self.__emissions_tracker._tasks[task_name].emissions_data.emissions
-
+                        stmt=controller.execute).repeat(num_runs, 1)
                 controller.cleanup()
                 controller.check_attributes()
             min_time = np.min(runtimes)
