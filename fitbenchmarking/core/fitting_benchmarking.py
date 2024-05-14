@@ -9,6 +9,7 @@ fitting software.
 import os
 import timeit
 import warnings
+import platform
 
 import numpy as np
 from codecarbon import EmissionsTracker
