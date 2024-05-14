@@ -9,7 +9,6 @@ fitting software.
 import os
 import timeit
 import warnings
-import platform
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -484,18 +483,11 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if tracker:
-                    if platform.system() == 'Windows':
-                        with tracker:
-                            runtimes = timeit.Timer(
-                                stmt=controller.execute
-                                ).repeat(num_runs, 1)
-                        emissions = tracker.final_emissions / num_runs
-                    else:
-                        tracker.start_task()
-                        runtimes = timeit.Timer(
-                            stmt=controller.execute
-                        ).repeat(num_runs, 1)
-                        emissions = tracker.stop_task().emissions / num_runs
+                    tracker.start_task()
+                    runtimes = timeit.Timer(
+                        stmt=controller.execute
+                    ).repeat(num_runs, 1)
+                    emissions = tracker.stop_task().emissions / num_runs
                 else:
                     runtimes = timeit.Timer(
                         stmt=controller.execute).repeat(num_runs, 1)
