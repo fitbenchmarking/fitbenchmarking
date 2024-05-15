@@ -80,7 +80,7 @@ class Fit:
                 def new_hs(*args, **kwargs):
                     time.sleep(1e-10)
                     return hs(*args, **kwargs)
-                
+
                 self.__emissions_tracker._hardware[0].start = new_hs
 
     def benchmark(self):
