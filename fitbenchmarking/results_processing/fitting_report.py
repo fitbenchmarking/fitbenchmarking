@@ -28,7 +28,7 @@ def create(results, support_pages_dir, options):
     """
 
     for prob_result in results:
-        if np.isinf(prob_result.accuracy):
+        if np.isinf(prob_result.accuracy) and np.isinf(prob_result.runtime):
             continue
         create_prob_group(prob_result,
                           support_pages_dir,
