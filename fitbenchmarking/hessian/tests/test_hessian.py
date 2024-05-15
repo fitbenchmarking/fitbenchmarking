@@ -5,22 +5,25 @@ from unittest import TestCase
 
 import numpy as np
 
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import\
-    WeightedNLLSCostFunc
-from fitbenchmarking.cost_func.hellinger_nlls_cost_func import\
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
     HellingerNLLSCostFunc
-from fitbenchmarking.cost_func.poisson_cost_func import\
-    PoissonCostFunc
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import Analytic
+from fitbenchmarking.hessian.best_available_hessian import BestAvailable
+from fitbenchmarking.hessian.hessian_factory import create_hessian
 from fitbenchmarking.hessian.numdifftools_hessian import Numdifftools
 from fitbenchmarking.hessian.scipy_hessian import Scipy
-from fitbenchmarking.jacobian.analytic_jacobian import Analytic\
-    as JacobianClass
-from fitbenchmarking.hessian.hessian_factory import create_hessian
+from fitbenchmarking.jacobian.analytic_jacobian import \
+    Analytic as JacobianClass
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def f_ls(x, p1, p2):
@@ -328,6 +331,64 @@ class TestHesCostFunc(TestCase):
                                           self.cost_func.jacobian)
         eval_result = self.cost_func.hes_cost(params=self.params)
         self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+
+class TestBestAvailable(TestCase):
+    """
+    Additional tests to check the best_available hessian
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f_ls
+        self.fitting_problem.jacobian = J_ls
+        self.fitting_problem.hessian = H_ls
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+        self.jacobian = JacobianClass(self.fitting_problem)
+
+    def test_name(self):
+        """
+        Test the name is not taken from a sub hessian.
+        """
+        hes = BestAvailable(self.fitting_problem, self.jacobian)
+        self.assertNotEqual(hes.name(), hes.sub_hes.name())
+
+    def test_set_method_warning(self):
+        """
+        Test that setting the method raises a warning.
+        """
+        hes = BestAvailable(self.fitting_problem, self.jacobian)
+        with self.assertLogs(LOGGER, level='WARNING') as log:
+            hes.method = "three"
+            self.assertTrue("Method cannot be selected" in log.output[0])
+
+    def test_set_method_value(self):
+        """
+        Test that setting the method does not work.
+        """
+        hes = BestAvailable(self.fitting_problem, self.jacobian)
+        hes.method = "three"
+        self.assertNotEqual(hes.method, "three")
+
+    def test_eval_callable_hes(self):
+        """
+        Test that an analytic hessian is used when hes is callable.
+        """
+        hes = BestAvailable(self.fitting_problem, self.jacobian)
+        self.assertEqual(type(hes.sub_hes), Analytic)
+
+    def test_eval_not_callable_hes(self):
+        """
+        Test that a scipy hessian is used when hes is not callable.
+        """
+        self.fitting_problem.hessian = None
+        hes = BestAvailable(self.fitting_problem, self.jacobian)
+        self.assertEqual(type(hes.sub_hes), Scipy)
 
 
 class TestFactory(TestCase):

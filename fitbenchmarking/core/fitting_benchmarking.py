@@ -10,6 +10,7 @@ import os
 import platform
 import timeit
 import warnings
+import time
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -68,8 +69,19 @@ class Fit:
         self._unselected_minimizers = {}
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
-        self.__emissions_tracker = EmissionsTracker() \
-            if 'emissions' in options.table_type else None
+        self.__emissions_tracker = None
+        if 'emissions' in options.table_type:
+            self.__emissions_tracker = EmissionsTracker()
+            if platform.system() == 'Windows':
+                # Temporary hack to artificially create a delay to avoid
+                # div by zero
+                hs = self.__emissions_tracker._hardware[0].start
+
+                def new_hs(*args, **kwargs):
+                    time.sleep(1e-10)
+                    return hs(*args, **kwargs)
+
+                self.__emissions_tracker._hardware[0].start = new_hs
 
     def benchmark(self):
         """
@@ -484,22 +496,14 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if tracker:
-                    if platform.system() == 'Windows':
-                        with tracker:
-                            runtimes = timeit.Timer(
-                                stmt=controller.execute
-                            ).repeat(num_runs, 1)
-                        emissions = tracker.final_emissions / num_runs
-                    else:
-                        tracker.start_task()
-                        runtimes = timeit.Timer(
-                            stmt=controller.execute
-                        ).repeat(num_runs, 1)
-                        emissions = tracker.stop_task().emissions / num_runs
+                    tracker.start_task()
+                    runtimes = timeit.Timer(
+                        stmt=controller.execute
+                    ).repeat(num_runs, 1)
+                    emissions = tracker.stop_task().emissions / num_runs
                 else:
                     runtimes = timeit.Timer(
                         stmt=controller.execute).repeat(num_runs, 1)
-
                 controller.cleanup()
                 controller.check_attributes()
             min_time = np.min(runtimes)
