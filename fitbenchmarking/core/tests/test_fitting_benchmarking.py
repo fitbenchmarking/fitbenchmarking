@@ -276,7 +276,7 @@ class PerformFitTests(unittest.TestCase):
 
             _ = fit._Fit__perform_fit(controller)
             assert ("ratio of the max time to the min is 5.0"
-                    in str(w[-1].message))
+                    in ''.join([str(w[i].message) for i in range(0, len(w))]))
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
