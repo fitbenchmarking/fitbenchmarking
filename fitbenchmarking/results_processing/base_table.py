@@ -258,7 +258,7 @@ class Table:
             val_str = self.display_str(val)
             error_str = self.get_error_str(result,
                                            error_template="<sup>{}</sup>")
-            if 'inf' in val_str and self.table_name != 'local_min_table.':
+            if 'inf' in val_str:
                 val_str = f'<span class="blank">Error {error_str}</span>'
             elif 'N/A' in val_str:
                 val_str = '<span class="blank">N/A</span>'
@@ -608,7 +608,6 @@ class Table:
         fig.set_size_inches(sz_in[0], sz_in[1])
 
         plt.savefig(fig_path, dpi=150)
-        plt.close(fig)
 
         return os.path.relpath(fig_path, self.group_dir)
 
