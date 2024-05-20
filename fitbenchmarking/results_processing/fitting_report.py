@@ -86,7 +86,7 @@ def create_prob_group(result, support_pages_dir, options):
     else:
         emission_disp = f"{result.emissions:.4g} kg CO\u2082 eq"
 
-    with open(file_path, 'w') as fh:
+    with open(file_path, 'w', encoding='utf-8') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
             table_style=css['table'],
