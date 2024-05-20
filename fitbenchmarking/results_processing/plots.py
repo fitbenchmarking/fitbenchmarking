@@ -18,32 +18,36 @@ class Plot:
     """
     Class providing plotting functionality.
     """
-    data_marker = {"symbol": "x",
-                   "color": "black"}
-    best_fit_line = {"dash": "dot",
-                     "color": '#6699ff'}
-    legend_options = {"yanchor": "top",
-                      "y": 0.99,
-                      "xanchor": "left",
-                      "x": 0.01,
-                      "bgcolor": 'rgba(0,0,0,0.1)'}
-    summary_best_plot_line = {"width": 2}
-    summary_plot_line = {"width": 1}
+    _data_marker = {"symbol": "x",
+                    "color": "black"}
+    _best_fit_line = {"dash": "dot",
+                      "color": '#6699ff'}
+    _legend_options = {"yanchor": "top",
+                       "y": 0.99,
+                       "xanchor": "left",
+                       "x": 0.01,
+                       "bgcolor": 'rgba(0,0,0,0.1)'}
+    _summary_best_plot_line = {"width": 2}
+    _summary_plot_line = {"width": 1}
+    _error_dict = dict(type='data',
+                       array=None,
+                       thickness=1,
+                       width=4)
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
+        self.plots_failed = False
 
-        self.plots_failed = True
         if self.result.multivariate:
+            self.plots_failed = True
             raise PlottingError(
                 'Plots cannot be generated for multivariate problems')
         if self.result.problem_format == 'horace':
+            self.plots_failed = True
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
-        self.plots_failed = False
 
         self.options = options
-
         self.figures_dir = figures_dir
 
     @staticmethod
@@ -85,14 +89,16 @@ class Plot:
                       color="minimizer",
                       title=self.result.name,
                       markers=True)
+        self._error_dict['array'] = df["e"][df["minimizer"] == 'Data']
         # add the raw data as a scatter plot
         fig.add_trace(go.Scatter(
             x=df["x"][df["minimizer"] == 'Data'],
             y=df["y"][df["minimizer"] == 'Data'],
+            error_y=self._error_dict,
             mode='markers',
             name='Data',
-            marker=self.data_marker))
-        fig.update_layout(legend=self.legend_options)
+            marker=self._data_marker))
+        fig.update_layout(legend=self._legend_options)
 
         if self.result.plot_scale in ["loglog", "logx"]:
             fig.update_xaxes(type="log")
@@ -139,6 +145,7 @@ class Plot:
         y_best = df["y"][df["best"]]
         x_data = df["x"][df["minimizer"] == 'Data']
         y_data = df["y"][df["minimizer"] == 'Data']
+        self._error_dict['array'] = df["e"][df["minimizer"] == 'Data']
 
         for minimizer in df['minimizer'].unique():
             if minimizer not in ["Data", "Starting Guess"]:
@@ -157,16 +164,17 @@ class Plot:
                                    y=y_best,
                                    mode='lines',
                                    name=name,
-                                   line=self.best_fit_line))
+                                   line=self._best_fit_line))
                 # add the raw data as a scatter plot
                 fig.add_trace(
                     go.Scatter(
                         x=x_data,
                         y=y_data,
+                        error_y=self._error_dict,
                         mode='markers',
                         name='Data',
-                        marker=self.data_marker))
-                fig.update_layout(legend=self.legend_options)
+                        marker=self._data_marker))
+                fig.update_layout(legend=self._legend_options)
 
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
@@ -266,22 +274,22 @@ class Plot:
                                        error_y=error_y,
                                        mode='markers',
                                        name='Data',
-                                       marker=cls.data_marker))
+                                       marker=cls._data_marker))
 
         for (key, results), colour in zip(categories.items(), plotly_colours):
             # Plot category
             for result in results:
                 if result.params is not None:
-                    line = cls.summary_best_plot_line \
-                        if result.is_best_fit else cls.summary_plot_line
+                    line = cls._summary_best_plot_line \
+                        if result.is_best_fit else cls._summary_plot_line
 
                     line["color"] = colour
                     label = key if result.is_best_fit else ''
                     if result.is_best_fit:
-                        line = cls.summary_best_plot_line
+                        line = cls._summary_best_plot_line
                         line["color"] = colour
                     else:
-                        line = cls.summary_plot_line
+                        line = cls._summary_plot_line
                         transparency = 0.5
                         line["color"] = 'rgba' + colour[3:-1] + ', ' + \
                             str(transparency) + ')'
