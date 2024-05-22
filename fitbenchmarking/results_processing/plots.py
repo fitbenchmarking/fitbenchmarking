@@ -97,7 +97,7 @@ class Plot:
             error_y=self._error_dict,
             mode='markers',
             name='Data',
-            marker=self.data_marker))
+            marker=self._data_marker))
         fig.update_layout(legend=self._legend_options)
         fig.update_xaxes(exponentformat="power")
         fig.update_yaxes(exponentformat="power")
