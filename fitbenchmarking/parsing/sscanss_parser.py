@@ -127,5 +127,5 @@ class SScanSSParser(FitbenchmarkParser):
         # x data is the spatial and agular coordinates for the pose
         # y data is the error in each coord at the fit (as defined in
         #     inverse_kinematics_error)
-        return {'x': np.array(["x", "y", "z", "alpha", "beta", "gamma"]),
+        return {'x': np.array(["x", "y", "z", "ex", "ey", "ez"]),
                 'y': np.array([0, 0, 0, 0, 0, 0])}
