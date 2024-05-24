@@ -46,6 +46,7 @@ class ScipyLeastSqController(Controller):
         self._status = None
         self._popt = None
 
+    # pylint: disable=attribute-defined-outside-init
     def setup(self):
         """
         Setup problem ready to be run with scipy leastsq
@@ -54,13 +55,13 @@ class ScipyLeastSqController(Controller):
                        'x0': self.initial_params,
                        'full_output': True,
                        'maxfev': 500}
+        if not self.cost_func.jacobian.use_default_jac:
+            self.kwargs['Dfun'] = self.cost_func.jac_res
 
     def fit(self):
         """
         Run problem with scipy leastsq.
         """
-        if not self.cost_func.jacobian.use_default_jac:
-            self.kwargs['Dfun'] = self.cost_func.jac_res
         self.result = leastsq(**self.kwargs)
         self._popt = self.result[0]
         self._status = self.result[4]
