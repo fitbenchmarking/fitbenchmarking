@@ -7,7 +7,6 @@ import inspect
 import os
 
 import numpy as np
-
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -82,7 +81,12 @@ def create_prob_group(result, support_pages_dir, options):
     css = get_css(options, support_pages_dir)
     template = env.get_template("fitting_report_template.html")
 
-    with open(file_path, 'w') as fh:
+    if np.isnan(result.emissions):
+        emission_disp = 'N/A'
+    else:
+        emission_disp = f"{result.emissions:.4g} kg CO\u2082 eq"
+
+    with open(file_path, 'w', encoding='utf-8') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
             table_style=css['table'],
@@ -95,7 +99,7 @@ def create_prob_group(result, support_pages_dir, options):
             minimizer=result.modified_minimizer_name(),
             accuracy=f"{result.accuracy:.4g}",
             runtime=f"{result.runtime:.4g}",
-            emissions=f"{result.emissions:.4g}",
+            emissions=emission_disp,
             is_best_fit=result.is_best_fit,
             initial_plot_available=init_success,
             initial_plot=fig_start,
