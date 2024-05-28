@@ -344,10 +344,10 @@ class Fit:
         minimizer = controller.minimizer
         jacobian_list = self._options.jac_method
         minimizer_check = minimizer in controller.jacobian_enabled_solvers
+        sparsity_check = minimizer in controller.sparsity_enabled_solvers
         results = []
         try:
             for jac_method in jacobian_list:
-
                 # Creates Jacobian class
                 jacobian_cls = create_jacobian(jac_method)
                 try:
@@ -365,6 +365,8 @@ class Fit:
                 for num_method in self._options.jac_num_method[jac_method]:
                     jacobian.method = num_method
                     cost_func.jacobian = jacobian
+                    if num_method.endswith("_sparse") and not sparsity_check:
+                        continue
                     if minimizer_check:
                         LOGGER.info(
                             "                Jacobian: %s",
