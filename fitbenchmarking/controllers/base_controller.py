@@ -285,7 +285,7 @@ class Controller:
                         par_conf.append(hist[start_bin]*width)
                     else:
                         par_conf.append(sum(hist[start_bin:end_bin]*width))
-        except RuntimeError as e:
+        except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
             print("\n"+str(e))
