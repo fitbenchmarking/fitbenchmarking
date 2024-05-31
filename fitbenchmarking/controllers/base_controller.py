@@ -288,7 +288,7 @@ class Controller:
         except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
-            print("\n"+str(e))
+            print("\n"+str(error_msg))
 
         return numpy.prod(par_conf)
 

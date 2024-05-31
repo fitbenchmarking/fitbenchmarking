@@ -251,7 +251,7 @@ class BaseControllerTests(TestCase):
         mock.side_effect = RuntimeError
         acc = controller.eval_confidence()
         self.assertEqual(acc, 0)
-        assert controller.flag == 8
+        self.assertEqual(controller.flag, 8)
 
     def test_check_flag_attr(self):
         """
