@@ -9,17 +9,15 @@ try:
 except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
+
 import numpy as np
 
 from fitbenchmarking.utils.debug import get_printable_table
-from fitbenchmarking.utils.exceptions import FittingProblemError, \
-    IncorrectBoundsError
+from fitbenchmarking.utils.exceptions import (FittingProblemError,
+                                              IncorrectBoundsError)
 from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
-# Using property getters and setters means that the setter does not always use
-# self
-# pylint: disable=no-self-use
 class FittingProblem:
     r"""
     Definition of a fitting problem, which will be populated by a parser from a
@@ -329,12 +327,13 @@ def correct_data(x, y, e, startx, endx, use_errors):
     if startx is not None and endx is not None:
         mask = np.logical_and(x >= startx,
                               x <= endx)
-        x = x[mask]
-        y = y[mask]
+        x: np.ndarray = x[mask]
+        y: np.ndarray = y[mask]
         if e is not None:
-            e = e[mask]
+            e: np.ndarray = e[mask]
 
     # Stores the indices of the sorted data
-    sorted_index = np.argsort(x)
+    sorted_index = np.argsort(x) if not isinstance(x[0], str) \
+        else np.arange(len(x))
 
     return x, y, e, sorted_index
