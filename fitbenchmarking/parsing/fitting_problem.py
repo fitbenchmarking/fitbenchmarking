@@ -328,13 +328,12 @@ def correct_data(x, y, e, startx, endx, use_errors):
         mask = np.logical_and(x >= startx,
                               x <= endx)
         x: np.ndarray = x[mask]
-        y = y[mask]
+        y: np.ndarray = y[mask]
         if e is not None:
-            e = e[mask]
+            e: np.ndarray = e[mask]
 
     # Stores the indices of the sorted data
     sorted_index = np.argsort(x) if not isinstance(x[0], str) \
         else np.arange(len(x))
-    print(x.dtype)
 
     return x, y, e, sorted_index
