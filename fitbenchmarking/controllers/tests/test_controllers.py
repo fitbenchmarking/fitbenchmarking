@@ -1303,7 +1303,6 @@ class BayesianControllerTests(TestCase):
         """
         controller = LmfitController(self.cost_func)
         controller.minimizer = 'emcee'
-        print(controller.initial_params)
         self.shared_tests.controller_run_test(controller)
 
         assert len(controller.params_pdfs) == len(controller.final_params)
