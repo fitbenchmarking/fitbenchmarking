@@ -25,7 +25,7 @@ class FitbenchmarkParser(Parser):
     Parser for the native FitBenchmarking problem definition (FitBenchmark)
     file.
     """
-    PARAM_IGNORE_LIST = []
+    _PARAM_IGNORE_LIST = []
 
     def __init__(self, filename, options):
         super().__init__(filename, options)
@@ -167,7 +167,7 @@ class FitbenchmarkParser(Parser):
             {
                 name: val
                 for name, val in self._parsed_func[0].items()
-                if name not in self.PARAM_IGNORE_LIST
+                if name not in self._PARAM_IGNORE_LIST
             }
         ]
 
