@@ -42,7 +42,11 @@
                         <tbody valign="top">
                             <tr>
                                 <td>{{ equation }}</td>
-                                <td>{{ initial_guess }}</td>
+                                    {% if list_params %}
+                                        <td>{{ initial_guess }}</td>
+                                    {% else %}
+                                        <td>Too many parameters to display</td>
+                                    {% endif %}
                             </tr>
                         </tbody>
                     </table>
@@ -113,7 +117,11 @@
                             <tbody valign="top">
                                 <tr>
                                     <td>{{ equation }}</td>
-                                    <td>{{ best_results[0].fin_function_params }}</td>
+                                    {% if list_params %}
+                                        <td>{{ min_params }}</td>
+                                    {% else %}
+                                        <td>Too many parameters to display</td>
+                                    {% endif %}
                                 </tr>
                             </tbody>
                         </table>
@@ -153,7 +161,11 @@
                                 <tbody valign="top">
                                     <tr>
                                         <td>{{ equation }}</td>
-                                        <td>{{ best_results[loop.index0].fin_function_params }}</td>
+                                        {% if list_params %}
+                                            <td>{{ min_params }}</td>
+                                        {% else %}
+                                            <td>Too many parameters to display</td>
+                                        {% endif %}
                                     </tr>
                                 </tbody>
                             </table>

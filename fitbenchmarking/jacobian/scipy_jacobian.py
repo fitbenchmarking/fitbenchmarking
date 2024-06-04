@@ -62,8 +62,11 @@ class Scipy(Jacobian):
                             'will not be used as the selected method is %s.',
                             self.method)
 
-        func = self.problem.eval_model
-        jac = approx_derivative(func, params,
+        def func_wrapper(params, **kwargs):
+            eval_model = self.problem.eval_model(params, **kwargs)
+            return eval_model.ravel()
+        
+        jac = approx_derivative(func_wrapper, params,
                                 method=self.equiv_np_method,
                                 rel_step=None,
                                 bounds=(-np.inf, np.inf),

@@ -83,7 +83,8 @@ def generate_test_cases():
     if TEST_TYPE == "all":
         formats = ['cutest', 'nist', 'mantid',
                    'ivp', 'sasview',
-                   'hogben', 'mantiddev']
+                   'hogben', 'mantiddev',
+                   'bal']
     elif TEST_TYPE == "default":
         formats = ['nist']
     else:
@@ -306,6 +307,12 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
+
+                # for problems with too many params to type out individually
+                if isinstance(r[1], dict):
+                    r[1] = np.ones(r[1]["n_params"])*r[1]["param_value"]
+                    r[2] = np.ones(r[2]["n_data_points"])*r[2]["func_val"]
+
                 if r[0] == 'NA':
                     actual = fitting_problem.eval_model(params=r[1])
                 else:

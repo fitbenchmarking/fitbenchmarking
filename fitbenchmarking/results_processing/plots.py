@@ -40,6 +40,9 @@ class Plot:
         if self.result.problem_format == 'horace':
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
+        if self.result.problem_format == 'bal':
+            raise PlottingError(
+                'Plots cannot be generated for BAL problems')
         self.plots_failed = False
 
         self.options = options
@@ -297,7 +300,7 @@ class Plot:
 
                     plotlyfig.update_layout(
                         title=title
-                        )
+                    )
 
                 if result.plot_scale in ["loglog", "logx"]:
                     plotlyfig.update_xaxes(type="log")
