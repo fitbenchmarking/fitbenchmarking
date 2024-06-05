@@ -34,6 +34,7 @@ a newline-separated list. Available options are:
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
+* ``scipy_leastsq`` (default software)
 * ``scipy_go``
 * ``theseus`` (external software -- see :ref:`external-instructions`)
 
