@@ -43,9 +43,6 @@ if TEST_TYPE in ['default', 'all']:
         ScipyLSController
     from fitbenchmarking.controllers.scipy_leastsq_controller import \
         ScipyLeastSqController
-    if platform.system() != "Windows":
-        from fitbenchmarking.controllers.paramonte_controller import \
-            ParamonteController
 
 if TEST_TYPE == 'all':
     from fitbenchmarking.controllers.ceres_controller import CeresController
@@ -1040,37 +1037,34 @@ class MatlabControllerTests(TestCase):
         """
         controller = MatlabController(self.cost_func)
 
-        minimizers = ['Nelder-Mead Simplex']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_tests.controller_run_test(controller)
+        controller.minimizer = 'Nelder-Mead Simplex'
+        self.shared_tests.controller_run_test(controller)
 
-            controller._status = 1
-            self.shared_tests.check_converged(controller)
-            controller._status = 0
-            self.shared_tests.check_max_iterations(controller)
-            controller._status = -1
-            self.shared_tests.check_diverged(controller)
-            controller.clear_matlab()
+        controller._status = 1
+        self.shared_tests.check_converged(controller)
+        controller._status = 0
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = -1
+        self.shared_tests.check_diverged(controller)
+        controller.clear_matlab()
 
-    def test_matlab_opt(self):
+    @parameterized.expand(['levenberg-marquardt', 'trust-region-reflective'])
+    def test_matlab_opt(self, minimizer):
         """
         MatlabOptController: Tests for output shape
         """
         controller = MatlabOptController(self.cost_func)
 
-        minimizers = ['levenberg-marquardt', 'trust-region-reflective']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_tests.controller_run_test(controller)
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
 
-            controller._status = 1
-            self.shared_tests.check_converged(controller)
-            controller._status = 0
-            self.shared_tests.check_max_iterations(controller)
-            controller._status = -1
-            self.shared_tests.check_diverged(controller)
-            controller.clear_matlab()
+        controller._status = 1
+        self.shared_tests.check_converged(controller)
+        controller._status = 0
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = -1
+        self.shared_tests.check_diverged(controller)
+        controller.clear_matlab()
 
     def test_matlab_stats(self):
         """
@@ -1078,35 +1072,32 @@ class MatlabControllerTests(TestCase):
         """
         controller = MatlabStatsController(self.cost_func)
 
-        minimizers = ['Levenberg-Marquardt']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_tests.controller_run_test(controller)
+        controller.minimizer = 'Levenberg-Marquardt'
+        self.shared_tests.controller_run_test(controller)
 
-            controller._status = 0
-            self.shared_tests.check_converged(controller)
-            controller._status = 1
-            self.shared_tests.check_diverged(controller)
-            controller.clear_matlab()
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 1
+        self.shared_tests.check_diverged(controller)
+        controller.clear_matlab()
 
-    def test_matlab_curve(self):
+    @parameterized.expand(['Levenberg-Marquardt', 'Trust-Region'])
+    def test_matlab_curve(self, minimizer):
         """
         MatlabCurveController: Tests for output shape
         """
         controller = MatlabCurveController(self.cost_func)
 
-        minimizers = ['Levenberg-Marquardt', 'Trust-Region']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_tests.controller_run_test(controller)
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
 
-            controller._status = 1
-            self.shared_tests.check_converged(controller)
-            controller._status = 0
-            self.shared_tests.check_max_iterations(controller)
-            controller._status = -1
-            self.shared_tests.check_diverged(controller)
-            controller.clear_matlab()
+        controller._status = 1
+        self.shared_tests.check_converged(controller)
+        controller._status = 0
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = -1
+        self.shared_tests.check_diverged(controller)
+        controller.clear_matlab()
 
     def test_horace(self):
         """
@@ -1114,16 +1105,14 @@ class MatlabControllerTests(TestCase):
         """
         controller = HoraceController(self.cost_func)
 
-        minimizers = ['lm-lsqr']
-        for minimizer in minimizers:
-            controller.minimizer = minimizer
-            self.shared_tests.controller_run_test(controller)
+        controller.minimizer = 'lm-lsqr'
+        self.shared_tests.controller_run_test(controller)
 
-            controller._fit_params['converged'] = 1
-            self.shared_tests.check_converged(controller)
-            controller._fit_params['converged'] = 0
-            self.shared_tests.check_diverged(controller)
-            controller.clear_matlab()
+        controller._fit_params['converged'] = 1
+        self.shared_tests.check_converged(controller)
+        controller._fit_params['converged'] = 0
+        self.shared_tests.check_diverged(controller)
+        controller.clear_matlab()
 
 
 @run_for_test_types(TEST_TYPE, 'all')
@@ -1187,45 +1176,23 @@ class BayesianControllerTests(TestCase):
         self.problem = self.cost_func.problem
         self.shared_tests = ControllerSharedTesting()
 
-    def test_paramonte(self):
+    @parameterized.expand([
+        ('paramonte', 'paraDram_sampler', 1),
+        ('bumps', 'dream', 0),
+        ('mantid', 'FABADA', 0),
+        ('lmfit', 'emcee', 0),
+    ])
+    def test_output_shape(self, controller_name, minimizer, offset):
         """
-        ParamonteController: Test for output shape
+        Test for output shape
         """
-        controller = ParamonteController(self.cost_func)
-        controller.minimizer = 'paraDram_sampler'
+        controller_class = ControllerFactory.create_controller(controller_name)
+        controller = controller_class(self.cost_func)
+        controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
 
-        assert len(controller.params_pdfs) == len(controller.final_params) + 1
-
-    def test_bumps(self):
-        """
-        BumpsController: Test for output shape
-        """
-        controller = BumpsController(self.cost_func)
-        controller.minimizer = 'dream'
-        self.shared_tests.controller_run_test(controller)
-
-        assert len(controller.params_pdfs) == len(controller.final_params)
-
-    def test_lmfit(self):
-        """
-        LmfitController: Test for output shape
-        """
-        controller = LmfitController(self.cost_func)
-        controller.minimizer = 'emcee'
-        self.shared_tests.controller_run_test(controller)
-
-        assert len(controller.params_pdfs) == len(controller.final_params)
-
-    def test_mantid(self):
-        """
-        MantidController: Test for output shape
-        """
-        controller = MantidController(self.cost_func)
-        controller.minimizer = 'FABADA'
-        self.shared_tests.controller_run_test(controller)
-
-        assert len(controller.params_pdfs) == len(controller.final_params)
+        self.assertEqual(len(controller.params_pdfs),
+                         len(controller.final_params) + offset)
 
 
 @run_for_test_types(TEST_TYPE, 'all')
@@ -1261,43 +1228,20 @@ class BayesianControllerBoundsTests(TestCase):
             self.assertLessEqual(controller.value_ranges[count][0], value)
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
-    def test_paramonte(self):
+    @parameterized.expand([
+        ('paramonte', 'paraDram_sampler'),
+        ('bumps', 'dream'),
+        ('mantid', 'FABADA'),
+        ('lmfit', 'emcee'),
+    ])
+    def test_parameter_bounds(self, controller_name, minimizer):
         """
-        ParamonteController: Test that parameter bounds are
+        Test that parameter bounds are
         respected for bounded problems
         """
-        controller = ParamonteController(self.cost_func)
-        controller.minimizer = 'paraDram_sampler'
-
-        self.check_bounds(controller)
-
-    def test_bumps(self):
-        """
-        ParamonteController: Test that parameter bounds are
-        respected for bounded problems
-        """
-        controller = BumpsController(self.cost_func)
-        controller.minimizer = 'dream'
-
-        self.check_bounds(controller)
-
-    def test_lmfit(self):
-        """
-        ParamonteController: Test that parameter bounds are
-        respected for bounded problems
-        """
-        controller = LmfitController(self.cost_func)
-        controller.minimizer = 'emcee'
-
-        self.check_bounds(controller)
-
-    def test_mantid(self):
-        """
-        ParamonteController: Test that parameter bounds are
-        respected for bounded problems
-        """
-        controller = MantidController(self.cost_func)
-        controller.minimizer = 'FABADA'
+        controller_class = ControllerFactory.create_controller(controller_name)
+        controller = controller_class(self.cost_func)
+        controller.minimizer = minimizer
 
         self.check_bounds(controller)
 
