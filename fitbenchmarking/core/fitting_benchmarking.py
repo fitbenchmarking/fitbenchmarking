@@ -7,9 +7,9 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 import warnings
-import platform
 import time
 
 import numpy as np
@@ -529,10 +529,8 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e)
             else:
-                if controller.eval_confidence != 0:
-                    accuracy = 1/controller.eval_confidence()
-                else:
-                    accuracy = np.inf
+                conf = controller.eval_confidence()
+                accuracy = 1 / conf if conf != 0 else np.inf
 
             accuracy_check = any(np.isnan(n) for n in accuracy) \
                 if controller.problem.multifit else np.isnan(accuracy)

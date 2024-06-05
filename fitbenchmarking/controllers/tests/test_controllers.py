@@ -6,21 +6,22 @@ import inspect
 import os
 import platform
 from unittest import TestCase
+from unittest.mock import patch
 
 import numpy as np
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from pytest import mark
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
+    WeightedNLLSCostFunc
+from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
-from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
@@ -30,41 +31,40 @@ if TEST_TYPE in ['default', 'all']:
     from fitbenchmarking.controllers.controller_factory import \
         ControllerFactory
     from fitbenchmarking.controllers.dfo_controller import DFOController
+    from fitbenchmarking.controllers.lmfit_controller import LmfitController
     from fitbenchmarking.controllers.minuit_controller import MinuitController
+    from fitbenchmarking.controllers.nlopt_controller import (NLoptController,
+                                                              nlopt)
     from fitbenchmarking.controllers.scipy_controller import ScipyController
     from fitbenchmarking.controllers.scipy_go_controller import \
         ScipyGOController
     from fitbenchmarking.controllers.scipy_ls_controller import \
         ScipyLSController
-    from fitbenchmarking.controllers.nlopt_controller import \
-        NLoptController, nlopt
-    from fitbenchmarking.controllers.lmfit_controller import LmfitController
     if platform.system() != "Windows":
         from fitbenchmarking.controllers.paramonte_controller import \
             ParamonteController
 
 if TEST_TYPE == 'all':
+    from fitbenchmarking.controllers.ceres_controller import CeresController
+    from fitbenchmarking.controllers.gofit_controller import GOFitController
+    from fitbenchmarking.controllers.gradient_free_controller import \
+        GradientFreeController
     from fitbenchmarking.controllers.gsl_controller import GSLController
     from fitbenchmarking.controllers.levmar_controller import LevmarController
     from fitbenchmarking.controllers.mantid_controller import MantidController
     from fitbenchmarking.controllers.ralfit_controller import RALFitController
-    from fitbenchmarking.controllers.gradient_free_controller import\
-        GradientFreeController
-    from fitbenchmarking.controllers.gofit_controller import GOFitController
-    from fitbenchmarking.controllers.ceres_controller import CeresController
-    from fitbenchmarking.controllers.theseus_controller import\
+    from fitbenchmarking.controllers.theseus_controller import \
         TheseusController
 
 if TEST_TYPE == 'matlab':
+    from fitbenchmarking.controllers.horace_controller import HoraceController
     from fitbenchmarking.controllers.matlab_controller import MatlabController
-    from fitbenchmarking.controllers.matlab_opt_controller import\
-        MatlabOptController
-    from fitbenchmarking.controllers.matlab_stats_controller import\
-        MatlabStatsController
-    from fitbenchmarking.controllers.matlab_curve_controller import\
+    from fitbenchmarking.controllers.matlab_curve_controller import \
         MatlabCurveController
-    from fitbenchmarking.controllers.horace_controller import\
-        HoraceController
+    from fitbenchmarking.controllers.matlab_opt_controller import \
+        MatlabOptController
+    from fitbenchmarking.controllers.matlab_stats_controller import \
+        MatlabStatsController
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
@@ -236,6 +236,22 @@ class BaseControllerTests(TestCase):
                                   'A4': [0.5, 0.7, 1, 1, 1.2]}
 
         self.assertAlmostEqual(controller.eval_confidence(), 0.192, 6)
+
+    @patch("fitbenchmarking.controllers.base_controller.curve_fit")
+    def test_eval_conf_failed_fit(self, mock):
+        """
+        BaseSoftwareController: Test eval_confidence function handles
+        RuntimeError correctly
+        """
+        controller = DummyController(self.cost_func)
+        controller.params_pdfs = {'A1': [4, 4, 4, 4, 4],
+                                  'A2': [3, 3.7, 3, 3, 3],
+                                  'A3': [2, 2, 2, 2.4, 2.5],
+                                  'A4': [0.5, 0.7, 1, 1, 1.2]}
+        mock.side_effect = RuntimeError
+        acc = controller.eval_confidence()
+        self.assertEqual(acc, 0)
+        self.assertEqual(controller.flag, 8)
 
     def test_check_flag_attr(self):
         """
@@ -1244,7 +1260,7 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, 'default', 'all')
+@run_for_test_types(TEST_TYPE, 'all')
 @mark.skipif(
     platform.system() == "Windows",
     reason="Paramonte doesn't automatically detect MPI"
@@ -1256,7 +1272,8 @@ class BayesianControllerTests(TestCase):
     """
 
     def setUp(self):
-        self.cost_func = make_cost_func(cost_func_type='loglike_nlls')
+        self.cost_func = make_cost_func(
+            'cubic-fba-test-go.txt', cost_func_type='loglike_nlls')
         self.problem = self.cost_func.problem
         self.shared_tests = ControllerSharedTesting()
 
@@ -1267,6 +1284,38 @@ class BayesianControllerTests(TestCase):
         controller = ParamonteController(self.cost_func)
         controller.minimizer = 'paraDram_sampler'
         self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params) + 1
+
+    def test_bumps(self):
+        """
+        BumpsController: Test for output shape
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'dream'
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
+
+    def test_lmfit(self):
+        """
+        LmfitController: Test for output shape
+        """
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'emcee'
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
+
+    def test_mantid(self):
+        """
+        MantidController: Test for output shape
+        """
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'FABADA'
+        self.shared_tests.controller_run_test(controller)
+
+        assert len(controller.params_pdfs) == len(controller.final_params)
 
 
 @run_for_test_types(TEST_TYPE, 'all')
@@ -1309,6 +1358,36 @@ class BayesianControllerBoundsTests(TestCase):
         """
         controller = ParamonteController(self.cost_func)
         controller.minimizer = 'paraDram_sampler'
+
+        self.check_bounds(controller)
+
+    def test_bumps(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = BumpsController(self.cost_func)
+        controller.minimizer = 'dream'
+
+        self.check_bounds(controller)
+
+    def test_lmfit(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = LmfitController(self.cost_func)
+        controller.minimizer = 'emcee'
+
+        self.check_bounds(controller)
+
+    def test_mantid(self):
+        """
+        ParamonteController: Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = MantidController(self.cost_func)
+        controller.minimizer = 'FABADA'
 
         self.check_bounds(controller)
 

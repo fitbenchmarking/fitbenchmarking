@@ -121,7 +121,7 @@ class LmfitController(Controller):
         """
         return self.cost_func.eval_loglike(
             list(map(lambda name: params[name].value,
-                     self.problem.param_names))
+                     self._param_names))
         )
 
     def lmfit_jacobians(self, params):
@@ -184,7 +184,9 @@ class LmfitController(Controller):
             self.flag = 2
 
         if self.minimizer == 'emcee':
-            self.params_pdfs = self.lmfit_out.flatchain.to_dict(orient='list')
+            params_pdf_dict = self.lmfit_out.flatchain.to_dict(orient='list')
+            self.params_pdfs = dict(zip(self.problem.param_names,
+                                        list(params_pdf_dict.values())))
 
         self.final_params = list(map(lambda params: params.value,
                                  self.lmfit_out.params.values()))
