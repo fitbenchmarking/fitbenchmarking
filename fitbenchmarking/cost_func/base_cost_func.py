@@ -6,6 +6,11 @@ from abc import ABCMeta, abstractmethod
 
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
+from typing import Optional
+
+from fitbenchmarking.jacobian.base_jacobian import Jacobian
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+
 
 class CostFunc:
     """
@@ -24,10 +29,10 @@ class CostFunc:
                 :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
         # Problem: The problem object from parsing
-        self.problem = problem
+        self.problem: 'FittingProblem' = problem
 
         # The Jacobian object to evaluate
-        self.jacobian = None
+        self.jacobian: 'Optional[Jacobian]' = None
 
         # The Hessian object to evaluate
         self.hessian = None
