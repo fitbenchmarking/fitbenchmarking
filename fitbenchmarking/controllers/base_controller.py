@@ -16,6 +16,8 @@ from fitbenchmarking.utils.exceptions import (
     UnknownMinimizerError,
 )
 
+from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
 
 class Controller:
     """
@@ -127,7 +129,7 @@ class Controller:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        self.cost_func = cost_func
+        self.cost_func: 'CostFunc' = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
