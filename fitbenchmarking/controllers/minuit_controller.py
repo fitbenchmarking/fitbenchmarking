@@ -4,7 +4,6 @@ https://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/
 using the iminuit python interface
 http://iminuit.readthedocs.org
 """
-
 import numpy as np
 from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
@@ -37,6 +36,8 @@ class MinuitController(Controller):
         "MCMC": [],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage.
@@ -56,7 +57,6 @@ class MinuitController(Controller):
 
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self._status = None
         self._popt = None

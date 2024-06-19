@@ -1,7 +1,7 @@
 """
 Implements a controller for the GALAHAD fitting software.
 """
-from typing import TYPE_CHECKING
+from typing import Any, Callable, Dict
 
 import numpy as np
 from galahad import arc, bllsb, nls, tru
@@ -10,9 +10,6 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
-if TYPE_CHECKING:
-    from typing import Any, Callable, Dict
-
 
 class GalahadController(Controller):
     """
@@ -20,23 +17,23 @@ class GalahadController(Controller):
     """
 
     algorithm_check = {
-        'all': ['arc', 'bllsb', 'nls', 'tru'],
-        'ls': ['bllsb', 'nls'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['tru'],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []}
+        "all": ["arc", "bllsb", "nls", "tru"],
+        "ls": ["bllsb", "nls"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["tru"],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": []}
 
-    jacobian_enabled_solvers = ['arc', 'bllsb', 'nls', 'tru']
+    jacobian_enabled_solvers = ["arc", "bllsb", "nls", "tru"]
 
-    hessian_enabled_solvers = ['arc', 'bllsb', 'nls', 'tru']
+    hessian_enabled_solvers = ["arc", "bllsb", "nls", "tru"]
 
     def __init__(self, cost_func):
         """
@@ -53,7 +50,7 @@ class GalahadController(Controller):
         self.no_bounds_minimizers = []
 
         self._num_vars = len(self.cost_func.problem.param_names)
-        self._hessian: 'Callable' = self._noop
+        self._hessian: "Callable" = self._noop
         self._initial_params_array = np.zeros(self._num_vars)
         self._module = arc
         self._nlls = False
@@ -66,13 +63,13 @@ class GalahadController(Controller):
         Setup problem ready to be run with GALAHAD
         """
         self._module = {
-            'arc': arc,
-            'bllsb': bllsb,
-            'nls': nls,
-            'tru': tru,
+            "arc": arc,
+            "bllsb": bllsb,
+            "nls": nls,
+            "tru": tru,
         }[self.minimizer]
 
-        if self.minimizer in self.algorithm_check['ls']:
+        if self.minimizer in self.algorithm_check["ls"]:
             if isinstance(self.cost_func, BaseNLLSCostFunc):
                 self._nlls = True
             else:
@@ -83,49 +80,49 @@ class GalahadController(Controller):
         else:
             self._nlls = False
 
-        print(f'Running: opts = {self.minimizer}.initialize()')
+        print(f"Running: opts = {self.minimizer}.initialize()")
         opts = self._module.initialize()
-        kwargs: 'Dict[str, Any]' = {
-            'n': self._num_vars,
-            'options': opts,
-            'H_ne': 10,
-            'H_row': None,
-            'H_col': None,
-            'H_ptr': None,
+        kwargs: "Dict[str, Any]" = {
+            "n": self._num_vars,
+            "options": opts,
+            "H_ne": 10,
+            "H_row": None,
+            "H_col": None,
+            "H_ptr": None,
         }
 
         has_hessian = self.cost_func.hessian is not None
         if has_hessian:
             self._hessian = self._hes
-            kwargs['H_type'] = 'dense'
+            kwargs["H_type"] = "dense"
             if self._nlls:
                 kwargs.update({
-                    'P_type': 'dense_by_columns',
-                    'P_ne': 10,
-                    'P_row': None,
-                    'P_col': None,
-                    'P_ptr': None,
+                    "P_type": "dense_by_columns",
+                    "P_ne": 10,
+                    "P_row": None,
+                    "P_col": None,
+                    "P_ptr": None,
                 })
                 self._P = self._eval_hes_res_product
         else:
             self._hessian = self._noop
-            kwargs['H_type'] = 'absent'
+            kwargs["H_type"] = "absent"
 
         if self._nlls:
             self._jacobian = self._jac
             kwargs.update({
-                'm': self.data_x.shape[0],
-                'J_type': 'dense',
-                'J_ne': 10,
-                'J_row': None,
-                'J_col': None,
-                'J_ptr': None,
-                'w': np.ones(self.data_x.shape[0]),
+                "m": self.data_x.shape[0],
+                "J_type": "dense",
+                "J_ne": 10,
+                "J_row": None,
+                "J_col": None,
+                "J_ptr": None,
+                "w": np.ones(self.data_x.shape[0]),
             })
         else:
             self._jacobian = self.cost_func.jac_cost
 
-        print(f'Running: {self.minimizer}.load(**kwargs)')
+        print(f"Running: {self.minimizer}.load(**kwargs)")
         self._module.load(**kwargs)
 
         self._initial_params_array = np.array(self.initial_params)
@@ -159,7 +156,7 @@ class GalahadController(Controller):
                 self._P,  # evalhprod
             ]
 
-        print(f'Running: self.result = {self.minimizer}.solve(*args)')
+        print(f"Running: self.result = {self.minimizer}.solve(*args)")
         self._result = self._module.solve(*args)
 
     def cleanup(self):
@@ -180,19 +177,19 @@ class GalahadController(Controller):
                       -19: 3,  # Max runtime
                       -82: 3,  # Killed by user
                       }
-        print(f'Running: info = {self.minimizer}.information()')
+        print(f"Running: info = {self.minimizer}.information()")
         info = self._module.information()
-        print(f'Running: {self.minimizer}.terminate()')
+        print(f"Running: {self.minimizer}.terminate()")
         self._module.terminate()
         self.final_params = self._result[0]
-        self.flag = status_map[info['status']]
+        self.flag = status_map[info["status"]]
 
     def _jac(self, p):
-        tmp: 'np.ndarray' = self.cost_func.jac_res(p)
+        tmp: "np.ndarray" = self.cost_func.jac_res(p)
         return np.ravel(tmp)
 
     def _hes(self, p):
-        tmp: 'np.ndarray' = self.cost_func.hes_cost(p)
+        tmp: "np.ndarray" = self.cost_func.hes_cost(p)
         return tmp[np.tril_indices(tmp.shape[0])]
 
     def _eval_hes_res_product(self, p, v):

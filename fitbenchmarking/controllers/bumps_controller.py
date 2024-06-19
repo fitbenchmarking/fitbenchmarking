@@ -42,6 +42,8 @@ class BumpsController(Controller):
         "MCMC": ["dream"],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Extract param names for function setup
@@ -55,7 +57,6 @@ class BumpsController(Controller):
         self._param_names = [
             f"p{i}" for (i, _) in enumerate(self.problem.param_names)
         ]
-        self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
         self.fit_order = None

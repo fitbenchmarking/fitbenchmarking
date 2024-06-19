@@ -1,12 +1,9 @@
 """
 Implements a controller for the lmfit fitting software.
 """
-
-import numpy as np
 from lmfit import Minimizer, Parameters
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
 class LmfitController(Controller):
@@ -98,6 +95,9 @@ class LmfitController(Controller):
         "trust-exact",
     ]
 
+    support_for_bounds = True
+    bounds_required_minimizers = ["dual_annealing", "differential_evolution"]
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -106,8 +106,6 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
-        self.bound_minimizers = ["dual_annealing", "differential_evolution"]
         self.lmfit_out = None
         self.lmfit_params = Parameters()
         self._param_names = [
@@ -142,14 +140,6 @@ class LmfitController(Controller):
         """
         Setup problem ready to be run with lmfit
         """
-
-        if (
-            self.value_ranges is None or np.any(np.isinf(self.value_ranges))
-        ) and self.minimizer in self.bound_minimizers:
-            raise MissingBoundsError(
-                f"{self.minimizer} requires finite bounds on all parameters"
-            )
-
         for i, name in enumerate(self._param_names):
             kwargs = {"name": name, "value": self.initial_params[i]}
             if self.value_ranges is not None:
