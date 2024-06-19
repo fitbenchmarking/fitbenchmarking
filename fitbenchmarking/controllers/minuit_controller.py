@@ -4,13 +4,13 @@ https://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/
 using the iminuit python interface
 http://iminuit.readthedocs.org
 """
+import numpy as np
 from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingSoftwareError,\
-                                             UnknownMinimizerError
+from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
+                                              UnknownMinimizerError)
 
 
 class MinuitController(Controller):
@@ -19,19 +19,21 @@ class MinuitController(Controller):
     """
 
     algorithm_check = {
-            'all': ['migrad', 'simplex'],
-            'ls': [],
-            'deriv_free': ['simplex'],
-            'general': ['migrad'],
-            'simplex': ['simplex'],
-            'trust_region': [],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['migrad', 'simplex'],
+        'ls': [],
+        'deriv_free': ['simplex'],
+        'general': ['migrad'],
+        'simplex': ['simplex'],
+        'trust_region': [],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
+
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -50,7 +52,6 @@ class MinuitController(Controller):
 
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self._status = None
         self._popt = None

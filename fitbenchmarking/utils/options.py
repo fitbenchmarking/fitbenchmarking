@@ -29,6 +29,7 @@ class Options:
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
+         'galahad': ['arc', 'bgo', 'dgo', 'nls', 'trb', 'tru'],
          'gofit': ['alternating', 'multistart', 'regularisation'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -141,11 +142,11 @@ class Options:
                             'trust_region', 'levenberg-marquardt',
                             'gauss_newton', 'bfgs', 'conjugate_gradient',
                             'steepest_descent', 'global_optimization', 'MCMC'],
-         'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
-                      'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
-                      'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
-                      'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
-                      'scipy_go', 'theseus'],
+         'software': ['bumps', 'ceres', 'dfo', 'galahad', 'gofit',
+                      'gradient_free', 'gsl', 'horace', 'levmar', 'lmfit',
+                      'mantid', 'matlab', 'matlab_curve', 'matlab_opt',
+                      'matlab_stats', 'minuit', 'nlopt', 'paramonte',
+                      'ralfit', 'scipy', 'scipy_ls', 'scipy_go', 'theseus'],
          'jac_method': ['best_available', 'scipy', 'analytic', 'default',
                         'numdifftools'],
          'hes_method': ['best_available', 'scipy', 'analytic', 'default',
@@ -207,6 +208,7 @@ class Options:
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
+         'galahad': ['arc', 'bgo', 'dgo', 'nls', 'trb', 'tru'],
          'gofit': ['multistart'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -524,8 +526,7 @@ class Options:
         """
         section = str(func).split("Section: ")[1].split('>')[0]
         try:
-            if (option in additional_options and
-                    additional_options[option]):
+            if (option in additional_options and additional_options[option]):
                 value = additional_options[option]
             else:
                 value = func(option, fallback=self.DEFAULTS[section][option])

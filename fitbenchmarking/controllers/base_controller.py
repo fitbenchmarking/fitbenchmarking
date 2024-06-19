@@ -3,8 +3,9 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING
 
-import numpy
+import numpy as np
 from scipy.optimize import curve_fit
 
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
@@ -12,7 +13,11 @@ from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleJacobianError,
                                               IncompatibleMinimizerError,
                                               IncompatibleProblemError,
+                                              MissingBoundsError,
                                               UnknownMinimizerError)
+
+if TYPE_CHECKING:
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
 
 class Controller:
@@ -90,6 +95,19 @@ class Controller:
     #: from the class name.
     controller_name = None
 
+    #: Used to check whether the fitting software has support for
+    #: bounded problems, set as True if at least some minimizers
+    #: in the fitting software have support for bounds
+    support_for_bounds = False
+
+    #: Used to check whether the selected minimizers is compatible with
+    #: problems that have parameter bounds
+    no_bounds_minimizers = []
+
+    #: Used to check whether the selected minimizer is compatible with
+    #: problems that don't have parameter bounds
+    bounds_required_minimizers = []
+
     #: A list of incompatible problem formats for this controller.
     incompatible_problems = []
 
@@ -105,7 +123,7 @@ class Controller:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        self.cost_func = cost_func
+        self.cost_func: 'CostFunc' = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -135,15 +153,6 @@ class Controller:
 
         # Flag: error handling flag
         self._flag = None
-
-        # Used to check whether the selected minimizers is compatible with
-        # problems that have parameter bounds
-        self.no_bounds_minimizers = []
-
-        # Used to check whether the fitting software has support for
-        # bounded problems, set as True if at least some minimizers
-        # in the fitting software have support for bounds
-        self.support_for_bounds = False
 
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
@@ -259,7 +268,7 @@ class Controller:
                                    p0=self.initial_params,
                                    sigma=self.data_e)
 
-            perr = numpy.sqrt(numpy.diag(pcov))
+            perr = np.sqrt(np.diag(pcov))
 
             self.params_pdfs['scipy_pfit'] = popt.tolist()
             self.params_pdfs['scipy_perr'] = perr.tolist()
@@ -268,7 +277,7 @@ class Controller:
             par_conf = []
             for i, name in enumerate(self.par_names):
                 tol = 2*perr[i]
-                hist, bin_edges = numpy.histogram(
+                hist, bin_edges = np.histogram(
                     self.params_pdfs[name.replace('.', '_')],
                     bins=100, density=True
                 )
@@ -278,9 +287,9 @@ class Controller:
                         tol_range[0] > bin_edges[-1]:
                     par_conf.append(0)
                 else:
-                    width = numpy.diff(bin_edges)[0]
-                    start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
-                    end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
+                    width = np.diff(bin_edges)[0]
+                    start_bin = np.argmin(abs(bin_edges-(popt[i]-tol)))
+                    end_bin = np.argmin(abs(bin_edges-(popt[i]+tol)))
                     if start_bin == end_bin:
                         par_conf.append(hist[start_bin]*width)
                     else:
@@ -290,7 +299,7 @@ class Controller:
             self.flag = 8
             print("\n"+str(error_msg))
 
-        return numpy.prod(par_conf)
+        return np.prod(par_conf)
 
     def _validate_jacobian(self) -> None:
         """
@@ -394,12 +403,17 @@ class Controller:
                           options
         :type minimizer: str
         """
+        if self.value_ranges is not None:
+            if self.support_for_bounds is False or \
+                    minimizer in self.no_bounds_minimizers:
+                raise IncompatibleMinimizerError(
+                    'The selected minimizer does not currently support '
+                    'problems with parameter bounds')
 
-        if self.support_for_bounds is False or \
-                minimizer in self.no_bounds_minimizers:
-            message = 'The selected minimizer does not currently support ' \
-                      'problems with parameter bounds'
-            raise IncompatibleMinimizerError(message)
+        if ((self.value_ranges is None or np.any(np.isinf(self.value_ranges)))
+                and minimizer in self.bounds_required_minimizers):
+            raise MissingBoundsError(
+                f"{minimizer} requires finite bounds on all parameters")
 
     def check_bounds_respected(self):
         """
@@ -416,11 +430,11 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'_flag': int, 'final_params': numpy.ndarray}
+        values = {'_flag': int, 'final_params': np.ndarray}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
-            if attr_type != numpy.ndarray:
+            if attr_type != np.ndarray:
                 if not isinstance(attr, attr_type):
                     raise ControllerAttributeError(
                         f'Attribute "{attr_name}" in the controller is not the'
@@ -432,7 +446,7 @@ class Controller:
                 if not self.problem.multifit:
                     attr = [attr]
                 for a in attr:
-                    if any(numpy.isnan(n) or numpy.isinf(n) for n in a):
+                    if any(np.isnan(n) or np.isinf(n) for n in a):
                         raise ControllerAttributeError(
                             f'Attribute "{attr_name}" in the controller is '
                             'not the expected numpy ndarray of floats. '

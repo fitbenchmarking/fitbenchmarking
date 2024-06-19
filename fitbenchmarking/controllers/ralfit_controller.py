@@ -3,8 +3,8 @@ Implements a controller for RALFit
 https://github.com/ralna/RALFit
 """
 
-import ral_nlls
 import numpy as np
+import ral_nlls
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -16,21 +16,21 @@ class RALFitController(Controller):
     """
 
     algorithm_check = {
-            'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                    'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-            'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                   'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
-            'levenberg-marquardt': ['gn', 'gn_reg'],
-            'gauss_newton': ['gn', 'gn_reg'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
+                'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+        'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
+               'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
+        'levenberg-marquardt': ['gn', 'gn_reg'],
+        'gauss_newton': ['gn', 'gn_reg'],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['gn', 'hybrid', 'newton', 'newton-tensor',
                                 'gn_reg', 'hybrid_reg', 'newton_reg',
@@ -38,6 +38,8 @@ class RALFitController(Controller):
 
     hessian_enabled_solvers = ['hybrid', 'newton', 'newton-tensor',
                                'hybrid_reg', 'newton_reg', 'newton-tensor_reg']
+
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -49,7 +51,6 @@ class RALFitController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self._status = None
         self._popt = None

@@ -3,8 +3,10 @@ Implements a controller for the paramonte software.
 """
 
 import shutil
+
 import numpy as np
 import paramonte as pm
+
 from fitbenchmarking.controllers.base_controller import Controller
 
 
@@ -28,6 +30,8 @@ class ParamonteController(Controller):
         'global_optimization': [],
         'MCMC': ['paraDram_sampler']}
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -36,7 +40,6 @@ class ParamonteController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.result = None
         self.pmpd = pm.ParaDRAM()
 
