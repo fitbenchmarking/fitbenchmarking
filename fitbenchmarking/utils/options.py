@@ -29,7 +29,7 @@ class Options:
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
-         'galahad': ['arc', 'bllsb', 'nls', 'tru'],
+         'galahad': ['arc', 'bgo', 'dgo', 'nls', 'trb', 'tru'],
          'gofit': ['alternating', 'multistart', 'regularisation'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -208,7 +208,7 @@ class Options:
                    'steepest_descent', 'Fletcher_Reeves', 'Polak_Ribiere',
                    'Hestenes_Stiefel'],
          'dfo': ['dfogn', 'dfols'],
-         'galahad': ['arc', 'nls', 'tru'],
+         'galahad': ['arc', 'bgo', 'dgo', 'nls', 'trb', 'tru'],
          'gofit': ['multistart'],
          'gradient_free': ['HillClimbingOptimizer',
                            'RepulsingHillClimbingOptimizer',
@@ -526,8 +526,7 @@ class Options:
         """
         section = str(func).split("Section: ")[1].split('>')[0]
         try:
-            if (option in additional_options and
-                    additional_options[option]):
+            if (option in additional_options and additional_options[option]):
                 value = additional_options[option]
             else:
                 value = func(option, fallback=self.DEFAULTS[section][option])
