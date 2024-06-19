@@ -84,6 +84,8 @@ class GradientFreeController(Controller):
 
     controller_name = "gradient_free"
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -94,7 +96,6 @@ class GradientFreeController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self._status = None
         self.search_space = None
         self.initialize = None
