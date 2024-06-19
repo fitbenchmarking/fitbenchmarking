@@ -16,19 +16,21 @@ class DFOController(Controller):
     """
 
     algorithm_check = {
-            'all': ['dfogn', 'dfols'],
-            'ls': ['dfogn', 'dfols'],
-            'deriv_free': ['dfogn', 'dfols'],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['dfols', 'dfogn'],
-            'levenberg-marquardt': [],
-            'gauss_newton': ['dfogn'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['dfogn', 'dfols'],
+        'ls': ['dfogn', 'dfols'],
+        'deriv_free': ['dfogn', 'dfols'],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['dfols', 'dfogn'],
+        'levenberg-marquardt': [],
+        'gauss_newton': ['dfogn'],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
+
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -40,7 +42,6 @@ class DFOController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self.rhobeg = None
         self._status = None
@@ -89,7 +90,7 @@ class DFOController(Controller):
             self._soln = dfols.solve(self.cost_func.eval_r,
                                      self._pinit,
                                      rhobeg=self.rhobeg,
-                                     bounds=(self.param_ranges))
+                                     bounds=self.param_ranges)
 
         self._popt = self._soln.x
         self._status = self._soln.flag

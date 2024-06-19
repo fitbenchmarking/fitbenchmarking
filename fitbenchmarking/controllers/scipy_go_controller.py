@@ -36,6 +36,8 @@ class ScipyGOController(Controller):
 
     jacobian_enabled_solvers = ['shgo', 'dual_annealing']
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -47,7 +49,6 @@ class ScipyGOController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self._popt = None
         self._status = None
         self._maxiter = None
@@ -73,7 +74,7 @@ class ScipyGOController(Controller):
         elif self.minimizer == "shgo":
             kwargs = {"options": {"maxiter": self._maxiter,
                                   "jac": self.cost_func.jac_cost}}
-        elif self.minimizer == "dual_annealing":
+        else:  # self.minimizer == "dual_annealing":
             kwargs = {"maxiter": self._maxiter, "local_search_options": {
                       "jac": self.cost_func.jac_cost}}
         fun = self.cost_func.eval_cost

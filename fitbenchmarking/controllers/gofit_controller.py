@@ -2,13 +2,12 @@
 Implements a controller for global optimization algorithms.
 """
 import numpy as np
-
 from gofit import alternating, multistart, regularisation
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
-from fitbenchmarking.utils.exceptions import UnknownMinimizerError
-from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
+from fitbenchmarking.utils.exceptions import (IncompatibleMinimizerError,
+                                              MissingBoundsError,
+                                              UnknownMinimizerError)
 
 
 class GOFitController(Controller):
@@ -34,6 +33,9 @@ class GOFitController(Controller):
 
     jacobian_enabled_solvers = ['multistart', 'regularisation']
 
+    support_for_bounds = True
+    no_bounds_minimizers = ['regularisation']
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -44,8 +46,6 @@ class GOFitController(Controller):
 
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ['regularisation']
         self._options = None
         self._nsplit = None
         self._p0 = None

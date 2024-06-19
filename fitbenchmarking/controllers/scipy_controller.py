@@ -15,37 +15,37 @@ class ScipyController(Controller):
     """
 
     algorithm_check = {
-            'all': ['Nelder-Mead',
-                    'Powell',
-                    'CG',
-                    'BFGS',
-                    'Newton-CG',
-                    'L-BFGS-B',
-                    'TNC',
-                    'SLSQP',
-                    'COBYLA',
-                    'trust-ncg',
-                    'trust-exact',
-                    'trust-krylov',
-                    'trust-constr',
-                    'dogleg'],
-            'ls': [None],
-            'deriv_free': ['Nelder-Mead', 'Powell', 'COBYLA'],
-            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-            'simplex': ['Nelder-Mead'],
-            'trust_region': ['trust-ncg',
-                             'trust-exact',
-                             'trust-krylov',
-                             'trust-constr',
-                             'dogleg'],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': ['BFGS', 'L-BFGS-B'],
-            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['Nelder-Mead',
+                'Powell',
+                'CG',
+                'BFGS',
+                'Newton-CG',
+                'L-BFGS-B',
+                'TNC',
+                'SLSQP',
+                'COBYLA',
+                'trust-ncg',
+                'trust-exact',
+                'trust-krylov',
+                'trust-constr',
+                'dogleg'],
+        'ls': [None],
+        'deriv_free': ['Nelder-Mead', 'Powell', 'COBYLA'],
+        'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+        'simplex': ['Nelder-Mead'],
+        'trust_region': ['trust-ncg',
+                         'trust-exact',
+                         'trust-krylov',
+                         'trust-constr',
+                         'dogleg'],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': ['BFGS', 'L-BFGS-B'],
+        'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['CG',
                                 'BFGS',
@@ -66,6 +66,9 @@ class ScipyController(Controller):
                                'trust-constr',
                                'dogleg']
 
+    support_for_bounds = True
+    no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -77,8 +80,6 @@ class ScipyController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ['Nelder-Mead', 'CG', 'BFGS', 'Newton-CG']
         self.options = None
         self.result = None
         self._popt = None

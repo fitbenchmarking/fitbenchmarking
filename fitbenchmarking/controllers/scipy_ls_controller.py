@@ -2,8 +2,8 @@
 Implements a controller for the scipy ls fitting software.
 In particular, for the scipy least_squares solver.
 """
-from scipy.optimize import least_squares
 import numpy as np
+from scipy.optimize import least_squares
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -31,6 +31,9 @@ class ScipyLSController(Controller):
 
     jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
 
+    no_bounds_minimizers = ['lm-scipy']
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -41,8 +44,6 @@ class ScipyLSController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ['lm-scipy']
         self.param_ranges = None
         self.result = None
         self._status = None
