@@ -4,10 +4,9 @@ Implements a controller for the GALAHAD fitting software.
 from typing import Any, Callable, Dict
 
 import numpy as np
-from galahad import arc, bllsb, nls, tru
+from galahad import arc, bgo, dgo, nls, trb, tru
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
 
@@ -17,23 +16,26 @@ class GalahadController(Controller):
     """
 
     algorithm_check = {
-        "all": ["arc", "bllsb", "nls", "tru"],
-        "ls": ["bllsb", "nls"],
+        "all": ["arc", "bgo", "dgo", "nls", "trb", "tru"],
+        "ls": ["nls"],
         "deriv_free": [],
         "general": [],
         "simplex": [],
-        "trust_region": ["tru"],
+        "trust_region": ["trb", "tru"],
         "levenberg-marquardt": [],
         "gauss_newton": [],
         "bfgs": [],
         "conjugate_gradient": [],
         "steepest_descent": [],
-        "global_optimization": [],
+        "global_optimization": ["bgo", "dgo"],
         "MCMC": []}
 
-    jacobian_enabled_solvers = ["arc", "bllsb", "nls", "tru"]
+    jacobian_enabled_solvers = ["arc", "bgo", "dgo", "nls", "trb", "tru"]
+    hessian_enabled_solvers = ["arc", "bgo", "dgo", "nls", "trb", "tru"]
 
-    hessian_enabled_solvers = ["arc", "bllsb", "nls", "tru"]
+    support_for_bounds = True
+    no_bounds_minimizers = ["arc", "tru", "nls"]
+    bounds_required_minimizers = ["bgo", "dgo"]
 
     def __init__(self, cost_func):
         """
@@ -46,118 +48,143 @@ class GalahadController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = []
-
         self._num_vars = len(self.cost_func.problem.param_names)
         self._hessian: "Callable" = self._noop
         self._initial_params_array = np.zeros(self._num_vars)
         self._module = arc
-        self._nlls = False
         self._jacobian = self.cost_func.jac_cost
         self._P = self._eval_hes_res_product
         self._result = [0]
+        self._minimizer = ""
+        self._variant = ""
 
     def setup(self):
         """
         Setup problem ready to be run with GALAHAD
         """
+        minimizer: "str" = self.minimizer
+        variant: "str" = ""
+        try:
+            minimizer, variant = minimizer.split("_", 1)
+        except ValueError:
+            pass
+
         self._module = {
             "arc": arc,
-            "bllsb": bllsb,
+            "bgo": bgo,
+            "dgo": dgo,
             "nls": nls,
+            "trb": trb,
             "tru": tru,
-        }[self.minimizer]
-
-        if self.minimizer in self.algorithm_check["ls"]:
-            if isinstance(self.cost_func, BaseNLLSCostFunc):
-                self._nlls = True
-            else:
-                raise IncompatibleMinimizerError(
-                    f"The minimizer {self.minimizer} can only be used for "
-                    "least squares problems"
-                )
-        else:
-            self._nlls = False
-
-        print(f"Running: opts = {self.minimizer}.initialize()")
-        opts = self._module.initialize()
-        kwargs: "Dict[str, Any]" = {
-            "n": self._num_vars,
-            "options": opts,
-            "H_ne": 10,
-            "H_row": None,
-            "H_col": None,
-            "H_ptr": None,
-        }
+        }[minimizer]
 
         has_hessian = self.cost_func.hessian is not None
-        if has_hessian:
-            self._hessian = self._hes
-            kwargs["H_type"] = "dense"
-            if self._nlls:
-                kwargs.update({
-                    "P_type": "dense_by_columns",
-                    "P_ne": 10,
-                    "P_row": None,
-                    "P_col": None,
-                    "P_ptr": None,
-                })
-                self._P = self._eval_hes_res_product
-        else:
-            self._hessian = self._noop
-            kwargs["H_type"] = "absent"
+        self._jacobian = self.cost_func.jac_cost
 
-        if self._nlls:
-            self._jacobian = self._jac
+        x_l, x_u = ([], [])
+        if self.value_ranges is None:
+            x_l = np.repeat(-np.inf, self._num_vars)
+            x_u = np.repeat(np.inf, self._num_vars)
+        else:
+            x_l, x_u = zip(*self.value_ranges)
+
+        x_l = np.array(x_l)
+        x_u = np.array(x_u)
+
+        opts = self._module.initialize()
+        kwargs: "Dict[str, Any]" = {
+                "options": opts,
+        }
+
+        if minimizer in ["arc", "tru"]:
             kwargs.update({
+                "n": self._num_vars,
+                "H_type": "dense" if has_hessian else "absent",
+                "H_ne": 10,
+                "H_row": None,
+                "H_col": None,
+                "H_ptr": None,
+            })
+        elif minimizer in ["bgo", "dgo", "trb"]:
+            kwargs.update({
+                "n": self._num_vars,
+                "x_l": x_l,
+                "x_u": x_u,
+                "H_type": "dense" if has_hessian else "absent",
+                "H_ne": 10,
+                "H_row": None,
+                "H_col": None,
+                "H_ptr": None,
+            })
+
+        elif minimizer in ["nls"]:
+            if not has_hessian:
+                raise IncompatibleMinimizerError(
+                    "Requires hessian information (for now)")
+            kwargs.update({
+                "n": self._num_vars,
                 "m": self.data_x.shape[0],
                 "J_type": "dense",
                 "J_ne": 10,
                 "J_row": None,
                 "J_col": None,
                 "J_ptr": None,
+                "H_type": "dense",
+                "H_ne": 10,
+                "H_row": None,
+                "H_col": None,
+                "H_ptr": None,
                 "w": np.ones(self.data_x.shape[0]),
+                "P_type": "dense_by_columns",
+                "P_ne": 10,
+                "P_row": None,
+                "P_col": None,
+                "P_ptr": None,
             })
-        else:
-            self._jacobian = self.cost_func.jac_cost
+            self._jacobian = self._jac
 
-        print(f"Running: {self.minimizer}.load(**kwargs)")
+        if has_hessian:
+            self._hessian = self._hes
+            self._P = self._eval_hes_res_product
+        else:
+            self._hessian = self._noop
+
         self._module.load(**kwargs)
 
         self._initial_params_array = np.array(self.initial_params)
+        self._minimizer = minimizer
+        self._variant = variant
 
     def fit(self):
         """
         Run problem with GALAHAD.
         """
-        args = []
-        if not self._nlls:
-            args = [
-                self._num_vars,  # n
-                int(self._num_vars*(self._num_vars+1)/2),  # H_ne
-                self._initial_params_array,  # x
-                self.cost_func.eval_cost,  # eval_f
-                self._jacobian,  # eval_g
-                self._hessian,  # eval_h
-            ]
-        else:
+        kwargs = {}
+        if self._minimizer in ["arc", "bgo", "dgo", "trb", "tru"]:
+            kwargs = {
+                "n": self._num_vars,
+                "H_ne": int(self._num_vars*(self._num_vars+1)/2),
+                "x": self._initial_params_array,
+                "eval_f": self.cost_func.eval_cost,
+                "eval_g": self._jacobian,
+                "eval_h": self._hessian,
+            }
+        elif self._minimizer in ["nls"]:
             m = self.data_x.shape[0]
-            args = [
-                self._num_vars,  # n
-                m,  # m
-                self._initial_params_array,  # x
-                self.cost_func.eval_r,  # eval_c
-                self._num_vars*m,  # j_ne
-                self._jacobian,  # eval_j
-                int(self._num_vars*(self._num_vars+1)/2),  # h_ne
-                self._hessian,  # eval_h
-                self._num_vars*m,  # p_ne
-                self._P,  # evalhprod
-            ]
+            kwargs = {
+                "n": self._num_vars,
+                "m": m,
+                "x": self._initial_params_array,
+                "eval_c": self.cost_func.eval_r,
+                "J_ne": self._num_vars*m,
+                "eval_j": self._jacobian,
+                "H_ne": int(self._num_vars*(self._num_vars+1)/2),
+                "eval_h": self._hessian,
+                "P_ne": self._num_vars*m,
+                "eval_hprod": self._P,
+            }
 
-        print(f"Running: self.result = {self.minimizer}.solve(*args)")
-        self._result = self._module.solve(*args)
+        self._result = self._module.solve(**kwargs)
 
     def cleanup(self):
         """
@@ -177,9 +204,7 @@ class GalahadController(Controller):
                       -19: 3,  # Max runtime
                       -82: 3,  # Killed by user
                       }
-        print(f"Running: info = {self.minimizer}.information()")
         info = self._module.information()
-        print(f"Running: {self.minimizer}.terminate()")
         self._module.terminate()
         self.final_params = self._result[0]
         self.flag = status_map[info["status"]]
