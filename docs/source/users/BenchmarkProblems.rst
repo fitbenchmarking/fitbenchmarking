@@ -313,6 +313,10 @@ webpage for more information on these datasets.
 
 These problems have between ~20,000 and ~190,000 unknown parameters, and fit between ~60,000 and ~170,000 data points.
 
+.. note::
+    These problems can currently only be run using the `scipy_ls` software, which supports sparse jacobians.
+    When running these problems with the `nlls` cost function, we would suggest adding the options
+    `ftol=1e-4` and `x_scale='jac'` to the call to `scipy.optimize.least_squares`.
 
 Simple tests
 ============
