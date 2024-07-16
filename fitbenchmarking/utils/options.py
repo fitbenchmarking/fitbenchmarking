@@ -134,7 +134,7 @@ class Options:
                    'trust-constr',
                    'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_leastsq': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-leastsq'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     VALID_FITTING = \
@@ -278,7 +278,7 @@ class Options:
                    'SLSQP',
                    'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
-         'scipy_leastsq': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-leastsq'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     DEFAULT_FITTING = \

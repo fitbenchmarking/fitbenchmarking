@@ -14,13 +14,13 @@ class ScipyLeastSqController(Controller):
     controller_name = 'scipy_leastsq'
 
     algorithm_check = {
-        'all': ['lm-scipy', 'trf', 'dogbox'],
-        'ls': ['lm-scipy', 'trf', 'dogbox'],
+        'all': ['lm-leastsq'],
+        'ls': ['lm-leastsq'],
         'deriv_free': [None],
         'general': [None],
         'simplex': [],
-        'trust_region': ['lm-scipy', 'trf', 'dogbox'],
-        'levenberg-marquardt': ['lm-scipy'],
+        'trust_region': ['lm-leastsq'],
+        'levenberg-marquardt': ['lm-leastsq'],
         'gauss_newton': [],
         'bfgs': [],
         'conjugate_gradient': [],
@@ -28,7 +28,7 @@ class ScipyLeastSqController(Controller):
         'global_optimization': [],
         'MCMC': []}
 
-    jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
+    jacobian_enabled_solvers = ['lm-leastsq']
 
     def __init__(self, cost_func):
         """
