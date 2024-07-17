@@ -155,9 +155,9 @@ class UserMininimizerOptionTests(unittest.TestCase):
         (['HillClimbingOptimizer', 'RepulsingHillClimbingOptimizer',
           'SimulatedAnnealingOptimizer'], 'gradient_free'),
     ])
-    def test_shared_valid(self, options_set, software):
+    def test_minimizer_choice_valid(self, options_set, software):
         """
-        Shared test to check that the minimizer option set is valid
+        Test to check that the minimizer option set is valid
 
         :param options_set: option set to be tested
         :type options_set: list
@@ -197,9 +197,9 @@ class UserMininimizerOptionTests(unittest.TestCase):
         (['random_minimizer_1', 'random_minimizer_2',
           'random_minimizer_3'], 'gradient_free'),
     ])
-    def test_shared_invalid(self, options_set, software):
+    def test_minimizer_choice_invalid(self, options_set, software):
         """
-        Shared test to check that the minimizer option set is invalid
+        Test to check that the minimizer option set is invalid
 
         :param options_set: option set to be tested
         :type options_set: list
