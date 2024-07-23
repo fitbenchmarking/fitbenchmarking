@@ -8,9 +8,9 @@ fitting software.
 
 import os
 import platform
+import time
 import timeit
 import warnings
-import time
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -216,6 +216,7 @@ class Fit:
         """
         results = []
         for cf in self._options.cost_func_type:
+            LOGGER.info("        Cost Function: %s", cf)
             cost_func_cls = create_cost_func(cf)
             cost_func = cost_func_cls(problem)
             try:
@@ -256,7 +257,7 @@ class Fit:
             else software
 
         for s in software_pbar:
-            LOGGER.info("        Software: %s", s.upper())
+            LOGGER.info("           Software: %s", s.upper())
             try:
                 minimizers = self._options.minimizers[s]
             except KeyError as e:
@@ -301,7 +302,7 @@ class Fit:
         for minimizer in minimizers:
             controller.minimizer = minimizer
             minimizer_check = True
-            LOGGER.info("            Minimizer: %s", minimizer)
+            LOGGER.info("               Minimizer: %s", minimizer)
             try:
                 controller.validate_minimizer(minimizer, algorithm_type)
             except UnknownMinimizerError as excp:
