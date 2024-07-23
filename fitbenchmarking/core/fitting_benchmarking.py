@@ -8,9 +8,9 @@ fitting software.
 
 import os
 import platform
+import time
 import timeit
 import warnings
-import time
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -70,6 +70,7 @@ class Fit:
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
         self.__emissions_tracker = None
+        self.__logger_prefix = "    "
         if 'emissions' in options.table_type:
             self.__emissions_tracker = EmissionsTracker()
             if platform.system() == 'Windows':
@@ -178,7 +179,8 @@ class Fit:
             else range(num_start_vals)
 
         for index in num_start_vals_pbar:
-            LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
+            LOGGER.info("%sStarting value: %i/%i", self.__logger_prefix,
+                        index + 1, num_start_vals)
 
             # Set the values of the start index
             self.__start_values_index = index
@@ -216,6 +218,7 @@ class Fit:
         """
         results = []
         for cf in self._options.cost_func_type:
+            LOGGER.info("%sCost Function: %s", self.__logger_prefix*2, cf)
             cost_func_cls = create_cost_func(cf)
             cost_func = cost_func_cls(problem)
             try:
@@ -256,7 +259,7 @@ class Fit:
             else software
 
         for s in software_pbar:
-            LOGGER.info("        Software: %s", s.upper())
+            LOGGER.info("%sSoftware: %s", self.__logger_prefix*3, s.upper())
             try:
                 minimizers = self._options.minimizers[s]
             except KeyError as e:
@@ -301,7 +304,7 @@ class Fit:
         for minimizer in minimizers:
             controller.minimizer = minimizer
             minimizer_check = True
-            LOGGER.info("            Minimizer: %s", minimizer)
+            LOGGER.info("%sMinimizer: %s", self.__logger_prefix*4, minimizer)
             try:
                 controller.validate_minimizer(minimizer, algorithm_type)
             except UnknownMinimizerError as excp:
@@ -379,7 +382,7 @@ class Fit:
                     cost_func.jacobian = jacobian
                     if minimizer_check:
                         LOGGER.info(
-                            "                Jacobian: %s",
+                            "%sJacobian: %s", self.__logger_prefix*5,
                             jacobian.name() if jacobian.name() else "default"
                         )
 
@@ -444,7 +447,7 @@ class Fit:
                     if cost_func.hessian is not None:
                         cost_func.hessian.method = num_method
                         hess_name = cost_func.hessian.name()
-                    LOGGER.info("                   Hessian: %s",
+                    LOGGER.info("%sHessian: %s", self.__logger_prefix*6,
                                 hess_name)
 
                 # Perform the fit a number of times specified by num_runs
