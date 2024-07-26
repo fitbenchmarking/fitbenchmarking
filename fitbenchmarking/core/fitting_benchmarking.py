@@ -7,9 +7,10 @@ fitting software.
 """
 
 import os
+import platform
+import time
 import timeit
 import warnings
-import platform
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -68,8 +69,20 @@ class Fit:
         self._unselected_minimizers = {}
         self.__start_values_index = 0
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
-        self.__emissions_tracker = EmissionsTracker() \
-            if 'emissions' in options.table_type else None
+        self.__emissions_tracker = None
+        self.__logger_prefix = "    "
+        if 'emissions' in options.table_type:
+            self.__emissions_tracker = EmissionsTracker()
+            if platform.system() == 'Windows':
+                # Temporary hack to artificially create a delay to avoid
+                # div by zero
+                hs = self.__emissions_tracker._hardware[0].start
+
+                def new_hs(*args, **kwargs):
+                    time.sleep(1e-10)
+                    return hs(*args, **kwargs)
+
+                self.__emissions_tracker._hardware[0].start = new_hs
 
     def benchmark(self):
         """
@@ -166,7 +179,8 @@ class Fit:
             else range(num_start_vals)
 
         for index in num_start_vals_pbar:
-            LOGGER.info("    Starting value: %i/%i", index + 1, num_start_vals)
+            LOGGER.info("%sStarting value: %i/%i", self.__logger_prefix,
+                        index + 1, num_start_vals)
 
             # Set the values of the start index
             self.__start_values_index = index
@@ -204,6 +218,7 @@ class Fit:
         """
         results = []
         for cf in self._options.cost_func_type:
+            LOGGER.info("%sCost Function: %s", self.__logger_prefix*2, cf)
             cost_func_cls = create_cost_func(cf)
             cost_func = cost_func_cls(problem)
             try:
@@ -244,7 +259,7 @@ class Fit:
             else software
 
         for s in software_pbar:
-            LOGGER.info("        Software: %s", s.upper())
+            LOGGER.info("%sSoftware: %s", self.__logger_prefix*3, s.upper())
             try:
                 minimizers = self._options.minimizers[s]
             except KeyError as e:
@@ -289,7 +304,7 @@ class Fit:
         for minimizer in minimizers:
             controller.minimizer = minimizer
             minimizer_check = True
-            LOGGER.info("            Minimizer: %s", minimizer)
+            LOGGER.info("%sMinimizer: %s", self.__logger_prefix*4, minimizer)
             try:
                 controller.validate_minimizer(minimizer, algorithm_type)
             except UnknownMinimizerError as excp:
@@ -369,7 +384,7 @@ class Fit:
                         continue
                     if minimizer_check:
                         LOGGER.info(
-                            "                Jacobian: %s",
+                            "%sJacobian: %s", self.__logger_prefix*5,
                             jacobian.name() if jacobian.name() else "default"
                         )
 
@@ -434,7 +449,7 @@ class Fit:
                     if cost_func.hessian is not None:
                         cost_func.hessian.method = num_method
                         hess_name = cost_func.hessian.name()
-                    LOGGER.info("                   Hessian: %s",
+                    LOGGER.info("%sHessian: %s", self.__logger_prefix*6,
                                 hess_name)
 
                 # Perform the fit a number of times specified by num_runs
@@ -486,22 +501,14 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if tracker:
-                    if platform.system() == 'Windows':
-                        with tracker:
-                            runtimes = timeit.Timer(
-                                stmt=controller.execute
-                                ).repeat(num_runs, 1)
-                        emissions = tracker.final_emissions / num_runs
-                    else:
-                        tracker.start_task()
-                        runtimes = timeit.Timer(
-                            stmt=controller.execute
-                        ).repeat(num_runs, 1)
-                        emissions = tracker.stop_task().emissions / num_runs
+                    tracker.start_task()
+                    runtimes = timeit.Timer(
+                        stmt=controller.execute
+                    ).repeat(num_runs, 1)
+                    emissions = tracker.stop_task().emissions / num_runs
                 else:
                     runtimes = timeit.Timer(
                         stmt=controller.execute).repeat(num_runs, 1)
-
                 controller.cleanup()
                 controller.check_attributes()
             min_time = np.min(runtimes)
@@ -527,10 +534,8 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e)
             else:
-                if controller.eval_confidence != 0:
-                    accuracy = 1/controller.eval_confidence()
-                else:
-                    accuracy = np.inf
+                conf = controller.eval_confidence()
+                accuracy = 1 / conf if conf != 0 else np.inf
 
             accuracy_check = any(np.isnan(n) for n in accuracy) \
                 if controller.problem.multifit else np.isnan(accuracy)

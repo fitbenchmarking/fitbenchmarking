@@ -90,16 +90,15 @@ class LocalMinTable(Table):
                  specified above) and :math:`\\frac{|| J^T r||}{||r||}`
         :rtype: bool, float
         """
-
-        res = result.r_x
-
-        jac = result.jac_x
-
-        if res is None:
+        if np.isinf(result.accuracy):
             return None, None
-
+        if result.r_x is None:
+            return None, None
         if result.params is None:
             return False, np.inf
+
+        res = result.r_x
+        jac = result.jac_x
 
         min_test = jac.transpose().dot(res)
         norm_r = np.linalg.norm(res)
@@ -143,7 +142,9 @@ class LocalMinTable(Table):
         """
         rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
                      for local_min in vals])
-        hex_strs = [clrs.rgb2hex(colour) for colour in rgba]
+        hex_strs = [clrs.to_hex("whitesmoke") if v is None
+                    else clrs.rgb2hex(colour)
+                    for colour, v in zip(rgba, vals)]
         text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
                     for colour in rgba]
         return hex_strs, text_str

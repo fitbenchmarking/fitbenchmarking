@@ -14,6 +14,7 @@ from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
     WeightedNLLSCostFunc
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
@@ -22,7 +23,10 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.exceptions import (NoSparseJacobianError,
                                               SparseJacobianIsDenseError)
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def f(x, p1, p2):
@@ -402,6 +406,62 @@ class TestDerivCostFunc(TestCase):
         self.assertTrue(np.isclose(self.actual, eval_result).all())
 
 
+class TestBestAvailable(TestCase):
+    """
+    Additional tests to check the best_available jacobian
+    """
+
+    def setUp(self):
+        """
+        Setting up tests
+        """
+        options = Options()
+        self.fitting_problem = FittingProblem(options)
+        self.fitting_problem.function = f
+        self.fitting_problem.jacobian = j
+        self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
+        self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
+
+    def test_name(self):
+        """
+        Test the name is not taken from a sub jacobian.
+        """
+        jac = BestAvailable(self.fitting_problem)
+        self.assertNotEqual(jac.name(), jac.sub_jac.name())
+
+    def test_set_method_warning(self):
+        """
+        Test that setting the method raises a warning.
+        """
+        jac = BestAvailable(self.fitting_problem)
+        with self.assertLogs(LOGGER, level='WARNING') as log:
+            jac.method = "three"
+            self.assertTrue("Method cannot be selected" in log.output[0])
+
+    def test_set_method_value(self):
+        """
+        Test that setting the method does not work.
+        """
+        jac = BestAvailable(self.fitting_problem)
+        jac.method = "three"
+        self.assertNotEqual(jac.method, "three")
+
+    def test_eval_callable_jac(self):
+        """
+        Test that an analytic jacobian is used when jac is callable.
+        """
+        jac = BestAvailable(self.fitting_problem)
+        self.assertEqual(type(jac.sub_jac), Analytic)
+
+    def test_eval_not_callable_jac(self):
+        """
+        Test that a scipy jacobian is used when jac is not callable.
+        """
+        self.fitting_problem.jacobian = None
+        jac = BestAvailable(self.fitting_problem)
+        self.assertEqual(type(jac.sub_jac), Scipy)
+
+
 class TestFactory(TestCase):
     """
     Tests for the Jacobian factory
@@ -414,13 +474,16 @@ class TestFactory(TestCase):
         """
         Test that the factory returns the correct class for inputs
         """
-        valid = ['scipy', 'analytic']
+        valid = [('scipy', Scipy),
+                 ('analytic', Analytic),
+                 ('best_available', BestAvailable),
+                 ]
 
         invalid = ['numpy', 'random_jac']
 
-        for jac_method in valid:
+        for jac_method, jac_class in valid:
             jac = create_jacobian(jac_method)
-            self.assertTrue(jac.__name__.lower().startswith(jac_method))
+            self.assertTrue(jac == jac_class)
 
         for jac_method in invalid:
             self.assertRaises(exceptions.NoJacobianError,

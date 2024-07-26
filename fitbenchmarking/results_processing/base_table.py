@@ -256,12 +256,20 @@ class Table:
         if html:
             val = self.get_value(result)
             val_str = self.display_str(val)
-            val_str += self.get_error_str(result,
-                                          error_template="<sup>{}</sup>")
-            val_str = self.get_hyperlink(result, val_str, text_col)
+            error_str = self.get_error_str(result,
+                                           error_template="<sup>{}</sup>")
+            if 'inf' in val_str and self.table_name != 'local_min_table.':
+                val_str = f'<span class="blank">Error {error_str}</span>'
+            elif 'N/A' in val_str:
+                val_str = '<span class="blank">N/A</span>'
+            else:
+                val_str = self.get_hyperlink(result,
+                                             val_str + error_str,
+                                             text_col)
         else:
             val_str = self.display_str(self.get_value(result))
-            val_str += self.get_error_str(result, error_template='[{}]')
+            if val_str != 'N/A':
+                val_str += self.get_error_str(result, error_template='[{}]')
         return val_str
 
     def get_hyperlink(self, result, val_str, text_col):
@@ -543,15 +551,19 @@ class Table:
         """
         log_vals = np.log10(vals)
         log_llim = min(log_vals)
-        norm_vals = (log_vals - log_llim) /\
-            (log_ulim - log_llim)
+        if np.isinf(log_llim):
+            norm_vals = np.repeat(np.nan, len(vals))
+        else:
+            norm_vals = (log_vals - log_llim) \
+             / (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
-        norm_vals[np.isnan(norm_vals)] = 1  # deal with nans
         # trimming colour map according to default/user input
         norm_vals = cmap_range[0] + \
             norm_vals*(cmap_range[1] - cmap_range[0])
         rgba = cmap(norm_vals)
-        hex_strs = [mpl.colors.rgb2hex(colour) for colour in rgba]
+        hex_strs = [mpl.colors.to_hex("whitesmoke") if np.isinf(v) else
+                    mpl.colors.rgb2hex(colour)
+                    for colour, v in zip(rgba, vals)]
         text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
                     for colour in rgba]
 
@@ -596,6 +608,7 @@ class Table:
         fig.set_size_inches(sz_in[0], sz_in[1])
 
         plt.savefig(fig_path, dpi=150)
+        plt.close(fig)
 
         return os.path.relpath(fig_path, self.group_dir)
 

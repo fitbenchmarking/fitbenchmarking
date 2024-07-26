@@ -11,9 +11,10 @@ import os
 from sys import platform
 from tempfile import NamedTemporaryFile
 from unittest import TestCase
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
-from conftest import run_for_test_types
 
+from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+
+from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
@@ -55,7 +56,8 @@ class TestRegressionAll(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory,
                       override_software=["mantid"],
-                      jac_num_method={"scipy": ["2-point", "3-point"]})
+                      jac_num_method={"scipy": ["2-point", "3-point"]},
+                      additional_options={'jac_method': ['scipy']})
 
         diff, msg = compare_results(problem_sub_directory, "multifit.csv")
         self.assertListEqual([], diff, msg)
@@ -146,7 +148,7 @@ def diff_result(actual, expected):
                        f'Expected :{line_change[1]}\n'
                        f'Actual   :{line_change[2]}'
                        for line_change in diff])
-    if diff != []:
+    if diff:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
         with open("actual.out", "w", encoding='utf-8') as outfile:
@@ -212,7 +214,7 @@ def setup_options(override_software: list = None,
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
     software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl", "levmar",
                         "lmfit", "mantid", "minuit", "nlopt", "ralfit",
-                        "scipy", "scipy_ls", "theseus"],
+                        "scipy", "scipy_ls", "scipy_leastsq", "theseus"],
                 "default": ["bumps", "scipy", "scipy_ls"],
                 "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
                            "matlab_stats"]}
@@ -236,6 +238,7 @@ def setup_options(override_software: list = None,
                   "ralfit": "gn",
                   "scipy": "Nelder-Mead",
                   "scipy_ls": "lm-scipy",
+                  "scipy_leastsq": "lm-leastsq",
                   "theseus": "Levenberg_Marquardt"}
 
     opts.software = software.get(TEST_TYPE) if override_software is None \
@@ -269,7 +272,8 @@ def create_options_file(override_software: list = None,
 
 def run_benchmark(results_dir: str, problem_sub_directory: str,
                   override_software: list = None,
-                  jac_num_method: dict = None) -> None:
+                  jac_num_method: dict = None,
+                  additional_options: dict = None) -> None:
     """
     Runs a benchmark of the problems in a specific directory
     and places them in the results directory.
@@ -289,7 +293,12 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
                                            os.pardir,
                                            "test_files",
                                            problem_sub_directory))
-    run([problem], additional_options={'results_dir': results_dir},
+
+    add_opts = {'results_dir': results_dir}
+    if additional_options is not None:
+        add_opts.update(additional_options)
+
+    run([problem], additional_options=add_opts,
         options_file=opt_file_name,
         debug=True)
     os.remove(opt_file_name)

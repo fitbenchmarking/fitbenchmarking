@@ -6,13 +6,16 @@ Jacobian Options
 
 The Jacobian section allows you to control which methods for computing Jacobians the software uses.
 
+.. _analytic-jac:
+
 Analytic (:code:`analytic`)
 ---------------------------
 
 Functions for analytic Jacobians are available for specific :ref:`problem_def`. Specifically, dense jacobian functions are
-available for cutest, NIST and Mantid, while sparse jacobians are available for cutest only. However, the user can specify custom
-jacobian functions for any :ref:`problem_def` except from NIST and cutest, through a problem definition file. They can specify a dense
-and a sparse jacobian, and select which one to use by the following options:
+available for cutest, NIST and Mantid, while sparse jacobians are available for cutest only.
+If an analytic jacobian is not available, the benchmark will be skipped. The user can specify custom
+jacobian functions for any :ref:`problem_def` except from NIST and cutest, through a problem definition file. 
+They can specify a dense and a sparse jacobian, and select which one to use by the following options:
 
 * ``default`` - use the analytic (dense) derivative provided by a supported format or the dense jacobian function provided by the user.
 * ``sparse`` - use a sparse jacobian function, either available or provided by the user, to compute the derivative.
@@ -95,3 +98,21 @@ Default is ``central``.
 
     [JACOBIAN]
     numdifftools: central
+
+Best Available (:code:`best_available`)
+---------------------------------------
+
+A flexible option which uses :ref:`analytic-jac` where available and
+:ref:`scipy-jac` with ``method=2-point`` when the analytic would fail.
+This may be useful when testing large problem sets with multiple sources.
+
+ The only option is:
+
+* ``default`` - use analytic jacobian if available, otherwise use scipy 2-point.
+
+Default is ``default``
+
+.. code-block:: rst
+
+    [JACOBIAN]
+    best_available: default

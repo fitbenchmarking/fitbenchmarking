@@ -205,8 +205,7 @@ class PerformFitTests(unittest.TestCase):
                     assert emissions != np.inf
 
     @patch("fitbenchmarking.controllers." +
-           "base_controller.Controller.eval_confidence",
-           return_value=2)
+           "base_controller.Controller.eval_confidence")
     def test_eval_confidence_branches(self, mock):
         """
         The test checks the eval_confidence branches in
@@ -220,11 +219,12 @@ class PerformFitTests(unittest.TestCase):
         fit = Fit(options=self.options,
                   data_dir='test',
                   checkpointer=self.cp)
+        mock.return_value = 2
         accuracy, _, _ = fit._Fit__perform_fit(controller)
         assert accuracy == 0.5
         assert mock.call_count == 1
 
-        controller.eval_confidence = 0
+        mock.return_value = 0
         accuracy, _, _ = fit._Fit__perform_fit(controller)
         assert accuracy == np.inf
 
@@ -277,7 +277,7 @@ class PerformFitTests(unittest.TestCase):
 
             _ = fit._Fit__perform_fit(controller)
             assert ("ratio of the max time to the min is 5.0"
-                    in str(w[-1].message))
+                    in ''.join([str(w[i].message) for i in range(0, len(w))]))
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
