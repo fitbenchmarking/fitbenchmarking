@@ -77,6 +77,8 @@ def create_prob_group(result, support_pages_dir, options):
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options, support_pages_dir)
     template = env.get_template("fitting_report_template.html")
+    n_params = result.get_n_parameters()
+    list_params = True if n_params < 100 else False
 
     with open(file_path, 'w') as fh:
         fh.write(template.render(
@@ -100,7 +102,8 @@ def create_prob_group(result, support_pages_dir, options):
             fitted_plot=fig_fit,
             pdf_plot_available=pdf_success,
             pdf_plot=fig_pdf,
-            n_params=result.get_n_parameters(),
+            n_params=n_params,
+            list_params=list_params,
             n_data_points=result.get_n_data_points()))
 
     result.fitting_report_link = os.path.abspath(file_path)
