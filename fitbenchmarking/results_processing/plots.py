@@ -46,6 +46,10 @@ class Plot:
             self.plots_failed = True
             raise PlottingError(
                 'Plots cannot be generated for Horace problems')
+        if self.result.problem_format == 'bal':
+            self.plots_failed = True
+            raise PlottingError(
+                'Plots cannot be generated for BAL problems')
 
         self.options = options
         self.figures_dir = figures_dir

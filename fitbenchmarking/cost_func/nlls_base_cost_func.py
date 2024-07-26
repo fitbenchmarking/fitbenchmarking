@@ -83,7 +83,7 @@ class BaseNLLSCostFunc(CostFunc):
         r = self.eval_r(params, **kwargs)
         J = self.jac_res(params, **kwargs)
 
-        return 2.0 * matmul(J.T, r)
+        return 2.0 * J.T.dot(r)
 
     def hes_cost(self, params, **kwargs):
         """

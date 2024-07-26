@@ -103,6 +103,8 @@ class FittingProblem:
         #: Callable function for the Jacobian
         self.jacobian = None
 
+        self.sparse_jacobian = None
+
         #: *bool*
         #: Whether the function has been wrapped to reduce the dimension of x
         #: on function calls

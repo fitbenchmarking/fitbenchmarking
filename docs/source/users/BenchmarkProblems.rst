@@ -296,10 +296,27 @@ or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/HOGBEN_samples
 
 These problems (also found in the folder `examples/benchmark_problems/HOGBEN_samples`)
 contain simulated reflectometry data. The data supplied has been generated using the
-`HOGBEN sample suite <https://github.com/jfkcooper/HOGBEN/blob/main/hogben/models/samples.py>.
+`HOGBEN sample suite <https://github.com/jfkcooper/HOGBEN/blob/main/hogben/models/samples.py>`_.
 
 These problems have between 4 and 10 unknown parameters, and fit around 180 data points.
 
+Bundle Adjustment in the Large (BAL)
+====================================
+
+**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.zip>`
+or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.tar.gz>`
+
+These problems (also found in the folder `examples/benchmark_problems/Bundle_Adjustment`)
+contain image data, either captured at a regular rate using a Ladybug camera, or downloaded
+from Flickr.com. Please see the `GRAIL <https://grail.cs.washington.edu/projects/bal/>`_
+webpage for more information on these datasets.
+
+These problems have between ~20,000 and ~190,000 unknown parameters, and fit between ~60,000 and ~170,000 data points.
+
+.. note::
+    These problems can currently only be run using the `scipy_ls` software, which supports sparse jacobians.
+    When running these problems with the `nlls` cost function, we would suggest adding the options
+    `ftol=1e-4` and `x_scale='jac'` to the call to `scipy.optimize.least_squares`.
 
 Simple tests
 ============
