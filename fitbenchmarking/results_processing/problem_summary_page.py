@@ -104,7 +104,7 @@ def _create_summary_page(categorised_best_results, summary_plot_path,
     run_name = f"{options.run_name}: " if options.run_name else ""
 
     n_params = results[0].get_n_parameters()
-    list_params = True if n_params < 100 else False
+    list_params = n_params < 100
 
     with open(file_path, 'w') as fh:
         fh.write(template.render(

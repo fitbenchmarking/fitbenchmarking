@@ -81,7 +81,7 @@ def create_prob_group(result, support_pages_dir, options):
     css = get_css(options, support_pages_dir)
     template = env.get_template("fitting_report_template.html")
     n_params = result.get_n_parameters()
-    list_params = True if n_params < 100 else False
+    list_params = n_params < 100
 
     if np.isnan(result.emissions):
         emission_disp = 'N/A'

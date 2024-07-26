@@ -65,7 +65,7 @@ class Scipy(Jacobian):
         def func_wrapper(params, **kwargs):
             eval_model = self.problem.eval_model(params, **kwargs)
             return eval_model.ravel()
-        
+
         jac = approx_derivative(func_wrapper, params,
                                 method=self.equiv_np_method,
                                 rel_step=None,

@@ -20,6 +20,7 @@ class BALParser(FitbenchmarkParser):
         """
         Read in datafile
         """
+        # pylint: disable=W0201
         with bz2.open(file_name, "rt") as file:
             self.n_cameras, self.n_points, n_observations = map(
                 int, file.readline().split())
@@ -109,7 +110,7 @@ class BALParser(FitbenchmarkParser):
                                       points_3d.ravel())).tolist()))
         ]
 
-        def fitFunction(x, *params):
+        def fitFunction(x, *params):  # pylint: disable=W0613
             y = self.fun(params)
             return y
 
@@ -184,6 +185,7 @@ class BALParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+        # pylint: disable=W0613
         def sparse_jac(x, *params):
             A = self.bundle_adjustment_sparsity()
             return A
