@@ -50,6 +50,7 @@ minuit = ['iminuit>=2.0']
 nlopt = ['nlopt']
 numdifftools = ['numdifftools']
 paramonte = ['paramonte']
+pyro = ['pyro', 'torch']
 SAS = ['sasmodels', "tinycc;platform_system=='Windows'"]
 dev = [
     'pytest',

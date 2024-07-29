@@ -6,6 +6,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 import glob
 import os
+
 import matplotlib.pyplot as plt
 
 from fitbenchmarking.utils.exceptions import OptionsError
@@ -81,6 +82,7 @@ class Options:
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['migrad', 'simplex'],
          'paramonte': ['paraDram_sampler'],
+         'pyro': ['NUTS'],
          'nlopt': ['LN_BOBYQA',
                    'LN_NEWUOA',
                    'LN_NEWUOA_BOUND',
@@ -143,8 +145,8 @@ class Options:
          'software': ['bumps', 'ceres', 'dfo', 'gofit', 'gradient_free', 'gsl',
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
-                      'nlopt', 'paramonte', 'ralfit', 'scipy', 'scipy_ls',
-                      'scipy_go', 'theseus'],
+                      'nlopt', 'paramonte', 'pyro', 'ralfit', 'scipy',
+                      'scipy_ls', 'scipy_go', 'theseus'],
          'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
@@ -241,6 +243,7 @@ class Options:
          'matlab_stats': ['Levenberg-Marquardt'],
          'minuit': ['migrad', 'simplex'],
          'paramonte': ['paraDram_sampler'],
+         'pyro': ['NUTS'],
          'nlopt': ['LN_BOBYQA',
                    'LN_NEWUOA',
                    'LN_NEWUOA_BOUND',
