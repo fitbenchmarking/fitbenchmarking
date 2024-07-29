@@ -135,6 +135,7 @@ class Options:
                    'trust-constr',
                    'dogleg'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-leastsq'],
          'scipy_go': ['differential_evolution', 'shgo', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     VALID_FITTING = \
@@ -146,20 +147,24 @@ class Options:
                       'horace', 'levmar', 'lmfit', 'mantid', 'matlab',
                       'matlab_curve', 'matlab_opt', 'matlab_stats', 'minuit',
                       'nlopt', 'paramonte', 'pyro', 'ralfit', 'scipy',
-                      'scipy_ls', 'scipy_go', 'theseus'],
-         'jac_method': ['scipy', 'analytic', 'default', 'numdifftools'],
-         'hes_method': ['scipy', 'analytic', 'default', 'numdifftools'],
+                      'scipy_ls', 'scipy_leastsq', 'scipy_go', 'theseus'],
+         'jac_method': ['best_available', 'scipy', 'analytic', 'default',
+                        'numdifftools'],
+         'hes_method': ['best_available', 'scipy', 'analytic', 'default',
+                        'numdifftools'],
          'cost_func_type': ['nlls', 'weighted_nlls', 'hellinger_nlls',
                             'loglike_nlls', 'poisson']}
     VALID_JACOBIAN = \
-        {'scipy': ['2-point', '3-point', 'cs'],
-         'analytic': ['default'],
+        {'scipy': ['2-point', '3-point', 'cs', '2-point_sparse'],
+         'best_available': ['default'],
+         'analytic': ['default', 'sparse'],
          'default': ['default'],
          'numdifftools': ['central',
                           'complex', 'multicomplex',
                           'forward', 'backward']}
     VALID_HESSIAN = \
         {'scipy': ['2-point', '3-point', 'cs'],
+         'best_available': ['default'],
          'analytic': ['default'],
          'default': ['default'],
          'numdifftools': ['central',
@@ -275,23 +280,26 @@ class Options:
                    'SLSQP',
                    'COBYLA'],
          'scipy_ls': ['lm-scipy', 'trf', 'dogbox'],
+         'scipy_leastsq': ['lm-leastsq'],
          'scipy_go': ['differential_evolution', 'dual_annealing'],
          'theseus': ['Levenberg_Marquardt', 'Gauss-Newton']}
     DEFAULT_FITTING = \
         {'num_runs': 5,
          'algorithm_type': ['all'],
          'software': ['scipy', 'scipy_ls'],
-         'jac_method': ['analytic'],
-         'hes_method': ['analytic'],
+         'jac_method': ['best_available'],
+         'hes_method': ['best_available'],
          'cost_func_type': ['weighted_nlls'],
          'max_runtime': 600}
     DEFAULT_JACOBIAN = \
         {'analytic': ['default'],
+         'best_available': ['default'],
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
     DEFAULT_HESSIAN = \
         {'analytic': ['default'],
+         'best_available': ['default'],
          'scipy': ['2-point'],
          'default': ['default'],
          'numdifftools': ['central']}
@@ -518,7 +526,7 @@ class Options:
         :return: value of the option
         :rtype: list/str/int/bool
         """
-        section = func.__str__().split("Section: ")[1].split('>')[0]
+        section = str(func).split("Section: ")[1].split('>')[0]
         try:
             if (option in additional_options and
                     additional_options[option]):
@@ -586,13 +594,16 @@ class Options:
 
         config['MINIMIZERS'] = {k: list_to_string(m)
                                 for k, m in self.minimizers.items()}
-        config['FITTING'] = {'num_runs': self.num_runs,
-                             'algorithm_type': list_to_string(
-                                 self.algorithm_type),
-                             'software': list_to_string(self.software),
-                             'jac_method': list_to_string(self.jac_method),
-                             'hes_method': list_to_string(self.hes_method),
-                             'max_runtime': self.max_runtime}
+        config['FITTING'] = {
+            'num_runs': self.num_runs,
+            'algorithm_type': list_to_string(
+                self.algorithm_type),
+            'software': list_to_string(self.software),
+            'jac_method': list_to_string(self.jac_method),
+            'hes_method': list_to_string(self.hes_method),
+            'max_runtime': self.max_runtime,
+            'cost_func_type': list_to_string(self.cost_func_type),
+        }
         config['JACOBIAN'] = {k: list_to_string(m)
                               for k, m in self.jac_num_method.items()}
         config['HESSIAN'] = {k: list_to_string(m)
@@ -630,7 +641,7 @@ class Options:
         """
         config = self._create_config()
 
-        with open(file_name, 'w') as f:
+        with open(file_name, 'w', encoding='utf-8') as f:
             config.write(f)
 
     def write_to_stream(self, file_object):
@@ -700,7 +711,7 @@ def find_options_file(options_file: str, additional_options: dict) -> Options:
         glob_options_file = glob.glob(options_file)
 
         if not glob_options_file:
-            raise OptionsError('Could not find file {}'.format(options_file))
+            raise OptionsError(f'Could not find file {options_file}')
         if not options_file.endswith(".ini"):
             raise OptionsError('Options file must be a ".ini" file')
 

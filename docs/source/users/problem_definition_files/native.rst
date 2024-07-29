@@ -25,7 +25,7 @@ keys are described below:
 
 software
   Either 'IVP', 'Mantid', 'SasView', or 'Horace' (case insensitive).
-  
+
   This defines whether to use an IVP format, Mantid, or SasView to generate the model.
   The 'Mantid' software also supports Mantid's MultiFit functionality, which
   requires the parameters listed here to be defined slightly differently.
@@ -72,7 +72,7 @@ input_file
   ``examples/benchmark_problems/Data_Assimilation/data_files/lorentz.txt``
 
 plot_scale
-  The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this 
+  The scale of the x and y axis for the plots. The options are 'loglog', 'logy', 'logx' and 'linear'. If this
   is not set it will default to 'linear'.
 
 function
@@ -121,10 +121,32 @@ function
 
   SASView functions can be any of
   `these <http://www.sasview.org/docs/user/qtgui/Perspectives/Fitting/models/index.html>`__.
-  
+
   **Horace**
 
-  The Horace functions are defined here :ref:`horace_format`
+  The Horace functions are defined here :ref:`horace_format` .
+
+jacobian
+  This is to define a dense jacobian function, or a sparse jacobian function, or both.
+  The parser for this function allows the user to define ``g`` in the following:
+
+  .. math:: \nabla_p f(x, *args) = g(x, *args)
+
+  To do this we use a python module, where the user can define a dense jacobian function
+  and a sparse jacobian function (or just one of the two). As in the above formula,
+  both functions can take the following arguments:
+
+  - *x* (np.array): A value for x to evaluate at
+  - *\*args* (floats): The parameters to fit
+
+  To link to this functions we use a string with the following parameters:
+
+  - *module*: The path to the module
+  - *dense_func*: The name of the dense jacobian function within the module
+  - *sparse_func*: The name of the sparse jacobian function within the module
+
+The sparse jacobian function provided must return a matrix in sparse format
+(e.g. coo, csr, crs), otherwise an error will be thrown.
 
 fit_ranges
   This specifies the region to be fit.
@@ -133,7 +155,7 @@ fit_ranges
   is the minimum in the range and the second is the maximum.
 
 parameter_ranges
-  An optional setting which specifies upper and lower bounds for 
+  An optional setting which specifies upper and lower bounds for
   parameters in the problem.
 
   Similarly to ``fit_ranges``, it takes the form where the first number

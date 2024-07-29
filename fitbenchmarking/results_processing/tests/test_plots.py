@@ -6,17 +6,18 @@ import inspect
 import os
 import unittest
 from tempfile import TemporaryDirectory
+from unittest import mock
 
 import pandas as pd
 import plotly.graph_objects as go
 
 from fitbenchmarking import test_files
+from fitbenchmarking.core.results_output import (create_directories,
+                                                 create_index_page)
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
-from fitbenchmarking.core.results_output import \
-    create_directories, create_index_page
 
 
 def load_mock_result():
@@ -43,6 +44,15 @@ def load_mock_result():
             dataset[b[0]].is_best_fit = True
 
     return results
+
+
+def find_error_bar_count(path):
+    """
+    Reads an html file and counts the error_y count
+    """
+    with open(path, 'r', encoding='utf-8') as file:
+        html_content = file.read()
+    return html_content.count("error_y")
 
 
 class PlotTests(unittest.TestCase):
@@ -108,7 +118,8 @@ class PlotTests(unittest.TestCase):
 
     def test_plot_initial_guess_create_files(self):
         """
-        Test that initial plot creates a file.
+        Test that initial plot creates a file and errorbars are
+        added to the plot.
         """
         file_name = self.plot.plot_initial_guess(
             self.df[('Fake_Test_Data', 'prob_1')])
@@ -116,6 +127,7 @@ class PlotTests(unittest.TestCase):
         self.assertEqual(file_name, 'start_for_prob_1.html')
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
+        self.assertEqual(find_error_bar_count(path), 2)
 
     def test_best_filename_return(self):
         """
@@ -127,14 +139,44 @@ class PlotTests(unittest.TestCase):
 
     def test_plotly_fit_create_files(self):
         """
-        Test that plotly_fit creates a file.
+        Test that plotly_fit creates a file and errorbars are
+        added to the plot.
         """
         file_names = self.plot.plotly_fit(
             self.df[('Fake_Test_Data', 'prob_1')])
 
-        self.assertEqual(file_names['m10_[s1]_jj0'],
-                         'm10_[s1]_jj0_fit_for_cf1_prob_1.html')
-        path = os.path.join(self.figures_dir, file_names['m10_[s1]_jj0'])
+        for m, s, j in zip(['m10', 'm11', 'm01', 'm00',
+                            'm10', 'm11', 'm01', 'm00'],
+                           ['s1', 's1', 's0', 's0',
+                            's1', 's1', 's0', 's0'],
+                           ['jj0', 'jj0', 'jj0', 'jj0',
+                            'jj1', 'jj1', 'jj1', 'jj1']):
+            file_name_prefix = f'{m}_[{s}]_{j}'
+            self.assertEqual(file_names[file_name_prefix],
+                             file_name_prefix+'_fit_for_cf1_prob_1.html')
+            path = os.path.join(self.figures_dir, file_names[file_name_prefix])
+            self.assertTrue(os.path.exists(path))
+            self.assertEqual(find_error_bar_count(path), 2)
+
+    def test_plot_posteriors_create_files(self):
+        """
+        Test that plot_posteriors creates a file
+        """
+
+        self.plot.result.param_names = ['a', 'b']
+
+        result = mock.Mock()
+        result.params_pdfs = {"scipy_pfit": [1.0, 1.0], "scipy_perr": [
+            0.1, 0.2], "a": [1.5, 1.0, 1.2], "b": [0.9, 1.6, 1.1]}
+        result.sanitised_min_name.return_value = 'm10_[s1]_jj0'
+        result.sanitised_name = 'cf1_prob_1'
+
+        file_name = self.plot.plot_posteriors(result)
+
+        self.assertEqual(file_name,
+                         'm10_[s1]_jj0_posterior_'
+                         'pdf_plot_for_cf1_prob_1.html')
+        path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
     def test_multivariate_plot(self):

@@ -39,24 +39,25 @@ class MantidDevParser(FitbenchmarkParser):
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
 
-    def parse(self):
-
-        fp = super().parse()
-
-        self._set_jacobian(fp)
-        return fp
-
-    def _set_jacobian(self, fp) -> None:
+    def _dense_jacobian(self) -> 'typing.Callable | None':
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
-        this try except tests if the error occurs and then only
+        This try except tests if the error occurs and then only
         assigns the jacobian if it passes.
-        :param fp: fitting problem
+        The jacobian will be None also in the case of multifit.
+
+        :return: the jacobian, or None
+        :rtype: Callable or None
         """
+        jac = super()._dense_jacobian()
+        if jac is not None:
+            return jac
+
+        fp = self.fitting_problem
         if self._is_multifit():
             # currently cannot do Jacobian and multifit
-            return
+            return None
         # need to trim x data to the correct range for Jacobian
         i0 = 0
         iN = len(fp.data_x)
@@ -80,8 +81,9 @@ class MantidDevParser(FitbenchmarkParser):
             _ = self._jacobian(x_data, self._params_dict.values())
             fp.jacobian = self._jacobian
         except RuntimeError:
+            return None
 
-            return
+        return self._jacobian
 
     def _jacobian(self, _x, params):
         # pylint: disable=unused-argument
@@ -98,6 +100,7 @@ class MantidDevParser(FitbenchmarkParser):
         :return: a matrix of the Jacobian
         :rtype: np.array
         """
+
         for param, key in zip(params, self._params_dict.keys()):
             self._mantid_function[key] = param
         # get mantid Jacobian
