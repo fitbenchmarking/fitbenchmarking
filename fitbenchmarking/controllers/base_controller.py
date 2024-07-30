@@ -52,6 +52,11 @@ class Controller:
     #: The **values** of the dictionary are given as a list of minimizers
     #: for that specific controller that fit into each of the above
     #: categories. See for example the ``GSL`` controller.
+    #:
+    #: The ``algorithm_check`` dictionary is used to determine which minimizers
+    #: to run given the ``algorithm_type`` selected in Fitting Options.
+    #: For guidance on how to catagorise minimizers, see the Optimization
+    #: Algorithms section of the FitBenchmarking docs.
     algorithm_check = {'all': [],
                        'ls': [],
                        'deriv_free': [],
