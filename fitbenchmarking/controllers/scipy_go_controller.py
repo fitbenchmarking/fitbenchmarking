@@ -51,6 +51,7 @@ class ScipyGOController(Controller):
         self._popt = None
         self._status = None
         self._maxiter = None
+        self._kwargs = {}
 
     def setup(self):
         """
@@ -69,17 +70,17 @@ class ScipyGOController(Controller):
         Run problem with Scipy GO.
         """
         if self.minimizer == "differential_evolution":
-            kwargs = {"maxiter": self._maxiter}
+            self._kwargs = {"maxiter": self._maxiter}
         elif self.minimizer == "shgo":
-            kwargs = {"options": {"maxiter": self._maxiter,
-                                  "jac": self.cost_func.jac_cost}}
+            self._kwargs = {"options": {"maxiter": self._maxiter,
+                                        "jac": self.cost_func.jac_cost}}
         elif self.minimizer == "dual_annealing":
-            kwargs = {"maxiter": self._maxiter, "local_search_options": {
-                      "jac": self.cost_func.jac_cost}}
+            self._kwargs = {"maxiter": self._maxiter, "local_search_options": {
+                            "jac": self.cost_func.jac_cost}}
         fun = self.cost_func.eval_cost
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
-        result = algorithm(fun, bounds, **kwargs)
+        result = algorithm(fun, bounds, **self._kwargs)
         self._popt = result.x
         if result.success:
             self._status = 0

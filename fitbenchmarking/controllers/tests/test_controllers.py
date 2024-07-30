@@ -16,6 +16,9 @@ from parameterized import parameterized
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.controllers.controller_factory import \
+        ControllerFactory
+from fitbenchmarking.controllers.nlopt_controller import nlopt
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -26,45 +29,6 @@ from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
-
-if TEST_TYPE in ['default', 'all']:
-    from fitbenchmarking.controllers.bumps_controller import BumpsController
-    from fitbenchmarking.controllers.controller_factory import \
-        ControllerFactory
-    from fitbenchmarking.controllers.dfo_controller import DFOController
-    from fitbenchmarking.controllers.lmfit_controller import LmfitController
-    from fitbenchmarking.controllers.minuit_controller import MinuitController
-    from fitbenchmarking.controllers.nlopt_controller import (NLoptController,
-                                                              nlopt)
-    from fitbenchmarking.controllers.scipy_controller import ScipyController
-    from fitbenchmarking.controllers.scipy_go_controller import \
-        ScipyGOController
-    from fitbenchmarking.controllers.scipy_ls_controller import \
-        ScipyLSController
-    from fitbenchmarking.controllers.scipy_leastsq_controller import \
-        ScipyLeastSqController
-
-if TEST_TYPE == 'all':
-    from fitbenchmarking.controllers.ceres_controller import CeresController
-    from fitbenchmarking.controllers.gofit_controller import GOFitController
-    from fitbenchmarking.controllers.gradient_free_controller import \
-        GradientFreeController
-    from fitbenchmarking.controllers.gsl_controller import GSLController
-    from fitbenchmarking.controllers.levmar_controller import LevmarController
-    from fitbenchmarking.controllers.mantid_controller import MantidController
-    from fitbenchmarking.controllers.ralfit_controller import RALFitController
-    from fitbenchmarking.controllers.theseus_controller import \
-        TheseusController
-
-if TEST_TYPE == 'matlab':
-    from fitbenchmarking.controllers.horace_controller import HoraceController
-    from fitbenchmarking.controllers.matlab_controller import MatlabController
-    from fitbenchmarking.controllers.matlab_curve_controller import \
-        MatlabCurveController
-    from fitbenchmarking.controllers.matlab_opt_controller import \
-        MatlabOptController
-    from fitbenchmarking.controllers.matlab_stats_controller import \
-        MatlabStatsController
 
 
 # pylint: disable=attribute-defined-outside-init, protected-access
@@ -80,11 +44,20 @@ def make_cost_func(file_name='cubic.dat', cost_func_type='weighted_nlls'):
 
     fitting_problem = parse_problem_file(fname, options)
     fitting_problem.correct_data()
-    if cost_func_type == 'weighted_nlls':
-        cost_func = WeightedNLLSCostFunc(fitting_problem)
-    if cost_func_type == 'loglike_nlls':
-        cost_func = LoglikeNLLSCostFunc(fitting_problem)
+    cost_func = WeightedNLLSCostFunc(fitting_problem)\
+        if cost_func_type == 'weighted_nlls'\
+        else LoglikeNLLSCostFunc(fitting_problem)
+
     return cost_func
+
+
+def create_controller(controller_name, cost_func):
+    """
+    Creates the controller using the Controller factory
+    """
+    controller_class = ControllerFactory.create_controller(controller_name)
+    controller = controller_class(cost_func)
+    return controller
 
 
 class DummyController(Controller):
@@ -428,8 +401,9 @@ class DefaultControllerTests(TestCase):
         """
         BumpsController: Test for output shape
         """
-        controller = BumpsController(self.cost_func)
+        controller = create_controller('bumps', self.cost_func)
         controller.minimizer = 'amoeba'
+
         self.shared_tests.controller_run_test(controller)
 
         controller._status = 0
@@ -444,9 +418,9 @@ class DefaultControllerTests(TestCase):
         """
         DFOController: Tests for output shape
         """
-        controller = DFOController(self.cost_func)
-
+        controller = create_controller('dfo', self.cost_func)
         controller.minimizer = minimizer
+
         self.shared_tests.controller_run_test(controller)
 
         controller._status = 0
@@ -461,9 +435,9 @@ class DefaultControllerTests(TestCase):
         """
         MinuitController: Tests for output shape
         """
-        controller = MinuitController(self.cost_func)
-
+        controller = create_controller('minuit', self.cost_func)
         controller.minimizer = minimizer
+
         self.shared_tests.controller_run_test(controller)
 
         controller._status = 0
@@ -475,8 +449,9 @@ class DefaultControllerTests(TestCase):
         """
         ScipyController: Test for output shape
         """
-        controller = ScipyController(self.cost_func)
+        controller = create_controller('scipy', self.cost_func)
         controller.minimizer = 'CG'
+
         self.shared_tests.controller_run_test(controller)
 
         controller.result.success = True
@@ -490,7 +465,7 @@ class DefaultControllerTests(TestCase):
         """
         ScipyLSController: Test for output shape
         """
-        controller = ScipyLSController(self.cost_func)
+        controller = create_controller('scipy_ls', self.cost_func)
         controller.minimizer = 'lm'
 
         self.shared_tests.controller_run_test(controller)
@@ -506,7 +481,7 @@ class DefaultControllerTests(TestCase):
         """
         ScipyLeastSqController: Test for output shape
         """
-        controller = ScipyLeastSqController(self.cost_func)
+        controller = create_controller('scipy_leastsq', self.cost_func)
         controller.minimizer = 'trf'
 
         self.shared_tests.controller_run_test(controller)
@@ -521,7 +496,7 @@ class DefaultControllerTests(TestCase):
         """
         NLoptController: Test for output shape
         """
-        controller = NLoptController(self.cost_func)
+        controller = create_controller('nlopt', self.cost_func)
         controller.minimizer = 'LD_VAR2'
 
         self.shared_tests.controller_run_test(controller)
@@ -541,7 +516,7 @@ class DefaultControllerTests(TestCase):
         """
         LmfitController: Test for output shape
         """
-        controller = LmfitController(self.cost_func)
+        controller = create_controller('lmfit', self.cost_func)
         controller.minimizer = 'leastsq'
         self.shared_tests.controller_run_test(controller)
 
@@ -550,12 +525,13 @@ class DefaultControllerTests(TestCase):
         controller.lmfit_out.success = False
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand([LmfitController, BumpsController])
-    def test_variable_names_corrected_in_controllers(self, controller):
+    @parameterized.expand(['lmfit', 'bumps'])
+    def test_variable_names_corrected_in_controllers(self, controller_name):
         """
         Test if variable names are corrected properly
         within the LmfitController and BumpsController
         """
+        controller = ControllerFactory.create_controller(controller_name)
         self.cost_func.param_names = ['b.1', 'b@2', 'b-3', 'b_4']
         control = controller(self.cost_func)
         assert control._param_names == ['p0', 'p1', 'p2', 'p3']
@@ -609,8 +585,7 @@ class ControllerBoundsTests(TestCase):
         Test that parameter bounds are respected for
         bounded problems in the controller.
         """
-        controller_class = ControllerFactory.create_controller(controller_name)
-        controller = controller_class(self.cost_func)
+        controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
 
         self.check_bounds(controller)
@@ -637,7 +612,7 @@ class ControllerValidateTests(TestCase):
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
 
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         controller.validate()
@@ -651,7 +626,7 @@ class ControllerValidateTests(TestCase):
         self.jac.method = "cs"
         self.cost_func.jacobian = self.jac
 
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         with self.assertRaises(exceptions.IncompatibleJacobianError):
@@ -666,7 +641,7 @@ class ControllerValidateTests(TestCase):
         self.jac.method = "cs"
         self.cost_func.jacobian = self.jac
 
-        controller = ScipyController(self.cost_func)
+        controller = create_controller('scipy', self.cost_func)
         controller.minimizer = "L-BFGS-B"
 
         with self.assertRaises(exceptions.IncompatibleJacobianError):
@@ -681,7 +656,7 @@ class ControllerValidateTests(TestCase):
         self.jac.method = "default"
         self.cost_func.jacobian = self.jac
 
-        controller = ScipyController(self.cost_func)
+        controller = create_controller('scipy', self.cost_func)
         controller.minimizer = "L-BFGS-B"
 
         controller.validate()
@@ -699,7 +674,7 @@ class ControllerValidateTests(TestCase):
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         controller.validate()
@@ -717,7 +692,7 @@ class ControllerValidateTests(TestCase):
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         with self.assertRaises(exceptions.IncompatibleHessianError):
@@ -736,7 +711,7 @@ class ControllerValidateTests(TestCase):
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
-        controller = ScipyController(self.cost_func)
+        controller = create_controller('scipy', self.cost_func)
         controller.minimizer = "L-BFGS-B"
 
         with self.assertRaises(exceptions.IncompatibleHessianError):
@@ -755,7 +730,7 @@ class ControllerValidateTests(TestCase):
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 
-        controller = ScipyController(self.cost_func)
+        controller = create_controller('scipy', self.cost_func)
         controller.minimizer = "L-BFGS-B"
 
         controller.validate()
@@ -779,7 +754,7 @@ class ExternalControllerTests(TestCase):
         """
         LevmarController: Tests for output shape
         """
-        controller = LevmarController(self.cost_func)
+        controller = create_controller('levmar', self.cost_func)
         controller.minimizer = 'levmar'
         self.shared_tests.controller_run_test(controller)
 
@@ -800,7 +775,7 @@ class ExternalControllerTests(TestCase):
         """
         TheseusController: Tests for output shape
         """
-        controller = TheseusController(self.cost_func)
+        controller = create_controller('theseus', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -817,7 +792,7 @@ class ExternalControllerTests(TestCase):
         """
         CeresController: Tests for output shape
         """
-        controller = CeresController(self.cost_func)
+        controller = create_controller('ceres', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -832,7 +807,7 @@ class ExternalControllerTests(TestCase):
         """
         MantidController: Test for output shape
         """
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -851,7 +826,7 @@ class ExternalControllerTests(TestCase):
         self.shared_tests = ControllerSharedTesting()
         self.cost_func.jacobian = Default(self.problem)
 
-        controller = MantidController(self.cost_func)
+        controller = create_controller('mantid', self.cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
 
@@ -870,7 +845,7 @@ class ExternalControllerTests(TestCase):
         file_path = os.path.join('multifit_set', 'multifit.txt')
         cost_func = make_cost_func(file_path)
 
-        controller = MantidController(cost_func)
+        controller = create_controller('mantid', cost_func)
         controller.minimizer = 'Levenberg-Marquardt'
 
         controller.parameter_set = 0
@@ -890,7 +865,7 @@ class ExternalControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (SingleFit).
         """
-        m_controller = MantidController(self.cost_func)
+        m_controller = create_controller('mantid', self.cost_func)
         b_controller = DummyController(self.cost_func)
         params = np.array([1, 2, 3, 4])
         x = np.array([6, 2, 32, 4])
@@ -909,7 +884,7 @@ class ExternalControllerTests(TestCase):
         Test the override in Mantid conroller is working correctly for
         evaluating chi_squared (MultiFit).
         """
-        m_controller = MantidController(self.cost_func)
+        m_controller = create_controller('mantid', self.cost_func)
         b_controller = DummyController(self.cost_func)
         params = [np.array([1, 2, 3, 4]),
                   np.array([1, 2, 3, 4]),
@@ -938,7 +913,7 @@ class ExternalControllerTests(TestCase):
         """
         GSLController: Tests for output shape
         """
-        controller = GSLController(self.cost_func)
+        controller = create_controller('gsl', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -955,7 +930,7 @@ class ExternalControllerTests(TestCase):
         """
         RALFitController: Tests for output shape
         """
-        controller = RALFitController(self.cost_func)
+        controller = create_controller('ralfit', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -969,7 +944,7 @@ class ExternalControllerTests(TestCase):
         """
         GOFitController: Tests for output shape
         """
-        controller = GOFitController(self.cost_func)
+        controller = create_controller('gofit', self.cost_func)
 
         controller.minimizer = 'regularisation'
         self.shared_tests.controller_run_test(controller)
@@ -1002,7 +977,7 @@ class MatlabControllerTests(TestCase):
         engine gives the same output as evaulating the function
         from python
         """
-        controller = MatlabController(self.cost_func)
+        controller = create_controller('matlab', self.cost_func)
         eng = controller.eng
         eng.workspace['test_mat_func'] =\
             controller.py_to_mat('eval_cost')
@@ -1019,14 +994,14 @@ class MatlabControllerTests(TestCase):
         MatlabController: Tests for correct error when fitting mantid problem
         """
         # No raise for default (NIST) problem
-        controller = MatlabController(self.cost_func)
+        controller = create_controller('matlab', self.cost_func)
         controller.validate()
         # Raise for Mantid problem
         cost_func = make_cost_func('cubic-fba-test-go.txt')
         jac = Scipy(cost_func.problem)
         jac.method = '2-point'
         cost_func.jacobian = jac
-        controller = MatlabController(cost_func)
+        controller = create_controller('matlab', cost_func)
         with self.assertRaises(exceptions.IncompatibleProblemError):
             controller.validate()
         controller.clear_matlab()
@@ -1035,7 +1010,7 @@ class MatlabControllerTests(TestCase):
         """
         MatlabController: Tests for output shape
         """
-        controller = MatlabController(self.cost_func)
+        controller = create_controller('matlab', self.cost_func)
 
         controller.minimizer = 'Nelder-Mead Simplex'
         self.shared_tests.controller_run_test(controller)
@@ -1053,7 +1028,7 @@ class MatlabControllerTests(TestCase):
         """
         MatlabOptController: Tests for output shape
         """
-        controller = MatlabOptController(self.cost_func)
+        controller = create_controller('matlab_opt', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -1070,7 +1045,7 @@ class MatlabControllerTests(TestCase):
         """
         MatlabStatsController: Tests for output shape
         """
-        controller = MatlabStatsController(self.cost_func)
+        controller = create_controller('matlab_stats', self.cost_func)
 
         controller.minimizer = 'Levenberg-Marquardt'
         self.shared_tests.controller_run_test(controller)
@@ -1086,7 +1061,7 @@ class MatlabControllerTests(TestCase):
         """
         MatlabCurveController: Tests for output shape
         """
-        controller = MatlabCurveController(self.cost_func)
+        controller = create_controller('matlab_curve', self.cost_func)
 
         controller.minimizer = minimizer
         self.shared_tests.controller_run_test(controller)
@@ -1103,7 +1078,7 @@ class MatlabControllerTests(TestCase):
         """
         Horace: Tests for output shape
         """
-        controller = HoraceController(self.cost_func)
+        controller = create_controller('horace', self.cost_func)
 
         controller.minimizer = 'lm-lsqr'
         self.shared_tests.controller_run_test(controller)
@@ -1133,7 +1108,7 @@ class GlobalOptimizationControllerTests(TestCase):
         """
         ScipyGOController: Test for output shape
         """
-        controller = ScipyGOController(self.cost_func)
+        controller = create_controller('scipy_go', self.cost_func)
         controller.minimizer = 'dual_annealing'
 
         self.shared_tests.controller_run_test(controller)
@@ -1149,7 +1124,7 @@ class GlobalOptimizationControllerTests(TestCase):
         """
         GradientFreeController: Tests for output shape
         """
-        controller = GradientFreeController(self.cost_func)
+        controller = create_controller('gradient_free', self.cost_func)
         controller.minimizer = 'HillClimbingOptimizer'
         self.shared_tests.controller_run_test(controller)
 
@@ -1239,8 +1214,7 @@ class BayesianControllerBoundsTests(TestCase):
         Test that parameter bounds are
         respected for bounded problems
         """
-        controller_class = ControllerFactory.create_controller(controller_name)
-        controller = controller_class(self.cost_func)
+        controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
 
         self.check_bounds(controller)

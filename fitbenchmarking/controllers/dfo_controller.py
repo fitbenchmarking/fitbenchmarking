@@ -89,7 +89,7 @@ class DFOController(Controller):
             self._soln = dfols.solve(self.cost_func.eval_r,
                                      self._pinit,
                                      rhobeg=self.rhobeg,
-                                     bounds=(self.param_ranges))
+                                     bounds=self.param_ranges)
 
         self._popt = self._soln.x
         self._status = self._soln.flag

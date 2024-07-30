@@ -17,9 +17,6 @@ from fitbenchmarking.utils.exceptions import FittingProblemError, \
 from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
-# Using property getters and setters means that the setter does not always use
-# self
-# pylint: disable=no-self-use
 class FittingProblem:
     r"""
     Definition of a fitting problem, which will be populated by a parser from a

@@ -44,7 +44,7 @@ class TestSetupLogger(TestCase):
         setup_logger(log_file=self.log_file, append=True, name='test2')
         logger.info('After reset')
 
-        with open(self.log_file, 'r') as f:
+        with open(self.log_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
         self.assertEqual(len(lines), 2, 'Wrong number of lines in log file')
@@ -62,7 +62,7 @@ class TestSetupLogger(TestCase):
         setup_logger(log_file=self.log_file, append=False, name='test3')
         logger.info('After reset')
 
-        with open(self.log_file, 'r') as f:
+        with open(self.log_file, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
         self.assertEqual(len(lines), 1, 'Wrong number of lines in log file')
