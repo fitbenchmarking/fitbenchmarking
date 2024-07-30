@@ -51,7 +51,7 @@ class OptionsWriteTests(unittest.TestCase):
             """
 
         opts_file = 'test_options_tests.ini'
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf-8') as f:
             f.write(config_str)
         self.options_file = opts_file
 
@@ -89,7 +89,7 @@ class OptionsWriteTests(unittest.TestCase):
         options = Options(file_name=self.options_file)
         new_file_name = f'copy_of_{self.options_file}'
 
-        with open(new_file_name, 'w') as f:
+        with open(new_file_name, 'w', encoding='utf-8') as f:
             options.write_to_stream(f)
 
         new_options = Options(new_file_name)
@@ -125,7 +125,7 @@ class OptionsWriteTests(unittest.TestCase):
             [FITTING]
             """
         opts_file = 'test_options_tests_valid.ini'
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf-8') as f:
             f.write(config_str)
         options = Options(opts_file)
         self.assertEqual(options.stored_file_name, opts_file)
@@ -141,7 +141,7 @@ class OptionsWriteTests(unittest.TestCase):
             [FITTING]
             """
         opts_file = 'test_options_tests_valid.ini'
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf-8') as f:
             f.write(config_str)
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)

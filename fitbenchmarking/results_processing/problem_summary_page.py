@@ -106,7 +106,7 @@ def _create_summary_page(categorised_best_results, summary_plot_path,
     n_params = results[0].get_n_parameters()
     list_params = n_params < 100
 
-    with open(file_path, 'w') as fh:
+    with open(file_path, 'w', encoding='utf-8') as fh:
         fh.write(template.render(
             css_style_sheet=css['main'],
             table_style=css['table'],

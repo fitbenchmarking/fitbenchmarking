@@ -24,7 +24,7 @@ classifiers = [
 dependencies = [
     'docutils',
     'tqdm>=4.60',
-    'numpy<1.24',
+    'numpy',
     'matplotlib>=2.0',
     'plotly>=5.0.0',
     'scipy>=0.18',
@@ -56,8 +56,8 @@ dev = [
     'pytest-cov>=4.0.0',
     'coveralls',
     'coverage[toml]>=6.3',
-    'pylint==2.9.5',
-    'flake8==3.9.2',
+    'pylint',
+    'flake8',
     'pylint-exit',
     'pandas',
     'iminuit>=2.25.2',
@@ -110,7 +110,6 @@ exclude = ['*mock*', '*test*']
 source = "versioningit"
 
 [tool.pylint.main]
-extension-pkg-allow-list = ["gofit"]
 ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
 ignored-modules = [
     "levmar",
@@ -123,6 +122,7 @@ ignored-modules = [
     "pygsl",
     "ral_nlls",
     "theseus",
+    "gofit"
 ]
 
 [tool.pylint.design]
