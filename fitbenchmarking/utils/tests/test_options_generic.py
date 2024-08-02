@@ -21,7 +21,7 @@ class OptionsWriteTests(unittest.TestCase):
             [MINIMIZERS]
             scipy: CG
                    Powell
-            dfo: dfogn
+            dfo: dfols
 
             [FITTING]
             algorithm_type: all
