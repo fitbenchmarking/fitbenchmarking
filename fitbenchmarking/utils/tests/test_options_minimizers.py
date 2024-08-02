@@ -32,7 +32,7 @@ class MininimizerOptionTests(unittest.TestCase):
 
     @parameterized.expand([
         ('bumps', ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq']),
-        ('dfo', ['dfogn', 'dfols']),
+        ('dfo', ['dfols']),
         ('gsl', ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
                  'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
                  'vector_bfgs2', 'steepest_descent']),
@@ -132,7 +132,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
 
     @parameterized.expand([
         (['newton', 'de'], 'bumps'),
-        (['dfogn', 'dfols'], 'dfo'),
+        (['dfols'], 'dfo'),
         (['lmsder', 'lmder', 'nmsimplex'], 'gsl'),
         (['Damped GaussNewton', 'Levenberg-Marquardt',
           'Levenberg-MarquardtMD'], 'mantid'),

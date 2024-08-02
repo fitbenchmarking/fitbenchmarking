@@ -4,7 +4,7 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-We recommend using |Python 3.7.1+| for running/installing Fitbenchmarking.
+We recommend using |Python 3.8.1+| for running/installing Fitbenchmarking.
 The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
@@ -78,7 +78,7 @@ or
 where valid strings ``option-x`` are:
 
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
-* ``DFO`` -- installs the `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ fitting packages.
+* ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>` fitting package.
 * ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package.
 * ``gradient-free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.

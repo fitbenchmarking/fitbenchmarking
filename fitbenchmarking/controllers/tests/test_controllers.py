@@ -413,13 +413,12 @@ class DefaultControllerTests(TestCase):
         controller._status = 1
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand(['dfogn', 'dfols'])
-    def test_dfo(self,  minimizer):
+    def test_dfo(self):
         """
         DFOController: Tests for output shape
         """
         controller = create_controller('dfo', self.cost_func)
-        controller.minimizer = minimizer
+        controller.minimizer = 'dfols'
 
         self.shared_tests.controller_run_test(controller)
 
@@ -571,7 +570,7 @@ class ControllerBoundsTests(TestCase):
         ('scipy', 'L-BFGS-B'),
         ('scipy_ls', 'trf'),
         ('minuit', 'migrad'),
-        ('dfo', 'dfogn'),
+        ('dfo', 'dfols'),
         ('bumps', 'amoeba'),
         ('ralfit', 'gn'),
         ('levmar', 'levmar'),
