@@ -199,6 +199,7 @@ class GalahadController(Controller):
                       -9: 3,  # Analysis failed       (linear solve)
                       -10: 3,  # Factorisation failed (linear solve)
                       -11: 3,  # Solve failed         (linear solve)
+                      -15: 3,  # Preconditioner not pos def
                       -16: 2,  # Ill-conditioned
                       -18: 1,  # Too many iterations
                       -19: 3,  # Max runtime
