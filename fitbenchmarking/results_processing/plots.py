@@ -29,10 +29,10 @@ class Plot:
                        "bgcolor": 'rgba(0,0,0,0.1)'}
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1}
-    _error_dict = dict(type='data',
-                       array=None,
-                       thickness=1,
-                       width=4)
+    _error_dict = {'type': 'data',
+                   'array': None,
+                   'thickness': 1,
+                   'width': 4}
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
@@ -219,13 +219,22 @@ class Plot:
 
         for i, name in enumerate(par_names):
             fig.append_trace(go.Histogram(x=result.params_pdfs[name],
-                             histnorm='probability density'), row=i + 1, col=1)
-            fig.add_vline(x=result.params_pdfs['scipy_pfit'][i],
-                          row=i + 1, col=1, line_color='red')
-            fig.add_vline(x=scipy_fit[i] - 2 * scipy_err[i],
-                          row=i + 1, col=1, line_color='red', line_dash='dash')
-            fig.add_vline(x=scipy_fit[i] + 2 * scipy_err[i],
-                          row=i + 1, col=1, line_color='red', line_dash='dash')
+                                          histnorm='probability density'),
+                             row=i + 1, col=1)
+
+        if result.params_pdfs['scipy_pfit'] is not None:
+            scipy_fit = result.params_pdfs['scipy_pfit']
+            scipy_err = result.params_pdfs['scipy_perr']
+
+            for i, name in enumerate(par_names):
+                fig.add_vline(x=scipy_fit[i],
+                              row=i + 1, col=1, line_color='red')
+                fig.add_vline(x=scipy_fit[i] - 2 * scipy_err[i],
+                              row=i + 1, col=1, line_color='red',
+                              line_dash='dash')
+                fig.add_vline(x=scipy_fit[i] + 2 * scipy_err[i],
+                              row=i + 1, col=1, line_color='red',
+                              line_dash='dash')
 
         fig.update_layout(showlegend=False)
         fig.update_xaxes(exponentformat="power")
