@@ -1,9 +1,9 @@
 """
 FitBenchmarking results object
 """
+from statistics import fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal
 
-from statistics import median, harmonic_mean, fmean
 import numpy as np
 from scipy import stats
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
-# pylint: disable=too-many-arguments, no-self-use
+# pylint: disable=too-many-arguments,attribute-defined-outside-init
 class FittingResult:
     """
     Minimal definition of a class to hold results from a
@@ -264,7 +264,7 @@ class FittingResult:
         :type value: str
         """
         self._runtime_metric = value
-        self.runtime = getattr(self, value+'_runtime')
+        self.runtime = getattr(self, value + '_runtime')
 
     @property
     def mean_runtime(self):
@@ -345,6 +345,8 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_acc is None:
+            if self.min_accuracy == 0:
+                self.min_accuracy = 1e-20
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             else:

@@ -111,7 +111,7 @@ source = "versioningit"
 
 [tool.pylint.main]
 extension-pkg-allow-list = ["gofit"]
-ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
+ignore = ["benchmark_problems", "examples", "fonts", "test_files", "templates"]
 ignored-modules = [
     "levmar",
     "lmfit",
@@ -148,3 +148,9 @@ ignored-argument-names = "arg|args|kwargs"
 
 [tool.versioningit]
 default-version = '0.0.0dev1'
+
+[tool.isort]
+skip = "benchmark_problems"
+
+[tool.autopep8]
+ignore = ['E401', 'E402'] # handled by isort

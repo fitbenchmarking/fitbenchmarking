@@ -2,7 +2,11 @@
 Implements the base Parser as a Context Manager.
 """
 
+import typing
 from abc import ABCMeta, abstractmethod
+
+if typing.TYPE_CHECKING:
+    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 class Parser:
@@ -56,7 +60,7 @@ class Parser:
             pass
 
     @abstractmethod
-    def parse(self):
+    def parse(self) -> 'typing.Union[FittingProblem, list[FittingProblem]]':
         """
         Parse the file into a FittingProblem.
 
