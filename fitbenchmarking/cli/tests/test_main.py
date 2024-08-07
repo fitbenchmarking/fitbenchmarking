@@ -94,7 +94,7 @@ class TestMain(TestCase):
 
         with TemporaryDirectory() as results_dir:
             with self.assertRaises(RuntimeError):
-                main.run(['examples/benchmark_problems/simple_tests'],
+                main.run(['examples/benchmark_problems/NIST/low_difficulty'],
                          additional_options={'scipy_ls': ['lm-scipy'],
                                              'software': ['scipy_ls'],
                                              'num_runs': 1,
