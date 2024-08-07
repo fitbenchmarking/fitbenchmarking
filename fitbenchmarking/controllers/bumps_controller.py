@@ -181,12 +181,14 @@ class BumpsController(Controller):
             self.params_pdfs = {}
             mcmc_draw = self._bumps_result.state.draw()
             if self.fit_order != self._param_names:
-                for name in self._param_names:
-                    ind = self.fit_order.index(name)
-                    self.params_pdfs[name] = mcmc_draw.points[:, ind]
+                for name1, name2 in zip(self.problem.param_names,
+                                        self._param_names):
+                    ind = self.fit_order.index(name2)
+                    self.params_pdfs[name1] = mcmc_draw.points[:, ind].tolist()
             else:
                 self.params_pdfs = {
-                    self._param_names[i]: mcmc_draw.points[:, i].tolist()
+                    self.problem.param_names[i]: mcmc_draw.points[:, i].tolist(
+                    )
                     for i in range(len(self._param_names))
                 }
 

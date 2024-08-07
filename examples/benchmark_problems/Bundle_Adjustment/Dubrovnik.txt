@@ -1,0 +1,5 @@
+# FitBenchmark Problem
+software = 'bal'
+name = 'dubrovnik'
+description = 'Images from Dubrovnik'
+input_file = 'problem-16-22106-pre.txt.bz2'

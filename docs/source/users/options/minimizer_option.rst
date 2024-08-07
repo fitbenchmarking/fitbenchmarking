@@ -848,6 +848,26 @@ The SciPy least squares minimizers are set as follows:
               trf
               dogbox
 
+.. _scipy-leastsq:
+
+SciPy LeastSq (``scipy_leastsq``)
+=======================
+
+`SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
+software.  In particular, we use the `leastsq <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.leastsq.html>`__
+wrapper around MINPACK’s *lmdif* and *lmder* algorithms to minimize the sum of squares of a set of equations.
+
+**Links** `Github - SciPy leastsq <https://github.com/scipy/scipy/blob/v1.14.0/scipy/optimize/_minpack_py.py#L292-L508>`__
+
+**Licence** Scipy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages many have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
+
+The SciPy leastsq minimizer is set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    scipy_leastsq: lm-leastsq
+
 .. _scipy-go:
 
 SciPy GO (``scipy_go``)

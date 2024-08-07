@@ -2,6 +2,7 @@
 Implements the weighted non-linear least squares cost function
 """
 from numpy import ravel
+from scipy.sparse import issparse
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -60,6 +61,10 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         e = kwargs.get("e", self.problem.data_e)
 
         jac = self.jacobian.eval(params, **kwargs)
+
+        if issparse(jac):
+            return - jac.transpose().multiply(1/e).transpose()
+
         return - jac / e[:, None]
 
     def hes_res(self, params, **kwargs):

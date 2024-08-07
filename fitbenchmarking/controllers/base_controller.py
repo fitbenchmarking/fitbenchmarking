@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 
 import numpy
 from scipy.optimize import curve_fit
+
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleHessianError,
                                               IncompatibleJacobianError,
@@ -24,7 +25,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7]
+    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -51,6 +52,11 @@ class Controller:
     #: The **values** of the dictionary are given as a list of minimizers
     #: for that specific controller that fit into each of the above
     #: categories. See for example the ``GSL`` controller.
+    #:
+    #: The ``algorithm_check`` dictionary is used to determine which minimizers
+    #: to run given the ``algorithm_type`` selected in Fitting Options.
+    #: For guidance on how to catagorise minimizers, see the Optimization
+    #: Algorithms section of the FitBenchmarking docs.
     algorithm_check = {'all': [],
                        'ls': [],
                        'deriv_free': [],
@@ -84,6 +90,16 @@ class Controller:
     #: software that allow Hessian information to be passed
     #: into the fitting algorithm
     hessian_enabled_solvers = []
+
+    #: Within the controller class, you must define the list
+    #: ``sparsity`_enabled_solvers`` if any of the minimizers
+    #: for the specific software offer support for sparse
+    #: jacobians.
+    #:
+    #: - ``sparsity_enabled_solvers``: a list of minimizers in a specific
+    #: software that allow sparsity structure to be passed
+    #: into the fitting algorithm
+    sparsity_enabled_solvers = []
 
     #: A name to be used in tables. If this is set to None it will be inferred
     #: from the class name.
@@ -163,6 +179,7 @@ class Controller:
         | 5: `Solution doesn't respect parameter bounds`
         | 6: `Solver has exceeded maximum allowed runtime`
         | 7: `Validation of the provided options failed`
+        | 8: `Confidence in fit could not be calculated`
         """
         return self._flag
 
@@ -248,36 +265,45 @@ class Controller:
         """
         Computes overall confidence in MCMC fit
         """
-        popt, pcov = curve_fit(self.problem.function,
-                               xdata=self.data_x,
-                               ydata=self.data_y,
-                               p0=self.initial_params,
-                               sigma=self.data_e,
-                               maxfev=500)
+        self.params_pdfs['scipy_pfit'] = None
+        self.params_pdfs['scipy_perr'] = None
+        try:
+            popt, pcov = curve_fit(self.problem.function,
+                                   xdata=self.data_x,
+                                   ydata=self.data_y,
+                                   p0=self.initial_params,
+                                   sigma=self.data_e)
 
-        perr = numpy.sqrt(numpy.diag(pcov))
+            perr = numpy.sqrt(numpy.diag(pcov))
 
-        self.params_pdfs['scipy_pfit'] = popt.tolist()
-        self.params_pdfs['scipy_perr'] = perr.tolist()
+            self.params_pdfs['scipy_pfit'] = popt.tolist()
+            self.params_pdfs['scipy_perr'] = perr.tolist()
 
-        # calculate overall confidence within 2 sigma tolerance
-        par_conf = []
-        for i, name in enumerate(self.par_names):
-            tol = 2*perr[i]
-            hist, bin_edges = numpy.histogram(self.params_pdfs[name],
-                                              bins=100, density=True)
-            # check tol range is covered by hist range
-            tol_range = [popt[i]-tol, popt[i]+tol]
-            if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
-                par_conf.append(0)
-            else:
-                width = numpy.diff(bin_edges)[0]
-                start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
-                end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
-                if start_bin == end_bin:
-                    par_conf.append(hist[start_bin]*width)
+            # calculate overall confidence within 2 sigma tolerance
+            par_conf = []
+            for i, name in enumerate(self.par_names):
+                tol = 2*perr[i]
+                hist, bin_edges = numpy.histogram(
+                    self.params_pdfs[name.replace('.', '_')],
+                    bins=100, density=True
+                )
+                # check tol range is covered by hist range
+                tol_range = [popt[i]-tol, popt[i]+tol]
+                if tol_range[-1] < bin_edges[0] or \
+                        tol_range[0] > bin_edges[-1]:
+                    par_conf.append(0)
                 else:
-                    par_conf.append(sum(hist[start_bin:end_bin]*width))
+                    width = numpy.diff(bin_edges)[0]
+                    start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
+                    end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
+                    if start_bin == end_bin:
+                        par_conf.append(hist[start_bin]*width)
+                    else:
+                        par_conf.append(sum(hist[start_bin:end_bin]*width))
+        except RuntimeError as error_msg:
+            par_conf = 0
+            self.flag = 8
+            print("\n"+str(error_msg))
 
         return numpy.prod(par_conf)
 

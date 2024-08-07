@@ -100,7 +100,7 @@ class LocalMinTable(Table):
         res = result.r_x
         jac = result.jac_x
 
-        min_test = np.matmul(res, jac)
+        min_test = jac.transpose().dot(res)
         norm_r = np.linalg.norm(res)
         norm_min_test = np.linalg.norm(min_test)
 
