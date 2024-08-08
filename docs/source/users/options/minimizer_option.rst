@@ -120,7 +120,7 @@ DFO (``dfo``)
 derivative free optimization solver developed by Lindon Roberts at the University
 of Oxford, in conjunction with NAG.  It is particularly well suited for solving noisy problems.
 
-FitBenchmarking currently supports the DFO-LS minimizer:
+FitBenchmarking currently supports the DFO minimizer:
 
 * `Derivative-Free Optimizer for Least Squares <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`__ (:code:`dfols`)
 
@@ -128,7 +128,7 @@ FitBenchmarking currently supports the DFO-LS minimizer:
 
 **Links** `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
-The DFO minimizers are set as follows:
+The DFO minimizer is set as follows:
 
 .. code-block:: rst
 
