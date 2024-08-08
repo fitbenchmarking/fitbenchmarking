@@ -1,9 +1,8 @@
 """
-Implements a controller for DFO-GN
-http://people.maths.ox.ac.uk/robertsl/dfogn/
+Implements a controller for DFO-LS
+https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html
 """
 
-import dfogn
 import dfols
 import numpy as np
 
@@ -12,18 +11,18 @@ from fitbenchmarking.controllers.base_controller import Controller
 
 class DFOController(Controller):
     """
-    Controller for the DFO-{GN/LS} fitting software.
+    Controller for the DFO-LS fitting software.
     """
 
     algorithm_check = {
-            'all': ['dfogn', 'dfols'],
-            'ls': ['dfogn', 'dfols'],
-            'deriv_free': ['dfogn', 'dfols'],
+            'all': ['dfols'],
+            'ls': ['dfols'],
+            'deriv_free': ['dfols'],
             'general': [],
             'simplex': [],
-            'trust_region': ['dfols', 'dfogn'],
+            'trust_region': ['dfols'],
             'levenberg-marquardt': [],
-            'gauss_newton': ['dfogn'],
+            'gauss_newton': [],
             'bfgs': [],
             'conjugate_gradient': [],
             'steepest_descent': [],
@@ -79,17 +78,10 @@ class DFOController(Controller):
         """
         Run problem with DFO.
         """
-        if self.minimizer == 'dfogn':
-            self._soln = dfogn.solve(self.cost_func.eval_r,
-                                     self._pinit,
-                                     rhobeg=self.rhobeg,
-                                     lower=self.param_ranges[0],
-                                     upper=self.param_ranges[1])
-        elif self.minimizer == 'dfols':
-            self._soln = dfols.solve(self.cost_func.eval_r,
-                                     self._pinit,
-                                     rhobeg=self.rhobeg,
-                                     bounds=(self.param_ranges))
+        self._soln = dfols.solve(self.cost_func.eval_r,
+                                 self._pinit,
+                                 rhobeg=self.rhobeg,
+                                 bounds=self.param_ranges)
 
         self._popt = self._soln.x
         self._status = self._soln.flag

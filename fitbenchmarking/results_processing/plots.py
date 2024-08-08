@@ -29,10 +29,10 @@ class Plot:
                        "bgcolor": 'rgba(0,0,0,0.1)'}
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1}
-    _error_dict = dict(type='data',
-                       array=None,
-                       thickness=1,
-                       width=4)
+    _error_dict = {"type": 'data',
+                   "array": None,
+                   "thickness": 1,
+                   "width": 4}
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
@@ -271,12 +271,12 @@ class Plot:
 
 #        # Plot data
         if "weighted_nlls" in options.cost_func_type:
-            error_y = dict(
-                type='data',
-                array=first_result.data_e,
-                color='rgb(0,0,0,0.8)',
-                thickness=1,
-                visible=True)
+            error_y = {
+                "type": 'data',
+                "array": first_result.data_e,
+                "color": 'rgb(0,0,0,0.8)',
+                "thickness": 1,
+                "visible": True}
         else:
             error_y = None
         plotlyfig.add_trace(go.Scatter(x=first_result.data_x,

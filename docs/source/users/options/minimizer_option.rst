@@ -116,31 +116,27 @@ The Ceres Solver minimizers are set as follows:
 DFO (``dfo``)
 =============
 
-There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ and
-`DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__.
-They are derivative free optimization solvers that were developed by Lindon Roberts at the University
-of Oxford, in conjunction with NAG.  They are particularly well suited for solving noisy problems.
+`DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`__ is a 
+derivative free optimization solver developed by Lindon Roberts at the University
+of Oxford, in conjunction with NAG.  It is particularly well suited for solving noisy problems.
 
-FitBenchmarking currently supports the DFO minimizers:
+FitBenchmarking currently supports the DFO minimizer:
 
-* `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ (:code:`dfols`)
+* `Derivative-Free Optimizer for Least Squares <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`__ (:code:`dfols`)
 
-* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__ (:code:`dfogn`)
+**Licence** `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ is available under the GPL-3 licence. A proprietary licence is also available from `NAG <https://nag.com/worldwide-contact-information/>`__ .
 
-**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ .
+**Links** `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
-**Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`__ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
-
-The DFO minimizers are set as follows:
+The DFO minimizer is set as follows:
 
 .. code-block:: rst
 
     [MINIMIZERS]
     dfo: dfols
-         dfogn
 
 .. warning::
-   Additional dependencies `DFO-GN` and `DFO-LS` must be installed for
+   Additional dependencies `DFO-LS` must be installed for
    these to be available;
    See :ref:`extra_dependencies`.
 
