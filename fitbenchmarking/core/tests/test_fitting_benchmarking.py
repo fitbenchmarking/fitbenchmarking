@@ -277,9 +277,10 @@ class PerformFitTests(unittest.TestCase):
                       checkpointer=self.cp)
 
             _ = fit._Fit__perform_fit(controller)
-            self.assertTrue("ratio of the max time to the min is 5.0"
-                            in ''.join([log.output[i]
-                                        for i in range(0, len(log.output))]))
+            self.assertTrue(("The ratio of the max time to the min is "
+                             "5.00000000, which is larger than the tolerance "
+                             "of 4. The min time is 1.00000000.")
+                            in log.output[0])
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
