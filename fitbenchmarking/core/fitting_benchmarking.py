@@ -10,7 +10,6 @@ import os
 import platform
 import time
 import timeit
-import warnings
 
 import numpy as np
 from codecarbon import EmissionsTracker
@@ -515,15 +514,15 @@ class Fit:
             ratio = np.max(runtimes) / min_time
             tol = 4
             if ratio > tol:
-                warnings.warn(
-                    f'The ratio of the max time to the min is {ratio},'
-                    f' which is larger than the tolerance of {tol}.'
-                    f' The min time is {min_time}. This can indicate that'
+                LOGGER.warning(
+                    'The ratio of the max time to the min is %.8f,'
+                    ' which is larger than the tolerance of %d.'
+                    ' The min time is %.8f. This can indicate that'
                     ' the fitting engine is caching results. If the'
                     ' min time is small this may just indicate that'
                     ' other non-FitBenchmarking CPU activities are'
                     ' taking place that affects the timing'
-                    ' results')
+                    ' results', ratio, tol, min_time)
 
             # Avoid deleting results (max runtime exception) if gotten this far
             controller.timer.reset()
