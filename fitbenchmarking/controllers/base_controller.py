@@ -168,6 +168,13 @@ class Controller:
 
         self.par_names = self.problem.param_names
 
+        # save iteration count
+        self.iteration_count = None
+
+        # type of iteration count, should be
+        # either "iterations" or "function evaluations"
+        self.count_type = None
+
     @property
     def flag(self):
         """

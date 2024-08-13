@@ -1,9 +1,9 @@
 """
 FitBenchmarking results object
 """
+from statistics import fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal
 
-from statistics import median, harmonic_mean, fmean
 import numpy as np
 from scipy import stats
 
@@ -87,6 +87,8 @@ class FittingResult:
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
         self.emissions = emissions
+        self.iteration_count = controller.iteration_count
+        self.count_type = controller.count_type
 
         # Posterior pdfs for Bayesian fitting
         self.params_pdfs = controller.params_pdfs

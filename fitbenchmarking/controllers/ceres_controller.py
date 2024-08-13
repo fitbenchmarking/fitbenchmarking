@@ -1,16 +1,20 @@
 """
 Implements a controller for the Ceres fitting software.
 """
-import sys
 import os
+import sys
+
 import numpy as np
+
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+
 pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
 
 # pylint: disable=wrong-import-position,wrong-import-order
-import PyCeres # noqa
+import PyCeres  # noqa
+
 # pylint: enable=wrong-import-position,wrong-import-order
 
 
@@ -18,6 +22,7 @@ class CeresCostFunction(PyCeres.CostFunction):
     """
     Cost function for Ceres solver
     """
+
     def __init__(self, fb_cf):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
         super().__init__()
@@ -124,7 +129,7 @@ class CeresController(Controller):
 
         if self.value_ranges is not None:
             for i, (value_ranges_lb, value_ranges_ub) in \
-              enumerate(self.value_ranges):
+                    enumerate(self.value_ranges):
                 self.ceres_problem.SetParameterLowerBound(self.result,
                                                           i,
                                                           value_ranges_lb)
@@ -186,3 +191,7 @@ class CeresController(Controller):
             self.flag = 2
 
         self.final_params = self.result
+
+        self.iteration_count = self.ceres_summary.num_successful_steps + \
+            self.ceres_summary.num_unsuccessful_steps
+        self.count_type = 'iterations'

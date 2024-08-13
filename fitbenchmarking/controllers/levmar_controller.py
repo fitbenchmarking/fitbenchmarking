@@ -5,8 +5,8 @@ via the python interface
 https://pypi.org/project/levmar/
 """
 
-import numpy as np
 import levmar
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -17,19 +17,19 @@ class LevmarController(Controller):
     """
 
     algorithm_check = {
-            'all': ['levmar'],
-            'ls': ['levmar'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levmar'],
-            'levenberg-marquardt': ['levmar'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['levmar'],
+        'ls': ['levmar'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['levmar'],
+        'levenberg-marquardt': ['levmar'],
+        'gauss_newton': [],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['levmar']
 
@@ -123,3 +123,6 @@ class LevmarController(Controller):
             self.flag = 1
         else:
             self.flag = 2
+
+        self.iteration_count = self._info[2]
+        self.count_type = 'iterations'

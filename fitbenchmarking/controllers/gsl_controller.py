@@ -5,9 +5,8 @@ using the pyGSL python interface
 https://sourceforge.net/projects/pygsl/
 """
 import numpy as np
-
-from pygsl import multifit_nlin, multiminimize, errno
 from pygsl import _numobj as numx
+from pygsl import errno, multifit_nlin, multiminimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -19,23 +18,23 @@ class GSLController(Controller):
     """
 
     algorithm_check = {
-            'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                    'vector_bfgs2', 'steepest_descent'],
-            'ls': ['lmsder', 'lmder'],
-            'deriv_free': ['nmsimplex', 'nmsimplex2'],
-            'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
-                        'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
-                        'steepest_descent'],
-            'simplex': ['nmsimplex', 'nmsimplex2'],
-            'trust_region': ['lmder', 'lmsder'],
-            'levenberg-marquardt': ['lmder', 'lmsder'],
-            'gauss_newton': [],
-            'bfgs': ['vector_bfgs', 'vector_bfgs2'],
-            'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
-            'steepest_descent': ['steepest_descent'],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                'vector_bfgs2', 'steepest_descent'],
+        'ls': ['lmsder', 'lmder'],
+        'deriv_free': ['nmsimplex', 'nmsimplex2'],
+        'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
+                    'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
+                    'steepest_descent'],
+        'simplex': ['nmsimplex', 'nmsimplex2'],
+        'trust_region': ['lmder', 'lmsder'],
+        'levenberg-marquardt': ['lmder', 'lmsder'],
+        'gauss_newton': [],
+        'bfgs': ['vector_bfgs', 'vector_bfgs2'],
+        'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
+        'steepest_descent': ['steepest_descent'],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['lmsder', 'lmder', 'conjugate_pr',
                                 'conjugate_fr', 'vector_bfgs',
@@ -212,7 +211,7 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        for _ in range(self._maxits):
+        for n in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
@@ -231,11 +230,14 @@ class GSLController(Controller):
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
+                self.iteration_count = n+1
                 break
             if status != errno.GSL_CONTINUE:
                 self.flag = 2
         else:
             self.flag = 1
+            self.iteration_count = self._maxits
+            self.count_type = 'function evaluations'
 
     def cleanup(self):
         """

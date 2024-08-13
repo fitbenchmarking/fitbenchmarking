@@ -16,19 +16,19 @@ class DFOController(Controller):
     """
 
     algorithm_check = {
-            'all': ['dfogn', 'dfols'],
-            'ls': ['dfogn', 'dfols'],
-            'deriv_free': ['dfogn', 'dfols'],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['dfols', 'dfogn'],
-            'levenberg-marquardt': [],
-            'gauss_newton': ['dfogn'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['dfogn', 'dfols'],
+        'ls': ['dfogn', 'dfols'],
+        'deriv_free': ['dfogn', 'dfols'],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['dfols', 'dfogn'],
+        'levenberg-marquardt': [],
+        'gauss_newton': ['dfogn'],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     def __init__(self, cost_func):
         """
@@ -107,3 +107,5 @@ class DFOController(Controller):
             self.flag = 2
 
         self.final_params = self._popt
+        self.iteration_count = self._soln.nf
+        self.count_type = 'function evaluations'

@@ -3,8 +3,8 @@ Implements a controller for RALFit
 https://github.com/ralna/RALFit
 """
 
-import ral_nlls
 import numpy as np
+import ral_nlls
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -16,21 +16,21 @@ class RALFitController(Controller):
     """
 
     algorithm_check = {
-            'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                    'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-            'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                   'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
-            'levenberg-marquardt': ['gn', 'gn_reg'],
-            'gauss_newton': ['gn', 'gn_reg'],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
+                'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+        'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
+               'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
+        'deriv_free': [],
+        'general': [],
+        'simplex': [],
+        'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
+        'levenberg-marquardt': ['gn', 'gn_reg'],
+        'gauss_newton': ['gn', 'gn_reg'],
+        'bfgs': [],
+        'conjugate_gradient': [],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['gn', 'hybrid', 'newton', 'newton-tensor',
                                 'gn_reg', 'hybrid_reg', 'newton_reg',
@@ -133,21 +133,25 @@ class RALFitController(Controller):
         Run problem with RALFit.
         """
         if self.cost_func.hessian:
-            self._popt = ral_nlls.solve(self.initial_params,
-                                        self.cost_func.eval_r,
-                                        self.cost_func.jac_res,
-                                        self.hes_eval,
-                                        options=self._options,
-                                        lower_bounds=self.param_ranges[0],
-                                        upper_bounds=self.param_ranges[1])[0]
+            (self._popt, inform) = \
+                ral_nlls.solve(self.initial_params,
+                               self.cost_func.eval_r,
+                               self.cost_func.jac_res,
+                               self.hes_eval,
+                               options=self._options,
+                               lower_bounds=self.param_ranges[0],
+                               upper_bounds=self.param_ranges[1])
         else:
-            self._popt = ral_nlls.solve(self.initial_params,
-                                        self.cost_func.eval_r,
-                                        self.cost_func.jac_res,
-                                        options=self._options,
-                                        lower_bounds=self.param_ranges[0],
-                                        upper_bounds=self.param_ranges[1])[0]
+            (self._popt, inform) = \
+                ral_nlls.solve(self.initial_params,
+                               self.cost_func.eval_r,
+                               self.cost_func.jac_res,
+                               options=self._options,
+                               lower_bounds=self.param_ranges[0],
+                               upper_bounds=self.param_ranges[1])
         self._status = 0 if self._popt is not None else 1
+        self.iteration_count = inform['iter']
+        self.count_type = 'iterations'
 
     def cleanup(self):
         """

@@ -15,37 +15,37 @@ class ScipyController(Controller):
     """
 
     algorithm_check = {
-            'all': ['Nelder-Mead',
-                    'Powell',
-                    'CG',
-                    'BFGS',
-                    'Newton-CG',
-                    'L-BFGS-B',
-                    'TNC',
-                    'SLSQP',
-                    'COBYLA',
-                    'trust-ncg',
-                    'trust-exact',
-                    'trust-krylov',
-                    'trust-constr',
-                    'dogleg'],
-            'ls': [None],
-            'deriv_free': ['Nelder-Mead', 'Powell', 'COBYLA'],
-            'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
-                        'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
-            'simplex': ['Nelder-Mead'],
-            'trust_region': ['trust-ncg',
-                             'trust-exact',
-                             'trust-krylov',
-                             'trust-constr',
-                             'dogleg'],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': ['BFGS', 'L-BFGS-B'],
-            'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        'all': ['Nelder-Mead',
+                'Powell',
+                'CG',
+                'BFGS',
+                'Newton-CG',
+                'L-BFGS-B',
+                'TNC',
+                'SLSQP',
+                'COBYLA',
+                'trust-ncg',
+                'trust-exact',
+                'trust-krylov',
+                'trust-constr',
+                'dogleg'],
+        'ls': [None],
+        'deriv_free': ['Nelder-Mead', 'Powell', 'COBYLA'],
+        'general': ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                    'Newton-CG', 'L-BFGS-B', 'TNC', 'SLSQP'],
+        'simplex': ['Nelder-Mead'],
+        'trust_region': ['trust-ncg',
+                         'trust-exact',
+                         'trust-krylov',
+                         'trust-constr',
+                         'dogleg'],
+        'levenberg-marquardt': [],
+        'gauss_newton': [],
+        'bfgs': ['BFGS', 'L-BFGS-B'],
+        'conjugate_gradient': ['CG', 'Newton-CG', 'Powell'],
+        'steepest_descent': [],
+        'global_optimization': [],
+        'MCMC': []}
 
     jacobian_enabled_solvers = ['CG',
                                 'BFGS',
@@ -126,5 +126,8 @@ class ScipyController(Controller):
             self.flag = 1
         else:
             self.flag = 2
+
+        self.iteration_count = self.result.nfev
+        self.count_type = 'function evaluations'
 
         self.final_params = self._popt

@@ -89,6 +89,8 @@ class Checkpoint:
             'runtime': result.runtime,
             'runtimes': result.runtimes,
             'emissions': result.emissions,
+            'iteration_count': result.iteration_count,
+            'count_type': result.count_type,
             'flag': result.error_flag,
             'params_pdfs': result.params_pdfs,
             'software': result.software,
@@ -269,6 +271,8 @@ class Checkpoint:
                 new_result.runtime = r['runtime']
                 new_result.runtimes = r['runtimes']
                 new_result.emissions = r['emissions']
+                new_result.iteration_count = r['iteration_count']
+                new_result.count_type = r['count_type']
                 new_result.error_flag = r['flag']
                 new_result.params_pdfs = r['params_pdfs']
                 new_result.software = r['software']

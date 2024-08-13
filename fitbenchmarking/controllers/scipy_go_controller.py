@@ -81,6 +81,8 @@ class ScipyGOController(Controller):
         algorithm = getattr(optimize, self.minimizer)
         result = algorithm(fun, bounds, **kwargs)
         self._popt = result.x
+        self.iteration_count = result.nit
+        self.count_type = 'iterations'
         if result.success:
             self._status = 0
         elif "Maximum number of iteration" in result.message:

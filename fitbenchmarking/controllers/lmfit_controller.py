@@ -178,6 +178,9 @@ class LmfitController(Controller):
         will be read from
         """
 
+        self.iteration_count = self.lmfit_out.nfev
+        self.count_type = 'function evaluations'
+
         if self.lmfit_out.success:
             self.flag = 0
         else:

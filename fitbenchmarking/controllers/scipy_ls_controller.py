@@ -2,8 +2,8 @@
 Implements a controller for the scipy ls fitting software.
 In particular, for the scipy least_squares solver.
 """
-from scipy.optimize import least_squares
 import numpy as np
+from scipy.optimize import least_squares
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -104,4 +104,6 @@ class ScipyLSController(Controller):
         else:
             self.flag = 2
 
+        self.iteration_count = self.result.nfev
+        self.count_type = 'function evaluations'
         self.final_params = self._popt
