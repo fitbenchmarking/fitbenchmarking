@@ -258,7 +258,7 @@ def _read_x(lines):
              parameters from the file.
     :rtype: numpy array, numpy array, numpy array, list of str, int
     """
-    to_write, num_params = [], None
+    to_write, num_params = [], 0
     # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
     col_width = 25
 
@@ -306,7 +306,7 @@ def _write_x(lines, x):
     :rtype: numpy array, numpy array, numpy array, list of str
     """
     to_write = []
-    x_idx, y_idx, e_idx = None, None, None
+    x_idx, y_idx, e_idx = 0, 0, 0
     # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
     col_width = 25
 

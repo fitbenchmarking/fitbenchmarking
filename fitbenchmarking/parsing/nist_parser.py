@@ -133,8 +133,9 @@ class NISTParser(Parser):
         """
         lines = self.file.readlines()
         idx, ignored_lines = 0, 0
-        equation_text = data_pattern_text = None
-        starting_values = description = None
+        equation_text = data_pattern_text = ''
+        description = ''
+        starting_values = []
 
         while idx < len(lines):
             line = lines[idx].strip()
