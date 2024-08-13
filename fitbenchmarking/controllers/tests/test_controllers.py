@@ -8,6 +8,7 @@ import platform
 from unittest import TestCase
 from unittest.mock import patch
 
+import nlopt
 import numpy as np
 from pytest import mark
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
@@ -18,7 +19,6 @@ from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import \
         ControllerFactory
-from fitbenchmarking.controllers.nlopt_controller import nlopt
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
