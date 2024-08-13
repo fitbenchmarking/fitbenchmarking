@@ -74,7 +74,7 @@ class ScipyGOController(Controller):
         elif self.minimizer == "dual_annealing":
             kwargs = {"maxiter": self._maxiter, "local_search_options": {
                       "jac": self.cost_func.jac_cost}}
-        else: # differential_evolution
+        else:  # differential_evolution
             kwargs = {"maxiter": self._maxiter}
         fun = self.cost_func.eval_cost
         bounds = self.value_ranges
