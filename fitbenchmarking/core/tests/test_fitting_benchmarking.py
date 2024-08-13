@@ -7,7 +7,6 @@ import inspect
 import json
 import os
 import unittest
-import warnings
 from pathlib import Path
 from unittest.mock import patch
 
@@ -31,8 +30,10 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               UnsupportedMinimizerError,
                                               ValidationException)
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
 
+LOGGER = get_logger()
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
 DATA_DIR = os.path.join(Path(__file__).parents[2],
@@ -267,7 +268,7 @@ class PerformFitTests(unittest.TestCase):
         mock2.return_value = None
         mock3.return_value = [1, 1, 1, 1, 5]
 
-        with warnings.catch_warnings(record=True) as w:
+        with self.assertLogs(LOGGER, level='WARNING') as log:
             controller = set_up_controller("ENSO.dat", self.options)
             controller.minimizer = 'Powell'
 
@@ -276,8 +277,10 @@ class PerformFitTests(unittest.TestCase):
                       checkpointer=self.cp)
 
             _ = fit._Fit__perform_fit(controller)
-            assert ("ratio of the max time to the min is 5.0"
-                    in ''.join([str(w[i].message) for i in range(0, len(w))]))
+            self.assertTrue(("The ratio of the max time to the min is "
+                             "5.00000000, which is larger than the tolerance "
+                             "of 4. The min time is 1.00000000.")
+                            in log.output[0])
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
