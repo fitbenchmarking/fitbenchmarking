@@ -110,8 +110,7 @@ class FitbenchmarkParser(Parser):
 
         return self.fitting_problem
 
-    @staticmethod
-    def _is_multifit() -> bool:
+    def _is_multifit(self) -> bool:
         """
         Returns true if the problem is a multi fit problem.
 
@@ -174,7 +173,6 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.end_x = fit_ranges[0]['x'][1]
 
     def _set_additional_info(self) -> None:
-        # pylint: disable=no-self-use
         """
         Sets any additional info for a fitting problem.
         """
@@ -364,8 +362,7 @@ class FitbenchmarkParser(Parser):
                 continue
         return value
 
-    @staticmethod
-    def _get_data_points(data_file_path: str):
+    def _get_data_points(self, data_file_path: str):
         """
         Get the data points of the problem from the data file.
 
@@ -376,7 +373,7 @@ class FitbenchmarkParser(Parser):
         :rtype: dict[str, np.ndarray]
         """
 
-        with open(data_file_path, 'r') as f:
+        with open(data_file_path, 'r', encoding='utf-8') as f:
             data_text = f.readlines()
 
         first_row = _find_first_line(data_text)

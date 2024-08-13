@@ -98,21 +98,34 @@ class CompareTable(Table):
         return result_template.format(acc_abs, acc_rel) + '<br>' + \
             result_template.format(runtime_abs, runtime_rel)
 
-    def vals_to_colour(self, vals, *args):
+    @staticmethod
+    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
         """
         Override vals_to_colour to allow it to run for both accuracy and
         runtime.
 
         :param vals: The relative values to get the colours for
         :type vals: list[list[float, float]]
+        :param cmap: matplotlib colourmap
+        :type cmap: matplotlib colourmap object
+        :param cmap_range: values in range [0, 1] for colourmap cropping
+        :type cmap_range: list[float], 2 elements
+        :param log_ulim: log10 of worst shading cutoff value
+        :type log_ulim: float
 
         :return: The background colours for the acc and runtime values and
                  The text colours for the acc and runtime values
         :rtype: tuple[zip[list[str], list[str]], zip[list[str], list[str]]]
         """
         acc, runtime = zip(*vals)
-        acc_colours, acc_text = super().vals_to_colour(acc, *args)
-        runtime_colours, runtime_text = super().vals_to_colour(runtime, *args)
+        acc_colours, acc_text = Table.vals_to_colour(acc,
+                                                     cmap,
+                                                     cmap_range,
+                                                     log_ulim)
+        runtime_colours, runtime_text = Table.vals_to_colour(runtime,
+                                                             cmap,
+                                                             cmap_range,
+                                                             log_ulim)
         background_col = zip(acc_colours, runtime_colours)
         foreground_text = zip(acc_text, runtime_text)
         return background_col, foreground_text
