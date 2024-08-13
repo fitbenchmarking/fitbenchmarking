@@ -19,7 +19,7 @@ class SScanSSParser(FitbenchmarkParser):
 
     Function calculates the error from a current pose to the target pose.
     """
-    PARAM_IGNORE_LIST = ['robot', 'module', 'targets']
+    _PARAM_IGNORE_LIST = ['robot', 'module', 'targets']
 
     def parse(self) -> 'list[FittingProblem]':
         template = super().parse()
@@ -121,8 +121,7 @@ class SScanSSParser(FitbenchmarkParser):
     def _get_data_file(self):
         return ["no_file_required"]
 
-    @staticmethod
-    def _get_data_points(_filename):
+    def _get_data_points(self, _filename):
         # pylint: disable=unused-argument
         # x data is the spatial and agular coordinates for the pose
         # y data is the error in each coord at the fit (as defined in
