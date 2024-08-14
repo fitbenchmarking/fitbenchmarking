@@ -17,6 +17,7 @@ from fitbenchmarking.utils.exceptions import (
 if TYPE_CHECKING:
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
+
 class ParserFactory:
     """
     A factory for creating parsers.
