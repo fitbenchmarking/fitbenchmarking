@@ -309,8 +309,8 @@ class TestParsers:
 
                 # for problems with too many params to type out individually
                 if isinstance(r[1], dict):
-                    r[1] = np.ones(r[1]["n_params"])*r[1]["param_value"]
-                    r[2] = np.ones(r[2]["n_data_points"])*r[2]["func_val"]
+                    r[1] = np.ones(r[1]["n_params"]) * r[1]["param_value"]
+                    r[2] = np.ones(r[2]["n_data_points"]) * r[2]["func_val"]
 
                 if r[0] == 'NA':
                     actual = fitting_problem.eval_model(params=r[1])
@@ -495,7 +495,7 @@ class TestParserFactory(TestCase):
         filename = os.path.join(os.path.dirname(__file__),
                                 'nist',
                                 'basic.dat')
-        fitting_problem = parse_problem_file(filename, OPTIONS)
+        fitting_problem = parse_problem_file(filename, OPTIONS)[0]
         self.assertEqual(fitting_problem.name, 'basic')
 
 
