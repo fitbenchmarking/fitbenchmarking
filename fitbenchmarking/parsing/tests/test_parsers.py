@@ -27,7 +27,6 @@ HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
 
-# pylint: disable=no-self-use
 def pytest_generate_tests(metafunc):
     """
     Function used by pytest to parametrize tests.
@@ -161,7 +160,7 @@ def load_expectation(filename):
     :return: A fitting problem to test against
     :rtype: fitbenchmarking.parsing.FittingProblem
     """
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         expectation_dict = load(f)
 
     expectation = FittingProblem(OPTIONS)
@@ -198,7 +197,7 @@ class TestParsers:
         assert (test_file is not None), \
             f'No test file for {file_format}'
 
-        with open(test_file) as f:
+        with open(test_file, encoding='utf-8') as f:
             if f.readline() == 'NA':
                 # Test File cannot be written
                 return
@@ -234,7 +233,7 @@ class TestParsers:
         for attr in ['name', 'data_x', 'data_y', 'data_e', 'start_x', 'end_x']:
             parsed_attr = getattr(fitting_problem, attr)
             expected_attr = getattr(expected, attr)
-            equal = (parsed_attr == expected_attr)
+            equal = parsed_attr == expected_attr
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
             assert (equal), f'{attr} was parsed incorrectly.' \
@@ -294,7 +293,7 @@ class TestParsers:
             f'No function evaluations provided to test against for'\
             f' {file_format}'
 
-        with open(evaluations_file, 'r') as ef:
+        with open(evaluations_file, 'r', encoding='utf-8') as ef:
             results = load(ef)
 
         format_dir = os.path.dirname(evaluations_file)
@@ -346,7 +345,7 @@ class TestParsers:
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
 
-            with open(evaluations_file, 'r') as ef:
+            with open(evaluations_file, 'r', encoding='utf-8') as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -387,7 +386,7 @@ class TestParsers:
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
 
-            with open(evaluations_file, 'r') as ef:
+            with open(evaluations_file, 'r', encoding='utf-8') as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -429,7 +428,7 @@ class TestParsers:
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
 
-            with open(evaluations_file, 'r') as ef:
+            with open(evaluations_file, 'r', encoding='utf-8') as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -455,7 +454,7 @@ class TestParsers:
         :param test_file: The path to the test file
         :type test_file: string
         """
-        with open(test_file) as f:
+        with open(test_file, encoding='utf-8') as f:
             if f.readline() == 'NA':
                 # Skip the test files with no data
                 return
@@ -480,7 +479,7 @@ class TestParserFactory(TestCase):
         parser is requested.
         """
         filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
-        with open(filename, 'w') as f:
+        with open(filename, 'w', encoding='utf-8') as f:
             f.write('this_is_a_fake_parser')
 
         factory = ParserFactory()
@@ -542,7 +541,7 @@ class TestParserNoJac(TestCase):
                                              format_dir,
                                              evaluations_file)
 
-        with open(evaluations_file_path, 'r') as ef:
+        with open(evaluations_file_path, 'r', encoding='utf-8') as ef:
             results = load(ef)
 
             for f, tests in results.items():

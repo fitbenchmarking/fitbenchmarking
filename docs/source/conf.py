@@ -33,7 +33,7 @@ os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
 pyceres_mock_name = "/mock_pyceres_location"
 os.environ["PYCERES_LOCATION"] = pyceres_mock_name
 # set mock imports
-autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfogn', 'dfols',
+autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfols',
                         'dill', 'gofit', 'matlab', 'pygsl', 'iminuit', 'bumps',
                         'bumps.fitters', 'tempfile', 'backports',
                         'gradient_free_optimizers', 'levmar', 'PyCeres',

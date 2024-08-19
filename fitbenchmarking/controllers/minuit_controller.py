@@ -9,8 +9,8 @@ from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
-                                              UnknownMinimizerError)
+from fitbenchmarking.utils.exceptions import MissingSoftwareError, \
+                                             UnknownMinimizerError
 
 
 class MinuitController(Controller):

@@ -17,79 +17,58 @@ on:
 
 jobs:
   default_system_linux:
-    name: 'Default System Tests (Linux)'
-    runs-on: 'ubuntu-latest'
+    name: Default System Tests (Linux)
+    runs-on: ubuntu-latest
     container:
       image: 'fitbenchmarking/fitbenchmarking-deps:latest'
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
+      uses: actions/checkout@v4
+    - name: Install dependencies
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
-    - name: 'Running Tests'
-      run: |
-        ci/system_tests_default.sh
-    - name: 'Upload Test Results'
+    - name: Run tests
+      run: ci/system_tests_default.sh
+    - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: default_system_tests
         path: test-results/default_system_pytest.xml
 
   full_system_linux:
-    name: 'Full System Tests (Linux)'
-    runs-on: 'ubuntu-latest'
+    name: Full System Tests (Linux)
+    runs-on: ubuntu-latest
     container:
       image: 'fitbenchmarking/fitbenchmarking-extras:latest'
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
+      uses: actions/checkout@v4
+    - name: Install dependencies
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
-    - name: 'Running Tests'
-      run: |
-        ci/system_tests.sh
-    - name: 'Upload Test Results'
+    - name: Run tests
+      run: ci/system_tests.sh
+    - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: full_system_tests
         path: test-results/full_system_pytest.xml
 
-  default_unit_linux:
-    name: 'Default Unit Tests (Linux)'
-    runs-on: 'ubuntu-latest'
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
-      run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
-    - name: 'Running Tests'
-      run: |
-        ci/unit_tests_default.sh
-    - name: 'Upload Test Results'
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        path: test-results/default_unit_pytest.xml
-
   full_unit_linux:
-    name: 'Full Unit Tests (Linux)'
-    runs-on: 'ubuntu-latest'
+    name: Full Unit Tests (Linux)
+    runs-on: ubuntu-latest
     container:
       image: 'fitbenchmarking/fitbenchmarking-extras:latest'
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
+      uses: actions/checkout@v4
+    - name: Install dependencies
       run: |
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
@@ -97,74 +76,85 @@ jobs:
         mkdir -p $PYCUTEST_CACHE
         sudo apt update
         sudo apt install -y curl
-    - name: 'Running Tests'
+    - name: Run tests
       run: |
         ci/unit_tests.sh
-    - name: 'Submit Coverage'
+    - name: Submit coverage
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
         compare-ref: master
         git-commit: ${{ github.event.pull_request.head.sha }}
-    - name: 'Upload Test Results'
+    - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: full_unit_tests
         path: test-results/full_unit_pytest.xml
 
-  linting_linux:
-    name: 'Linting Tests (Linux)'
-    runs-on: 'ubuntu-latest'
-    steps:
-    - name: 'Checkout code'
-      uses: actions/checkout@v3
-    - name: 'Choose Python Version'
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-    - name: 'Installing'
-      run: |
-        python -m pip install --upgrade pip==20.0.2
-        python -m pip install --upgrade wheel
-        pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        pip install --upgrade .[dev]
-    - name: 'Run Linting'
-      run: |
-        ci/linting_tests.sh
-
-  default_unit_windows:
-    name: 'Default Unit Tests (Windows)'
-    runs-on: 'windows-latest'
+  default_unit_tests:
+    name: Default Unit Tests (Linux)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.8', '3.x']
+    runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: 'Choose Python Version'
-      uses: actions/setup-python@v4
+      uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
-    - name: Installing
+        python-version: ${{ matrix.python }}
+        check-latest: true
+    - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install wheel
-        python -m pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
-    - name: 'Running Tests'
+    - name: Run linux tests
+      if: runner.os == 'Linux'
+      run: ci/unit_tests_default.sh
+    - name: Run windows tests
+      if: runner.os == 'Windows'
+      run: bash ci/unit_tests_default.sh
+    - name: Upload test results
+      if: runner.os == 'Linux' && matrix.python == '3.x'
+      uses: actions/upload-artifact@v4
+      with:
+        name: default_unit_tests
+        path: test-results/default_unit_pytest.xml
+
+  linting_test:
+    name: Linting Tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        check-latest: true
+    - name: Install default dependencies for fitbenchmarking
       run: |
-        bash ci/unit_tests_default.sh
+        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install --upgrade .[dev]
+    - name: Run linting
+      run: ci/linting_tests.sh
 
   publish-test-results:
-    name: 'Publish Test Results'
-    needs: [default_system_linux, full_system_linux, default_unit_linux, full_unit_linux]
-    runs-on: 'ubuntu-latest'
+    name: Publish Test Results
+    needs: [default_system_linux, full_system_linux, default_unit_tests, full_unit_linux]
+    runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: 'Download Artifacts'
-        uses: actions/download-artifact@v3
-        with:
-          path: artifacts
-
-      - name: 'Publish Test Results'
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          check_name: 'Unit & System Test Results'
-          files: artifacts/**/*.xml
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        check_name: Unit & system test results
+        files: artifacts/**/*.xml

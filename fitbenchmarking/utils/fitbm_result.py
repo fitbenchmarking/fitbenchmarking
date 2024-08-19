@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
-# pylint: disable=too-many-arguments, no-self-use
 class FittingResult:
     """
     Minimal definition of a class to hold results from a
