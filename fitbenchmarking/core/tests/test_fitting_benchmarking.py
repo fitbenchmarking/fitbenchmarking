@@ -7,7 +7,6 @@ import inspect
 import json
 import os
 import unittest
-import warnings
 from pathlib import Path
 from unittest.mock import patch
 
@@ -31,8 +30,10 @@ from fitbenchmarking.utils.exceptions import (FitBenchmarkException,
                                               UnsupportedMinimizerError,
                                               ValidationException)
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
 
+LOGGER = get_logger()
 FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 TEST_FILES_DIR = os.path.dirname(inspect.getfile(test_files))
 DATA_DIR = os.path.join(Path(__file__).parents[2],
@@ -267,7 +268,7 @@ class PerformFitTests(unittest.TestCase):
         mock2.return_value = None
         mock3.return_value = [1, 1, 1, 1, 5]
 
-        with warnings.catch_warnings(record=True) as w:
+        with self.assertLogs(LOGGER, level='WARNING') as log:
             controller = set_up_controller("ENSO.dat", self.options)
             controller.minimizer = 'Powell'
 
@@ -276,8 +277,10 @@ class PerformFitTests(unittest.TestCase):
                       checkpointer=self.cp)
 
             _ = fit._Fit__perform_fit(controller)
-            assert ("ratio of the max time to the min is 5.0"
-                    in ''.join([str(w[i].message) for i in range(0, len(w))]))
+            self.assertTrue(("The ratio of the max time to the min is "
+                             "5.00000000, which is larger than the tolerance "
+                             "of 4. The min time is 1.00000000.")
+                            in log.output[0])
 
     @patch("fitbenchmarking.controllers." +
            "base_controller.Controller.validate")
@@ -871,7 +874,7 @@ class BenchmarkTests(unittest.TestCase):
         results, failed_problems, unselected_minimizers = self.fit.benchmark()
 
         # Import the expected results
-        with open(results_dir) as j:
+        with open(results_dir, encoding='utf-8') as j:
             expected = json.load(j)
             expected = expected['NIST_average_difficulty']
 
@@ -890,7 +893,7 @@ class BenchmarkTests(unittest.TestCase):
                          'jacobian_tag',
                          'hessian_tag',
                          'costfun_tag']:
-                assert r.__getattribute__(attr) == \
+                assert getattr(r, attr) == \
                     expected['results'][ix][attr]
             self.assertAlmostEqual(r.accuracy,
                                    expected['results'][ix]['accuracy'],
@@ -910,8 +913,8 @@ class BenchmarkTests(unittest.TestCase):
         """
         mock_parse_problem_file.side_effect = FitBenchmarkException
         results, failed_problems, _ = self.fit.benchmark()
-        assert results == []
-        assert failed_problems == []
+        assert not results
+        assert not failed_problems
         assert get_problem_files.call_count == 1
         assert mock_parse_problem_file.call_count == 2
 
@@ -930,7 +933,7 @@ class BenchmarkTests(unittest.TestCase):
         assert len(results) == 2
         assert results[0].name == 'ENSO 1'
         assert results[1].name == 'ENSO 2'
-        assert failed_problems == []
-        assert unselected_minimizers == {}
+        assert not failed_problems
+        assert not unselected_minimizers
         assert mock_starting_values.call_count == 2
         assert mock_problem_files.call_count == 1
