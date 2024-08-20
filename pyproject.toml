@@ -24,7 +24,7 @@ classifiers = [
 dependencies = [
     'docutils',
     'tqdm>=4.60',
-    'numpy',
+    'numpy<2.0',
     'matplotlib>=2.0',
     'plotly>=5.0.0',
     'scipy>=0.18',
