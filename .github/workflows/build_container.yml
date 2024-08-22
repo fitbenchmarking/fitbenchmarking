@@ -37,7 +37,7 @@ jobs:
       uses: redhat-actions/buildah-build@v2
       with:
         containerfiles: |
-          - 'Container/Containerfile'
+          Container/Containerfile
         image: fitbenchmarking-extras
         tags: latest
     
