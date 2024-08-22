@@ -19,8 +19,6 @@ jobs:
   default_system_linux:
     name: Default System Tests (Linux)
     runs-on: ubuntu-latest
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -41,7 +39,10 @@ jobs:
     name: Full System Tests (Linux)
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -64,7 +65,10 @@ jobs:
     name: Full Unit Tests (Linux)
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
