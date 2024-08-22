@@ -68,6 +68,9 @@ RUN mkdir -p /RALFit/libRALFit/build
 
 WORKDIR /RALFit/libRALFit/build
 
+COPY Container/ralfit.patch /RALFit/
+RUN git apply /RALFit/ralfit.patch
+
 RUN cmake .. && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
