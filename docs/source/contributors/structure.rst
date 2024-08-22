@@ -45,8 +45,7 @@ This can be locally built via podman with:
 
 .. code-block:: bash
 		
-		cd Container
-		podman build --tag fitbenchmarking:<tag> .
+		podman build Container/ -t fitbenchmarking:<tag>
 		
 where ``<tag>`` is, e.g., ``latest``.
 

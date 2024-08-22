@@ -1,5 +1,5 @@
 # Use ubuntu as a parent image
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -8,16 +8,17 @@ RUN apt-get update && apt-get install -y \
     git \
     sudo \
     cmake \
-    mpich
+    mpich \
+    curl
 
 
 # use uv to manage python version
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN uv python install 3.12
+RUN $HOME/.cargo/bin/uv python install 3.12
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN uv venv --seed $VIRTUAL_ENV
+RUN $HOME/.cargo/bin/uv venv --seed $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install wheel
@@ -37,18 +38,7 @@ WORKDIR /
 # Update cmake -- kitware hosts 3.22 where ubuntu hosts 3.16 #
 # (follows instructions on apt.kitware.com)                  #
 ##############################################################
-RUN apt-get install -y wget
-
-RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
-    | gpg --dearmor - \
-    | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-
-RUN echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main" \
-    | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-
-RUN sudo apt-get update
-
-RUN sudo apt-get install -y kitware-archive-keyring
+RUN curl https://apt.kitware.com/kitware-archive.sh | sh -s -- noble
 
 RUN sudo apt-get install -y cmake
 
