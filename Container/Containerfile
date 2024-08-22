@@ -68,7 +68,7 @@ RUN mkdir -p /RALFit/libRALFit/build
 
 WORKDIR /RALFit/libRALFit/build
 
-COPY Container/ralfit.patch /RALFit/
+COPY ralfit.patch /RALFit/
 RUN git apply /RALFit/ralfit.patch
 
 RUN cmake .. && make && make install
