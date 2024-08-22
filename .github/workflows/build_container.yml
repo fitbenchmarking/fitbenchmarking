@@ -38,6 +38,7 @@ jobs:
       with:
         containerfiles: |
           Container/Containerfile
+        context: Container
         image: fitbenchmarking-extras
         tags: latest
     
