@@ -201,6 +201,19 @@ RUN pip install theseus-ai
 
 WORKDIR /
 
+#############
+# SScanSS-2 #
+#############
+
+WORKDIR /
+
+RUN git clone https://github.com/ISISNeutronMuon/SScanSS-2.git ./sscanss
+
+WORKDIR /sscanss
+RUN pip install .
+
+WORKDIR /
+
 ###########
 # Tidy up #
 ###########
