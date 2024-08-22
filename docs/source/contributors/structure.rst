@@ -31,24 +31,26 @@ The specific tests run are defined in a series of Bash scripts,
 which are stored in this folder.
 
 ###################
-Container (``Container``)
+Docker (``Docker``)
 ###################
 
-The continuous integration process on Github Actions currently run on a container,
-and this directory holds the Containerfiles.
-The container is hosted on the Github Container Registry (ghcr.io).
+The continuous integration process on Github Actions currently run on a Docker container,
+and this directory holds the Dockerfiles.  The Docker containers are hosted on
+Dockerhub.
 
-``Containerfile`` builds into a container that includes all optional third party software that FitBenchmarking can work with.
+``BasicInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-deps``, the latest of which should have the tag ``latest``.  This contains a basic Ubuntu install, with just the minimal infrastructure needed to run the tests.
 
-The version tagged as "latest" on ghcr is updated via github actions when the file is edited.
-This can be locally built via podman with:
+``FullInstall`` holds the Dockerfile that is pushed to the repository ``fitbenchmarking/fitbenchmarking-extras``, the latest of which should have the tag ``latest``.  This is built on top of the basic container, and includes optional third party software that FitBenchmarking can work with.
+
+The versions on Docker Hub can be updated from a connected account by issuing the commands:
 
 .. code-block:: bash
 		
-		cd Container
-		podman build --tag fitbenchmarking:<tag> .
-		
-where ``<tag>`` is, e.g., ``latest``.
+		docker build --tag fitbenchmarking-<type>:<tag> .
+		docker tag fitbenchmarking-<type>:<tag> fitbenchmarking/fitbenchmarking-<type>:<tag>
+		docker push fitbenchmarking/fitbenchmarking-<type>:<tag>
+
+where ``<type>`` is, e.g., ``deps`` or ``extras``, and ``<tag>`` is, e.g., ``latest``.
 
 ########################
 Documentation (``docs``)
