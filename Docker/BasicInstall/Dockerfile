@@ -16,7 +16,7 @@ RUN uv python install 3.12
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN uv venv $VIRTUAL_ENV
+RUN uv venv --seed $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install wheel
