@@ -79,3 +79,9 @@ manually. Manual editing may be desired for removing data while
 this feature is developed but should be done with caution to ensure results
 are still comparable.
 
+.. important::
+
+   It is recommended that the same version of python is used to load
+   the checkpoint file as was used when the file was created. 
+   We also recommend that any checkpoint files to be merged 
+   are created using the same version of python.
