@@ -82,5 +82,6 @@ are still comparable.
 .. important::
 
    It is recommended that the same version of python is used to load
-   the checkpoint file as was used when the file was created. Merging
-   files created on the same version of python is also recommended.
+   the checkpoint file as was used when the file was created. 
+   We also recommend that any checkpoint files to be merged 
+   are created using the same version of python.
