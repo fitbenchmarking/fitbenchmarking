@@ -839,7 +839,7 @@ class BenchmarkTests(unittest.TestCase):
         results, failed_problems, unselected_minimizers = self.fit.benchmark()
 
         # Import the expected results
-        with open(results_dir) as j:
+        with open(results_dir, encoding='utf-8') as j:
             expected = json.load(j)
             expected = expected['NIST_average_difficulty']
 
@@ -858,7 +858,7 @@ class BenchmarkTests(unittest.TestCase):
                          'jacobian_tag',
                          'hessian_tag',
                          'costfun_tag']:
-                assert r.__getattribute__(attr) == \
+                assert getattr(r, attr) == \
                     expected['results'][ix][attr]
             self.assertAlmostEqual(r.accuracy,
                                    expected['results'][ix]['accuracy'],
@@ -878,8 +878,8 @@ class BenchmarkTests(unittest.TestCase):
         """
         mock_parse_problem_file.side_effect = FitBenchmarkException
         results, failed_problems, _ = self.fit.benchmark()
-        assert results == []
-        assert failed_problems == []
+        assert not results
+        assert not failed_problems
         assert get_problem_files.call_count == 1
         assert mock_parse_problem_file.call_count == 2
 
@@ -898,7 +898,7 @@ class BenchmarkTests(unittest.TestCase):
         assert len(results) == 2
         assert results[0].name == 'ENSO 1'
         assert results[1].name == 'ENSO 2'
-        assert failed_problems == []
-        assert unselected_minimizers == {}
+        assert not failed_problems
+        assert not unselected_minimizers
         assert mock_starting_values.call_count == 2
         assert mock_problem_files.call_count == 1

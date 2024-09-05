@@ -253,12 +253,12 @@ class Plot:
 
 #        # Plot data
         if "weighted_nlls" in options.cost_func_type:
-            error_y = dict(
-                type='data',
-                array=first_result.data_e,
-                color='rgb(0,0,0,0.8)',
-                thickness=1,
-                visible=True)
+            error_y = {
+                "type": 'data',
+                "array": first_result.data_e,
+                "color": 'rgb(0,0,0,0.8)',
+                "thickness": 1,
+                "visible": True}
         else:
             error_y = None
         plotlyfig.add_trace(go.Scatter(x=first_result.data_x,

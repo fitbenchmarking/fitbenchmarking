@@ -29,37 +29,13 @@ class MininimizerOptionTests(unittest.TestCase):
                     'theseus']
         self.options.software = software
 
-    def test_minimizer_bumps(self):
-        """
-        Checks default bumps minimizers are set correctly
-        """
-        expected = ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq']
-        actual = self.options.minimizers['bumps']
-        self.assertEqual(expected, actual)
-
-    def test_minimizer_dfo(self):
-        """
-        Checks default dfo minimizers are set correctly
-        """
-        expected = ['dfogn', 'dfols']
-        actual = self.options.minimizers['dfo']
-        self.assertEqual(expected, actual)
-
-    def test_minimizer_gsl(self):
-        """
-        Checks default gsl minimizers are set correctly
-        """
-        expected = ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                    'vector_bfgs2', 'steepest_descent']
-        actual = self.options.minimizers['gsl']
-        self.assertEqual(expected, actual)
-
-    def test_minimizer_mantid(self):
-        """
-        Checks default mantid minimizers are set correctly
-        """
-        expected = ['BFGS',
+    @parameterized.expand([
+        ('bumps', ['amoeba', 'lm-bumps', 'newton', 'scipy-leastsq']),
+        ('dfo', ['dfols']),
+        ('gsl', ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
+                 'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
+                 'vector_bfgs2', 'steepest_descent']),
+        ('mantid', ['BFGS',
                     'Conjugate gradient (Fletcher-Reeves imp.)',
                     'Conjugate gradient (Polak-Ribiere imp.)',
                     'Damped GaussNewton', 'Levenberg-Marquardt',
@@ -283,11 +259,36 @@ class UserMininimizerOptionTests(unittest.TestCase):
             f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
         opts_file = os.path.join(self.test_files_dir,
                                  f'test_{software}_valid.ini')
-        with open(opts_file, 'w') as f:
+        with open(opts_file, 'w', encoding='utf-8') as f:
             f.write(config_str)
         return opts_file
 
-    def shared_valid(self, options_set, software):
+    @parameterized.expand([
+        (['newton', 'de'], 'bumps'),
+        (['dfols'], 'dfo'),
+        (['lmsder', 'lmder', 'nmsimplex'], 'gsl'),
+        (['Damped GaussNewton', 'Levenberg-Marquardt',
+          'Levenberg-MarquardtMD'], 'mantid'),
+        (['migrad', 'simplex'], 'minuit'),
+        (['hybrid_reg'], 'ralfit'),
+        (['Nelder-Mead', 'TNC', 'BFGS', 'CG'], 'scipy'),
+        (['lm-scipy', 'trf'], 'scipy_ls'),
+        (['lm-leastsq'], 'scipy_leastsq'),
+        (['LD_TNEWTON', 'LD_LBFGS'], 'nlopt'),
+        (['Levenberg_Marquardt'], 'ceres'),
+        (['Levenberg_Marquardt'], 'theseus'),
+        (['regularisation'], 'gofit'),
+        (['lm-lsqr'], 'horace'),
+        (['levmar'], 'levmar'),
+        (['Nelder-Mead Simplex'], 'matlab'),
+        (['Trust-Region', 'Levenberg-Marquardt'], 'matlab_curve'),
+        (['levenberg-marquardt', 'trust-region-reflective'], 'matlab_opt'),
+        (['Levenberg-Marquardt'], 'matlab_stats'),
+        (['differential_evolution', 'shgo'], 'scipy_go'),
+        (['HillClimbingOptimizer', 'RepulsingHillClimbingOptimizer',
+          'SimulatedAnnealingOptimizer'], 'gradient_free'),
+    ])
+    def test_minimizer_choice_valid(self, options_set, software):
         """
         Shared test to check that the minimizer option set is valid
 
