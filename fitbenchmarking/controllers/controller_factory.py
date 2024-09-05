@@ -8,8 +8,10 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
-                                              NoControllerError)
+from fitbenchmarking.utils.exceptions import (
+    MissingSoftwareError,
+    NoControllerError,
+)
 
 
 class ControllerFactory:
@@ -33,24 +35,32 @@ class ControllerFactory:
         :rtype: fitbenchmarking.fitting.base_controller.Controller subclass
         """
 
-        module_name = f'{software.lower()}_controller'
+        module_name = f"{software.lower()}_controller"
 
         try:
-            module = import_module('.' + module_name, __package__)
+            module = import_module("." + module_name, __package__)
         except ImportError as e:
-            full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                     module_name+'.py'))
+            full_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), module_name + ".py")
+            )
             if os.path.exists(full_path):
-                raise MissingSoftwareError('Requirements are missing for the '
-                                           f'{software} controller: {e}') \
-                                            from e
-            raise NoControllerError('Could not find controller for '
-                                    f'{software}. Check the input is correct '
-                                    'and try again.') from e
+                raise MissingSoftwareError(
+                    "Requirements are missing for the "
+                    f"{software} controller: {e}"
+                ) from e
+            raise NoControllerError(
+                "Could not find controller for "
+                f"{software}. Check the input is correct "
+                "and try again."
+            ) from e
 
-        classes = getmembers(module,
-                             lambda m: (isclass(m)
-                                        and not isabstract(m)
-                                        and issubclass(m, Controller)
-                                        and m is not Controller))
+        classes = getmembers(
+            module,
+            lambda m: (
+                isclass(m)
+                and not isabstract(m)
+                and issubclass(m, Controller)
+                and m is not Controller
+            ),
+        )
         return classes[0][1]

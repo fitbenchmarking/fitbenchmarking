@@ -12,14 +12,14 @@ from sys import platform
 from tempfile import NamedTemporaryFile
 from unittest import TestCase
 
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
 
-@run_for_test_types(TEST_TYPE, 'all')
+@run_for_test_types(TEST_TYPE, "all")
 class TestRegressionAll(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all fitting software
@@ -31,8 +31,9 @@ class TestRegressionAll(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        cls.results_dir = os.path.join(os.path.dirname(__file__),
-                                       "fitbenchmarking_results")
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
 
     def test_results_consistent_all(self):
         """
@@ -54,16 +55,19 @@ class TestRegressionAll(TestCase):
         """
         problem_sub_directory = "multifit_set"
 
-        run_benchmark(self.results_dir, problem_sub_directory,
-                      override_software=["mantid"],
-                      jac_num_method={"scipy": ["2-point", "3-point"]},
-                      additional_options={'jac_method': ['scipy']})
+        run_benchmark(
+            self.results_dir,
+            problem_sub_directory,
+            override_software=["mantid"],
+            jac_num_method={"scipy": ["2-point", "3-point"]},
+            additional_options={"jac_method": ["scipy"]},
+        )
 
         diff, msg = compare_results(problem_sub_directory, "multifit.csv")
         self.assertListEqual([], diff, msg)
 
 
-@run_for_test_types(TEST_TYPE, 'matlab')
+@run_for_test_types(TEST_TYPE, "matlab")
 class TestRegressionMatlab(TestCase):
     """
     Regression tests for the Fitbenchmarking software with
@@ -75,8 +79,9 @@ class TestRegressionMatlab(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        cls.results_dir = os.path.join(os.path.dirname(__file__),
-                                       'fitbenchmarking_results')
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
 
     def test_results_consistent_all(self):
         """
@@ -92,7 +97,7 @@ class TestRegressionMatlab(TestCase):
         self.assertListEqual([], diff, msg)
 
 
-@run_for_test_types(TEST_TYPE, 'default')
+@run_for_test_types(TEST_TYPE, "default")
 class TestRegressionDefault(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all default fitting
@@ -104,8 +109,9 @@ class TestRegressionDefault(TestCase):
         """
         Create an options file, run it, and get the results.
         """
-        cls.results_dir = os.path.join(os.path.dirname(__file__),
-                                       'fitbenchmarking_results')
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
 
     def test_results_consistent(self):
         """
@@ -117,8 +123,9 @@ class TestRegressionDefault(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory,
-                                    "default_parsers_set.csv")
+        diff, msg = compare_results(
+            problem_sub_directory, "default_parsers_set.csv"
+        )
         self.assertListEqual([], diff, msg)
 
 
@@ -135,23 +142,28 @@ def diff_result(actual, expected):
     :rtype: list[list[str]], str
     """
     diff = []
-    for i, (exp_line, act_line) in enumerate(
-            zip_longest(expected, actual)):
-        exp_line = '' if exp_line is None else exp_line.strip('\n')
-        act_line = '' if act_line is None else act_line.strip('\n')
+    for i, (exp_line, act_line) in enumerate(zip_longest(expected, actual)):
+        exp_line = "" if exp_line is None else exp_line.strip("\n")
+        act_line = "" if act_line is None else act_line.strip("\n")
         if exp_line != act_line:
             diff.append([i, exp_line, act_line])
 
-    msg = f'\n\nOutput has changed in {len(diff)} ' \
-          + 'minimizer-problem pairs. \n' \
-          + '\n'.join([f'== Line {line_change[0]} ==\n'
-                       f'Expected :{line_change[1]}\n'
-                       f'Actual   :{line_change[2]}'
-                       for line_change in diff])
+    msg = (
+        f"\n\nOutput has changed in {len(diff)} "
+        + "minimizer-problem pairs. \n"
+        + "\n".join(
+            [
+                f"== Line {line_change[0]} ==\n"
+                f"Expected :{line_change[1]}\n"
+                f"Actual   :{line_change[2]}"
+                for line_change in diff
+            ]
+        )
+    )
     if diff:
         print("\n==\n")
         print("Output generated (also saved as actual.out):")
-        with open("actual.out", "w", encoding='utf-8') as outfile:
+        with open("actual.out", "w", encoding="utf-8") as outfile:
             for line in actual:
                 print(line)
                 outfile.write(line)
@@ -171,26 +183,31 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
     :return: The lines which differ and a formatted message
     :rtype: list[list[str]], str
     """
-    expected_file = os.path.join(os.path.dirname(__file__),
-                                 f'{platform}_expected_results',
-                                 result_filename)
+    expected_file = os.path.join(
+        os.path.dirname(__file__),
+        f"{platform}_expected_results",
+        result_filename,
+    )
 
-    actual_file = os.path.join(os.path.dirname(__file__),
-                               'fitbenchmarking_results',
-                               problem_sub_directory,
-                               'acc_table.csv')
+    actual_file = os.path.join(
+        os.path.dirname(__file__),
+        "fitbenchmarking_results",
+        problem_sub_directory,
+        "acc_table.csv",
+    )
 
-    with open(expected_file, 'r', encoding='utf-8') as f:
+    with open(expected_file, encoding="utf-8") as f:
         expected = f.readlines()
 
-    with open(actual_file, 'r', encoding='utf-8') as f:
+    with open(actual_file, encoding="utf-8") as f:
         actual = f.readlines()
 
     return diff_result(actual, expected)
 
 
-def setup_options(override_software: list = None,
-                  jac_num_method: dict = None) -> Options:
+def setup_options(
+    override_software: list = None, jac_num_method: dict = None
+) -> Options:
     """
     Setups up options class for system tests
 
@@ -207,7 +224,7 @@ def setup_options(override_software: list = None,
     opts.num_runs = 1
     opts.make_plots = False
     opts.run_dash = False
-    opts.table_type = ['acc', 'runtime', 'compare', 'local_min']
+    opts.table_type = ["acc", "runtime", "compare", "local_min"]
 
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.
@@ -240,16 +257,20 @@ def setup_options(override_software: list = None,
                   "scipy_leastsq": "lm-leastsq",
                   "theseus": "Levenberg_Marquardt"}
 
-    opts.software = software.get(TEST_TYPE) if override_software is None \
+    opts.software = (
+        software.get(TEST_TYPE)
+        if override_software is None
         else override_software
+    )
     opts.minimizers = {s: [minimizers[s]] for s in opts.software}
     if jac_num_method is not None:
         opts.jac_num_method = jac_num_method
     return opts
 
 
-def create_options_file(override_software: list = None,
-                        jac_num_method: dict = None):
+def create_options_file(
+    override_software: list = None, jac_num_method: dict = None
+):
     """
     Creates a temporary options file and returns its name.
 
@@ -262,17 +283,19 @@ def create_options_file(override_software: list = None,
     :rtype: str
     """
     opts = setup_options(override_software, jac_num_method)
-    with NamedTemporaryFile(suffix='.ini', mode='w',
-                            delete=False) as opt_file:
+    with NamedTemporaryFile(suffix=".ini", mode="w", delete=False) as opt_file:
         opts.write_to_stream(opt_file)
         name = opt_file.name
     return name
 
 
-def run_benchmark(results_dir: str, problem_sub_directory: str,
-                  override_software: list = None,
-                  jac_num_method: dict = None,
-                  additional_options: dict = None) -> None:
+def run_benchmark(
+    results_dir: str,
+    problem_sub_directory: str,
+    override_software: list = None,
+    jac_num_method: dict = None,
+    additional_options: dict = None,
+) -> None:
     """
     Runs a benchmark of the problems in a specific directory
     and places them in the results directory.
@@ -288,16 +311,23 @@ def run_benchmark(results_dir: str, problem_sub_directory: str,
     :type jac_num_method: dict{str: list[str]}
     """
     opt_file_name = create_options_file(override_software, jac_num_method)
-    problem = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           os.pardir,
-                                           "test_files",
-                                           problem_sub_directory))
+    problem = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            os.pardir,
+            "test_files",
+            problem_sub_directory,
+        )
+    )
 
-    add_opts = {'results_dir': results_dir}
+    add_opts = {"results_dir": results_dir}
     if additional_options is not None:
         add_opts.update(additional_options)
 
-    run([problem], additional_options=add_opts,
+    run(
+        [problem],
+        additional_options=add_opts,
         options_file=opt_file_name,
-        debug=True)
+        debug=True,
+    )
     os.remove(opt_file_name)

@@ -13,6 +13,7 @@ class CeresCostFunction(pyceres.CostFunction):
     Cost function for Ceres solver
     """
 
+
     def __init__(self, fb_cf):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
         super().__init__()
@@ -50,45 +51,53 @@ class CeresController(Controller):
     """
 
     algorithm_check = {
-        'all': ['Levenberg_Marquardt',
-                'Dogleg',
-                'BFGS',
-                'LBFGS',
-                'steepest_descent',
-                'Fletcher_Reeves',
-                'Polak_Ribiere',
-                'Hestenes_Stiefel'],
-        'ls': ['Levenberg_Marquardt',
-               'Dogleg',
-               'BFGS',
-               'LBFGS',
-               'steepest_descent',
-               'Fletcher_Reeves',
-               'Polak_Ribiere',
-               'Hestenes_Stiefel'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['Levenberg_Marquardt', 'Dogleg'],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': ['BFGS', 'LBFGS'],
-        'conjugate_gradient': ['Fletcher_Reeves',
-                               'Polak_Ribiere',
-                               'Hestenes_Stiefel'],
-        'steepest_descent': ['steepest_descent'],
-        'global_optimization': [],
-        'MCMC': []
+        "all": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "ls": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["Levenberg_Marquardt", "Dogleg"],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": ["BFGS", "LBFGS"],
+        "conjugate_gradient": [
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "steepest_descent": ["steepest_descent"],
+        "global_optimization": [],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['Levenberg_Marquardt',
-                                'Dogleg',
-                                'BFGS',
-                                'LBFGS',
-                                'steepest_descent',
-                                'Fletcher_Reeves',
-                                'Polak_Ribiere',
-                                'Hestenes_Stiefel']
+    jacobian_enabled_solvers = [
+        "Levenberg_Marquardt",
+        "Dogleg",
+        "BFGS",
+        "LBFGS",
+        "steepest_descent",
+        "Fletcher_Reeves",
+        "Polak_Ribiere",
+        "Hestenes_Stiefel",
+    ]
 
     def __init__(self, cost_func):
         """
@@ -157,7 +166,8 @@ class CeresController(Controller):
                 pyceres.NonlinearConjugateGradientType.HESTENES_STIEFEL
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for Ceres solver")
+                f"No {self.minimizer} minimizer for Ceres solver"
+            )
 
     def fit(self):
         """
@@ -170,8 +180,7 @@ class CeresController(Controller):
             self.ceres_summary,
         )
 
-        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 2
+        self._status = 0 if self.ceres_summary.IsSolutionUsable() else 2
 
     def cleanup(self):
         """

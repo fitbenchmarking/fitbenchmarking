@@ -1,18 +1,21 @@
 """
 Unit testing for the jacobian directory.
 """
+
 from unittest import TestCase
 
 import numpy as np
 from scipy import sparse
 from scipy.sparse import issparse
 
-from fitbenchmarking.cost_func.hellinger_nlls_cost_func import \
-    HellingerNLLSCostFunc
+from fitbenchmarking.cost_func.hellinger_nlls_cost_func import (
+    HellingerNLLSCostFunc,
+)
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
+    WeightedNLLSCostFunc,
+)
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
@@ -21,8 +24,10 @@ from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
-from fitbenchmarking.utils.exceptions import (NoSparseJacobianError,
-                                              SparseJacobianIsDenseError)
+from fitbenchmarking.utils.exceptions import (
+    NoSparseJacobianError,
+    SparseJacobianIsDenseError,
+)
 from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
 
@@ -58,8 +63,7 @@ def j(x, p):
     :return: Jacobian evaluation
     :rtype: 1D numpy array
     """
-    return np.column_stack((np.exp(p[1] * x),
-                            x * p[0] * np.exp(p[1] * x)))
+    return np.column_stack((np.exp(p[1] * x), x * p[0] * np.exp(p[1] * x)))
 
 
 def j_sparse(x, p):
@@ -89,8 +93,7 @@ def J(x, p):
     :return: Jacobian residuals evaluation
     :rtype: 1D numpy array
     """
-    # pylint: disable=invalid-unary-operand-type
-    return - j(x, p)
+    return -j(x, p)
 
 
 def J_weighted(x, e, p):
@@ -98,8 +101,9 @@ def J_weighted(x, e, p):
     Analytic Jacobian evaluation for weighted_nlls
     cost function
     """
-    return np.column_stack((-(np.exp(p[1] * x) / e),
-                            -(x * p[0] * np.exp(p[1] * x)) / e))
+    return np.column_stack(
+        (-(np.exp(p[1] * x) / e), -(x * p[0] * np.exp(p[1] * x)) / e)
+    )
 
 
 def J_hellinger(x, p):
@@ -107,9 +111,17 @@ def J_hellinger(x, p):
     Analytic Jacobian evaluation for hellinger_nlls
     cost function
     """
-    return np.column_stack((-1/2*(p[0]*np.exp(p[1]*x))**(-1/2)*np.exp(p[1]*x),
-                            -1/2*(p[0]*np.exp(p[1]*x))**(-1/2)
-                            * p[0]*x*np.exp(p[1]*x)))
+    return np.column_stack(
+        (
+            -1 / 2 * (p[0] * np.exp(p[1] * x)) ** (-1 / 2) * np.exp(p[1] * x),
+            -1
+            / 2
+            * (p[0] * np.exp(p[1] * x)) ** (-1 / 2)
+            * p[0]
+            * x
+            * np.exp(p[1] * x),
+        )
+    )
 
 
 def J_poisson(x, y, p):
@@ -117,8 +129,9 @@ def J_poisson(x, y, p):
     Analytic Jacobian evaluation for poisson
     cost function
     """
-    return np.column_stack((-y/p[0]+np.exp(p[1]*x),
-                            -y*x+p[0]*x*np.exp(p[1]*x)))
+    return np.column_stack(
+        (-y / p[0] + np.exp(p[1] * x), -y * x + p[0] * x * np.exp(p[1] * x))
+    )
 
 
 class TestJacobianName(TestCase):
@@ -142,7 +155,7 @@ class TestJacobianName(TestCase):
         Test the name is correct for the scipy jacobian.
         """
         jacobian = Scipy(self.fitting_problem)
-        jacobian.method = 'some_method'
+        jacobian.method = "some_method"
         self.assertEqual(jacobian.name(), "scipy some_method")
 
     def test_analytic_jacobian(self):
@@ -150,7 +163,7 @@ class TestJacobianName(TestCase):
         Test the name is correct for the analytic jacobian.
         """
         jacobian = Analytic(self.fitting_problem)
-        jacobian.method = 'some_method'
+        jacobian.method = "some_method"
         self.assertEqual(jacobian.name(), "analytic")
 
 
@@ -189,9 +202,7 @@ class TestJacobianClass(TestCase):
         """
         Test whether Scipy evaluation is correct
         """
-        for method in ['2-point',
-                       '3-point',
-                       'cs']:
+        for method in ["2-point", "3-point", "cs"]:
             jac = Scipy(self.cost_func.problem)
             jac.method = method
             eval_result = jac.eval(params=self.params)
@@ -203,7 +214,7 @@ class TestJacobianClass(TestCase):
         using sparsity
         """
         jac = Scipy(self.cost_func.problem)
-        jac.method = '2-point_sparse'
+        jac.method = "2-point_sparse"
         eval_result = jac.eval(params=self.params)
 
         self.assertTrue(np.isclose(self.actual, eval_result.todense()).all())
@@ -216,7 +227,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = j
         jac = Scipy(self.cost_func.problem)
-        jac.method = '2-point_sparse'
+        jac.method = "2-point_sparse"
         with self.assertRaises(SparseJacobianIsDenseError):
             jac.eval(params=self.params)
 
@@ -227,7 +238,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = None
         jac = Scipy(self.cost_func.problem)
-        jac.method = '2-point_sparse'
+        jac.method = "2-point_sparse"
         with self.assertRaises(NoSparseJacobianError):
             jac.eval(params=self.params)
 
@@ -235,11 +246,13 @@ class TestJacobianClass(TestCase):
         """
         Test whether numdifftools evaluation is correct
         """
-        for method in ['central',
-                       'forward',
-                       'backward',
-                       'complex',
-                       'multicomplex']:
+        for method in [
+            "central",
+            "forward",
+            "backward",
+            "complex",
+            "multicomplex",
+        ]:
             jac = Numdifftools(self.cost_func.problem)
             jac.method = method
             eval_result = jac.eval(params=self.params)
@@ -262,7 +275,7 @@ class TestJacobianClass(TestCase):
         when using sparsity
         """
         jac = Analytic(self.cost_func.problem)
-        jac.method = 'sparse'
+        jac.method = "sparse"
         self.cost_func.jacobian = jac
         eval_result = self.cost_func.jac_res(params=self.params)
         actual = J(self.fitting_problem.data_x, self.params)
@@ -276,7 +289,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = None
         jac = Analytic(self.cost_func.problem)
-        jac.method = 'sparse'
+        jac.method = "sparse"
         self.cost_func.jacobian = jac
         with self.assertRaises(NoSparseJacobianError):
             self.cost_func.jac_res(params=self.params)
@@ -288,7 +301,7 @@ class TestJacobianClass(TestCase):
         """
         self.fitting_problem.sparse_jacobian = j
         jac = Analytic(self.cost_func.problem)
-        jac.method = 'sparse'
+        jac.method = "sparse"
         self.cost_func.jacobian = jac
         with self.assertRaises(SparseJacobianIsDenseError):
             self.cost_func.jac_res(params=self.params)
@@ -302,8 +315,11 @@ class TestJacobianClass(TestCase):
         self.cost_func = WeightedNLLSCostFunc(self.fitting_problem)
         self.cost_func.jacobian = Analytic(self.cost_func.problem)
         eval_result = self.cost_func.jac_res(params=self.params)
-        actual = J_weighted(self.fitting_problem.data_x,
-                            self.fitting_problem.data_e, self.params)
+        actual = J_weighted(
+            self.fitting_problem.data_x,
+            self.fitting_problem.data_e,
+            self.params,
+        )
         self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_cutest_hellinger(self):
@@ -325,8 +341,11 @@ class TestJacobianClass(TestCase):
         self.cost_func = PoissonCostFunc(self.fitting_problem)
         self.cost_func.jacobian = Analytic(self.cost_func.problem)
         eval_result = self.cost_func.jac_res(params=self.params)
-        actual = J_poisson(self.fitting_problem.data_x,
-                           self.fitting_problem.data_y, self.params)
+        actual = J_poisson(
+            self.fitting_problem.data_x,
+            self.fitting_problem.data_y,
+            self.params,
+        )
         print(str(actual))
         print(str(eval_result))
         self.assertTrue(np.isclose(actual, eval_result).all())
@@ -359,20 +378,17 @@ class TestDerivCostFunc(TestCase):
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
         self.cost_func = NLLSCostFunc(self.fitting_problem)
-        J_eval = J(x=self.fitting_problem.data_x,
-                   p=self.params)
-        f_eval = self.fitting_problem.data_y - f(x=self.fitting_problem.data_x,
-                                                 p1=self.params[0],
-                                                 p2=self.params[1])
+        J_eval = J(x=self.fitting_problem.data_x, p=self.params)
+        f_eval = self.fitting_problem.data_y - f(
+            x=self.fitting_problem.data_x, p1=self.params[0], p2=self.params[1]
+        )
         self.actual = 2.0 * np.matmul(J_eval.T, f_eval)
 
     def test_scipy_eval(self):
         """
         Test whether Scipy evaluation is correct
         """
-        for method in ['2-point',
-                       '3-point',
-                       'cs']:
+        for method in ["2-point", "3-point", "cs"]:
             jac = Scipy(self.cost_func.problem)
             jac.method = method
             self.cost_func.jacobian = jac
@@ -383,11 +399,13 @@ class TestDerivCostFunc(TestCase):
         """
         Test whether numdifftools evaluation is correct
         """
-        for method in ['central',
-                       'forward',
-                       'backward',
-                       'complex',
-                       'multicomplex']:
+        for method in [
+            "central",
+            "forward",
+            "backward",
+            "complex",
+            "multicomplex",
+        ]:
             jac = Numdifftools(self.cost_func.problem)
             jac.method = method
             self.cost_func.jacobian = jac
@@ -434,7 +452,7 @@ class TestBestAvailable(TestCase):
         Test that setting the method raises a warning.
         """
         jac = BestAvailable(self.fitting_problem)
-        with self.assertLogs(LOGGER, level='WARNING') as log:
+        with self.assertLogs(LOGGER, level="WARNING") as log:
             jac.method = "three"
             self.assertTrue("Method cannot be selected" in log.output[0])
 
@@ -474,18 +492,19 @@ class TestFactory(TestCase):
         """
         Test that the factory returns the correct class for inputs
         """
-        valid = [('scipy', Scipy),
-                 ('analytic', Analytic),
-                 ('best_available', BestAvailable),
-                 ]
+        valid = [
+            ("scipy", Scipy),
+            ("analytic", Analytic),
+            ("best_available", BestAvailable),
+        ]
 
-        invalid = ['numpy', 'random_jac']
+        invalid = ["numpy", "random_jac"]
 
         for jac_method, jac_class in valid:
             jac = create_jacobian(jac_method)
             self.assertTrue(jac == jac_class)
 
         for jac_method in invalid:
-            self.assertRaises(exceptions.NoJacobianError,
-                              create_jacobian,
-                              jac_method)
+            self.assertRaises(
+                exceptions.NoJacobianError, create_jacobian, jac_method
+            )

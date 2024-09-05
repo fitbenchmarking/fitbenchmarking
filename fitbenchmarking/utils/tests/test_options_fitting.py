@@ -1,6 +1,7 @@
-'''
+"""
 Test the FITTING section for the options file
-'''
+"""
+
 import inspect
 import os
 import shutil
@@ -33,7 +34,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks algorithm_type default
         """
-        expected = ['all']
+        expected = ["all"]
         actual = self.options.algorithm_type
         self.assertEqual(expected, actual)
 
@@ -41,7 +42,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks software default
         """
-        expected = ['scipy', 'scipy_ls']
+        expected = ["scipy", "scipy_ls"]
         actual = self.options.software
         self.assertEqual(expected, actual)
 
@@ -49,7 +50,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks jac_method default
         """
-        expected = ['best_available']
+        expected = ["best_available"]
         actual = self.options.jac_method
         self.assertEqual(expected, actual)
 
@@ -57,7 +58,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks hes_method default
         """
-        expected = ['best_available']
+        expected = ["best_available"]
         actual = self.options.hes_method
         self.assertEqual(expected, actual)
 
@@ -65,7 +66,7 @@ class FittingOptionTests(unittest.TestCase):
         """
         Checks cost_func default
         """
-        expected = ['weighted_nlls']
+        expected = ["weighted_nlls"]
         actual = self.options.cost_func_type
         self.assertEqual(expected, actual)
 
@@ -88,7 +89,7 @@ class UserFittingOptionTests(unittest.TestCase):
         Sets the directory to save the temporary ini files in
         """
         options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
+        self.test_files_dir = os.path.join(options_dir, "tests", "files")
         os.mkdir(self.test_files_dir)
 
     def tearDown(self):
@@ -110,9 +111,10 @@ class UserFittingOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        opts_file = os.path.join(self.test_files_dir,
-                                 f'test_{opt_name}_valid.ini')
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        opts_file = os.path.join(
+            self.test_files_dir, f"test_{opt_name}_valid.ini"
+        )
+        with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         return opts_file
 
@@ -149,108 +151,95 @@ class UserFittingOptionTests(unittest.TestCase):
         """
         Tests that the user defined option key is invalid.
         """
-        config_str = \
-            "[FITTING]\nnum_minimizer_runs: 3"
-        self.shared_invalid('num_minimizer_runs', config_str)
+        config_str = "[FITTING]\nnum_minimizer_runs: 3"
+        self.shared_invalid("num_minimizer_runs", config_str)
 
     def test_minimizer_num_runs_valid(self):
         """
         Checks user set num_runs is valid
         """
         set_option = 3
-        config_str = \
-            "[FITTING]\nnum_runs: 3"
-        self.shared_valid('num_runs', set_option, config_str)
+        config_str = "[FITTING]\nnum_runs: 3"
+        self.shared_valid("num_runs", set_option, config_str)
 
     def test_minimizer_num_runs_invalid(self):
         """
         Checks user set num_runs is invalid
         """
-        config_str = \
-            "[FITTING]\nnum_runs: two"
-        self.shared_invalid('num_runs', config_str)
+        config_str = "[FITTING]\nnum_runs: two"
+        self.shared_invalid("num_runs", config_str)
 
     def test_minimizer_algorithm_type_valid(self):
         """
         Checks user set algorithm_type is valid
         """
-        set_option = ['general']
-        config_str = \
-            "[FITTING]\nalgorithm_type: general"
-        self.shared_valid('algorithm_type', set_option, config_str)
+        set_option = ["general"]
+        config_str = "[FITTING]\nalgorithm_type: general"
+        self.shared_valid("algorithm_type", set_option, config_str)
 
     def test_minimizer_algorithm_type_invalid(self):
         """
         Checks user set algorithm_type is invalid
         """
-        config_str = \
-            "[FITTING]\nalgorithm_type: all_the_minimizers"
-        self.shared_invalid('algorithm_type', config_str)
+        config_str = "[FITTING]\nalgorithm_type: all_the_minimizers"
+        self.shared_invalid("algorithm_type", config_str)
 
     def test_minimizer_jac_method_valid(self):
         """
         Checks user set jac_method is valid
         """
         set_option = ["analytic"]
-        config_str = \
-            "[FITTING]\njac_method: analytic"
-        self.shared_valid('jac_method', set_option, config_str)
+        config_str = "[FITTING]\njac_method: analytic"
+        self.shared_valid("jac_method", set_option, config_str)
 
     def test_minimizer_jac_method_invalid(self):
         """
         Checks user set jac_method is invalid
         """
-        config_str = \
-            "[FITTING]\njac_method: NumPyFD"
-        self.shared_invalid('jac_method', config_str)
+        config_str = "[FITTING]\njac_method: NumPyFD"
+        self.shared_invalid("jac_method", config_str)
 
     def test_minimizer_hes_method_valid(self):
         """
         Checks user set hes_method is valid
         """
         set_option = ["analytic"]
-        config_str = \
-            "[FITTING]\nhes_method: analytic"
-        self.shared_valid('hes_method', set_option, config_str)
+        config_str = "[FITTING]\nhes_method: analytic"
+        self.shared_valid("hes_method", set_option, config_str)
 
     def test_minimizer_hes_method_invalid(self):
         """
         Checks user set hes_method is invalid
         """
-        config_str = \
-            "[FITTING]\nhes_method: numpy"
-        self.shared_invalid('hes_method', config_str)
+        config_str = "[FITTING]\nhes_method: numpy"
+        self.shared_invalid("hes_method", config_str)
 
     def test_minimizer_cost_func_type_valid(self):
         """
         Checks user set cost_func_type is valid
         """
         set_option = ["nlls"]
-        config_str = \
-            "[FITTING]\ncost_func_type: nlls"
-        self.shared_valid('cost_func_type', set_option, config_str)
+        config_str = "[FITTING]\ncost_func_type: nlls"
+        self.shared_valid("cost_func_type", set_option, config_str)
 
     def test_minimizer_cost_func_type_invalid(self):
         """
         Checks user set cost_func_type is invalid
         """
-        config_str = \
-            "[FITTING]\ncost_func_type: normal_dist"
-        self.shared_invalid('cost_func_type', config_str)
+        config_str = "[FITTING]\ncost_func_type: normal_dist"
+        self.shared_invalid("cost_func_type", config_str)
 
     def test_minimizer_max_runtime_type_valid(self):
         """
         Checks user set max_runtime is valid
         """
         set_option = 10
-        config_str = \
-            "[FITTING]\nmax_runtime: 10"
-        self.shared_valid('max_runtime', set_option, config_str)
+        config_str = "[FITTING]\nmax_runtime: 10"
+        self.shared_valid("max_runtime", set_option, config_str)
 
     def test_minimizer_max_runtime_invalid(self):
         """
         Checks user set max_runtime is invalid
         """
-        config_str = \
-            "[FITTING]\nmax_runtime: 10 seconds"
-        self.shared_invalid('max_runtime', config_str)
+        config_str = "[FITTING]\nmax_runtime: 10 seconds"
+        self.shared_invalid("max_runtime", config_str)

@@ -140,25 +140,6 @@ jobs:
         name: default_unit_tests
         path: test-results/default_unit_pytest.xml
 
-  linting_test:
-    name: Linting Tests (Linux)
-    if: github.event.repository.fork == false
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Install python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-        check-latest: true
-    - name: Install default dependencies for fitbenchmarking
-      run: |
-        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
-        pip install --upgrade .[dev]
-    - name: Run linting
-      run: ci/linting_tests.sh
-
   publish-test-results:
     name: Publish Test Results
     if: github.event.repository.fork == false && always()

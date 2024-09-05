@@ -16,8 +16,11 @@ import fitbenchmarking
 from fitbenchmarking.cli.checkpoint_handler import generate_report
 from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.fitting_benchmarking import Fit
-from fitbenchmarking.core.results_output import (create_index_page,
-                                                 open_browser, save_results)
+from fitbenchmarking.core.results_output import (
+    create_index_page,
+    open_browser,
+    save_results,
+)
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
@@ -34,7 +37,7 @@ def get_parser():
     :rtype: argparse.ArgParser
     """
 
-    epilog = '''Usage Examples:
+    epilog = """Usage Examples:
 
     $ fitbenchmarking
     $ fitbenchmarking -p examples/benchmark_problems/NIST/*
@@ -61,174 +64,257 @@ Please note that the third listed example assumes that \
 Fitbenchmarking has been installed with a number of pip \
 installable fitting software packages. For more information \
 on installing these packages, please see the Installation pages \
-of the Fitbenchmarking docs. '''
+of the Fitbenchmarking docs. """
 
     parser = argparse.ArgumentParser(
-        prog='FitBenchmarking', add_help=True, epilog=epilog,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        prog="FitBenchmarking",
+        add_help=True,
+        epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
 
-    parser.add_argument('-o', '--options-file',
-                        metavar='OPTIONS_FILE',
-                        default='',
-                        help='The path to a %(prog)s options file.')
-    parser.add_argument('-p', '--problem_sets',
-                        nargs='+',
-                        default=glob.glob(os.path.join(root,
-                                                       'benchmark_problems',
-                                                       'NIST',
-                                                       'average_difficulty')),
-                        help='Paths to directories containing problem sets.')
-    parser.add_argument('-r', '--results_dir',
-                        metavar='RESULTS_DIR',
-                        default='',
-                        help='The directory to store resulting files in.')
-    parser.add_argument('-d', '--debug-mode',
-                        default=False,
-                        action='store_true',
-                        help='Enable debug mode (prints traceback).',)
-    parser.add_argument('-n', '--num_runs',
-                        metavar='NUM_RUNS',
-                        type=int,
-                        default=0,
-                        help="Set the number of runs to average "
-                        "each fit over.")
-    parser.add_argument('-a', '--algorithm_type',
-                        metavar='ALGORITHM_TYPE',
-                        nargs='+',
-                        type=str,
-                        default=[],
-                        help="Select what type of algorithm is used within a "
-                        "specific software.")
-    parser.add_argument('-s', '--software',
-                        metavar='SOFTWARE',
-                        nargs='+',
-                        type=str,
-                        default=[],
-                        help="Select the fitting software to benchmark.")
-    parser.add_argument('-j', '--jac_method',
-                        metavar='JAC_METHOD',
-                        nargs='+',
-                        type=str,
-                        default=[],
-                        help="Set the Jacobian to be used.")
-    parser.add_argument('-c', '--cost_func_type',
-                        metavar='COST_FUNC_TYPE',
-                        nargs='+',
-                        type=str,
-                        default=[],
-                        help="Set the cost functions to be used "
-                        "for the given data.")
-    parser.add_argument('-rt', '--runtime_metric',
-                        metavar='RUNTIME_METRIC',
-                        choices=['mean',
-                                 'minimum',
-                                 'maximum',
-                                 'first',
-                                 'median',
-                                 'harmonic',
-                                 'trim'],
-                        type=str,
-                        default='',
-                        help="Set the metric for the runtime.")
+    parser.add_argument(
+        "-o",
+        "--options-file",
+        metavar="OPTIONS_FILE",
+        default="",
+        help="The path to a %(prog)s options file.",
+    )
+    parser.add_argument(
+        "-p",
+        "--problem_sets",
+        nargs="+",
+        default=glob.glob(
+            os.path.join(
+                root, "benchmark_problems", "NIST", "average_difficulty"
+            )
+        ),
+        help="Paths to directories containing problem sets.",
+    )
+    parser.add_argument(
+        "-r",
+        "--results_dir",
+        metavar="RESULTS_DIR",
+        default="",
+        help="The directory to store resulting files in.",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug-mode",
+        default=False,
+        action="store_true",
+        help="Enable debug mode (prints traceback).",
+    )
+    parser.add_argument(
+        "-n",
+        "--num_runs",
+        metavar="NUM_RUNS",
+        type=int,
+        default=0,
+        help="Set the number of runs to average " "each fit over.",
+    )
+    parser.add_argument(
+        "-a",
+        "--algorithm_type",
+        metavar="ALGORITHM_TYPE",
+        nargs="+",
+        type=str,
+        default=[],
+        help="Select what type of algorithm is used within a "
+        "specific software.",
+    )
+    parser.add_argument(
+        "-s",
+        "--software",
+        metavar="SOFTWARE",
+        nargs="+",
+        type=str,
+        default=[],
+        help="Select the fitting software to benchmark.",
+    )
+    parser.add_argument(
+        "-j",
+        "--jac_method",
+        metavar="JAC_METHOD",
+        nargs="+",
+        type=str,
+        default=[],
+        help="Set the Jacobian to be used.",
+    )
+    parser.add_argument(
+        "-c",
+        "--cost_func_type",
+        metavar="COST_FUNC_TYPE",
+        nargs="+",
+        type=str,
+        default=[],
+        help="Set the cost functions to be used " "for the given data.",
+    )
+    parser.add_argument(
+        "-rt",
+        "--runtime_metric",
+        metavar="RUNTIME_METRIC",
+        choices=[
+            "mean",
+            "minimum",
+            "maximum",
+            "first",
+            "median",
+            "harmonic",
+            "trim",
+        ],
+        type=str,
+        default="",
+        help="Set the metric for the runtime.",
+    )
 
-    parser.add_argument('--port',
-                        metavar='PORT',
-                        type=int,
-                        default=0,
-                        help="Set the port for Dash.")
+    parser.add_argument(
+        "--port",
+        metavar="PORT",
+        type=int,
+        default=0,
+        help="Set the port for Dash.",
+    )
 
     group1 = parser.add_mutually_exclusive_group()
-    group1.add_argument('--make_plots', action='store_true',
-                        help="Use this option if you have decided to "
-                        "create plots during runtime.")
-    group1.add_argument('--dont_make_plots', action='store_true',
-                        help="Use this option if you have decided not to "
-                        "create plots during runtime.")
+    group1.add_argument(
+        "--make_plots",
+        action="store_true",
+        help="Use this option if you have decided to "
+        "create plots during runtime.",
+    )
+    group1.add_argument(
+        "--dont_make_plots",
+        action="store_true",
+        help="Use this option if you have decided not to "
+        "create plots during runtime.",
+    )
 
     group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument('--results_browser', action='store_true',
-                        help="Use this option if you have decided to "
-                        "open a browser window to show the results "
-                        "of a fit benchmark.")
-    group2.add_argument('--no_results_browser', action='store_true',
-                        help="Use this option if you have decided not to "
-                        "open a browser window to show the results "
-                        "of a fit benchmark.")
+    group2.add_argument(
+        "--results_browser",
+        action="store_true",
+        help="Use this option if you have decided to "
+        "open a browser window to show the results "
+        "of a fit benchmark.",
+    )
+    group2.add_argument(
+        "--no_results_browser",
+        action="store_true",
+        help="Use this option if you have decided not to "
+        "open a browser window to show the results "
+        "of a fit benchmark.",
+    )
 
     group3 = parser.add_mutually_exclusive_group()
-    group3.add_argument('--pbar', action='store_true',
-                        help="Use this option if you would like to "
-                        "see the progress bar during runtime.")
-    group3.add_argument('--no_pbar', action='store_true',
-                        help="Use this option if you do not want to "
-                        "see the progress bar during runtime.")
+    group3.add_argument(
+        "--pbar",
+        action="store_true",
+        help="Use this option if you would like to "
+        "see the progress bar during runtime.",
+    )
+    group3.add_argument(
+        "--no_pbar",
+        action="store_true",
+        help="Use this option if you do not want to "
+        "see the progress bar during runtime.",
+    )
 
-    parser.add_argument('--run_name',
-                        metavar='RUN_NAME',
-                        default='',
-                        help="Use this option if you would like to "
-                        "prefix the html title of results pages.")
+    parser.add_argument(
+        "--run_name",
+        metavar="RUN_NAME",
+        default="",
+        help="Use this option if you would like to "
+        "prefix the html title of results pages.",
+    )
 
-    parser.add_argument('-m', '--comparison_mode',
-                        metavar='COMPARISON_MODE',
-                        default='',
-                        help="Select the mode for displaying values in "
-                        "the resulting table.")
-    parser.add_argument('-t', '--table_type',
-                        metavar='TABLE_TYPE',
-                        nargs='+',
-                        type=str,
-                        default=[],
-                        help="Select the type of table to be produced "
-                        "in FitBenchmarking.")
-    parser.add_argument('-f', '--logging_file_name',
-                        metavar='LOGGING_FILE_NAME',
-                        default='',
-                        help="Specify the file path to write the logs to.")
+    parser.add_argument(
+        "-m",
+        "--comparison_mode",
+        metavar="COMPARISON_MODE",
+        default="",
+        help="Select the mode for displaying values in "
+        "the resulting table.",
+    )
+    parser.add_argument(
+        "-t",
+        "--table_type",
+        metavar="TABLE_TYPE",
+        nargs="+",
+        type=str,
+        default=[],
+        help="Select the type of table to be produced " "in FitBenchmarking.",
+    )
+    parser.add_argument(
+        "-f",
+        "--logging_file_name",
+        metavar="LOGGING_FILE_NAME",
+        default="",
+        help="Specify the file path to write the logs to.",
+    )
 
     group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument('--append_log', action='store_true',
-                        help="Use this option if you have decided to "
-                        "log in append mode. If append mode is active, "
-                        "the log file will be extended with each "
-                        "subsequent run.")
-    group2.add_argument('--overwrite_log', action='store_true',
-                        help="Use this option if you have decided not to "
-                        "log in append mode. If append mode is not active, "
-                        "the log will be cleared after each run.")
+    group2.add_argument(
+        "--append_log",
+        action="store_true",
+        help="Use this option if you have decided to "
+        "log in append mode. If append mode is active, "
+        "the log file will be extended with each "
+        "subsequent run.",
+    )
+    group2.add_argument(
+        "--overwrite_log",
+        action="store_true",
+        help="Use this option if you have decided not to "
+        "log in append mode. If append mode is not active, "
+        "the log will be cleared after each run.",
+    )
 
-    parser.add_argument('-l', '--level',
-                        metavar='LEVEL',
-                        default='',
-                        help="Specify the minimum level of logging to display "
-                        "on console during runtime.")
-    parser.add_argument('-e', '--external_output',
-                        metavar='EXTERNAL_OUTPUT',
-                        default='',
-                        help="Select the amount of information displayed "
-                        "from third-parties.")
+    parser.add_argument(
+        "-l",
+        "--level",
+        metavar="LEVEL",
+        default="",
+        help="Specify the minimum level of logging to display "
+        "on console during runtime.",
+    )
+    parser.add_argument(
+        "-e",
+        "--external_output",
+        metavar="EXTERNAL_OUTPUT",
+        default="",
+        help="Select the amount of information displayed "
+        "from third-parties.",
+    )
 
-    parser.add_argument('--load_checkpoint',
-                        default=False,
-                        action='store_true',
-                        help='Load results from the checkpoint and generate'
-                             'reports. Will not run any new tests.')
+    parser.add_argument(
+        "--load_checkpoint",
+        default=False,
+        action="store_true",
+        help="Load results from the checkpoint and generate"
+        "reports. Will not run any new tests.",
+    )
 
     group4 = parser.add_mutually_exclusive_group()
-    group4.add_argument('--run_dash', action='store_true',
-                        help="Use this option if you have decided to "
-                        "run dash for interactive plots.")
-    group4.add_argument('--dont_run_dash', action='store_true',
-                        help="Use this option if you have decided not to "
-                        "run dash for interactive plots.")
+    group4.add_argument(
+        "--run_dash",
+        action="store_true",
+        help="Use this option if you have decided to "
+        "run dash for interactive plots.",
+    )
+    group4.add_argument(
+        "--dont_run_dash",
+        action="store_true",
+        help="Use this option if you have decided not to "
+        "run dash for interactive plots.",
+    )
     return parser
 
 
 @exception_handler
-def run(problem_sets, additional_options=None, options_file='', debug=False):
-    # pylint: disable=unused-argument
+def run(problem_sets, additional_options=None, options_file="", debug=False):
     """
     Run benchmarking for the problems sets and options file given.
     Opens a webbrowser to the results_index after fitting.
@@ -251,17 +337,18 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
     current_path = os.path.abspath(os.path.curdir)
     options = find_options_file(options_file, additional_options)
 
-    setup_logger(log_file=options.log_file,
-                 append=options.log_append,
-                 level=options.log_level)
+    setup_logger(
+        log_file=options.log_file,
+        append=options.log_append,
+        level=options.log_level,
+    )
 
-    with NamedTemporaryFile(suffix='.ini', mode='w',
-                            delete=False) as opt_file:
+    with NamedTemporaryFile(suffix=".ini", mode="w", delete=False) as opt_file:
         options.write_to_stream(opt_file)
         opt_file_name = opt_file.name
 
     LOGGER.debug("The options file used is as follows:")
-    with open(opt_file_name, encoding='utf-8') as f:
+    with open(opt_file_name, encoding="utf-8") as f:
         for line in f:
             LOGGER.debug(line.replace("\n", ""))
     os.remove(opt_file_name)
@@ -272,31 +359,29 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
     cp = Checkpoint(options=options)
 
     for sub_dir in problem_sets:
-
         # Create full path for the directory that holds a group of
         # problem definition files
         data_dir = os.path.join(current_path, sub_dir)
 
-        test_data = glob.glob(data_dir + '/*.*')
+        test_data = glob.glob(data_dir + "/*.*")
 
         if not test_data:
-            LOGGER.warning('Problem set %s not found', data_dir)
+            LOGGER.warning("Problem set %s not found", data_dir)
             continue
 
         # generate group label/name used for problem set
         try:
-            with open(os.path.join(data_dir, 'META.txt'), 'r',
-                      encoding='utf-8') as f:
-                label = f.readline().strip('\n')
-        except IOError:
-            label = sub_dir.replace('/', '_')
+            with open(
+                os.path.join(data_dir, "META.txt"), encoding="utf-8"
+            ) as f:
+                label = f.readline().strip("\n")
+        except OSError:
+            label = sub_dir.replace("/", "_")
 
-        LOGGER.info('Running the benchmarking on the %s problem set',
-                    label)
-        fit = Fit(options=options,
-                  data_dir=data_dir,
-                  label=label,
-                  checkpointer=cp)
+        LOGGER.info("Running the benchmarking on the %s problem set", label)
+        fit = Fit(
+            options=options, data_dir=data_dir, label=label, checkpointer=cp
+        )
         results, failed_problems, unselected_minimizers = fit.benchmark()
 
         # If a result has error flag 4 then the result contains dummy values,
@@ -312,28 +397,32 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
         # raise an exception and the tables will produce errors if they run
         # for that problem set.
         if not results or all_dummy_results_flag:
-            message = "\nWARNING: \nThe user chosen options and/or problem " \
-                      " setup resulted in all minimizers and/or parsers " \
-                      "raising an exception. Because of this, results for " \
-                      f"the {label} problem set will not be displayed. " \
-                      "Please see the logs for more detail on why this is " \
-                      "the case."
+            message = (
+                "\nWARNING: \nThe user chosen options and/or problem "
+                " setup resulted in all minimizers and/or parsers "
+                "raising an exception. Because of this, results for "
+                f"the {label} problem set will not be displayed. "
+                "Please see the logs for more detail on why this is "
+                "the case."
+            )
             LOGGER.warning(message)
         else:
-            LOGGER.info('Producing output for the %s problem set', label)
+            LOGGER.info("Producing output for the %s problem set", label)
             # Display the runtime and accuracy results in a table
-            group_results_dir, pp_dfs = \
-                save_results(group_name=label,
-                             results=results,
-                             options=options,
-                             failed_problems=failed_problems,
-                             unselected_minimizers=unselected_minimizers)
+            group_results_dir, pp_dfs = save_results(
+                group_name=label,
+                results=results,
+                options=options,
+                failed_problems=failed_problems,
+                unselected_minimizers=unselected_minimizers,
+            )
 
             pp_dfs_all_prob_sets[label] = pp_dfs
 
-            LOGGER.info('Completed benchmarking for %s problem set', sub_dir)
-            group_results_dir = os.path.relpath(path=group_results_dir,
-                                                start=options.results_dir)
+            LOGGER.info("Completed benchmarking for %s problem set", sub_dir)
+            group_results_dir = os.path.relpath(
+                path=group_results_dir, start=options.results_dir
+            )
             result_dir.append(group_results_dir)
             group_labels.append(label)
 
@@ -341,19 +430,23 @@ def run(problem_sets, additional_options=None, options_file='', debug=False):
 
     # Check result_dir is non empty before producing output
     if not result_dir:
-        message = "The user chosen options and/or problem setup resulted in " \
-                  "all minimizers and/or parsers raising an exception. " \
-                  "For more detail on what caused this, please see the " \
-                  "above logs before reviewing your options setup " \
-                  "and/or problem set then re-run FitBenchmarking"
+        message = (
+            "The user chosen options and/or problem setup resulted in "
+            "all minimizers and/or parsers raising an exception. "
+            "For more detail on what caused this, please see the "
+            "above logs before reviewing your options setup "
+            "and/or problem set then re-run FitBenchmarking"
+        )
         raise NoResultsError(message)
 
-    if additional_options['results_dir'] == "":
-        LOGGER.info("\nINFO:\nThe FitBenchmarking results will be placed "
-                    "into the folder:\n\n   %s\n\nTo change this use the "
-                    "-r or --results_dir optional command line argument. "
-                    "You can also set 'results_dir' in an options file.",
-                    options.results_dir)
+    if additional_options["results_dir"] == "":
+        LOGGER.info(
+            "\nINFO:\nThe FitBenchmarking results will be placed "
+            "into the folder:\n\n   %s\n\nTo change this use the "
+            "-r or --results_dir optional command line argument. "
+            "You can also set 'results_dir' in an options file.",
+            options.results_dir,
+        )
 
     index_page = create_index_page(options, group_labels, result_dir)
     open_browser(index_page, options, pp_dfs_all_prob_sets)
@@ -366,74 +459,80 @@ def main():
     parser = get_parser()
 
     if len(sys.argv) == 1:
-        print("Running NIST average_difficulty problem set "
-              "with scipy minimizers \n")
+        print(
+            "Running NIST average_difficulty problem set "
+            "with scipy minimizers \n"
+        )
 
     args = parser.parse_args(sys.argv[1:])
 
     # Dictionary of options which can be set via argparse
     # rather than from an ini file or from the default options
     options_dictionary = {
-        'results_dir': args.results_dir,
-        'num_runs': args.num_runs,
-        'algorithm_type': args.algorithm_type,
-        'software': args.software,
-        'jac_method': args.jac_method,
-        'cost_func_type': args.cost_func_type,
-        'comparison_mode': args.comparison_mode,
-        'table_type': args.table_type,
-        'file_name': args.logging_file_name,
-        'level': args.level,
-        'external_output': args.external_output,
-        'run_name': args.run_name,
-        'runtime_metric': args.runtime_metric,
-        'port': args.port
+        "results_dir": args.results_dir,
+        "num_runs": args.num_runs,
+        "algorithm_type": args.algorithm_type,
+        "software": args.software,
+        "jac_method": args.jac_method,
+        "cost_func_type": args.cost_func_type,
+        "comparison_mode": args.comparison_mode,
+        "table_type": args.table_type,
+        "file_name": args.logging_file_name,
+        "level": args.level,
+        "external_output": args.external_output,
+        "run_name": args.run_name,
+        "runtime_metric": args.runtime_metric,
+        "port": args.port,
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.make_plots:
-        options_dictionary['make_plots'] = True
+        options_dictionary["make_plots"] = True
     elif args.dont_make_plots:
-        options_dictionary['make_plots'] = False
+        options_dictionary["make_plots"] = False
 
     # Check if results_browser in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.results_browser:
-        options_dictionary['results_browser'] = True
+        options_dictionary["results_browser"] = True
     elif args.no_results_browser:
-        options_dictionary['results_browser'] = False
+        options_dictionary["results_browser"] = False
 
     # Check if run_dash in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.run_dash:
-        options_dictionary['run_dash'] = True
+        options_dictionary["run_dash"] = True
     elif args.dont_run_dash:
-        options_dictionary['run_dash'] = False
+        options_dictionary["run_dash"] = False
 
     # Check if benchmark in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.pbar:
-        options_dictionary['pbar'] = True
+        options_dictionary["pbar"] = True
     elif args.no_pbar:
-        options_dictionary['pbar'] = False
+        options_dictionary["pbar"] = False
 
     # Check if log_append in options.py should be overridden, and if so,
     # add to options_dictionary
     if args.append_log:
-        options_dictionary['append'] = True
+        options_dictionary["append"] = True
     elif args.overwrite_log:
-        options_dictionary['append'] = False
+        options_dictionary["append"] = False
 
     if args.load_checkpoint:
-        generate_report(options_file=args.options_file,
-                        additional_options=options_dictionary)
+        generate_report(
+            options_file=args.options_file,
+            additional_options=options_dictionary,
+        )
     else:
-        run(problem_sets=args.problem_sets,
+        run(
+            problem_sets=args.problem_sets,
             options_file=args.options_file,
             debug=args.debug_mode,
-            additional_options=options_dictionary)
+            additional_options=options_dictionary,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

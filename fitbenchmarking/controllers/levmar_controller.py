@@ -5,8 +5,8 @@ via the python interface
 https://pypi.org/project/levmar/
 """
 
-import numpy as np
 import levmar
+import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -17,21 +17,22 @@ class LevmarController(Controller):
     """
 
     algorithm_check = {
-            'all': ['levmar'],
-            'ls': ['levmar'],
-            'deriv_free': [],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['levmar'],
-            'levenberg-marquardt': ['levmar'],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        "all": ["levmar"],
+        "ls": ["levmar"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["levmar"],
+        "levenberg-marquardt": ["levmar"],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
-    jacobian_enabled_solvers = ['levmar']
+    jacobian_enabled_solvers = ["levmar"]
 
     def __init__(self, cost_func):
         """
@@ -69,9 +70,7 @@ class LevmarController(Controller):
             solve_levmar = getattr(levmar, "levmar")
         else:
             solve_levmar = getattr(levmar, "levmar_bc")
-        args = [self.cost_func.eval_r,
-                self.initial_params,
-                self.lm_y]
+        args = [self.cost_func.eval_r, self.initial_params, self.lm_y]
         if self.value_ranges is not None:
             args.append(self.param_ranges)
         kwargs = {}
@@ -113,11 +112,11 @@ class LevmarController(Controller):
         will be read from.
         """
 
-        if self._info[3] == "Stop by small Dp":
-            self.flag = 0
-        elif self._info[3] == "Stopped by small gradient J^T e":
-            self.flag = 0
-        elif self._info[3] == "Stopped by small ||e||_2":
+        if (
+            self._info[3] == "Stop by small Dp"
+            or self._info[3] == "Stopped by small gradient J^T e"
+            or self._info[3] == "Stopped by small ||e||_2"
+        ):
             self.flag = 0
         elif self._info[3] == "maxit":
             self.flag = 1

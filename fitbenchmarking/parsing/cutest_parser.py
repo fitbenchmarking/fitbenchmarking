@@ -2,10 +2,10 @@
 This file calls the pycutest interface for SIF data
 """
 
-
 import os
 import time
 from tempfile import TemporaryDirectory
+
 import numpy as np
 import pycutest
 
@@ -13,18 +13,18 @@ from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
 
-if os.path.isdir(os.environ["PYCUTEST_CACHE"]+"/pycutest_cache_holder"):
+if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
     # clear problems from cache that are older than 1 hour, do not clear
     # all problems as when running with matlab the cache is cleared again
     # when dill.load is called in controller
     for cached_problem in pycutest.all_cached_problems():
         file_age = time.time() - os.path.getmtime(
-            os.environ["PYCUTEST_CACHE"] +
-            "/pycutest_cache_holder/"+cached_problem[0])
+            os.environ["PYCUTEST_CACHE"]
+            + "/pycutest_cache_holder/"
+            + cached_problem[0]
+        )
         if file_age > 7200:
             pycutest.clear_cache(cached_problem[0], cached_problem[1])
-
-# pylint: disable=attribute-defined-outside-init, too-few-public-methods
 
 
 class CutestParser(Parser):
@@ -58,9 +58,7 @@ class CutestParser(Parser):
         :return: The fully parsed fitting problem
         :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
         """
-        # pylint: disable=consider-using-with
         self.mastsif_dir = TemporaryDirectory()
-        # pylint: enable=consider-using-with
 
         # set the MASTSIF environment variable so that pycutest
         # can find the sif files
@@ -182,24 +180,24 @@ class CutestParser(Parser):
         return gx
 
     def _get_starting_values(self):
-
         starting_values = [
-            {f'f{i}': self._p.x0[i]
-             for i in range(self._num_params)}
+            {f"f{i}": self._p.x0[i] for i in range(self._num_params)}
         ]
 
         return starting_values
 
     def _get_parameter_ranges(self):
-
-        if all(x == -1.e+20 for x in self._p.bl) and\
-                all(x == 1.e+20 for x in self._p.bu):
+        if all(x == -1.0e20 for x in self._p.bl) and all(
+            x == 1.0e20 for x in self._p.bu
+        ):
             parameter_values = False
         else:
-            parameter_values = [{
-                f'f{i}': (self._p.bl[i], self._p.bu[i])
-                for i in range(self._num_params)
-            }][0]
+            parameter_values = [
+                {
+                    f"f{i}": (self._p.bl[i], self._p.bu[i])
+                    for i in range(self._num_params)
+                }
+            ][0]
 
         return parameter_values
 
@@ -224,7 +222,7 @@ class CutestParser(Parser):
         """
 
         if self.file.closed:
-            with open(self._filename, 'r', encoding='utf-8') as f:
+            with open(self._filename, encoding="utf-8") as f:
                 lines = f.readlines()
         else:
             lines = self.file.readlines()
@@ -237,10 +235,11 @@ class CutestParser(Parser):
                 x = np.array([x])
             x, y, e, to_write = _write_x(lines, x)
 
-        file_path = os.path.join(self.mastsif_dir.name,
-                                 f'{str(id(x))[-10:]}.SIF')
+        file_path = os.path.join(
+            self.mastsif_dir.name, f"{str(id(x))[-10:]}.SIF"
+        )
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.writelines(to_write)
 
         return file_path, x, y, e
@@ -279,12 +278,12 @@ def _read_x(lines):
         elif "RE Y" in line:
             data_y[y_idx] = float(line.split()[2])
             y_idx += 1
-            line = line[:col_width - 1] + '0.0'
-        elif 'RE E' in line:
+            line = line[: col_width - 1] + "0.0"
+        elif "RE E" in line:
             data_e[e_idx] = float(line.split()[2])
             e_idx += 1
-            line = line[:col_width - 1] + '1.0'
-        to_write.append(line + '\n')
+            line = line[: col_width - 1] + "1.0"
+        to_write.append(line + "\n")
 
     _check_data(data_count, x_idx, y_idx, e_idx)
     if not e_idx:
@@ -314,31 +313,35 @@ def _write_x(lines, x):
 
     for line in lines:
         if "IE M " in line:
-            line = line[:col_width - 1] + str(len(x))
+            line = line[: col_width - 1] + str(len(x))
         elif "IE MLOWER" in line:
-            line = line[:col_width - 1] + '1\n'
+            line = line[: col_width - 1] + "1\n"
         elif "IE MUPPER" in line:
-            line = line[:col_width - 1] + str(len(x))
+            line = line[: col_width - 1] + str(len(x))
         elif "RE X" in line:
             # Only write data once.
             # Once written can skip all x entries
             if written:
                 continue
-            line = ''
+            line = ""
             new_lines = []
             for i, val in enumerate(x):
                 idx = i + 1
-                spacing = ' ' * (col_width - (5 + len(str(idx))))
-                new_lines.extend([f' RE X{idx}{spacing}{val}',
-                                  f' RE Y{idx}{spacing}0.0',
-                                  f' RE E{idx}{spacing}1.0'])
+                spacing = " " * (col_width - (5 + len(str(idx))))
+                new_lines.extend(
+                    [
+                        f" RE X{idx}{spacing}{val}",
+                        f" RE Y{idx}{spacing}0.0",
+                        f" RE E{idx}{spacing}1.0",
+                    ]
+                )
             x_idx = y_idx = e_idx = len(new_lines) / 3
-            line = '\n'.join(new_lines)
+            line = "\n".join(new_lines)
             written = True
-        elif "RE Y" in line or 'RE E' in line:
+        elif "RE Y" in line or "RE E" in line:
             # These should be ignored as they are written when X is found.
             continue
-        to_write.append(line + '\n')
+        to_write.append(line + "\n")
 
     _check_data(len(x), x_idx, y_idx, e_idx)
     return x, np.zeros_like(x), np.ones_like(x), to_write
@@ -360,14 +363,17 @@ def _check_data(count, x, y, e):
     """
 
     if x != count:
-        raise ParsingError(f'Wrong number of x data points. Got {x}, '
-                           f'expected {count}')
+        raise ParsingError(
+            f"Wrong number of x data points. Got {x}, " f"expected {count}"
+        )
     if y != count:
-        raise ParsingError(f'Wrong number of y data points. Got {y}, '
-                           f'expected {count}')
+        raise ParsingError(
+            f"Wrong number of y data points. Got {y}, " f"expected {count}"
+        )
     if e not in (0, count):
-        raise ParsingError(f'Wrong number of e data points. Got {e}, '
-                           f'expected {count}')
+        raise ParsingError(
+            f"Wrong number of e data points. Got {e}, " f"expected {count}"
+        )
 
 
 def _import_problem(file_name):
