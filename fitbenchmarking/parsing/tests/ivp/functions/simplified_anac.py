@@ -15,14 +15,8 @@ def simplified_anac(t, x, gamma, mu):
         mu (float): The value in the above equations
     """
     if len(x.shape) == 1:
-        return np.array([
-            x[1],
-            gamma * x[0] + 2 * mu * x[0]**3
-        ])
+        return np.array([x[1], gamma * x[0] + 2 * mu * x[0] ** 3])
     elif len(x.shape) == 2:
-        return np.array([
-            x[:, 1],
-            gamma * x[:, 0] + 2 * mu * x[:, 0]**3
-        ])
+        return np.array([x[:, 1], gamma * x[:, 0] + 2 * mu * x[:, 0] ** 3])
     else:
-        raise ValueError('x is the wrong shape in simplified_anac call.')
+        raise ValueError("x is the wrong shape in simplified_anac call.")

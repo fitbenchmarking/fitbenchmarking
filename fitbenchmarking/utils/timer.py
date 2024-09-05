@@ -2,7 +2,9 @@
 Implements the TimerWithMaxTime class used for checking the
 'max_runtime' is not exceeded.
 """
+
 from time import time
+
 from fitbenchmarking.utils.exceptions import MaxRuntimeError
 
 

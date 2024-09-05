@@ -2,13 +2,18 @@
 This file contains tests on the creation of directories
 """
 
-import time
 import os
 import shutil
+import time
 import unittest
 
-from fitbenchmarking.utils.create_dirs import (figures, group_results, results,
-                                               support_pages, css)
+from fitbenchmarking.utils.create_dirs import (
+    css,
+    figures,
+    group_results,
+    results,
+    support_pages,
+)
 
 
 class CreateDirsTests(unittest.TestCase):
@@ -20,7 +25,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         Sets a temporary directory in which results are stored
         """
-        path = f'r{int(time.time())}'
+        path = f"r{int(time.time())}"
         self.results_dir = os.path.join(os.getcwd(), path)
 
     def tearDown(self):
@@ -69,8 +74,9 @@ class CreateDirsTests(unittest.TestCase):
         results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
         support_pages_dir = support_pages(group_results_dir)
-        support_pages_dir_expected = os.path.join(group_results_dir,
-                                                  'support_pages')
+        support_pages_dir_expected = os.path.join(
+            group_results_dir, "support_pages"
+        )
 
         self.assertEqual(support_pages_dir_expected, support_pages_dir)
         self.assertTrue(os.path.exists(support_pages_dir_expected))
@@ -86,7 +92,7 @@ class CreateDirsTests(unittest.TestCase):
         support_pages_dir = support_pages(group_results_dir)
 
         figures_dir = figures(support_pages_dir)
-        figures_dir_expected = os.path.join(support_pages_dir, 'figures')
+        figures_dir_expected = os.path.join(support_pages_dir, "figures")
 
         self.assertEqual(figures_dir_expected, figures_dir)
         self.assertTrue(os.path.exists(figures_dir_expected))
@@ -100,8 +106,7 @@ class CreateDirsTests(unittest.TestCase):
         results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
         css_dir = css(group_results_dir)
-        css_dir_expected = os.path.join(group_results_dir,
-                                        'css')
+        css_dir_expected = os.path.join(group_results_dir, "css")
         self.assertEqual(css_dir_expected, css_dir)
         self.assertTrue(os.path.exists(css_dir_expected))
 

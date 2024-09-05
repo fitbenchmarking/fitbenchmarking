@@ -7,31 +7,10 @@ repos:
   - id: check-added-large-files
   - id: check-merge-conflict
 
-- repo: https://github.com/PyCQA/isort
-  rev: 5.13.2
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.6.3
   hooks:
-  - id: isort
-
-- repo: https://github.com/hhatto/autopep8
-  rev: v2.0.4
-  hooks:
-  - id: autopep8
-
-- repo: local
-  hooks:
-    - id: pylint
-      name: pylint
-      entry: pylint
-      language: system
-      types: [python]
-      args:
-        [
-          "-rn", # Only display messages
-          "-sn", # Don't display the score
-        ]
-
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.0.0
-  hooks:
-  - id: flake8
-
+    # Run the linter.
+    - id: ruff
+    # Run the formatter.
+    - id: ruff-format

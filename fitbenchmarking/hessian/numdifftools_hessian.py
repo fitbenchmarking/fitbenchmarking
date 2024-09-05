@@ -1,6 +1,7 @@
 """
 Module which calculates numdifftools finite difference approximations
 """
+
 import numdifftools as nd
 
 from fitbenchmarking.hessian.base_hessian import Hessian
@@ -32,4 +33,4 @@ class Numdifftools(Hessian):
         hes = hes_func(params)
 
         # ensure Hessian is symmetric
-        return 0.5*(hes+hes.transpose(1, 0, 2))
+        return 0.5 * (hes + hes.transpose(1, 0, 2))

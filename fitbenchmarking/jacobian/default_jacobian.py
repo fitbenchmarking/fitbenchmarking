@@ -1,6 +1,7 @@
 """
 Module which uses the minimizer's default jacobian
 """
+
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 
 

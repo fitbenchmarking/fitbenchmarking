@@ -15,23 +15,24 @@ class MatlabStatsController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-        'all': ['Levenberg-Marquardt'],
-        'ls': ['Levenberg-Marquardt'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['Levenberg-Marquardt'],
-        'levenberg-marquardt': ['Levenberg-Marquardt'],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []}
+        "all": ["Levenberg-Marquardt"],
+        "ls": ["Levenberg-Marquardt"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["Levenberg-Marquardt"],
+        "levenberg-marquardt": ["Levenberg-Marquardt"],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
-    controller_name = 'matlab_stats'
+    controller_name = "matlab_stats"
 
-    incompatible_problems = ['mantid']
+    incompatible_problems = ["mantid"]
 
     def __init__(self, cost_func):
         """
@@ -58,17 +59,21 @@ class MatlabStatsController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called
-        self.eng.workspace['eval_f'] = self.py_to_mat('eval_r')
-        self.eng.evalc('f_wrapper = @(p, x)double(eval_f(p))')
+        self.eng.workspace["eval_f"] = self.py_to_mat("eval_r")
+        self.eng.evalc("f_wrapper = @(p, x)double(eval_f(p))")
 
     def fit(self):
         """
         Run problem with Matlab Statistics Toolbox
         """
 
-        self.result = self.eng.nlinfit(self.x_data_mat, self.y_data_mat,
-                                       self.eng.workspace['f_wrapper'],
-                                       self.initial_params_mat, nargout=1)
+        self.result = self.eng.nlinfit(
+            self.x_data_mat,
+            self.y_data_mat,
+            self.eng.workspace["f_wrapper"],
+            self.initial_params_mat,
+            nargout=1,
+        )
         self._status = 0 if self.result is not None else 1
 
     def cleanup(self):
@@ -81,5 +86,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = np.array(self.result[0],
-                                     dtype=np.float64).flatten()
+        self.final_params = np.array(
+            self.result[0], dtype=np.float64
+        ).flatten()

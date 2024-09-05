@@ -2,8 +2,9 @@
 Implements a controller for the scipy ls fitting software.
 In particular, for the scipy least_squares solver.
 """
-from scipy.optimize import least_squares
+
 import numpy as np
+from scipy.optimize import least_squares
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -12,26 +13,28 @@ class ScipyLSController(Controller):
     """
     Controller for the Scipy Least-Squares fitting software.
     """
-    controller_name = 'scipy_ls'
+
+    controller_name = "scipy_ls"
 
     algorithm_check = {
-        'all': ['lm-scipy', 'trf', 'dogbox'],
-        'ls': ['lm-scipy', 'trf', 'dogbox'],
-        'deriv_free': [None],
-        'general': [None],
-        'simplex': [],
-        'trust_region': ['lm-scipy', 'trf', 'dogbox'],
-        'levenberg-marquardt': ['lm-scipy'],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []}
+        "all": ["lm-scipy", "trf", "dogbox"],
+        "ls": ["lm-scipy", "trf", "dogbox"],
+        "deriv_free": [None],
+        "general": [None],
+        "simplex": [],
+        "trust_region": ["lm-scipy", "trf", "dogbox"],
+        "levenberg-marquardt": ["lm-scipy"],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
-    jacobian_enabled_solvers = ['lm-scipy', 'trf', 'dogbox']
+    jacobian_enabled_solvers = ["lm-scipy", "trf", "dogbox"]
 
-    sparsity_enabled_solvers = ['trf', 'dogbox']
+    sparsity_enabled_solvers = ["trf", "dogbox"]
 
     def __init__(self, cost_func):
         """
@@ -44,14 +47,14 @@ class ScipyLSController(Controller):
         super().__init__(cost_func)
 
         self.support_for_bounds = True
-        self.no_bounds_minimizers = ['lm-scipy']
+        self.no_bounds_minimizers = ["lm-scipy"]
         self.param_ranges = None
         self.result = None
         self._status = None
         self._popt = None
         # Need to map the minimizer to an internal one to avoid changing the
         # minimizer in results
-        self._minimizer = ''
+        self._minimizer = ""
 
     def setup(self):
         """
@@ -73,21 +76,24 @@ class ScipyLSController(Controller):
             self.param_ranges = (list(value_ranges_lb), list(value_ranges_ub))
         else:
             self.param_ranges = (
-                [-np.inf]*len(self.initial_params),
-                [np.inf]*len(self.initial_params))
+                [-np.inf] * len(self.initial_params),
+                [np.inf] * len(self.initial_params),
+            )
 
     def fit(self):
         """
         Run problem with Scipy LS.
         """
-        kwargs = {'fun': self.cost_func.eval_r,
-                  'x0': self.initial_params,
-                  'method': self._minimizer,
-                  'max_nfev': 500}
+        kwargs = {
+            "fun": self.cost_func.eval_r,
+            "x0": self.initial_params,
+            "method": self._minimizer,
+            "max_nfev": 500,
+        }
         if not self.cost_func.jacobian.use_default_jac:
-            kwargs['jac'] = self.cost_func.jac_res
+            kwargs["jac"] = self.cost_func.jac_res
         if self.minimizer != "lm":
-            kwargs['bounds'] = self.param_ranges
+            kwargs["bounds"] = self.param_ranges
         self.result = least_squares(**kwargs)
         self._popt = self.result.x
         self._status = self.result.status

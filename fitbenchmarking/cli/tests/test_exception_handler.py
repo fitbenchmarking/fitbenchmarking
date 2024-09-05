@@ -1,6 +1,7 @@
 """
 Tests for the exception handler file.
 """
+
 from unittest import TestCase
 
 from fitbenchmarking.cli.exception_handler import exception_handler
@@ -11,10 +12,12 @@ class TestExceptionHandler(TestCase):
     """
     Tests for the exception handler function in exception handler.
     """
+
     def test_return_unchanged(self):
         """
         Test that the return value is correct when wrapping a function.
         """
+
         @exception_handler
         def get_val():
             """
@@ -29,6 +32,7 @@ class TestExceptionHandler(TestCase):
         """
         Test behaviour on a non fitbenchmarking exception.
         """
+
         @exception_handler
         def get_val():
             """
@@ -42,6 +46,7 @@ class TestExceptionHandler(TestCase):
         """
         Test behaviour on a fitbenchmarking exception.
         """
+
         @exception_handler
         def get_val():
             """
