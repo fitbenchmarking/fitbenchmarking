@@ -1,6 +1,7 @@
 """
 Implements the non-weighted non-linear least squares cost function
 """
+
 from numpy import ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
@@ -36,8 +37,10 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
-            raise CostFuncError('The length of the x and y are not the same, '
-                                f'len(x)={len(x)} and len(y)={len(y)}.')
+            raise CostFuncError(
+                "The length of the x and y are not the same, "
+                f"len(x)={len(x)} and len(y)={len(y)}."
+            )
         result = y - self.problem.eval_model(params=params, x=x)
 
         # Flatten in case of a vector function
@@ -55,7 +58,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
-        return - self.jacobian.eval(params, **kwargs)
+        return -self.jacobian.eval(params, **kwargs)
 
     def hes_res(self, params, **kwargs):
         """
@@ -71,4 +74,4 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :rtype: tuple (list of 2D numpy arrays, list of 1D numpy arrays)
         """
         J = self.jac_res(params, **kwargs)
-        return - self.hessian.eval(params, **kwargs), J
+        return -self.hessian.eval(params, **kwargs), J

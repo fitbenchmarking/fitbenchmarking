@@ -2,6 +2,7 @@
 This file contains a factory implementation for the available cost functions
 within FitBenchmarking.
 """
+
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
@@ -21,17 +22,24 @@ def create_cost_func(cost_func_type):
     :rtype: fitbenchmarking.cost_func.base_cost_func.CostFunc subclass
     """
 
-    module_name = f'{cost_func_type}_cost_func'
+    module_name = f"{cost_func_type}_cost_func"
 
     try:
-        module = import_module('.' + module_name, __package__)
+        module = import_module("." + module_name, __package__)
     except ImportError as e:
-        raise CostFuncError('Could not find Cost function class with type as '
-                            f'{cost_func_type}.') from e
-    classes = getmembers(module, lambda m: (isclass(m)
-                                            and not isabstract(m)
-                                            and issubclass(m, CostFunc)
-                                            and m is not CostFunc
-                                            and m is not BaseNLLSCostFunc))
+        raise CostFuncError(
+            "Could not find Cost function class with type as "
+            f"{cost_func_type}."
+        ) from e
+    classes = getmembers(
+        module,
+        lambda m: (
+            isclass(m)
+            and not isabstract(m)
+            and issubclass(m, CostFunc)
+            and m is not CostFunc
+            and m is not BaseNLLSCostFunc
+        ),
+    )
 
     return classes[0][1]

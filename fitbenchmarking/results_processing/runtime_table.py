@@ -1,6 +1,7 @@
 """
 Runtime table
 """
+
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -12,7 +13,8 @@ class RuntimeTable(Table):
     in python. num_runs is set in :ref:`options`.
 
     """
-    name = 'runtime'
+
+    name = "runtime"
     cbar_title = "Problem-Specific Cell Shading: Relative Runtime"
 
     def get_value(self, result):

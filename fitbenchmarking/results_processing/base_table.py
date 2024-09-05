@@ -1,6 +1,7 @@
 """
 Implements the base class for the tables.
 """
+
 import os
 from abc import ABCMeta, abstractmethod
 
@@ -12,11 +13,12 @@ import pandas as pd
 
 from fitbenchmarking.utils.misc import get_js
 
-FORMAT_DESCRIPTION = \
-    {'abs': 'Absolute values are displayed in the table.',
-     'rel': 'Relative values are displayed in the table.',
-     'both': 'Absolute and relative values are displayed in '
-             'the table in the format ``abs (rel)``'}
+FORMAT_DESCRIPTION = {
+    "abs": "Absolute values are displayed in the table.",
+    "rel": "Relative values are displayed in the table.",
+    "both": "Absolute and relative values are displayed in "
+    "the table in the format ``abs (rel)``",
+}
 CONTRAST_RATIO_AAA = 7.0
 
 
@@ -32,16 +34,26 @@ class Table:
     - get_error_str
     - get_link_str
     """
+
     __metaclass__ = ABCMeta
     name = None
-    output_string_type = {"abs": '{:.4g}',
-                          "rel": '{:.4g}',
-                          "both": '{0:.4g} ({1:.4g})'}
-    colour_template = 'background-color: {0}'
+    output_string_type = {
+        "abs": "{:.4g}",
+        "rel": "{:.4g}",
+        "both": "{0:.4g} ({1:.4g})",
+    }
+    colour_template = "background-color: {0}"
     cbar_title = "No colour bar description given"
 
-    def __init__(self, results, best_results, options, group_dir,
-                 pp_locations, table_name):
+    def __init__(
+        self,
+        results,
+        best_results,
+        options,
+        group_dir,
+        pp_locations,
+        table_name,
+    ):
         """
         Initialise the class.
 
@@ -69,7 +81,7 @@ class Table:
         self.pp_locations = pp_locations
         self.table_name = table_name
 
-        self.pp_location = ''
+        self.pp_location = ""
         self._table_title = None
         self._file_path = None
         self.pps = [self.name]
@@ -136,11 +148,12 @@ class Table:
         :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return os.path.relpath(path=result.fitting_report_link,
-                               start=self.group_dir)
+        return os.path.relpath(
+            path=result.fitting_report_link, start=self.group_dir
+        )
 
     @staticmethod
-    def get_error_str(result, error_template='[{}]'):
+    def get_error_str(result, error_template="[{}]"):
         """
         Get the error string for a result based on error_template
         This can be overridden if tables require different error formatting.
@@ -153,7 +166,7 @@ class Table:
         """
         error_code = result.error_flag
         if error_code == 0:
-            return ''
+            return ""
 
         return error_template.format(error_code)
 
@@ -164,8 +177,10 @@ class Table:
         This is used to create HTML and csv tables.
         This is stored in self.sorted_results
         """
-        self.sorted_results = {k: [r for cat in row.values() for r in cat]
-                               for k, row in self.results.items()}
+        self.sorted_results = {
+            k: [r for cat in row.values() for r in cat]
+            for k, row in self.results.items()
+        }
 
     def create_prob_sizes_list(self):
         """
@@ -174,13 +189,15 @@ class Table:
         This is stored in self.problem_sizes and is used to create the tables.
         """
         # Store info on problem size
-        n_points_and_params = [(results[0].get_n_parameters(),
-                                results[0].get_n_data_points())
-                               for results in self.sorted_results.values()]
+        n_points_and_params = [
+            (results[0].get_n_parameters(), results[0].get_n_data_points())
+            for results in self.sorted_results.values()
+        ]
 
         # Build strings for problem size to display in table
-        self.problem_sizes = [f'{m} params, {n} points'
-                              for m, n in n_points_and_params]
+        self.problem_sizes = [
+            f"{m} params, {n} points" for m, n in n_points_and_params
+        ]
 
     def get_str_dict(self, html=False):
         """
@@ -192,8 +209,10 @@ class Table:
         str_dict = {}
         for k, results in self.sorted_results.items():
             _, text_arrs = self.get_colours_for_row(results)
-            str_dict[k] = [self.get_str_result(r, t, html)
-                           for r, t in zip(results, text_arrs)]
+            str_dict[k] = [
+                self.get_str_result(r, t, html)
+                for r, t in zip(results, text_arrs)
+            ]
         return str_dict
 
     def get_colour_df(self, like_df=None):
@@ -213,7 +232,7 @@ class Table:
         for k, results in self.sorted_results.items():
             col_dict[k], _ = self.get_colours_for_row(results)
 
-        table = pd.DataFrame.from_dict(col_dict, orient='index')
+        table = pd.DataFrame.from_dict(col_dict, orient="index")
 
         if like_df is None:
             row = next(iter(self.sorted_results.values()))
@@ -256,20 +275,21 @@ class Table:
         if html:
             val = self.get_value(result)
             val_str = self.display_str(val)
-            error_str = self.get_error_str(result,
-                                           error_template="<sup>{}</sup>")
-            if 'inf' in val_str and self.table_name != 'local_min_table.':
+            error_str = self.get_error_str(
+                result, error_template="<sup>{}</sup>"
+            )
+            if "inf" in val_str and self.table_name != "local_min_table.":
                 val_str = f'<span class="blank">Error {error_str}</span>'
-            elif 'N/A' in val_str:
+            elif "N/A" in val_str:
                 val_str = '<span class="blank">N/A</span>'
             else:
-                val_str = self.get_hyperlink(result,
-                                             val_str + error_str,
-                                             text_col)
+                val_str = self.get_hyperlink(
+                    result, val_str + error_str, text_col
+                )
         else:
             val_str = self.display_str(self.get_value(result))
-            if val_str != 'N/A':
-                val_str += self.get_error_str(result, error_template='[{}]')
+            if val_str != "N/A":
+                val_str += self.get_error_str(result, error_template="[{}]")
         return val_str
 
     def get_hyperlink(self, result, val_str, text_col):
@@ -287,11 +307,15 @@ class Table:
         :return: The hyperlink representation.
         :rtype: str
         """
-        color_to_class = {'rgb(0,0,0)': 'class="dark"',
-                          'rgb(255,255,255)': 'class="light"'}
-        val_str = (f'<a {color_to_class[text_col]} '
-                   f'href="{self.get_link_str(result)}">'
-                   f'{val_str}</a>')
+        color_to_class = {
+            "rgb(0,0,0)": 'class="dark"',
+            "rgb(255,255,255)": 'class="light"',
+        }
+        val_str = (
+            f"<a {color_to_class[text_col]} "
+            f'href="{self.get_link_str(result)}">'
+            f"{val_str}</a>"
+        )
         return val_str
 
     def get_colours_for_row(self, results):
@@ -320,8 +344,9 @@ class Table:
 
         col_strs = ["background-colour: #ffffff" for _ in results]
 
-        colours, text_str = self.vals_to_colour(values, cmap,
-                                                cmap_range, log_ulim)
+        colours, text_str = self.vals_to_colour(
+            values, cmap, cmap_range, log_ulim
+        )
         for i, c in enumerate(colours):
             try:
                 col_strs[i] = self.colour_template.format(c)
@@ -355,14 +380,15 @@ class Table:
 
         single_index = list(str_results.keys())
 
-        multi_index = pd.MultiIndex.from_tuples(zip(single_index,
-                                                    self.problem_sizes))
+        multi_index = pd.MultiIndex.from_tuples(
+            zip(single_index, self.problem_sizes)
+        )
 
         results_only = np.array(list(str_results.values()))
 
-        table = pd.DataFrame(results_only,
-                             index=multi_index,
-                             columns=multi_columns)
+        table = pd.DataFrame(
+            results_only, index=multi_index, columns=multi_columns
+        )
 
         return table
 
@@ -376,20 +402,26 @@ class Table:
         table = self.create_pandas_data_frame(html=True)
 
         # Format the table headers
-        cost_func_template = '<a class="cost_function_header" ' \
-                             'href=https://fitbenchmarking.readthedocs.io/' \
-                             'en/latest/users/options/fitting_option.html' \
-                             '#cost-function-cost-func-type ' \
-                             'target="_blank">{0}</a>'
-        software_template = '<a class="software_header" ' \
-                            'href="https://fitbenchmarking.readthedocs.io/' \
-                            'en/latest/users/options/minimizer_option.html' \
-                            '#{0}" target="_blank">{0}</a>'
-        minimizer_template = '<a class="minimizer_header" col={0} ' \
-                             'title="{1}"' \
-                             'href="https://fitbenchmarking.readthedocs.io/' \
-                             'en/latest/users/options/minimizer_option.html' \
-                             '#{2}" target="_blank">{3}</a>'
+        cost_func_template = (
+            '<a class="cost_function_header" '
+            "href=https://fitbenchmarking.readthedocs.io/"
+            "en/latest/users/options/fitting_option.html"
+            "#cost-function-cost-func-type "
+            'target="_blank">{0}</a>'
+        )
+        software_template = (
+            '<a class="software_header" '
+            'href="https://fitbenchmarking.readthedocs.io/'
+            "en/latest/users/options/minimizer_option.html"
+            '#{0}" target="_blank">{0}</a>'
+        )
+        minimizer_template = (
+            '<a class="minimizer_header" col={0} '
+            'title="{1}"'
+            'href="https://fitbenchmarking.readthedocs.io/'
+            "en/latest/users/options/minimizer_option.html"
+            '#{2}" target="_blank">{3}</a>'
+        )
 
         minimizers_list = []
         for row in self.sorted_results.values():
@@ -397,12 +429,15 @@ class Table:
                 formatted = (
                     cost_func_template.format(result.costfun_tag),
                     software_template.format(
-                        result.software.replace('_', '-')),
+                        result.software.replace("_", "-")
+                    ),
                     minimizer_template.format(
                         i,
                         result.algorithm_type,
-                        result.software.replace('_', '-'),
-                        result.modified_minimizer_name()))
+                        result.software.replace("_", "-"),
+                        result.modified_minimizer_name(),
+                    ),
+                )
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
                 elif len(minimizers_list[i][2]) < len(formatted[2]):
@@ -413,19 +448,24 @@ class Table:
 
         # Format the row labels
         double_index = []
-        for b, i1, i2 in zip(self.best_results.values(),
-                             self.best_results.keys(),
-                             self.problem_sizes):
-
+        for b, i1, i2 in zip(
+            self.best_results.values(),
+            self.best_results.keys(),
+            self.problem_sizes,
+        ):
             b = next(iter(b.values()))
             rel_path = os.path.relpath(
-                path=b.problem_summary_page_link,
-                start=self.group_dir)
+                path=b.problem_summary_page_link, start=self.group_dir
+            )
 
-            double_index.append((f'<a class="problem_header" '
-                                 f'href="{rel_path}">{i1}</a>',
-                                 f'<a class="problem_header_lev1" '
-                                 f'href="{rel_path}">{i2}</a>'))
+            double_index.append(
+                (
+                    f'<a class="problem_header" '
+                    f'href="{rel_path}">{i1}</a>',
+                    f'<a class="problem_header_lev1" '
+                    f'href="{rel_path}">{i2}</a>',
+                )
+            )
 
         multi_index = pd.MultiIndex.from_tuples(double_index)
         table.index = multi_index
@@ -438,16 +478,25 @@ class Table:
         column_dividers = column_dividers[1:]
 
         # Set the cell colours and increase bars between cost functions
-        table_style = table.style\
-            .apply(lambda df: self.get_colour_df(like_df=df), axis=None)\
-            .set_table_styles(table_styles={
-                k: [{'selector': 'td',
-                     'props': [('border-left-width', '3px')]},
-                    {'selector': 'th',
-                     'props': [('border-left-width', '3px')]}]
-                for k in column_dividers})
+        table_style = table.style.apply(
+            lambda df: self.get_colour_df(like_df=df), axis=None
+        ).set_table_styles(
+            table_styles={
+                k: [
+                    {
+                        "selector": "td",
+                        "props": [("border-left-width", "3px")],
+                    },
+                    {
+                        "selector": "th",
+                        "props": [("border-left-width", "3px")],
+                    },
+                ]
+                for k in column_dividers
+            }
+        )
 
-        return table_style.to_html(table_uuid='table')
+        return table_style.to_html(table_uuid="table")
 
     def to_csv_file(self):
         """
@@ -472,16 +521,13 @@ class Table:
         html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
-            descrip = descrip.replace(':ref:', '')
+            descrip = descrip.replace(":ref:", "")
             js = get_js(self.options, self.group_dir)
-            docsettings = {
-                'math_output': 'MathJax '+js['mathjax']
-            }
+            docsettings = {"math_output": "MathJax " + js["mathjax"]}
             description_page = docutils.core.publish_parts(
-                descrip,
-                writer_name='html',
-                settings_overrides=docsettings)
-            html[name] = description_page['body'].replace('<blockquote>\n', '')
+                descrip, writer_name="html", settings_overrides=docsettings
+            )
+            html[name] = description_page["body"].replace("<blockquote>\n", "")
         return html
 
     @property
@@ -554,18 +600,21 @@ class Table:
         if np.isinf(log_llim):
             norm_vals = np.repeat(np.nan, len(vals))
         else:
-            norm_vals = (log_vals - log_llim) \
-             / (log_ulim - log_llim)
+            norm_vals = (log_vals - log_llim) / (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
         # trimming colour map according to default/user input
-        norm_vals = cmap_range[0] + \
-            norm_vals*(cmap_range[1] - cmap_range[0])
+        norm_vals = cmap_range[0] + norm_vals * (cmap_range[1] - cmap_range[0])
         rgba = cmap(norm_vals)
-        hex_strs = [mpl.colors.to_hex("whitesmoke") if np.isinf(v) else
-                    mpl.colors.rgb2hex(colour)
-                    for colour, v in zip(rgba, vals)]
-        text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
-                    for colour in rgba]
+        hex_strs = [
+            mpl.colors.to_hex("whitesmoke")
+            if np.isinf(v)
+            else mpl.colors.rgb2hex(colour)
+            for colour, v in zip(rgba, vals)
+        ]
+        text_str = [
+            background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+            for colour in rgba
+        ]
 
         return hex_strs, text_str
 
@@ -587,22 +636,44 @@ class Table:
 
         figh = 0.77
         fig, ax = plt.subplots(nrows=1, figsize=(6.4, figh))
-        fig.subplots_adjust(top=1 - 0.35 / figh, bottom=0.15 / figh,
-                            left=0.3, right=0.7, hspace=1)
+        fig.subplots_adjust(
+            top=1 - 0.35 / figh,
+            bottom=0.15 / figh,
+            left=0.3,
+            right=0.7,
+            hspace=1,
+        )
 
         cmap_range = self.options.cmap_range
         gradient = np.linspace(cmap_range[0], cmap_range[1], n_divs)
         gradient = np.vstack((gradient, gradient))
 
-        ax.imshow(gradient, aspect='auto',
-                  cmap=plt.get_cmap(self.options.colour_map), vmin=0, vmax=1)
+        ax.imshow(
+            gradient,
+            aspect="auto",
+            cmap=plt.get_cmap(self.options.colour_map),
+            vmin=0,
+            vmax=1,
+        )
 
-        ax.text(-0.02, 0.5, self.cbar_left_label,
-                va='center', ha='right', fontsize=6,
-                transform=ax.transAxes)
-        ax.text(1.02, 0.5, self.cbar_right_label,
-                va='center', ha='left', fontsize=6,
-                transform=ax.transAxes)
+        ax.text(
+            -0.02,
+            0.5,
+            self.cbar_left_label,
+            va="center",
+            ha="right",
+            fontsize=6,
+            transform=ax.transAxes,
+        )
+        ax.text(
+            1.02,
+            0.5,
+            self.cbar_right_label,
+            va="center",
+            ha="left",
+            fontsize=6,
+            transform=ax.transAxes,
+        )
         ax.set_title(self.cbar_title, fontsize=6)
         ax.set_axis_off()
         fig.set_size_inches(sz_in[0], sz_in[1])
@@ -619,14 +690,17 @@ class Table:
         :return: HTML for a dropdown checklist of problem sets.
         :rtype: str
         """
-        items = [f'        <li><label class="noselect"><input '
-                 f'type="checkbox" checked=true '
-                 f'onclick="toggle_problem(\'{problem_name}\')"/> '
-                 f'{problem_name}</label></li>'
-                 for problem_name in self.sorted_results.keys()]
+        items = [
+            f'        <li><label class="noselect"><input '
+            f'type="checkbox" checked=true '
+            f"onclick=\"toggle_problem('{problem_name}')\"/> "
+            f"{problem_name}</label></li>"
+            for problem_name in self.sorted_results.keys()
+        ]
 
-        return self._dropdown_html("problem_dropdown", "Select Problems",
-                                   items)
+        return self._dropdown_html(
+            "problem_dropdown", "Select Problems", items
+        )
 
     def minimizer_dropdown_html(self) -> str:
         """
@@ -638,8 +712,10 @@ class Table:
         minimizers = []
         for row in self.sorted_results.values():
             for i, r in enumerate(row):
-                formatted = (r.software.replace('_', '-'),
-                             r.modified_minimizer_name())
+                formatted = (
+                    r.software.replace("_", "-"),
+                    r.modified_minimizer_name(),
+                )
                 if len(minimizers) == i:
                     minimizers.append(formatted)
                 elif len(minimizers[i][1]) < len(formatted[1]):
@@ -648,18 +724,22 @@ class Table:
         # Remove duplicates
         minimizers = list(dict.fromkeys(minimizers))
 
-        items = [f'        <li><label class="noselect"><input '
-                 f'type="checkbox" checked=true '
-                 f'onclick="toggle_minimizer(\'{software}\', '
-                 f'\'{minimizer}\')"/> {minimizer}</label></li>'
-                 for software, minimizer in minimizers]
+        items = [
+            f'        <li><label class="noselect"><input '
+            f'type="checkbox" checked=true '
+            f"onclick=\"toggle_minimizer('{software}', "
+            f"'{minimizer}')\"/> {minimizer}</label></li>"
+            for software, minimizer in minimizers
+        ]
 
-        return self._dropdown_html("minimizer_dropdown",
-                                   "Select Minimizers", items)
+        return self._dropdown_html(
+            "minimizer_dropdown", "Select Minimizers", items
+        )
 
     @staticmethod
-    def _dropdown_html(list_id: str, selector_text: str,
-                       checklist: list) -> str:
+    def _dropdown_html(
+        list_id: str, selector_text: str, checklist: list
+    ) -> str:
         """
         Generates the HTML for a dropdown checklist. The list of items
         must be provided to this function.
@@ -675,14 +755,16 @@ class Table:
         :rtype: str
         """
         checklist_str = "\n".join(checklist)
-        html = f'<div id="{list_id}" class="dropdown-check-list" ' \
-               f'tabindex="100">\n' \
-               f'    <span class="anchor" onclick="show_dropdown' \
-               f'(\'{list_id}\')">{selector_text}</span>\n' \
-               '    <ul class="items">\n' \
-               f'{checklist_str}\n' \
-               '    </ul>\n' \
-               '</div>'
+        html = (
+            f'<div id="{list_id}" class="dropdown-check-list" '
+            f'tabindex="100">\n'
+            f'    <span class="anchor" onclick="show_dropdown'
+            f"('{list_id}')\">{selector_text}</span>\n"
+            '    <ul class="items">\n'
+            f"{checklist_str}\n"
+            "    </ul>\n"
+            "</div>"
+        )
         return html
 
     @staticmethod
@@ -694,11 +776,13 @@ class Table:
         :rtype: str
         """
 
-        html = '<label class="checkbox_container">'\
-               '<input type="checkbox" id="checkbox_prob_size" '\
-               'onclick="toggle_prob_size_header()" '\
-               'checked="checked"> Problem size column'\
-               '</label>'
+        html = (
+            '<label class="checkbox_container">'
+            '<input type="checkbox" id="checkbox_prob_size" '
+            'onclick="toggle_prob_size_header()" '
+            'checked="checked"> Problem size column'
+            "</label>"
+        )
         return html
 
 
@@ -721,11 +805,11 @@ def background_to_text(background_col, contrast_threshold):
     """
     w = calculate_contrast(background_col, [1, 1, 1])  # white (default)
     b = calculate_contrast(background_col, [0, 0, 0])  # black
-    contrast = {'rgb(255,255,255)': w, 'rgb(0,0,0)': b}
+    contrast = {"rgb(255,255,255)": w, "rgb(0,0,0)": b}
     if w <= contrast_threshold:
         text_str = max(contrast, key=contrast.get)
     else:
-        text_str = 'rgb(255,255,255)'
+        text_str = "rgb(255,255,255)"
     return text_str
 
 
@@ -747,7 +831,7 @@ def calculate_contrast(background, foreground):
     fore_lum = calculate_luminance(foreground)
     brightest = max(back_lum, fore_lum)
     darkest = min(back_lum, fore_lum)
-    return (brightest+0.05)/(darkest+0.05)
+    return (brightest + 0.05) / (darkest + 0.05)
 
 
 def calculate_luminance(rgb):
@@ -761,7 +845,12 @@ def calculate_luminance(rgb):
     :return: the luminance [0, 1]
     :rtype: float
     """
-    a = list(map(lambda color: color/12.92
-             if color <= 0.03928
-             else (((color+0.055)/1.055)**2.4), rgb))
+    a = list(
+        map(
+            lambda color: color / 12.92
+            if color <= 0.03928
+            else (((color + 0.055) / 1.055) ** 2.4),
+            rgb,
+        )
+    )
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722

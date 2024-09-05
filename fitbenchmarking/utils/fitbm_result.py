@@ -1,9 +1,10 @@
 """
 FitBenchmarking results object
 """
+
+from statistics import fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal
 
-from statistics import median, harmonic_mean, fmean
 import numpy as np
 from scipy import stats
 
@@ -24,19 +25,17 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self,
-                 controller: 'Controller',
-                 accuracy: 'float | list[float]' = np.inf,
-                 runtimes: 'float | list[float]' = np.inf,
-                 emissions: 'float' = np.inf,
-                 runtime_metric: Literal['mean',
-                                         'minimum',
-                                         'maximum',
-                                         'first',
-                                         'median',
-                                         'harmonic',
-                                         'trim'] = 'mean',
-                 dataset: 'Optional[int]' = None) -> None:
+    def __init__(
+        self,
+        controller: "Controller",
+        accuracy: "float | list[float]" = np.inf,
+        runtimes: "float | list[float]" = np.inf,
+        emissions: "float" = np.inf,
+        runtime_metric: Literal[
+            "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
+        ] = "mean",
+        dataset: "Optional[int]" = None,
+    ) -> None:
         """
         Initialise the Fitting Result
 
@@ -54,15 +53,15 @@ class FittingResult:
         """
         self.init_blank()
 
-        cost_func: 'CostFunc' = controller.cost_func
-        problem: 'FittingProblem' = controller.problem
+        cost_func: CostFunc = controller.cost_func
+        problem: FittingProblem = controller.problem
 
         # Problem definition + scores
-        self.name: 'str' = problem.name
-        self.multivariate: 'bool' = problem.multivariate
-        self.problem_format: 'str' = problem.format
-        self.problem_desc: 'str' = problem.description
-        self.initial_params: 'list[float]' = controller.initial_params
+        self.name: str = problem.name
+        self.multivariate: bool = problem.multivariate
+        self.problem_format: str = problem.format
+        self.problem_desc: str = problem.description
+        self.initial_params: list[float] = controller.initial_params
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
@@ -75,7 +74,7 @@ class FittingResult:
             self.params = controller.final_params
             self.accuracy = accuracy
         else:
-            self.name += f', Dataset {dataset + 1}'
+            self.name += f", Dataset {dataset + 1}"
             self.data_x = problem.data_x[dataset]
             self.data_y = problem.data_y[dataset]
             self.data_e = problem.data_e[dataset]
@@ -93,12 +92,17 @@ class FittingResult:
         # Details of options used for this run
         self.software = controller.software
         self.minimizer = controller.minimizer
-        self.algorithm_type = [k for k, v in controller.algorithm_check.items()
-                               if v == self.minimizer]
+        self.algorithm_type = [
+            k
+            for k, v in controller.algorithm_check.items()
+            if v == self.minimizer
+        ]
 
         jac_enabled = self.minimizer in controller.jacobian_enabled_solvers
-        hess_enabled = cost_func.hessian is not None \
+        hess_enabled = (
+            cost_func.hessian is not None
             and self.minimizer in controller.hessian_enabled_solvers
+        )
 
         self.jac = cost_func.jacobian.name() if jac_enabled else None
         self.hess = cost_func.hessian.name() if hess_enabled else None
@@ -112,22 +116,23 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(self.params,
-                                            x=self.data_x,
-                                            y=self.data_y,
-                                            e=self.data_e)
-                self.jac_x = cost_func.jac_res(self.params,
-                                               x=self.data_x,
-                                               y=self.data_y,
-                                               e=self.data_e)
+                self.r_x = cost_func.eval_r(
+                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                )
+                self.jac_x = cost_func.jac_res(
+                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                )
             self.fin_y = cost_func.problem.eval_model(
-                self.params, x=self.data_x)
+                self.params, x=self.data_x
+            )
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(
-            params=controller.initial_params)
+            params=controller.initial_params
+        )
         self.fin_function_params = problem.get_function_params(
-            params=controller.final_params)
+            params=controller.final_params
+        )
 
         # Controller error handling
         self.error_flag = controller.flag
@@ -135,10 +140,12 @@ class FittingResult:
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
-        self.software_tag: str = self.software \
-            if self.software is not None else ""
-        self.minimizer_tag: str = self.minimizer \
-            if self.minimizer is not None else ""
+        self.software_tag: str = (
+            self.software if self.software is not None else ""
+        )
+        self.minimizer_tag: str = (
+            self.minimizer if self.minimizer is not None else ""
+        )
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
@@ -157,25 +164,27 @@ class FittingResult:
         self.is_best_fit = False
 
         # Paths to various output files
-        self.problem_summary_page_link = ''
-        self.fitting_report_link = ''
-        self.start_figure_link = ''
-        self.figure_link = ''
-        self.figure_error = ''
-        self.posterior_plots = ''
+        self.problem_summary_page_link = ""
+        self.fitting_report_link = ""
+        self.start_figure_link = ""
+        self.figure_link = ""
+        self.figure_error = ""
+        self.posterior_plots = ""
 
     def __str__(self):
-        info = {"Cost Function": self.costfun_tag,
-                "Problem": self.problem_tag,
-                "Software": self.software_tag,
-                "Minimizer": self.minimizer_tag,
-                "Jacobian": self.jacobian_tag,
-                "Hessian": self.hessian_tag,
-                "Accuracy": self.accuracy,
-                "Runtime": self.runtime,
-                "Runtime metric": self.runtime_metric,
-                "Runtimes": self.runtimes,
-                "Emissions": self.emissions}
+        info = {
+            "Cost Function": self.costfun_tag,
+            "Problem": self.problem_tag,
+            "Software": self.software_tag,
+            "Minimizer": self.minimizer_tag,
+            "Jacobian": self.jacobian_tag,
+            "Hessian": self.hessian_tag,
+            "Accuracy": self.accuracy,
+            "Runtime": self.runtime,
+            "Runtime metric": self.runtime_metric,
+            "Runtimes": self.runtimes,
+            "Emissions": self.emissions,
+        }
 
         return get_printable_table("FittingResult", info)
 
@@ -186,10 +195,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f'{key} not equal!')
+                    print(f"{key} not equal!")
                     return False
             else:
-                print(f'No attr {key}')
+                print(f"No attr {key}")
                 return False
         return True
 
@@ -223,13 +232,13 @@ class FittingResult:
         """
         name: str = self.minimizer_tag
         if with_software:
-            name += f' [{self.software_tag}]'
+            name += f" [{self.software_tag}]"
 
         if self.jacobian_tag:
-            name += f': j:{self.jacobian_tag}'
+            name += f": j:{self.jacobian_tag}"
 
         if self.hessian_tag:
-            name += f' h:{self.hessian_tag}'
+            name += f" h:{self.hessian_tag}"
 
         return name
 
@@ -241,8 +250,11 @@ class FittingResult:
         :return: sanitised name
         :rtype: str
         """
-        return self.modified_minimizer_name(with_software)\
-            .replace(':', '').replace(' ', '_')
+        return (
+            self.modified_minimizer_name(with_software)
+            .replace(":", "")
+            .replace(" ", "_")
+        )
 
     @property
     def runtime_metric(self):
@@ -263,7 +275,7 @@ class FittingResult:
         :type value: str
         """
         self._runtime_metric = value
-        self.runtime = getattr(self, value+'_runtime')
+        self.runtime = getattr(self, value + "_runtime")
 
     @property
     def mean_runtime(self):
@@ -418,8 +430,8 @@ class FittingResult:
         :return: sanitised name
         :rtype: str
         """
-        return self.name.replace(',', '').replace(' ', '_')
+        return self.name.replace(",", "").replace(" ", "_")
 
     @sanitised_name.setter
     def sanitised_name(self, value):
-        raise RuntimeError('sanitised_name can not be edited')
+        raise RuntimeError("sanitised_name can not be edited")

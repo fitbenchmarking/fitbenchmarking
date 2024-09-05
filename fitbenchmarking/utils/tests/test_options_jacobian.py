@@ -1,9 +1,10 @@
-'''
+"""
 Test the JACOBIAN section for the options file
-'''
+"""
+
 import inspect
-import shutil
 import os
+import shutil
 import unittest
 
 from fitbenchmarking.utils import exceptions
@@ -26,11 +27,11 @@ class JacobianOptionTesJacobians(unittest.TestCase):
         Checks num_method default
         """
         expected = {
-            'analytic': ['default'],
-            'best_available': ['default'],
-            'default': ['default'],
-            'numdifftools': ['central'],
-            'scipy': ['2-point'],
+            "analytic": ["default"],
+            "best_available": ["default"],
+            "default": ["default"],
+            "numdifftools": ["central"],
+            "scipy": ["2-point"],
         }
         actual = self.options.jac_num_method
         self.assertEqual(expected, actual)
@@ -46,7 +47,7 @@ class UserJacobianOptionTests(unittest.TestCase):
         Sets the directory to save the temporary ini files in
         """
         options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, 'tests', 'files')
+        self.test_files_dir = os.path.join(options_dir, "tests", "files")
         os.mkdir(self.test_files_dir)
 
     def tearDown(self):
@@ -68,9 +69,10 @@ class UserJacobianOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        opts_file = os.path.join(self.test_files_dir,
-                                 f'test_{opt_name}_valid.ini')
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        opts_file = os.path.join(
+            self.test_files_dir, f"test_{opt_name}_valid.ini"
+        )
+        with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         return opts_file
 
@@ -107,29 +109,26 @@ class UserJacobianOptionTests(unittest.TestCase):
         """
         Tests that the user defined option key is invalid.
         """
-        config_str = \
-            "[JACOBIAN]\nnum_minimizer_runs: 3"
-        self.shared_invalid('num_minimizer_runs', config_str)
+        config_str = "[JACOBIAN]\nnum_minimizer_runs: 3"
+        self.shared_invalid("num_minimizer_runs", config_str)
 
     def test_minimizer_num_method_valid(self):
         """
         Checks user set num_method is valid
         """
         set_option = {
-            'analytic': ['default'],
-            'best_available': ['default'],
-            'default': ['default'],
-            'numdifftools': ['central'],
-            'scipy': ['cs'],
+            "analytic": ["default"],
+            "best_available": ["default"],
+            "default": ["default"],
+            "numdifftools": ["central"],
+            "scipy": ["cs"],
         }
-        config_str = \
-            "[JACOBIAN]\nscipy: cs"
-        self.shared_valid('jac_num_method', set_option, config_str)
+        config_str = "[JACOBIAN]\nscipy: cs"
+        self.shared_valid("jac_num_method", set_option, config_str)
 
     def test_minimizer_num_method_invalid(self):
         """
         Checks user set num_method is invalid
         """
-        config_str = \
-            "[JACOBIAN]\nnum_method: FD_3point"
-        self.shared_invalid('jac_num_method', config_str)
+        config_str = "[JACOBIAN]\nnum_method: FD_3point"
+        self.shared_invalid("jac_num_method", config_str)

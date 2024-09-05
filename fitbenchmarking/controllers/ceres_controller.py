@@ -1,23 +1,25 @@
 """
 Implements a controller for the Ceres fitting software.
 """
-import sys
+
 import os
+import sys
+
 import numpy as np
+import PyCeres
+
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+
 pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
-
-# pylint: disable=wrong-import-position,wrong-import-order
-import PyCeres # noqa
-# pylint: enable=wrong-import-position,wrong-import-order
 
 
 class CeresCostFunction(PyCeres.CostFunction):
     """
     Cost function for Ceres solver
     """
+
     def __init__(self, fb_cf):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
         super().__init__()
@@ -55,45 +57,53 @@ class CeresController(Controller):
     """
 
     algorithm_check = {
-        'all': ['Levenberg_Marquardt',
-                'Dogleg',
-                'BFGS',
-                'LBFGS',
-                'steepest_descent',
-                'Fletcher_Reeves',
-                'Polak_Ribiere',
-                'Hestenes_Stiefel'],
-        'ls': ['Levenberg_Marquardt',
-               'Dogleg',
-               'BFGS',
-               'LBFGS',
-               'steepest_descent',
-               'Fletcher_Reeves',
-               'Polak_Ribiere',
-               'Hestenes_Stiefel'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['Levenberg_Marquardt', 'Dogleg'],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': ['BFGS', 'LBFGS'],
-        'conjugate_gradient': ['Fletcher_Reeves',
-                               'Polak_Ribiere',
-                               'Hestenes_Stiefel'],
-        'steepest_descent': ['steepest_descent'],
-        'global_optimization': [],
-        'MCMC': []
+        "all": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "ls": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["Levenberg_Marquardt", "Dogleg"],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": ["BFGS", "LBFGS"],
+        "conjugate_gradient": [
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "steepest_descent": ["steepest_descent"],
+        "global_optimization": [],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['Levenberg_Marquardt',
-                                'Dogleg',
-                                'BFGS',
-                                'LBFGS',
-                                'steepest_descent',
-                                'Fletcher_Reeves',
-                                'Polak_Ribiere',
-                                'Hestenes_Stiefel']
+    jacobian_enabled_solvers = [
+        "Levenberg_Marquardt",
+        "Dogleg",
+        "BFGS",
+        "LBFGS",
+        "steepest_descent",
+        "Fletcher_Reeves",
+        "Polak_Ribiere",
+        "Hestenes_Stiefel",
+    ]
 
     def __init__(self, cost_func):
         """
@@ -117,62 +127,74 @@ class CeresController(Controller):
         """
         self.result = np.array(self.initial_params)
 
-        self.ceres_problem.AddResidualBlock(self.ceres_cost_func, None,
-                                            self.result)
+        self.ceres_problem.AddResidualBlock(
+            self.ceres_cost_func, None, self.result
+        )
 
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            for i, (value_ranges_lb, value_ranges_ub) in \
-              enumerate(self.value_ranges):
-                self.ceres_problem.SetParameterLowerBound(self.result,
-                                                          i,
-                                                          value_ranges_lb)
-                self.ceres_problem.SetParameterUpperBound(self.result,
-                                                          i,
-                                                          value_ranges_ub)
+            for i, (value_ranges_lb, value_ranges_ub) in enumerate(
+                self.value_ranges
+            ):
+                self.ceres_problem.SetParameterLowerBound(
+                    self.result, i, value_ranges_lb
+                )
+                self.ceres_problem.SetParameterUpperBound(
+                    self.result, i, value_ranges_ub
+                )
 
-        self.ceres_options.linear_solver_type = \
+        self.ceres_options.linear_solver_type = (
             PyCeres.LinearSolverType.DENSE_QR
+        )
 
         if self.minimizer == "Levenberg_Marquardt":
-            self.ceres_options.trust_region_strategy_type =  \
+            self.ceres_options.trust_region_strategy_type = (
                 PyCeres.TrustRegionStrategyType.LEVENBERG_MARQUARDT
+            )
         elif self.minimizer == "Dogleg":
-            self.ceres_options.trust_region_strategy_type = \
+            self.ceres_options.trust_region_strategy_type = (
                 PyCeres.TrustRegionStrategyType.DOGLEG
+            )
         elif self.minimizer == "BFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 PyCeres.LineSearchDirectionType.BFGS
+            )
         elif self.minimizer == "LBFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 PyCeres.LineSearchDirectionType.LBFGS
+            )
         elif self.minimizer == "steepest_descent":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 PyCeres.LineSearchDirectionType.STEEPEST_DESCENT
+            )
         elif self.minimizer == "Fletcher_Reeves":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 PyCeres.NonlinearConjugateGradientType.FLETCHER_REEVES
+            )
         elif self.minimizer == "Polak_Ribiere":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 PyCeres.NonlinearConjugateGradientType.POLAK_RIBIERE
+            )
         elif self.minimizer == "Hestenes_Stiefel":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 PyCeres.NonlinearConjugateGradientType.HESTENES_STIEFEL
+            )
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for Ceres solver")
+                f"No {self.minimizer} minimizer for Ceres solver"
+            )
 
     def fit(self):
         """
         Run problem with Ceres solver
         """
 
-        PyCeres.Solve(self.ceres_options, self.ceres_problem,
-                      self.ceres_summary)
+        PyCeres.Solve(
+            self.ceres_options, self.ceres_problem, self.ceres_summary
+        )
 
-        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 2
+        self._status = 0 if self.ceres_summary.IsSolutionUsable() else 2
 
     def cleanup(self):
         """
