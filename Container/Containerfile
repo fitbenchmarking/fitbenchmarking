@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
     mpich \
     curl
 
-
 # use uv to manage python version
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN $HOME/.cargo/bin/uv python install 3.12
@@ -28,9 +27,6 @@ RUN pip install "pytest>3.6" \
     "coverage~=4.5.4" \ 
     "urllib3==1.23" \
     mock 
-
-WORKDIR /home/
-
 
 WORKDIR /
 
@@ -62,16 +58,13 @@ RUN apt-get install -y gfortran \
 
 RUN git clone https://github.com/ralna/RALFit
 
-RUN pip install numpy
-
 RUN mkdir -p /RALFit/libRALFit/build
-
 WORKDIR /RALFit/libRALFit/build
-
 
 RUN cmake .. && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
+ENV CC=gcc
 RUN pip install .
 
 ENV LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
