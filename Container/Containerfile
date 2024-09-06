@@ -61,10 +61,10 @@ RUN git clone https://github.com/ralna/RALFit
 RUN mkdir -p /RALFit/libRALFit/build
 WORKDIR /RALFit/libRALFit/build
 
+ENV CC=gcc
 RUN cmake .. && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
-ENV CC=gcc
 RUN pip install .
 
 ENV LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
