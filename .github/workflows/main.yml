@@ -39,7 +39,7 @@ jobs:
     name: Full System Tests (Linux)
     runs-on: ubuntu-latest
     container:
-      image: 'ghcr.io/fitbenchmarking/fitbenchmarking:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -65,7 +65,7 @@ jobs:
     name: Full Unit Tests (Linux)
     runs-on: ubuntu-latest
     container:
-      image: 'ghcr.io/fitbenchmarking/fitbenchmarking:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
