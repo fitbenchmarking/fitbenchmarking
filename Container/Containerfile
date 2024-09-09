@@ -115,7 +115,7 @@ RUN python -m pip install pycutest
 ##################
 
 WORKDIR /
-RUN apt-get -y install libjemalloc-dev
+RUN apt-get -y install libjemalloc-dev libmuparser-dev libjsoncpp-dev libeigen3-dev xfonts-scalable libocct-data-exchange-dev libocct-draw-dev libocct-foundation-dev libocct-modeling-algorithms-dev libocct-modeling-data-dev libocct-ocaf-dev libocct-visualization-dev libboost-all-dev libpoco-dev libtbb-dev
 
 # Requires NeXuS format
 RUN wget -O nexus.tar.gz https://github.com/nexusformat/code/archive/refs/tags/v4.4.3.tar.gz
@@ -129,23 +129,16 @@ RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/m
 RUN mv mantid mantid-$MANTID_VERSION
 
 RUN pip install versioningit
-RUN apt-get -y install libboost-all-dev 
-RUN apt-get -y install libpoco-dev
-RUN apt-get -y install libtbb-dev
 
 WORKDIR /nexus/build
-RUN cmake -G Ninja ..
+RUN cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON
 RUN cmake --build .
 RUN cmake --install .
+
 RUN mkdir -p /opt/Mantid
 WORKDIR /opt/Mantid
 RUN cmake -G Ninja /mantid-$MANTID_VERSION -DENABLE_MANTIDQT=OFF -DENABLE_WORKBENCH=OFF -DENABLE_DOCS=OFF -DENABLE_PRECOMMIT=OFF
-
 RUN cmake --build .
-
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH=$OLD_PATH
-RUN unset OLD_PATH
 
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
 RUN python -m pip install IPython six python-dateutil pyyaml h5py
