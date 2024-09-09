@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     git \
     sudo \
     cmake \
+    ninja-build \
     mpich \
     curl
 
@@ -26,7 +27,8 @@ RUN pip install "pytest>3.6" \
     coveralls \
     "coverage~=4.5.4" \ 
     "urllib3==1.23" \
-    mock 
+    mock \
+    meson 
 
 WORKDIR /
 
@@ -95,15 +97,15 @@ ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
 # Install sifdecode
 
 WORKDIR $SIFDECODE
-RUN printf "6\n2\n2\n" > sifdecode.input && \
-    printf "nny" >> sifdecode.input && \
+RUN printf "1\n1\nn" > sifdecode.input && \
+    printf "1\nny" >> sifdecode.input && \
     ./install_sifdecode  < sifdecode.input
 
 # Install cutest
 WORKDIR $CUTEST
-RUN printf "6\n2\n2\n2\n4\n" > cutest.input && \
-    printf "nnydn" >> cutest.input && \
-    ./install_cutest < cutest.input
+RUN meson setup builddir
+RUN meson compile -C builddir
+RUN meson install -C builddir
 
 # install pycutest
 RUN python -m pip install pycutest
@@ -113,41 +115,38 @@ RUN python -m pip install pycutest
 ##################
 
 WORKDIR /
-# set noninteractive to stop tzdata prompt
-ENV DEBIAN_FRONTEND=noniteractive
-ENV VIRTUAL_ENV=""
-ENV OLD_PATH=$PATH
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-RUN apt-get install -y git g++ qt5-default clang-format-6.0 cmake dvipng doxygen libtbb-dev \
-  libgoogle-perftools-dev libboost-all-dev libpoco-dev libnexus-dev libhdf5-dev libhdf4-dev \
-  libjemalloc-dev libgsl-dev liboce-visualization-dev libmuparser-dev libssl-dev libjsoncpp-dev \
-  librdkafka-dev qtbase5-dev qttools5-dev qttools5-dev-tools libqt5webkit5-dev \
-  libqt5x11extras5-dev libqt5opengl5-dev libqscintilla2-qt5-dev libpython3-dev \
-  ninja-build python3-setuptools python3-sip-dev python3-pyqt5 pyqt5-dev pyqt5-dev-tools \
-  python3-qtpy python3-numpy python3-scipy python3-sphinx python3-sphinx-bootstrap-theme \
-  python3-pycifrw python3-dateutil python3-matplotlib python3-qtconsole python3-h5py \
-  python3-mock python3-psutil python3-requests python3-toml python3-yaml wget
+RUN apt-get -y install libjemalloc-dev
 
-# Details from mantid website
-ARG MANTID_VERSION=6.2
-ARG MANTID_SOURCE="mantid-$MANTID_VERSION.0-Source"
+# Requires NeXuS format
+RUN wget -O nexus.tar.gz https://github.com/nexusformat/code/archive/refs/tags/v4.4.3.tar.gz
+RUN tar --no-same-owner --no-same-permissions -xzf nexus.tar.gz
+RUN mv code-4.4.3 nexus
+RUN mkdir nexus/build
 
-RUN wget https://downloads.sourceforge.net/project/mantid/$MANTID_VERSION/$MANTID_SOURCE.tar.xz
-RUN tar -xvf $MANTID_SOURCE.tar.xz
-RUN rm mantid*.xz
+ARG MANTID_VERSION=6.10.0
 
-RUN apt-get install -y ccache
-RUN ccache --max-size=20G
+RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/mantid.git 
+RUN mv mantid mantid-$MANTID_VERSION
 
+RUN pip install versioningit
+RUN apt-get -y install libboost-all-dev 
+RUN apt-get -y install libpoco-dev
+RUN apt-get -y install libtbb-dev
+
+WORKDIR /nexus/build
+RUN cmake -G Ninja ..
+RUN cmake --build .
+RUN cmake --install .
 RUN mkdir -p /opt/Mantid
-
 WORKDIR /opt/Mantid
-RUN cmake /$MANTID_SOURCE -DENABLE_PRECOMMIT=OFF
-RUN make
+RUN cmake -G Ninja /mantid-$MANTID_VERSION -DENABLE_MANTIDQT=OFF -DENABLE_WORKBENCH=OFF -DENABLE_DOCS=OFF -DENABLE_PRECOMMIT=OFF
+
+RUN cmake --build .
 
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH=$OLD_PATH
 RUN unset OLD_PATH
+
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
 RUN python -m pip install IPython six python-dateutil pyyaml h5py
 ENV HDF5_DISABLE_VERSION_CHECK=2
