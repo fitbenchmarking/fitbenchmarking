@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     ninja-build \
     mpich \
-    curl
+    curl \
+    apt-utils
 
 # use uv to manage python version
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -116,29 +117,26 @@ RUN python -m pip install pycutest
 
 WORKDIR /
 RUN apt-get -y install libjemalloc-dev libmuparser-dev libjsoncpp-dev libeigen3-dev xfonts-scalable libocct-data-exchange-dev libocct-draw-dev libocct-foundation-dev libocct-modeling-algorithms-dev libocct-modeling-data-dev libocct-ocaf-dev libocct-visualization-dev libboost-all-dev libpoco-dev libtbb-dev
+RUN pip install versioningit
 
 # Requires NeXuS format
 RUN wget -O nexus.tar.gz https://github.com/nexusformat/code/archive/refs/tags/v4.4.3.tar.gz
 RUN tar --no-same-owner --no-same-permissions -xzf nexus.tar.gz
 RUN mv code-4.4.3 nexus
 RUN mkdir nexus/build
-
-ARG MANTID_VERSION=6.10.0
-
-RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/mantid.git 
-RUN ls /
-COPY mantid.patch /
-WORKDIR /mantid
-RUN git apply ../mantid.patch
-WORKDIR /
-RUN mv mantid mantid-$MANTID_VERSION
-
-RUN pip install versioningit
-
 WORKDIR /nexus/build
 RUN cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON
 RUN cmake --build .
 RUN cmake --install .
+
+ARG MANTID_VERSION=6.10.0
+
+WORKDIR /
+RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/mantid.git 
+COPY mantid.patch /
+WORKDIR /mantid
+RUN git apply ../mantid.patch
+RUN mv /mantid /mantid-$MANTID_VERSION
 
 RUN mkdir -p /opt/Mantid
 WORKDIR /opt/Mantid
@@ -155,43 +153,49 @@ WORKDIR /
 #################
 # install pygsl #
 #################
+
+WORKDIR /
+
 RUN apt-get -y install swig
-RUN python -m pip install pygsl
+RUN wget -O pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.4.0.tar.gz
+RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
+
+WORKDIR /pygsl-2.4.0
+RUN python -m pip install .
 
 #################
 # Install Ceres #
 #################
 WORKDIR /
 
-RUN apt-get install -y libgoogle-glog-dev \
+RUN sudo apt-get install -y libgoogle-glog-dev \
  libgflags-dev \
  libatlas-base-dev \
+ libsuitesparse-dev \
  libeigen3-dev \
- libsuitesparse-dev
+ libtbb-dev
+
 # Make ceres directory 
 RUN mkdir -p /ceres
 # Change working directory to ceres  
 WORKDIR /ceres 
 # Download ceres solver 2.0.0 tar 
-RUN wget http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+RUN wget http://ceres-solver.org/ceres-solver-2.2.0.tar.gz
 # unpack the tar file 
-RUN tar zxf ceres-solver-2.0.0.tar.gz
-# Clone PyCeres repository
-RUN git clone https://github.com/Edwinem/ceres_python_bindings.git ./ceres-solver-2.0.0/ceres_python_bindings
-# Initialise and update ceres_python_bindings for PyBind11
-RUN git -C ./ceres-solver-2.0.0/ceres_python_bindings submodule init
-RUN git -C ./ceres-solver-2.0.0/ceres_python_bindings submodule update
-# Append PyCeres installer to ceres solver camkelist.txt
-RUN echo "include(ceres_python_bindings/AddToCeres.cmake)" >> ./ceres-solver-2.0.0/CMakeLists.txt
+RUN tar --no-same-owner --no-same-permissions -xzf ceres-solver-2.2.0.tar.gz
 # Make ceres-bin directory
 RUN mkdir -p ceres-bin 
 # Change working directory to ceres-bin
 WORKDIR /ceres/ceres-bin
-RUN cmake ../ceres-solver-2.0.0
-RUN make -j3
-RUN make install
-# Set the PYCERES_LOCATION
-ENV PYCERES_LOCATION=/ceres/ceres-bin/lib
+RUN cmake -G Ninja ../ceres-solver-2.2.0
+RUN cmake --build .
+RUN cmake --install .
+
+WORKDIR /
+ENV CXX=g++
+RUN git clone https://github.com/cvg/pyceres.git
+WORKDIR /pyceres
+RUN python -m pip install .
 
 WORKDIR /
 

@@ -1,3 +1,15 @@
+diff --git a/Framework/API/inc/MantidAPI/PreviewManager.h b/Framework/API/inc/MantidAPI/PreviewManager.h
+index a9c84f2d06e..a13e9caa732 100644
+--- a/Framework/API/inc/MantidAPI/PreviewManager.h
++++ b/Framework/API/inc/MantidAPI/PreviewManager.h
+@@ -15,6 +15,7 @@
+ #include <type_traits>
+ #include <utility>
+ #include <vector>
++#include <stdexcept>
+ 
+ namespace Mantid {
+ namespace API {
 diff --git a/Framework/Parallel/src/IO/Chunker.cpp b/Framework/Parallel/src/IO/Chunker.cpp
 index 91ee69add9f..64be6abc995 100644
 --- a/Framework/Parallel/src/IO/Chunker.cpp
