@@ -93,7 +93,7 @@ jobs:
         path: test-results/full_unit_pytest.xml
 
   default_unit_tests:
-    name: Default Unit Tests (Linux)
+    name: Default Unit Tests
     strategy:
       fail-fast: false
       matrix:
