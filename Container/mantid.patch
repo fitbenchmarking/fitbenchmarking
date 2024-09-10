@@ -1,0 +1,25 @@
+diff --git a/Framework/Parallel/src/IO/Chunker.cpp b/Framework/Parallel/src/IO/Chunker.cpp
+index 91ee69add9f..64be6abc995 100644
+--- a/Framework/Parallel/src/IO/Chunker.cpp
++++ b/Framework/Parallel/src/IO/Chunker.cpp
+@@ -8,6 +8,7 @@
+ #include <iterator>
+ #include <numeric>
+ #include <utility>
++#include <cstdint>
+ 
+ #include "MantidParallel/IO/Chunker.h"
+ 
+diff --git a/Framework/PythonInterface/core/src/ErrorHandling.cpp b/Framework/PythonInterface/core/src/ErrorHandling.cpp
+index a2f61284629..6a61faea95e 100644
+--- a/Framework/PythonInterface/core/src/ErrorHandling.cpp
++++ b/Framework/PythonInterface/core/src/ErrorHandling.cpp
+@@ -39,7 +39,7 @@ void tracebackToStream(std::ostream &msg, PyTracebackObject *traceback, bool roo
+     msg << "caused by";
+ 
+   msg << " line " << traceback->tb_lineno << " in \'"
+-      << extract<const char *>(traceback->tb_frame->f_code->co_filename)() << "\'";
++      << extract<const char *>(PyFrame_GetCode(traceback->tb_frame)->co_filename)() << "\'";
+   tracebackToStream(msg, traceback->tb_next, false);
+ }
+ 

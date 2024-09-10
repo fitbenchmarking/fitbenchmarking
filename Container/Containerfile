@@ -126,6 +126,11 @@ RUN mkdir nexus/build
 ARG MANTID_VERSION=6.10.0
 
 RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/mantid.git 
+RUN ls /
+COPY mantid.patch /
+WORKDIR /mantid
+RUN git apply ../mantid.patch
+WORKDIR /
 RUN mv mantid mantid-$MANTID_VERSION
 
 RUN pip install versioningit
