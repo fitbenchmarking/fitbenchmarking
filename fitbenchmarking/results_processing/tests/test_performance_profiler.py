@@ -169,7 +169,7 @@ class PerformanceProfilerTests(unittest.TestCase):
 
         self.options = Options()
         self.solvers = ['migrad [minuit]', 'simplex [minuit]',
-                        'dfols [dfo]']
+                        'dfogn [dfo]']
         self.step_values = [
             np.array([0., 1., 1.2, 1.4, 2., 5., 10.4, 15.9, 500.]),
             np.array([0., 1., 1.5, 1.8, 5., 8., 15.4, 25.9, 600.]),
@@ -317,7 +317,7 @@ class PerformanceProfilerTests(unittest.TestCase):
                                             2., 10.4, 15.9, 5.],
                         'simplex [minuit]': [15.4, 1., 1.5, 1.8,
                                              8., 5., 600., 25.9],
-                        'dfols [dfo]': [3.5, 5.8, 2., 10., 7.,
+                        'dfogn [dfo]': [3.5, 5.8, 2., 10., 7.,
                                         45.9, 25.4, 800.]}
 
         step_vals, max_val = performance_profiler.\
@@ -348,6 +348,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         assert np.array_equal(expected_dict['plot_points'],
                               output_dict['plot_points'])
 
+    # pylint: disable=no-self-use
     def test_compute_linestyle_combinations(self):
         """
         Test compute_linestyle_combinations returns expected styles.
@@ -359,6 +360,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             assert isinstance(combination, tuple)
             assert isinstance(combination[0], str)
             assert re.match(r"#[0-9a-fA-F]{6}", combination[1])
+    # pylint: enable=no-self-use
 
 
 class DashPerfProfileTests(unittest.TestCase):
@@ -381,7 +383,7 @@ class DashPerfProfileTests(unittest.TestCase):
                                 2., 10.4, 15.9, 5.],
             'simplex [minuit]': [15.4, 1., 1.5, 1.8,
                                  8., 5., 600., 25.9],
-            'dfols [dfo]': [3.5, 5.8, 2., 10., 7.,
+            'dfogn [dfo]': [3.5, 5.8, 2., 10., 7.,
                             45.9, 25.4, 800.]})
 
         self.perf_profile = performance_profiler.\

@@ -23,6 +23,7 @@ HESSIAN_ENABLED_PARSERS = ['nist']
 BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
 
 
+# pylint: disable=no-self-use
 def pytest_generate_tests(metafunc):
     """
     Function used by pytest to parametrize tests.
@@ -131,7 +132,7 @@ def load_expectation(filename):
     :return: A fitting problem to test against
     :rtype: fitbenchmarking.parsing.FittingProblem
     """
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, 'r') as f:
         expectation_dict = load(f)
 
     expectation = FittingProblem(OPTIONS)
@@ -168,7 +169,7 @@ class TestParsers:
         assert (test_file is not None), \
             f'No test file for {file_format}'
 
-        with open(test_file, encoding='utf-8') as f:
+        with open(test_file) as f:
             if f.readline() == 'NA':
                 # Test File cannot be written
                 return
@@ -204,7 +205,7 @@ class TestParsers:
         for attr in ['name', 'data_x', 'data_y', 'data_e', 'start_x', 'end_x']:
             parsed_attr = getattr(fitting_problem, attr)
             expected_attr = getattr(expected, attr)
-            equal = parsed_attr == expected_attr
+            equal = (parsed_attr == expected_attr)
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
             assert (equal), f'{attr} was parsed incorrectly.' \
@@ -260,7 +261,7 @@ class TestParsers:
             f'No function evaluations provided to test against for'\
             f' {file_format}'
 
-        with open(evaluations_file, 'r', encoding='utf-8') as ef:
+        with open(evaluations_file, 'r') as ef:
             results = load(ef)
 
         format_dir = os.path.dirname(evaluations_file)
@@ -306,7 +307,7 @@ class TestParsers:
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
 
-            with open(evaluations_file, 'r', encoding='utf-8') as ef:
+            with open(evaluations_file, 'r') as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -347,7 +348,7 @@ class TestParsers:
                 f'against for {file_format}'
             assert (evaluations_file is not None), message
 
-            with open(evaluations_file, 'r', encoding='utf-8') as ef:
+            with open(evaluations_file, 'r') as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -373,7 +374,7 @@ class TestParsers:
         :param test_file: The path to the test file
         :type test_file: string
         """
-        with open(test_file, encoding='utf-8') as f:
+        with open(test_file) as f:
             if f.readline() == 'NA':
                 # Skip the test files with no data
                 return
@@ -398,7 +399,7 @@ class TestParserFactory(TestCase):
         parser is requested.
         """
         filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, 'w') as f:
             f.write('this_is_a_fake_parser')
 
         factory = ParserFactory()
@@ -416,62 +417,3 @@ class TestParserFactory(TestCase):
                                 'basic.dat')
         fitting_problem = parse_problem_file(filename, OPTIONS)
         self.assertEqual(fitting_problem.name, 'basic')
-
-
-class TestParserNoJac(TestCase):
-    """
-    A class to hold the tests for cases where the user does not provide
-    a jacobian function
-    """
-
-    def setUp(self):
-        """
-        Set up the tests.
-        """
-        self.test_dir = os.path.dirname(__file__)
-
-    def test_sparsej_returns_none(self):
-        """
-        Test sparse_jacobian is None in two cases:
-         - when no 'jac' line in prob def file
-         - when there is a 'jac' line but no 'sparse_func' in it.
-        """
-        for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
-            prob_def_file_path = os.path.join(self.test_dir,
-                                              'ivp',
-                                              prob_def_file)
-
-            parser = ParserFactory.create_parser(prob_def_file_path)
-            with parser(prob_def_file_path, OPTIONS) as p:
-                fitting_problem = p.parse()
-
-            assert fitting_problem.sparse_jacobian is None
-
-    @run_for_test_types(TEST_TYPE, 'all')
-    def test_mantid_jac_when_no_func_by_user(self):
-        """
-        Tests that, for mantid problems, when no jacobian is provided
-        by the user, the jacobian function from mantid is used.
-        """
-        evaluations_file = 'jacobian_evaluations.json'
-        format_dir = 'mantiddev'
-
-        evaluations_file_path = os.path.join(self.test_dir,
-                                             format_dir,
-                                             evaluations_file)
-
-        with open(evaluations_file_path, 'r', encoding='utf-8') as ef:
-            results = load(ef)
-
-            for f, tests in results.items():
-                f = os.path.join(self.test_dir, format_dir, f)
-
-                parser = ParserFactory.create_parser(f)
-                with parser(f, OPTIONS) as p:
-                    fitting_problem = p.parse()
-
-                for r in tests:
-                    x = np.array(r[0])
-
-                    actual = fitting_problem.jacobian(x, r[1])
-                    assert np.isclose(actual, r[2]).all()

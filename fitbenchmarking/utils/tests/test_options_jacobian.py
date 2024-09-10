@@ -70,7 +70,7 @@ class UserJacobianOptionTests(unittest.TestCase):
         """
         opts_file = os.path.join(self.test_files_dir,
                                  f'test_{opt_name}_valid.ini')
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        with open(opts_file, 'w') as f:
             f.write(config_str)
         return opts_file
 

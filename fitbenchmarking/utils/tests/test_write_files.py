@@ -20,7 +20,7 @@ def write_to_a_file(file_path: str, content: str):
     :param content: the content of the file.
     :type content: str
     """
-    with open(file_path, "w", encoding='utf-8') as file:
+    with open(file_path, "w") as file:
         file.write(content)
 
 

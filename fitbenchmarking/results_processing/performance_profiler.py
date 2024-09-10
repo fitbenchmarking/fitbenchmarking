@@ -100,7 +100,8 @@ def compute_step_values(profile_plot):
         value = np.array(value)
         sorted_list = np.sort(_remove_nans(value))
         max_in_list = np.max(sorted_list) if len(sorted_list) > 0 else 0.0
-        max_value = max(max_value, max_in_list)
+        if max_in_list > max_value:
+            max_value = max_in_list
         step_values.append(np.insert(sorted_list, 0, 0.0))
 
     return step_values, max_value
@@ -158,7 +159,7 @@ def create_plots_and_get_paths(bounds, fig_dir, options):
                       'a static offline plot. Please run Dash and use '\
                       'the online version instead. </body></div>'
 
-            with open(this_filename_html, "w", encoding='utf-8') as file:
+            with open(this_filename_html, "w") as file:
                 file.write(warning)
 
     return figure_paths
@@ -560,7 +561,8 @@ class DashPerfProfile():
             label = list(data_one_solver['label'])[0]
 
             temp_max_value = max(list(solver_values))
-            max_value = max(max_value, temp_max_value)
+            if temp_max_value > max_value:
+                max_value = temp_max_value
 
             fig.add_trace(
                 go.Scatter(
@@ -576,7 +578,7 @@ class DashPerfProfile():
                     type='scatter'))
 
         log_upper_limit = min(max_value+1, 10000)
-        use_log_plot = x_axis_scale == 'Log x-axis'
+        use_log_plot = (x_axis_scale == 'Log x-axis')
 
         fig = update_fig(fig, self.profile_name, use_log_plot,
                          log_upper_limit)

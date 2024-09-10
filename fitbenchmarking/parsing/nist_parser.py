@@ -85,7 +85,7 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", f"{name}.jac")
         try:
-            with open(jac_file, "r", encoding='utf-8') as jac_data:
+            with open(jac_file, "r") as jac_data:
                 jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
             raise NoJacobianError('Could not find data for NIST Jacobian '
@@ -109,7 +109,7 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         hes_file = os.path.join(file_dir, "data_files", f"{name}.hes")
         try:
-            with open(hes_file, "r", encoding='utf-8') as hes_data:
+            with open(hes_file, "r") as hes_data:
                 hes_lines = hes_data.readlines()
         except FileNotFoundError as e:
             raise NoHessianError('Could not find data for NIST Hessian '
@@ -133,9 +133,6 @@ class NISTParser(Parser):
         """
         lines = self.file.readlines()
         idx, ignored_lines = 0, 0
-        equation_text = data_pattern_text = ''
-        description = ''
-        starting_values = []
 
         while idx < len(lines):
             line = lines[idx].strip()

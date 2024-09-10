@@ -33,7 +33,7 @@ class CreateDirsTests(unittest.TestCase):
             filepath = os.path.join(self.dirname, filename)
             expected.append(filepath)
 
-            with open(filepath, 'w+', encoding='utf-8') as f:
+            with open(filepath, 'w+') as f:
                 f.write('This is a mock data file to check that finding files'
                         'is correct')
 

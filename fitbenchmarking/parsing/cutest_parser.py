@@ -195,7 +195,7 @@ class CutestParser(Parser):
         """
 
         if self.file.closed:
-            with open(self._filename, 'r', encoding='utf-8') as f:
+            with open(self._filename, 'r') as f:
                 lines = f.readlines()
         else:
             lines = self.file.readlines()
@@ -211,7 +211,7 @@ class CutestParser(Parser):
         file_path = os.path.join(self.mastsif_dir.name,
                                  f'{str(id(x))[-10:]}.SIF')
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, 'w') as f:
             f.writelines(to_write)
 
         return file_path, x, y, e
@@ -229,7 +229,7 @@ def _read_x(lines):
              parameters from the file.
     :rtype: numpy array, numpy array, numpy array, list of str, int
     """
-    to_write, num_params = [], 0
+    to_write = []
     # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
     col_width = 25
 
@@ -277,7 +277,6 @@ def _write_x(lines, x):
     :rtype: numpy array, numpy array, numpy array, list of str
     """
     to_write = []
-    x_idx, y_idx, e_idx = 0, 0, 0
     # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
     col_width = 25
 

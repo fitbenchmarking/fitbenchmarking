@@ -9,7 +9,7 @@ from iminuit import __version__ as iminuit_version
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingSoftwareError, \
+from fitbenchmarking.utils.exceptions import MissingSoftwareError,\
                                              UnknownMinimizerError
 
 

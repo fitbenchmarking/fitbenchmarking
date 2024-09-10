@@ -147,7 +147,7 @@ class GenerateTableTests(unittest.TestCase):
             act_line = act_line.replace('href=\"..\\', 'href=\"../')
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
-        if diff:
+        if diff != []:
             print(f"Comparing against {expected}\n"
                   + "\n".join([f'== Line {change[0]} ==\n'
                                f'Expected :{change[1]}\n'
@@ -156,7 +156,7 @@ class GenerateTableTests(unittest.TestCase):
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
             print(achieved)
-            with open("actual.out", "w", encoding='utf-8') as outfile:
+            with open("actual.out", "w") as outfile:
                 outfile.write(achieved)
         self.assertListEqual([], diff)
 

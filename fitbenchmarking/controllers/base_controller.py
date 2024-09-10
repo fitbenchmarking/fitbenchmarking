@@ -4,7 +4,7 @@ Implements the base class for the fitting software controllers.
 
 from abc import ABCMeta, abstractmethod
 
-import numpy as np
+import numpy
 from scipy.optimize import curve_fit
 from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
                                               IncompatibleHessianError,
@@ -255,39 +255,31 @@ class Controller:
                                sigma=self.data_e,
                                maxfev=500)
 
-        perr = np.sqrt(np.diag(pcov))
+        perr = numpy.sqrt(numpy.diag(pcov))
 
         self.params_pdfs['scipy_pfit'] = popt.tolist()
         self.params_pdfs['scipy_perr'] = perr.tolist()
 
         # calculate overall confidence within 2 sigma tolerance
         par_conf = []
-        try: 
-            for i, name in enumerate(self.par_names):
-                tol = 2*perr[i]
-                hist, bin_edges = np.histogram(
-                    self.params_pdfs[name.replace('.', '_')],
-                    bins=100, density=True
-                )
-                # check tol range is covered by hist range
-                tol_range = [popt[i]-tol, popt[i]+tol]
-                if tol_range[-1] < bin_edges[0] or \
-                        tol_range[0] > bin_edges[-1]:
-                    par_conf.append(0)
+        for i, name in enumerate(self.par_names):
+            tol = 2*perr[i]
+            hist, bin_edges = numpy.histogram(self.params_pdfs[name],
+                                              bins=100, density=True)
+            # check tol range is covered by hist range
+            tol_range = [popt[i]-tol, popt[i]+tol]
+            if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
+                par_conf.append(0)
+            else:
+                width = numpy.diff(bin_edges)[0]
+                start_bin = numpy.argmin(abs(bin_edges-(popt[i]-tol)))
+                end_bin = numpy.argmin(abs(bin_edges-(popt[i]+tol)))
+                if start_bin == end_bin:
+                    par_conf.append(hist[start_bin]*width)
                 else:
-                    width = np.diff(bin_edges)[0]
-                    start_bin = np.argmin(abs(bin_edges-(popt[i]-tol)))
-                    end_bin = np.argmin(abs(bin_edges-(popt[i]+tol)))
-                    if start_bin == end_bin:
-                        par_conf.append(hist[start_bin]*width)
-                    else:
-                        par_conf.append(sum(hist[start_bin:end_bin]*width))
-        except RuntimeError as error_msg:
-            par_conf = 0
-            self.flag = 8
-            print("\n"+str(error_msg))
+                    par_conf.append(sum(hist[start_bin:end_bin]*width))
 
-        return np.prod(par_conf)
+        return numpy.prod(par_conf)
 
     def _validate_jacobian(self) -> None:
         """
@@ -413,11 +405,11 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'_flag': int, 'final_params': np.ndarray}
+        values = {'_flag': int, 'final_params': numpy.ndarray}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
-            if attr_type != np.ndarray:
+            if attr_type != numpy.ndarray:
                 if not isinstance(attr, attr_type):
                     raise ControllerAttributeError(
                         f'Attribute "{attr_name}" in the controller is not the'
@@ -429,7 +421,7 @@ class Controller:
                 if not self.problem.multifit:
                     attr = [attr]
                 for a in attr:
-                    if any(np.isnan(n) or np.isinf(n) for n in a):
+                    if any(numpy.isnan(n) or numpy.isinf(n) for n in a):
                         raise ControllerAttributeError(
                             f'Attribute "{attr_name}" in the controller is '
                             'not the expected numpy ndarray of floats. '
