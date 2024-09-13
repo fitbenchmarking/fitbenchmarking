@@ -50,9 +50,7 @@ class Scipy(Jacobian):
                     "sparse jacobian function."
                 )
 
-            self.jac_pattern = self.problem.sparse_jacobian(
-                self.problem.data_x, params
-            )
+            self.jac_pattern = self.problem.sparse_jacobian(self.problem.data_x, params)
 
             if not issparse(self.jac_pattern):
                 raise SparseJacobianIsDenseError()

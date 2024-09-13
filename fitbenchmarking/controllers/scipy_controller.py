@@ -116,18 +116,13 @@ class ScipyController(Controller):
             "method": self.minimizer,
             "options": self.options,
         }
-        if self.minimizer in self.jacobian_enabled_solvers:
-            if (
-                not self.cost_func.jacobian.use_default_jac
-                or self.minimizer == "Newton-CG"
-            ):
-                kwargs["jac"] = self.cost_func.jac_cost
+        if self.minimizer in self.jacobian_enabled_solvers and (
+            not self.cost_func.jacobian.use_default_jac or self.minimizer == "Newton-CG"
+        ):
+            kwargs["jac"] = self.cost_func.jac_cost
         if self.minimizer not in self.no_bounds_minimizers:
             kwargs["bounds"] = self.value_ranges
-        if (
-            self.cost_func.hessian
-            and self.minimizer in self.hessian_enabled_solvers
-        ):
+        if self.cost_func.hessian and self.minimizer in self.hessian_enabled_solvers:
             kwargs["hess"] = self.cost_func.hes_cost
         self.result = minimize(**kwargs)
         self._popt = self.result.x
@@ -147,8 +142,7 @@ class ScipyController(Controller):
         if self.result.success:
             self.flag = 0
         elif any(
-            message in self.result.message.lower()
-            for message in max_iters_messages
+            message in self.result.message.lower() for message in max_iters_messages
         ):
             self.flag = 1
         else:

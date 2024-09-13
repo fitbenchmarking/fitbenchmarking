@@ -123,9 +123,7 @@ class TestRegressionDefault(TestCase):
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(
-            problem_sub_directory, "default_parsers_set.csv"
-        )
+        diff, msg = compare_results(problem_sub_directory, "default_parsers_set.csv")
         self.assertListEqual([], diff, msg)
 
 
@@ -258,9 +256,7 @@ def setup_options(
                   "theseus": "Levenberg_Marquardt"}
 
     opts.software = (
-        software.get(TEST_TYPE)
-        if override_software is None
-        else override_software
+        software.get(TEST_TYPE) if override_software is None else override_software
     )
     opts.minimizers = {s: [minimizers[s]] for s in opts.software}
     if jac_num_method is not None:
@@ -268,9 +264,7 @@ def setup_options(
     return opts
 
 
-def create_options_file(
-    override_software: list = None, jac_num_method: dict = None
-):
+def create_options_file(override_software: list = None, jac_num_method: dict = None):
     """
     Creates a temporary options file and returns its name.
 

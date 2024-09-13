@@ -64,13 +64,9 @@ class MatlabMixin:
                 if cost_func.problem.format == "horace":
                     matlab_dump = os.path.join(temp_dir, "dump.mat")
                     to_transfer = list_persistent_matlab_vars()
-                    to_transfer_str = "', '".join(
-                        v for v in to_transfer if v != "cf"
-                    )
+                    to_transfer_str = "', '".join(v for v in to_transfer if v != "cf")
                     to_transfer_str = f"'{to_transfer_str}'"
-                    self.eng.evalc(
-                        f"save('{matlab_dump}', {to_transfer_str});"
-                    )
+                    self.eng.evalc(f"save('{matlab_dump}', {to_transfer_str});")
                     print(
                         self.eng.evalc(
                             f"cf.problem.set_persistent_vars('{matlab_dump}')"

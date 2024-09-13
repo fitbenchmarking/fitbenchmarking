@@ -138,9 +138,7 @@ class CompareTable(Table):
         :rtype: tuple[zip[list[str], list[str]], zip[list[str], list[str]]]
         """
         acc, runtime = zip(*vals)
-        acc_colours, acc_text = Table.vals_to_colour(
-            acc, cmap, cmap_range, log_ulim
-        )
+        acc_colours, acc_text = Table.vals_to_colour(acc, cmap, cmap_range, log_ulim)
         runtime_colours, runtime_text = Table.vals_to_colour(
             runtime, cmap, cmap_range, log_ulim
         )

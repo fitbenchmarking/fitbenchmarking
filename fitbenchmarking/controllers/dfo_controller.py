@@ -64,9 +64,7 @@ class DFOController(Controller):
             # if bounds are set then gap between lower and upper bound must
             # be at least 2*rhobeg so check that default rhobeg value
             # satisfies this condition
-            bound_range = np.array(
-                [ub_i - lb_i for lb_i, ub_i in self.value_ranges]
-            )
+            bound_range = np.array([ub_i - lb_i for lb_i, ub_i in self.value_ranges])
             self.rhobeg = 0.1 * max(np.linalg.norm(self._pinit, np.inf), 1)
             if min(bound_range) <= 2 * self.rhobeg:
                 self.rhobeg = min(bound_range / 2)

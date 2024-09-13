@@ -154,9 +154,7 @@ class PoissonCostFunc(CostFunc):
                                            values.
         """
         if (self.problem.data_y < 0).any():
-            raise IncompatibleCostFunctionError(
-                "Problem has a negative y value."
-            )
+            raise IncompatibleCostFunctionError("Problem has a negative y value.")
 
 
 def _safe_a_log_b(a, b):

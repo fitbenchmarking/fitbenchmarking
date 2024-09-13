@@ -61,9 +61,7 @@ class GenerateTableTests(unittest.TestCase):
             root, "results_processing", "tests", "expected_results"
         )
 
-        self.fig_dir = os.path.join(
-            root, "results_processing", "tests", "figures"
-        )
+        self.fig_dir = os.path.join(root, "results_processing", "tests", "figures")
         if not os.path.exists(self.fig_dir):
             os.mkdir(self.fig_dir)
 
@@ -95,12 +93,8 @@ class GenerateTableTests(unittest.TestCase):
                 suffix=suffix,
             )
 
-            html_table_name = os.path.join(
-                self.expected_results_dir, f"{suffix}.html"
-            )
-            csv_table_name = os.path.join(
-                self.expected_results_dir, f"{suffix}.csv"
-            )
+            html_table_name = os.path.join(self.expected_results_dir, f"{suffix}.html")
+            csv_table_name = os.path.join(self.expected_results_dir, f"{suffix}.csv")
             for f, t in zip(
                 [html_table_name, csv_table_name], [html["table"], csv_table]
             ):
@@ -155,9 +149,7 @@ class GenerateTableTests(unittest.TestCase):
             exp_lines = f.readlines()
 
         diff = []
-        for i, (act_line, exp_line) in enumerate(
-            zip(achieved.splitlines(), exp_lines)
-        ):
+        for i, (act_line, exp_line) in enumerate(zip(achieved.splitlines(), exp_lines)):
             exp_line = "" if exp_line is None else exp_line.strip("\n")
             act_line = "" if act_line is None else act_line.strip("\n")
             # to pass on windows need to first do this before comparing
@@ -200,16 +192,12 @@ class CreateResultsTableTests(unittest.TestCase):
         self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
 
-        self.group_dir = os.path.join(
-            root, "results_processing", "tests", "results"
-        )
+        self.group_dir = os.path.join(root, "results_processing", "tests", "results")
 
         if not os.path.exists(self.group_dir):
             os.mkdir(self.group_dir)
 
-        self.fig_dir = os.path.join(
-            root, "results_processing", "tests", "figures"
-        )
+        self.fig_dir = os.path.join(root, "results_processing", "tests", "figures")
         os.mkdir(self.fig_dir)
 
         self.group_name = "test_name"

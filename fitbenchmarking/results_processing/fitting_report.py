@@ -70,8 +70,7 @@ def create_prob_group(result, support_pages_dir, options):
             fig_pdf = result.figure_error
     else:
         fig_fit = fig_start = fig_pdf = (
-            "Re-run with make_plots "
-            "set to yes in the ini file to generate plots."
+            "Re-run with make_plots set to yes in the ini file to generate plots."
         )
 
     run_name = f"{options.run_name}: " if options.run_name else ""
@@ -129,17 +128,13 @@ def get_figure_paths(result):
     :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
 
     :return: the paths to the required figures
-    :rtype: tuple(str, str)
+    :rtype: tuple(str, str, str)
     """
-
-    figures_dir = "figures"
-
-    output = []
-    for link in [
-        result.figure_link,
-        result.start_figure_link,
-        result.posterior_plots,
-    ]:
-        output.append(os.path.join(figures_dir, link) if link else "")
-
-    return output[0], output[1], output[2]
+    return tuple(
+        os.path.join("figures", link) if link else ""
+        for link in [
+            result.figure_link,
+            result.start_figure_link,
+            result.posterior_plots,
+        ]
+    )

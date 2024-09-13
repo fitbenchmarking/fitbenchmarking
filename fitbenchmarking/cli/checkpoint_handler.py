@@ -279,9 +279,7 @@ def merge(A, B, strategy):
             A[k]["results"], B[k]["results"], strategy=strategy
         )
         A[k]["failed_problems"] = []
-        A[k]["unselected_minimisers"] = {
-            r["software_tag"]: [] for r in A[k]["results"]
-        }
+        A[k]["unselected_minimisers"] = {r["software_tag"]: [] for r in A[k]["results"]}
 
     return A
 
@@ -399,9 +397,7 @@ def main():
     if args.subprog == "report":
         if args.filename:
             additional_options["checkpoint_filename"] = args.filename
-        generate_report(
-            args.options_file, additional_options, debug=args.debug_mode
-        )
+        generate_report(args.options_file, additional_options, debug=args.debug_mode)
     elif args.subprog == "merge":
         merge_data_sets(
             files=args.files,

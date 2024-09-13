@@ -47,11 +47,7 @@ class TestExamples(TestCase):
                 ]
                 while len(options_indices) > 1:
                     args.append(
-                        " ".join(
-                            example_split[
-                                options_indices[0] : options_indices[1]
-                            ]
-                        )
+                        " ".join(example_split[options_indices[0] : options_indices[1]])
                     )
                     options_indices = options_indices[1:]
                 if options_indices[0] != len(example_split):
@@ -59,9 +55,7 @@ class TestExamples(TestCase):
 
                 for i, s in enumerate(example_split[:-1]):
                     if s in ["-o", "-p", "-d"]:
-                        args.append(
-                            "".join([example_split[i], example_split[i + 1]])
-                        )
+                        args.append("".join([example_split[i], example_split[i + 1]]))
             else:
                 args = example_split
 

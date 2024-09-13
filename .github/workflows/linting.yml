@@ -1,11 +1,12 @@
-name: ruff tests
+name: Linting
 
 on:
   push:
   pull_request:
 
 jobs:
-  linting_linux:
+  ruff_linux:
+    name: Ruff (linux)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -13,9 +14,9 @@ jobs:
       - name: Run check
         uses: chartboost/ruff-action@v1
         with:
-            version: 0.6.3
-      - name: Run format 
+            version: 0.6.4
+      - name: Run format
         uses: chartboost/ruff-action@v1
         with:
             args: 'format --check'
-            version: 0.6.3
+            version: 0.6.4

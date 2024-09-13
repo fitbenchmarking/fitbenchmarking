@@ -131,9 +131,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             "m11 [s1]: j:j1": [0.7, 3.0],
         }
         for k in self.accuracy_expected:
-            self.accuracy_expected[k] = [
-                v / min_acc for v in self.accuracy_expected[k]
-            ]
+            self.accuracy_expected[k] = [v / min_acc for v in self.accuracy_expected[k]]
 
         min_runtime = 1.0
         self.runtime_expected = {
@@ -228,9 +226,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         ]
 
         self.plot_points = len(self.solvers) * [
-            np.array(
-                [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.0]
-            )
+            np.array([0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.0])
         ]
 
         self._dir = TemporaryDirectory()
@@ -300,9 +296,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that create_plot_and_df returns the correct plot.
         """
         output_plot_path = self.temp_result + "/pp_offline_plot.html"
-        expected_plot_path = (
-            self.expected_results_dir + "/pp_offline_plot.html"
-        )
+        expected_plot_path = self.expected_results_dir + "/pp_offline_plot.html"
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
 
@@ -321,9 +315,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         Test that create_df creates the expected dataframe to be used
         to build the dash plots.
         """
-        expected_df = read_csv(
-            self.expected_results_dir + "/offline_pp_plot_data.csv"
-        )
+        expected_df = read_csv(self.expected_results_dir + "/offline_pp_plot_data.csv")
         output_df = performance_profiler.create_df(
             self.solvers, self.solvers, self.solver_values, self.plot_points
         )
@@ -361,9 +353,7 @@ class PerformanceProfilerTests(unittest.TestCase):
             "dfols [dfo]": [3.5, 5.8, 2.0, 10.0, 7.0, 45.9, 25.4, 800.0],
         }
 
-        step_vals, max_val = performance_profiler.compute_step_values(
-            profile_plot
-        )
+        step_vals, max_val = performance_profiler.compute_step_values(profile_plot)
 
         assert max_val == expec_max
         for arr, exp_arr in zip(step_vals, expec_step_vals):
@@ -389,9 +379,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         assert np.array_equal(
             expected_dict["solver_values"], output_dict["solver_values"]
         )
-        assert np.array_equal(
-            expected_dict["plot_points"], output_dict["plot_points"]
-        )
+        assert np.array_equal(expected_dict["plot_points"], output_dict["plot_points"])
 
     def test_adjust_values_to_plot_failures(self):
         """
@@ -516,9 +504,7 @@ class DashPerfProfileTests(unittest.TestCase):
         """
         selected_solvers = self.data.columns
         output = self.perf_profile.prepare_data(selected_solvers)
-        expected_output = read_csv(
-            self.expected_results_dir + "/dash_pp_plot_data.csv"
-        )
+        expected_output = read_csv(self.expected_results_dir + "/dash_pp_plot_data.csv")
         assert output.equals(expected_output)
 
 

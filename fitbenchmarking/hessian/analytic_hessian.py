@@ -25,8 +25,7 @@ class Analytic(Hessian):
         super().__init__(problem, jacobian)
         if not callable(self.problem.hessian):
             raise NoHessianError(
-                "Problem set selected does not currently "
-                "support analytic Hessians"
+                "Problem set selected does not currently support analytic Hessians"
             )
 
     def eval(self, params, **kwargs):

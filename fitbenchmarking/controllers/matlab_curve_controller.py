@@ -63,9 +63,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         else:
             self.eng.workspace["e_data"] = matlab.double([])
 
-        eval_path = os.path.join(
-            os.path.dirname(__file__), "matlab_curve_controller"
-        )
+        eval_path = os.path.join(os.path.dirname(__file__), "matlab_curve_controller")
         self.eng.addpath(eval_path)
 
         if self.value_ranges is not None:
@@ -100,8 +98,7 @@ class MatlabCurveController(MatlabMixin, Controller):
         Run problem with Matlab
         """
         self.eng.evalc(
-            "[fitobj, gof, output] = fit([x_data', y_data'],"
-            "zeros(size(x_data))', ft);"
+            "[fitobj, gof, output] = fit([x_data', y_data'],zeros(size(x_data))', ft);"
         )
         self._status = int(self.eng.workspace["output"]["exitflag"])
 
@@ -117,6 +114,4 @@ class MatlabCurveController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = self.eng.coeffvalues(self.eng.workspace["fitobj"])[
-            0
-        ]
+        self.final_params = self.eng.coeffvalues(self.eng.workspace["fitobj"])[0]

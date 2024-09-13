@@ -24,8 +24,7 @@ def get_printable_table(class_name: str, class_info: dict) -> str:
 
     rows = [
         header_separator,
-        f"| {class_name}"
-        f"{' ' * (max_key + max_value - len(class_name) + 4)}|",
+        f"| {class_name}{' ' * (max_key + max_value - len(class_name) + 4)}|",
         header_separator,
     ]
 
