@@ -2,6 +2,7 @@
 Implements the base Parser as a Context Manager.
 """
 
+import contextlib
 from abc import ABCMeta, abstractmethod
 
 
@@ -51,10 +52,8 @@ class Parser:
                           traceback.
         :type traceback: traceback
         """
-        try:
+        with contextlib.suppress(AttributeError):
             self.file.close()
-        except AttributeError:
-            pass
 
     @abstractmethod
     def parse(self):

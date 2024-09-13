@@ -76,19 +76,14 @@ def nist_jacobian_definition(jacobian, param_names):
 
     new_param_name = "params"
     for i, name in enumerate(param_names):
-        jacobian_format = jacobian_format.replace(
-            name, f"{new_param_name}[{i}]"
-        )
+        jacobian_format = jacobian_format.replace(name, f"{new_param_name}[{i}]")
 
     # Sanitizing of jacobian_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
     local_dict = {}
     global_dict = {"__builtins__": {}, "np": np}
     exec(
-        "def jacobian_function(x, "
-        + new_param_name
-        + "): return "
-        + jacobian_format,
+        "def jacobian_function(x, " + new_param_name + "): return " + jacobian_format,
         global_dict,
         local_dict,
     )
@@ -144,10 +139,7 @@ def nist_hessian_definition(hessian, param_names):
     local_dict = {}
     global_dict = {"__builtins__": {}, "np": np}
     exec(
-        "def hessian_function(x, "
-        + new_param_name
-        + "): return "
-        + hessian_format,
+        "def hessian_function(x, " + new_param_name + "): return " + hessian_format,
         global_dict,
         local_dict,
     )
@@ -297,8 +289,4 @@ def is_safe(func_str):
         pass
 
     # Only remaining acceptable strings are variables
-    if func_str[0].isalpha() and func_str.isalnum():
-        return True
-
-    # Unparsed output remains
-    return False
+    return func_str[0].isalpha() and func_str.isalnum()

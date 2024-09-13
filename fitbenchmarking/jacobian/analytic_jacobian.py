@@ -21,8 +21,7 @@ class Analytic(Jacobian):
         super().__init__(problem)
         if not callable(self.problem.jacobian):
             raise NoJacobianError(
-                "Problem set selected does not currently "
-                "support analytic Jacobians"
+                "Problem set selected does not currently support analytic Jacobians"
             )
 
     def eval(self, params, **kwargs):

@@ -175,13 +175,10 @@ class MantidController(Controller):
                 function_def += f"; constraints=({constraints})"
             elif self.value_ranges is not None:
                 if ";" not in function_def:
-                    self._param_names = [
-                        "f0." + name for name in self._param_names
-                    ]
+                    self._param_names = ["f0." + name for name in self._param_names]
 
                 constraints = ",".join(
-                    f"{self.value_ranges[i][0]} < {p} <"
-                    f"{self.value_ranges[i][1]}"
+                    f"{self.value_ranges[i][0]} < {p} <{self.value_ranges[i][1]}"
                     for i, p in enumerate(self._param_names)
                 )
                 function_def += f"; constraints=({constraints})"
@@ -315,24 +312,17 @@ class MantidController(Controller):
 
         if self.minimizer == "FABADA":
             self.params_pdfs = {}
-            n_chains = (
-                self._mantid_results.ConvergedChain.getNumberHistograms()
-            )
+            n_chains = self._mantid_results.ConvergedChain.getNumberHistograms()
             for i in range(0, n_chains - 1):
                 self.params_pdfs[self._param_names[i]] = (
                     self._mantid_results.ConvergedChain.readY(i).tolist()
                 )
 
         if not self._multi_fit:
-            self.final_params = [
-                final_params_dict[key] for key in self._param_names
-            ]
+            self.final_params = [final_params_dict[key] for key in self._param_names]
         else:
             self.final_params = [
-                [
-                    final_params_dict[f"f{i}.{name}"]
-                    for name in self._param_names
-                ]
+                [final_params_dict[f"f{i}.{name}"] for name in self._param_names]
                 for i in range(self._multi_fit)
             ]
 

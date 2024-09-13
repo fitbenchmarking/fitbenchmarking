@@ -34,9 +34,7 @@ class AlgorithmCheckDocs(Directive):
         inp_key = self.options["key"]
 
         # import controller factory
-        factory = import_module(
-            "fitbenchmarking.controllers.controller_factory"
-        )
+        factory = import_module("fitbenchmarking.controllers.controller_factory")
 
         # set relative path to controllers directory
         cwd = os.path.dirname(__file__)
@@ -53,9 +51,7 @@ class AlgorithmCheckDocs(Directive):
                 "matlab_mixin.py",
             ]:
                 continue
-            software_name = os.path.splitext(filename)[0].replace(
-                "_controller", ""
-            )
+            software_name = os.path.splitext(filename)[0].replace("_controller", "")
 
             controller_class = factory.ControllerFactory.create_controller(
                 software_name

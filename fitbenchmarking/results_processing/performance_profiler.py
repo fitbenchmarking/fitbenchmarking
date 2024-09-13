@@ -70,9 +70,7 @@ def prepare_profile_data(results):
                     minimizers[i] = key
                 pp_data["acc"][minimizers[i]].append(result.norm_acc)
                 pp_data["runtime"][minimizers[i]].append(result.norm_runtime)
-                pp_data["emissions"][minimizers[i]].append(
-                    result.norm_emissions
-                )
+                pp_data["emissions"][minimizers[i]].append(result.norm_emissions)
 
     for key in to_remove:
         for pp in pp_data.values():
@@ -202,9 +200,7 @@ def update_fig(
         )
     else:
         x_limits = (1, linear_upper_limit)
-        fig.update_xaxes(
-            range=x_limits, tickvals=x_ticks, ticktext=x_ticks_labels
-        )
+        fig.update_xaxes(range=x_limits, tickvals=x_ticks, ticktext=x_ticks_labels)
 
     # Update appearance of graph
     graph_title = f"Performance profile - {name}"
@@ -327,9 +323,7 @@ def compute_linestyle_combinations() -> "list[tuple[str, str]]":
     return avail_styles
 
 
-def create_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> go.Figure:
+def create_plot(step_values: "list[np.ndarray]", solvers: "list[str]") -> go.Figure:
     """
     Function to draw plot in plotly.
 
@@ -344,9 +338,7 @@ def create_plot(
 
     fig = go.Figure()
 
-    data_to_plot = adjust_values_to_plot(
-        step_values=step_values, solvers=solvers
-    )
+    data_to_plot = adjust_values_to_plot(step_values=step_values, solvers=solvers)
 
     avail_styles = compute_linestyle_combinations()
 
@@ -507,9 +499,7 @@ class DashPerfProfile:
 
         # If min found is inf, set min to 1 (to avoid getting nan
         # when dividing by min)
-        df_chosen_solvers["min"].replace(
-            to_replace=np.inf, value=1.0, inplace=True
-        )
+        df_chosen_solvers["min"].replace(to_replace=np.inf, value=1.0, inplace=True)
 
         # Divide values by min (thus recalculating the profile)
         df_chosen_solvers = df_chosen_solvers.divide(
@@ -521,9 +511,7 @@ class DashPerfProfile:
 
         step_values, _ = compute_step_values(new_dict)
 
-        data_to_plot = adjust_values_to_plot(
-            step_values=step_values, solvers=solvers
-        )
+        data_to_plot = adjust_values_to_plot(step_values=step_values, solvers=solvers)
 
         output_df = create_df(
             data_to_plot["solvers"],

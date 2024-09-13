@@ -103,8 +103,7 @@ def _create_summary_page(
     else:
         best_plot_available = [False] * len(results)
         fig_start = (
-            "Re-run with make_plots set to yes in the "
-            "ini file to generate plots."
+            "Re-run with make_plots set to yes in the ini file to generate plots."
         )
         best_fits = [fig_start] * len(results)
 
@@ -159,11 +158,10 @@ def _get_figure_paths(result):
     :return: the paths to the required figures
     :rtype: tuple(str, str)
     """
-
-    figures_dir = "figures"
-
-    output = []
-    for link in [result.figure_link, result.start_figure_link]:
-        output.append(os.path.join(figures_dir, link) if link else "")
-
-    return output[0], output[1]
+    return tuple(
+        os.path.join("figures", link) if link else ""
+        for link in [
+            result.figure_link,
+            result.start_figure_link,
+        ]
+    )

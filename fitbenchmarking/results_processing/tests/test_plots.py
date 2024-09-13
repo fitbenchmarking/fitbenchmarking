@@ -138,9 +138,7 @@ class PlotTests(unittest.TestCase):
         Test that initial plot creates a file and errorbars are
         added to the plot.
         """
-        file_name = self.plot.plot_initial_guess(
-            self.df[("Fake_Test_Data", "prob_1")]
-        )
+        file_name = self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
 
         self.assertEqual(file_name, "start_for_prob_1.html")
         path = os.path.join(self.figures_dir, file_name)
@@ -159,9 +157,7 @@ class PlotTests(unittest.TestCase):
         Test that plotly_fit creates a file and errorbars are
         added to the plot.
         """
-        file_names = self.plot.plotly_fit(
-            self.df[("Fake_Test_Data", "prob_1")]
-        )
+        file_names = self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
 
         for m, s, j in zip(
             ["m10", "m11", "m01", "m00", "m10", "m11", "m01", "m00"],
@@ -197,7 +193,7 @@ class PlotTests(unittest.TestCase):
         file_name = self.plot.plot_posteriors(result)
 
         self.assertEqual(
-            file_name, "m10_[s1]_jj0_posterior_" "pdf_plot_for_cf1_prob_1.html"
+            file_name, "m10_[s1]_jj0_posterior_pdf_plot_for_cf1_prob_1.html"
         )
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))

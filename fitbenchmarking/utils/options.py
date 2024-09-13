@@ -548,17 +548,13 @@ class Options:
 
         fitting = config["FITTING"]
 
-        self.num_runs = self.read_value(
-            fitting.getint, "num_runs", additional_options
-        )
+        self.num_runs = self.read_value(fitting.getint, "num_runs", additional_options)
 
         self.algorithm_type = self.read_value(
             fitting.getlist, "algorithm_type", additional_options
         )
 
-        self.software = self.read_value(
-            fitting.getlist, "software", additional_options
-        )
+        self.software = self.read_value(fitting.getlist, "software", additional_options)
 
         self.jac_method = self.read_value(
             fitting.getlist, "jac_method", additional_options
@@ -616,9 +612,7 @@ class Options:
         if "pbar" in additional_options:
             self.pbar = additional_options["pbar"]
         else:
-            self.pbar = self.read_value(
-                output.getboolean, "pbar", additional_options
-            )
+            self.pbar = self.read_value(output.getboolean, "pbar", additional_options)
 
         self.colour_map = self.read_value(
             output.getstr, "colour_map", additional_options
@@ -645,9 +639,7 @@ class Options:
             output.getstr, "checkpoint_filename", additional_options
         )
 
-        self.run_name = self.read_value(
-            output.getstr, "run_name", additional_options
-        )
+        self.run_name = self.read_value(output.getstr, "run_name", additional_options)
 
         runtime = config["RUNTIME"]
         self.runtime_metric = self.read_value(
@@ -655,9 +647,7 @@ class Options:
         )
 
         dash_settings = config["DASH"]
-        self.port = self.read_value(
-            dash_settings.getint, "port", additional_options
-        )
+        self.port = self.read_value(dash_settings.getint, "port", additional_options)
 
         logging = config["LOGGING"]
 
@@ -665,13 +655,9 @@ class Options:
             logging.getboolean, "append", additional_options
         )
 
-        self.log_file = self.read_value(
-            logging.getstr, "file_name", additional_options
-        )
+        self.log_file = self.read_value(logging.getstr, "file_name", additional_options)
 
-        self.log_level = self.read_value(
-            logging.getstr, "level", additional_options
-        )
+        self.log_level = self.read_value(logging.getstr, "level", additional_options)
 
         self.external_output = self.read_value(
             logging.getstr, "external_output", additional_options
@@ -703,9 +689,7 @@ class Options:
                 value = func(option, fallback=self.DEFAULTS[section][option])
 
         except ValueError as e:
-            self.error_message.append(
-                f"Incorrect options type for {option}.\n{e}"
-            )
+            self.error_message.append(f"Incorrect options type for {option}.\n{e}")
             value = None
 
         if option in self.VALID[section]:

@@ -8,6 +8,8 @@ try:
 except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
+import contextlib
+
 import numpy as np
 
 from fitbenchmarking.utils.debug import get_printable_table
@@ -141,9 +143,7 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.function is None:
-            raise FittingProblemError(
-                "Cannot call function before setting " "function."
-            )
+            raise FittingProblemError("Cannot call function before setting function.")
 
         self.timer.check_elapsed_time()
 
@@ -202,10 +202,8 @@ class FittingProblem:
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             type_match = isinstance(attr, attr_type)
-            try:
+            with contextlib.suppress(TypeError, IndexError):
                 type_match = type_match or isinstance(attr[0], attr_type)
-            except (TypeError, IndexError):
-                pass
             if not type_match:
                 raise FittingProblemError(
                     f'Attribute "{attr_name}" is not the expected type.'
@@ -266,9 +264,7 @@ class FittingProblem:
                             :code:`{p1_name: [p1_min, p1_max], ...}`
         :type value_ranges: dict
         """
-        lower_param_names = [
-            name.lower() for name in self.starting_values[0].keys()
-        ]
+        lower_param_names = [name.lower() for name in self.starting_values[0]]
         if not all(name in lower_param_names for name in value_ranges):
             raise IncorrectBoundsError(
                 "One or more of the parameter names in "
@@ -280,9 +276,7 @@ class FittingProblem:
         self.value_ranges = []
         for name in lower_param_names:
             if name in value_ranges:
-                self.value_ranges.append(
-                    (value_ranges[name][0], value_ranges[name][1])
-                )
+                self.value_ranges.append((value_ranges[name][0], value_ranges[name][1]))
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 

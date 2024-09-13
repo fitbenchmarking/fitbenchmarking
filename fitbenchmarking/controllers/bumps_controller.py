@@ -52,9 +52,7 @@ class BumpsController(Controller):
         """
         super().__init__(cost_func)
         # Need unique strings that are valid python vars
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.problem.param_names)]
         self.support_for_bounds = True
         self._func_wrapper = None
         self._fit_problem = None
@@ -98,9 +96,7 @@ class BumpsController(Controller):
             exec(wrapper, exec_dict)
             model = exec_dict["fitFunction"]
             zero_y = np.zeros(len(self.data_y))
-            func_wrapper = Curve(
-                fn=model, x=self.data_x, y=zero_y, **param_dict
-            )
+            func_wrapper = Curve(fn=model, x=self.data_x, y=zero_y, **param_dict)
 
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
@@ -119,10 +115,9 @@ class BumpsController(Controller):
 
         # Determine the order of the parameters in `self.fit_problem` as this
         # could differ from the ordering of parameters in `self._param_names`
-        param_order = []
-        for i in range(len(self._param_names)):
-            param_order.append(str(self._fit_problem._parameters[i]))
-        self.fit_order = param_order
+        self.fit_order = [
+            str(self._fit_problem._parameters[i]) for i in range(len(self._param_names))
+        ]
 
         if self.minimizer == "lm-bumps":
             self._minimizer = "lm"
@@ -184,16 +179,12 @@ class BumpsController(Controller):
             self.params_pdfs = {}
             mcmc_draw = self._bumps_result.state.draw()
             if self.fit_order != self._param_names:
-                for name1, name2 in zip(
-                    self.problem.param_names, self._param_names
-                ):
+                for name1, name2 in zip(self.problem.param_names, self._param_names):
                     ind = self.fit_order.index(name2)
                     self.params_pdfs[name1] = mcmc_draw.points[:, ind].tolist()
             else:
                 self.params_pdfs = {
-                    self.problem.param_names[i]: mcmc_draw.points[
-                        :, i
-                    ].tolist()
+                    self.problem.param_names[i]: mcmc_draw.points[:, i].tolist()
                     for i in range(len(self._param_names))
                 }
 

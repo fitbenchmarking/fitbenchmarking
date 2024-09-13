@@ -117,10 +117,7 @@ class LocalMinTable(Table):
         norm_r = np.linalg.norm(res)
         norm_min_test = np.linalg.norm(min_test)
 
-        if result.error_flag != 5:
-            norm_rel = norm_min_test / norm_r
-        else:
-            norm_rel = np.inf
+        norm_rel = norm_min_test / norm_r if result.error_flag != 5 else np.inf
 
         local_min = any(
             [
@@ -157,18 +154,14 @@ class LocalMinTable(Table):
         :rtype: tuple[list[str], list[str]]
         """
         rgba = cmap(
-            [
-                cmap_range[0] if local_min else cmap_range[1]
-                for local_min in vals
-            ]
+            [cmap_range[0] if local_min else cmap_range[1] for local_min in vals]
         )
         hex_strs = [
             clrs.to_hex("whitesmoke") if v is None else clrs.rgb2hex(colour)
             for colour, v in zip(rgba, vals)
         ]
         text_str = [
-            background_to_text(colour[:3], CONTRAST_RATIO_AAA)
-            for colour in rgba
+            background_to_text(colour[:3], CONTRAST_RATIO_AAA) for colour in rgba
         ]
         return hex_strs, text_str
 

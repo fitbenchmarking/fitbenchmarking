@@ -189,17 +189,12 @@ def load_table(table):
     try:
         module = import_module("." + module_name, __package__)
     except ImportError as e:
-        raise UnknownTableError(
-            f"Given table option {table} " f"was not found: {e}"
-        ) from e
+        raise UnknownTableError(f"Given table option {table} was not found: {e}") from e
 
     classes = getmembers(
         module,
         lambda m: (
-            isclass(m)
-            and not isabstract(m)
-            and issubclass(m, Table)
-            and m is not Table
+            isclass(m) and not isabstract(m) and issubclass(m, Table) and m is not Table
         ),
     )
     return classes[0][1]

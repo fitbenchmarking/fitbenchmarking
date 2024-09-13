@@ -43,9 +43,7 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 
 @write_file
-def save_results(
-    options, results, group_name, failed_problems, unselected_minimizers
-):
+def save_results(options, results, group_name, failed_problems, unselected_minimizers):
     """
     Create all results files and store them.
     Result files are plots, support pages, tables, and index pages.
@@ -74,16 +72,12 @@ def save_results(
 
     best_results, results_dict = preprocess_data(results)
 
-    pp_locations, pp_dfs = performance_profiler.profile(
-        results_dict, fig_dir, options
-    )
+    pp_locations, pp_dfs = performance_profiler.profile(results_dict, fig_dir, options)
 
     if options.make_plots:
         create_plots(options, results_dict, best_results, fig_dir)
 
-    fitting_report.create(
-        options=options, results=results, support_pages_dir=supp_dir
-    )
+    fitting_report.create(options=options, results=results, support_pages_dir=supp_dir)
     problem_summary_page.create(
         options=options,
         results=results_dict,
@@ -191,9 +185,7 @@ def preprocess_data(results: "list[FittingResult]"):
 
     # Build the sorted results dictionary
     sorted_results: Dict[str, Dict[str, List[Optional[FittingResult]]]] = {
-        r.strip(":"): {
-            k: [None for _ in category] for k, category in columns.items()
-        }
+        r.strip(":"): {k: [None for _ in category] for k, category in columns.items()}
         for r in rows
     }
 
@@ -207,14 +199,10 @@ def preprocess_data(results: "list[FittingResult]"):
         # Fix up cells where error flag = 4
         if r.error_flag == 4:
             match_rows = _find_matching_tags(result_tags["row"], rows)
-            match_cats = _find_matching_tags(
-                result_tags["cat"], columns.keys()
-            )
+            match_cats = _find_matching_tags(result_tags["cat"], columns.keys())
             for row in match_rows:
                 for cat in match_cats:
-                    match_cols = _find_matching_tags(
-                        result_tags["col"], columns[cat]
-                    )
+                    match_cols = _find_matching_tags(result_tags["col"], columns[cat])
                     for col in match_cols:
                         col = columns[cat][col]
                         sorted_results[row][cat][col] = r
@@ -412,9 +400,9 @@ def create_plots(options, results, best_results, figures_dir):
                 plot_path = plot.best_filename(best_dict[cf])
                 best_dict[cf].figure_link = plot_path
             else:
-                best_dict[cf].figure_error = (
-                    "Minimizer failed to produce " "any parameters"
-                )
+                best_dict[
+                    cf
+                ].figure_error = "Minimizer failed to produce any parameters"
             best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
@@ -425,13 +413,9 @@ def create_plots(options, results, best_results, figures_dir):
                 continue
             for result in cat_results:
                 if result.params is not None:
-                    result.figure_link = plot_paths[
-                        result.sanitised_min_name(True)
-                    ]
+                    result.figure_link = plot_paths[result.sanitised_min_name(True)]
                 else:
-                    result.figure_error = (
-                        "Minimizer failed to produce " "any parameters"
-                    )
+                    result.figure_error = "Minimizer failed to produce any parameters"
                 result.start_figure_link = initial_guess_path[cf]
 
         # For each result, if it succeeded and produced posterior pdf estimates
@@ -516,8 +500,7 @@ def create_index_page(
     css = get_css(options, options.results_dir)
     template = env.get_template("index_page.html")
     group_links = [
-        os.path.join(d, f"{g}_index.html")
-        for g, d in zip(groups, result_directories)
+        os.path.join(d, f"{g}_index.html") for g, d in zip(groups, result_directories)
     ]
     output_file = os.path.join(options.results_dir, "results_index.html")
 

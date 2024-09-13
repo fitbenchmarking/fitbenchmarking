@@ -184,9 +184,7 @@ class GSLController(Controller):
             )
             self._solver = getattr(multifit_nlin, self.minimizer)(mysys, n, p)
         elif self.minimizer in self._function_methods_no_jac:
-            mysys = multiminimize.gsl_multimin_function(
-                self._chi_squared, data, p
-            )
+            mysys = multiminimize.gsl_multimin_function(self._chi_squared, data, p)
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         elif self.minimizer in self._function_methods_with_jac:
             mysys = multiminimize.gsl_multimin_function_fdf(
@@ -198,9 +196,7 @@ class GSLController(Controller):
             )
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         else:
-            raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for GSL"
-            )
+            raise UnknownMinimizerError(f"No {self.minimizer} minimizer for GSL")
 
         # Set up initialization parameters
         #
@@ -231,17 +227,13 @@ class GSLController(Controller):
             if self.minimizer in self._residual_methods:
                 x = self._solver.getx()
                 dx = self._solver.getdx()
-                status = multifit_nlin.test_delta(
-                    dx, x, self._abserror, self._relerror
-                )
+                status = multifit_nlin.test_delta(dx, x, self._abserror, self._relerror)
             elif self.minimizer in self._function_methods_no_jac:
                 simplex_size = self._solver.size()
                 status = multiminimize.test_size(simplex_size, self._abserror)
             else:  # must be in function_methods_with_jac
                 gradient = self._solver.gradient()
-                status = multiminimize.test_gradient(
-                    gradient, self._gradient_tol
-                )
+                status = multiminimize.test_gradient(gradient, self._gradient_tol)
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
                 break

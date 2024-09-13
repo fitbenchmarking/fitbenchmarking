@@ -34,8 +34,7 @@ class CreateDirsTests(unittest.TestCase):
 
             with open(filepath, "w+", encoding="utf-8") as f:
                 f.write(
-                    "This is a mock data file to check that finding files"
-                    "is correct"
+                    "This is a mock data file to check that finding filesis correct"
                 )
 
         self.expected = sorted(expected)
@@ -67,9 +66,7 @@ class CreateDirsTests(unittest.TestCase):
         expected_css_dir = os.path.join("..", "css")
         expected_main_css = os.path.join(expected_css_dir, "main_style.css")
         expected_table_css = os.path.join(expected_css_dir, "table_style.css")
-        expected_custom_css = os.path.join(
-            expected_css_dir, "custom_style.css"
-        )
+        expected_custom_css = os.path.join(expected_css_dir, "custom_style.css")
         css = get_css(options, test_dir)
 
         self.assertEqual(css["main"], expected_main_css)

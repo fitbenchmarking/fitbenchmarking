@@ -48,9 +48,7 @@ class CreateTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, "support_pages")
             self.fig_dir = os.path.join(self.supp_dir, "figures")
         os.makedirs(self.fig_dir)
-        results, self.options = load_mock_results(
-            {"results_dir": self.temp_dir}
-        )
+        results, self.options = load_mock_results({"results_dir": self.temp_dir})
         self.best_results, self.results = preprocess_data(results)
 
     def tearDown(self) -> None:
@@ -72,9 +70,7 @@ class CreateTests(TestCase):
             options=self.options,
         )
         for k in self.results:
-            expected_path = os.path.join(
-                self.fig_dir, f"summary_plot_for_{k}.html"
-            )
+            expected_path = os.path.join(self.fig_dir, f"summary_plot_for_{k}.html")
             self.assertTrue(os.path.exists(expected_path))
 
     def test_create_no_plots(self):
@@ -89,10 +85,8 @@ class CreateTests(TestCase):
             figures_dir=self.fig_dir,
             options=self.options,
         )
-        for k in self.results.keys():
-            expected_path = os.path.join(
-                self.fig_dir, f"summary_plot_for_{k}.png"
-            )
+        for k in self.results:
+            expected_path = os.path.join(self.fig_dir, f"summary_plot_for_{k}.png")
             self.assertFalse(os.path.exists(expected_path))
 
     def test_create_all_summary_pages(self):
@@ -109,9 +103,7 @@ class CreateTests(TestCase):
         )
         for v in self.best_results.values():
             example_result = list(v.values())[0]
-            self.assertTrue(
-                os.path.exists(example_result.problem_summary_page_link)
-            )
+            self.assertTrue(os.path.exists(example_result.problem_summary_page_link))
 
 
 class CreateSummaryPageTests(TestCase):
@@ -128,17 +120,13 @@ class CreateSummaryPageTests(TestCase):
             self.supp_dir = os.path.join(self.temp_dir, "support_pages")
 
         os.makedirs(self.supp_dir)
-        results, self.options = load_mock_results(
-            {"results_dir": self.temp_dir}
-        )
+        results, self.options = load_mock_results({"results_dir": self.temp_dir})
 
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
         self.results = results[self.prob_name]
         self.best_results = best_results[self.prob_name]
-        cat_results = [
-            (cf, r, "Some text") for cf, r in self.best_results.items()
-        ]
+        cat_results = [(cf, r, "Some text") for cf, r in self.best_results.items()]
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
             summary_plot_path="plot_path",
@@ -156,9 +144,7 @@ class CreateSummaryPageTests(TestCase):
         """
         Check that a summary page is created for a problem set.
         """
-        expected_path = os.path.join(
-            self.supp_dir, f"{self.prob_name}_summary.html"
-        )
+        expected_path = os.path.join(self.supp_dir, f"{self.prob_name}_summary.html")
         self.assertTrue(os.path.exists(expected_path))
 
     def test_set_link_attribute(self):
@@ -185,9 +171,7 @@ class GetFigurePathsTests(TestCase):
         """
         self.result.figure_link = "some_link"
         self.result.start_figure_link = "other_link"
-        figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result
-        )
+        figure_link, start_link = problem_summary_page._get_figure_paths(self.result)
         self.assertEqual(figure_link, os.path.join("figures", "some_link"))
         self.assertEqual(start_link, os.path.join("figures", "other_link"))
 
@@ -197,9 +181,7 @@ class GetFigurePathsTests(TestCase):
         """
         self.result.figure_link = ""
         self.result.start_figure_link = ""
-        figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result
-        )
+        figure_link, start_link = problem_summary_page._get_figure_paths(self.result)
         self.assertEqual(figure_link, "")
         self.assertEqual(start_link, "")
 

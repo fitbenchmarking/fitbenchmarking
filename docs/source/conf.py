@@ -1,4 +1,3 @@
-#
 # FitBenchmarking documentation build configuration file, created by
 # sphinx-quickstart on Wed Sep 11 09:17:28 2019.
 #
