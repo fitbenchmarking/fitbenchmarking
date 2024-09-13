@@ -129,9 +129,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         test_path = os.path.dirname(os.path.realpath(__file__))
         self.results_dir = os.path.join(test_path, "fitbenchmarking_results")
-        self.options = Options(
-            additional_options={"results_dir": self.results_dir}
-        )
+        self.options = Options(additional_options={"results_dir": self.results_dir})
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -147,9 +145,7 @@ class CreateDirectoriesTests(unittest.TestCase):
         group_name = "test_group"
         expected_results_dir = self.results_dir
         expected_group_dir = os.path.join(expected_results_dir, group_name)
-        expected_support_dir = os.path.join(
-            expected_group_dir, "support_pages"
-        )
+        expected_support_dir = os.path.join(expected_group_dir, "support_pages")
         expected_figures_dir = os.path.join(expected_support_dir, "figures")
 
         group_dir, support_dir, figures_dir = create_directories(
@@ -213,9 +209,7 @@ class CreatePlotsTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
 
-            results, self.options = load_mock_results(
-                {"results_dir": self.results_dir}
-            )
+            results, self.options = load_mock_results({"results_dir": self.results_dir})
             self.best_results, self.results = preprocess_data(results)
 
     @mock.patch("fitbenchmarking.results_processing.plots.Plot")
@@ -237,17 +231,13 @@ class CreatePlotsTests(unittest.TestCase):
             "m00_[s0]_jj1": "plotly_fit9",
         }
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
+        plot_instance.plot_initial_guess.return_value = expected_plot_initial_guess
         plot_instance.plot_best.return_value = expected_plot_best
         plot_instance.plotly_fit.return_value = expected_plotly_fit
 
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
-        create_plots(
-            self.options, self.results, self.best_results, self.results_dir
-        )
+        create_plots(self.options, self.results, self.best_results, self.results_dir)
         for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
@@ -272,8 +262,7 @@ class CreatePlotsTests(unittest.TestCase):
                 )
                 self.assertTrue(
                     all(
-                        r.figure_link
-                        == expected_plotly_fit[r.sanitised_min_name(True)]
+                        r.figure_link == expected_plotly_fit[r.sanitised_min_name(True)]
                         for r in results
                         if not r.is_best_fit
                     )
@@ -296,14 +285,10 @@ class CreatePlotsTests(unittest.TestCase):
 
         expected_plot_initial_guess = "initial_guess"
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
+        plot_instance.plot_initial_guess.return_value = expected_plot_initial_guess
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
-        create_plots(
-            self.options, self.results, self.best_results, self.results_dir
-        )
+        create_plots(self.options, self.results, self.best_results, self.results_dir)
 
         for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
@@ -326,11 +311,7 @@ class CreatePlotsTests(unittest.TestCase):
                 # Check plot is correctly set in results
                 self.assertEqual(best_in_cat.figure_link, "")
                 self.assertTrue(
-                    all(
-                        r.figure_link == ""
-                        for r in results
-                        if not r.is_best_fit
-                    )
+                    all(r.figure_link == "" for r in results if not r.is_best_fit)
                 )
 
                 # Checks that when no params are given the correct error
@@ -411,9 +392,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
             self.group_dir,
             self.table_descriptions,
         )
-        expected_file = os.path.join(
-            self.group_dir, f"{self.group_name}_index.html"
-        )
+        expected_file = os.path.join(self.group_dir, f"{self.group_name}_index.html")
         self.assertTrue(os.path.isfile(expected_file))
 
 
@@ -428,9 +407,7 @@ class ExtractTagsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
-            results, self.options = load_mock_results(
-                {"results_dir": self.results_dir}
-            )
+            results, self.options = load_mock_results({"results_dir": self.results_dir})
             self.result = results[0]
             self.result.costfun_tag = "cf0"
             self.result.problem_tag = "p0"
@@ -451,9 +428,7 @@ class ExtractTagsTests(unittest.TestCase):
             cat_sorting=["software", "minimizer"],
         )
 
-        self.assertDictEqual(
-            tags, {"row": "cf0:p0", "col": "j0:h0", "cat": "s0:m0"}
-        )
+        self.assertDictEqual(tags, {"row": "cf0:p0", "col": "j0:h0", "cat": "s0:m0"})
 
     def test_correct_tags_error_flag_4(self):
         """
@@ -521,9 +496,7 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
-            results, self.options = load_mock_results(
-                {"results_dir": self.results_dir}
-            )
+            results, self.options = load_mock_results({"results_dir": self.results_dir})
             self.results = results[:5]
             for r, accuracy, runtime in zip(
                 self.results, [2, 1, 5, 3, 4], [5, 4, 1, 2, 3]

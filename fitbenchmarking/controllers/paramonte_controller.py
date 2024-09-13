@@ -53,9 +53,7 @@ class ParamonteController(Controller):
         # overwrite the existing output files just in case they already exist.
         self.pmpd.spec.overwriteRequested = True
         # specify the output file prefixes.
-        self.pmpd.spec.outputFileName = (
-            "./out_" + str(self.problem.name) + "/temp"
-        )
+        self.pmpd.spec.outputFileName = "./out_" + str(self.problem.name) + "/temp"
         # set the output names of the parameters.
         self.pmpd.spec.variableNameList = self.par_names
         self.pmpd.spec.variableNameList = list(param_dict.keys())
@@ -63,12 +61,8 @@ class ParamonteController(Controller):
 
         if self.value_ranges is not None:
             value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
-            value_ranges_lb = [
-                -10e20 if x == -np.inf else x for x in value_ranges_lb
-            ]
-            value_ranges_ub = [
-                10e20 if x == np.inf else x for x in value_ranges_ub
-            ]
+            value_ranges_lb = [-10e20 if x == -np.inf else x for x in value_ranges_lb]
+            value_ranges_ub = [10e20 if x == np.inf else x for x in value_ranges_ub]
             self.pmpd.spec.domainLowerLimitVec = value_ranges_lb
             self.pmpd.spec.domainUpperLimitVec = value_ranges_ub
 

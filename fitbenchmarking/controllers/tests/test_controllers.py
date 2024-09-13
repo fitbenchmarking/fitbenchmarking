@@ -159,18 +159,12 @@ class BaseControllerTests(TestCase):
         assert len(controller.data_e) == len(controller.data_x)
         assert len(controller.data_e) == len(controller.data_y)
 
-        self.assertTrue(
-            all(x in self.problem.data_x for x in controller.data_x)
-        )
-        self.assertTrue(
-            all(y in self.problem.data_y for y in controller.data_y)
-        )
+        self.assertTrue(all(x in self.problem.data_x for x in controller.data_x))
+        self.assertTrue(all(y in self.problem.data_y for y in controller.data_y))
 
         e_is_default = self.problem.data_e is None
         if not e_is_default:
-            self.assertTrue(
-                all(e in self.problem.data_e for e in controller.data_e)
-            )
+            self.assertTrue(all(e in self.problem.data_e for e in controller.data_e))
 
     def test_prepare(self):
         """
@@ -679,9 +673,7 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(
-            self.cost_func.problem, self.cost_func.jacobian
-        )
+        self.hes = ScipyHessian(self.cost_func.problem, self.cost_func.jacobian)
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 
@@ -698,9 +690,7 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(
-            self.cost_func.problem, self.cost_func.jacobian
-        )
+        self.hes = ScipyHessian(self.cost_func.problem, self.cost_func.jacobian)
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
@@ -718,9 +708,7 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(
-            self.cost_func.problem, self.cost_func.jacobian
-        )
+        self.hes = ScipyHessian(self.cost_func.problem, self.cost_func.jacobian)
         self.hes.method = "cs"
         self.cost_func.hessian = self.hes
 
@@ -738,9 +726,7 @@ class ControllerValidateTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
-        self.hes = ScipyHessian(
-            self.cost_func.problem, self.cost_func.jacobian
-        )
+        self.hes = ScipyHessian(self.cost_func.problem, self.cost_func.jacobian)
         self.hes.method = "2-point"
         self.cost_func.hessian = self.hes
 
@@ -904,8 +890,7 @@ class ExternalControllerTests(TestCase):
         self.assertEqual(
             expected,
             actual,
-            "Mantid controller found a different chi squared"
-            " for single fit problem.",
+            "Mantid controller found a different chi squared for single fit problem.",
         )
 
     def test_mantid_multifit_chisquared(self):
@@ -945,8 +930,7 @@ class ExternalControllerTests(TestCase):
         self.assertListEqual(
             expected,
             actual,
-            "Mantid controller found a different chi squared for multi fit"
-            " problem.",
+            "Mantid controller found a different chi squared for multi fit problem.",
         )
 
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
@@ -1177,8 +1161,7 @@ class GlobalOptimizationControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, "all")
 @mark.skipif(
     platform.system() == "Windows",
-    reason="Paramonte doesn't automatically detect MPI"
-    " libraries installed on Windows",
+    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows",
 )
 class BayesianControllerTests(TestCase):
     """
@@ -1217,8 +1200,7 @@ class BayesianControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, "all")
 @mark.skipif(
     platform.system() == "Windows",
-    reason="Paramonte doesn't automatically detect MPI"
-    " libraries installed on Windows",
+    reason="Paramonte doesn't automatically detect MPI libraries installed on Windows",
 )
 class BayesianControllerBoundsTests(TestCase):
     """
@@ -1229,9 +1211,7 @@ class BayesianControllerBoundsTests(TestCase):
         """
         Setup for bounded problem for Bayesian fitting
         """
-        self.cost_func = make_cost_func(
-            "cubic-fba-test-bounds.txt", "loglike_nlls"
-        )
+        self.cost_func = make_cost_func("cubic-fba-test-bounds.txt", "loglike_nlls")
         self.problem = self.cost_func.problem
 
     def check_bounds(self, controller):

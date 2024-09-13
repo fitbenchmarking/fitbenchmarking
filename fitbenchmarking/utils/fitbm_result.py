@@ -93,9 +93,7 @@ class FittingResult:
         self.software = controller.software
         self.minimizer = controller.minimizer
         self.algorithm_type = [
-            k
-            for k, v in controller.algorithm_check.items()
-            if v == self.minimizer
+            k for k, v in controller.algorithm_check.items() if v == self.minimizer
         ]
 
         jac_enabled = self.minimizer in controller.jacobian_enabled_solvers
@@ -122,9 +120,7 @@ class FittingResult:
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
-            self.fin_y = cost_func.problem.eval_model(
-                self.params, x=self.data_x
-            )
+            self.fin_y = cost_func.problem.eval_model(self.params, x=self.data_x)
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(
@@ -140,12 +136,8 @@ class FittingResult:
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
-        self.software_tag: str = (
-            self.software if self.software is not None else ""
-        )
-        self.minimizer_tag: str = (
-            self.minimizer if self.minimizer is not None else ""
-        )
+        self.software_tag: str = self.software if self.software is not None else ""
+        self.minimizer_tag: str = self.minimizer if self.minimizer is not None else ""
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 

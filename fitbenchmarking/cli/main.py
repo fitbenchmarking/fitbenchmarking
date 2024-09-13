@@ -87,9 +87,7 @@ of the Fitbenchmarking docs. """
         "--problem_sets",
         nargs="+",
         default=glob.glob(
-            os.path.join(
-                root, "benchmark_problems", "NIST", "average_difficulty"
-            )
+            os.path.join(root, "benchmark_problems", "NIST", "average_difficulty")
         ),
         help="Paths to directories containing problem sets.",
     )
@@ -113,7 +111,7 @@ of the Fitbenchmarking docs. """
         metavar="NUM_RUNS",
         type=int,
         default=0,
-        help="Set the number of runs to average " "each fit over.",
+        help="Set the number of runs to average each fit over.",
     )
     parser.add_argument(
         "-a",
@@ -122,8 +120,7 @@ of the Fitbenchmarking docs. """
         nargs="+",
         type=str,
         default=[],
-        help="Select what type of algorithm is used within a "
-        "specific software.",
+        help="Select what type of algorithm is used within a specific software.",
     )
     parser.add_argument(
         "-s",
@@ -150,7 +147,7 @@ of the Fitbenchmarking docs. """
         nargs="+",
         type=str,
         default=[],
-        help="Set the cost functions to be used " "for the given data.",
+        help="Set the cost functions to be used for the given data.",
     )
     parser.add_argument(
         "-rt",
@@ -182,14 +179,12 @@ of the Fitbenchmarking docs. """
     group1.add_argument(
         "--make_plots",
         action="store_true",
-        help="Use this option if you have decided to "
-        "create plots during runtime.",
+        help="Use this option if you have decided to create plots during runtime.",
     )
     group1.add_argument(
         "--dont_make_plots",
         action="store_true",
-        help="Use this option if you have decided not to "
-        "create plots during runtime.",
+        help="Use this option if you have decided not to create plots during runtime.",
     )
 
     group2 = parser.add_mutually_exclusive_group()
@@ -235,8 +230,7 @@ of the Fitbenchmarking docs. """
         "--comparison_mode",
         metavar="COMPARISON_MODE",
         default="",
-        help="Select the mode for displaying values in "
-        "the resulting table.",
+        help="Select the mode for displaying values in the resulting table.",
     )
     parser.add_argument(
         "-t",
@@ -245,7 +239,7 @@ of the Fitbenchmarking docs. """
         nargs="+",
         type=str,
         default=[],
-        help="Select the type of table to be produced " "in FitBenchmarking.",
+        help="Select the type of table to be produced in FitBenchmarking.",
     )
     parser.add_argument(
         "-f",
@@ -285,8 +279,7 @@ of the Fitbenchmarking docs. """
         "--external_output",
         metavar="EXTERNAL_OUTPUT",
         default="",
-        help="Select the amount of information displayed "
-        "from third-parties.",
+        help="Select the amount of information displayed from third-parties.",
     )
 
     parser.add_argument(
@@ -301,8 +294,7 @@ of the Fitbenchmarking docs. """
     group4.add_argument(
         "--run_dash",
         action="store_true",
-        help="Use this option if you have decided to "
-        "run dash for interactive plots.",
+        help="Use this option if you have decided to run dash for interactive plots.",
     )
     group4.add_argument(
         "--dont_run_dash",
@@ -371,17 +363,13 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
 
         # generate group label/name used for problem set
         try:
-            with open(
-                os.path.join(data_dir, "META.txt"), encoding="utf-8"
-            ) as f:
+            with open(os.path.join(data_dir, "META.txt"), encoding="utf-8") as f:
                 label = f.readline().strip("\n")
         except OSError:
             label = sub_dir.replace("/", "_")
 
         LOGGER.info("Running the benchmarking on the %s problem set", label)
-        fit = Fit(
-            options=options, data_dir=data_dir, label=label, checkpointer=cp
-        )
+        fit = Fit(options=options, data_dir=data_dir, label=label, checkpointer=cp)
         results, failed_problems, unselected_minimizers = fit.benchmark()
 
         # If a result has error flag 4 then the result contains dummy values,
@@ -459,10 +447,7 @@ def main():
     parser = get_parser()
 
     if len(sys.argv) == 1:
-        print(
-            "Running NIST average_difficulty problem set "
-            "with scipy minimizers \n"
-        )
+        print("Running NIST average_difficulty problem set with scipy minimizers \n")
 
     args = parser.parse_args(sys.argv[1:])
 

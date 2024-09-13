@@ -58,9 +58,7 @@ class FitbenchmarkParser(Parser):
 
         if "plot_scale" in self._entries:
             if self._entries["plot_scale"].lower() in plot_scale_options:
-                self.fitting_problem.plot_scale = self._entries[
-                    "plot_scale"
-                ].lower()
+                self.fitting_problem.plot_scale = self._entries["plot_scale"].lower()
             else:
                 raise ParsingError(
                     "The plot scale should be one of these "
@@ -332,7 +330,7 @@ class FitbenchmarkParser(Parser):
         if self._parsed_jac_func is None:
             return None
 
-        if jac_type not in self._parsed_jac_func[0].keys():
+        if jac_type not in self._parsed_jac_func[0]:
             return None
 
         pf = self._parsed_jac_func[0]
@@ -369,9 +367,7 @@ class FitbenchmarkParser(Parser):
         lhs, rhs = func.strip().split("=", 1)
         name = lhs
         if not re.match(r"^\w+$", name):
-            raise ParsingError(
-                f"Unexpected character in parameter name: {name}"
-            )
+            raise ParsingError(f"Unexpected character in parameter name: {name}")
 
         if rhs[0] in "([":
             value, rem = cls._parse_parens(rhs)
@@ -401,10 +397,7 @@ class FitbenchmarkParser(Parser):
         :rtype: Union[dict, list], str
         """
         count = 0
-        if string[0] == "[":
-            delim = "[]"
-        else:  # '('
-            delim = "()"
+        delim = "[]" if string[0] == "[" else "()"
 
         for i, c in enumerate(string):
             if c == delim[0]:
@@ -582,9 +575,7 @@ def _find_first_line(file_lines: "list[str]") -> int:
     raise ParsingError("Could not find data points")
 
 
-def _get_column_data(
-    file_lines: "list[str]", first_row: int, dim: int
-) -> list:
+def _get_column_data(file_lines: "list[str]", first_row: int, dim: int) -> list:
     """
     Gets the data in the file as a dictionary of x, y and e data.
 

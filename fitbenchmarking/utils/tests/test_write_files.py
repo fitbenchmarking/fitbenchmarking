@@ -49,9 +49,7 @@ class WriteFilesTests(unittest.TestCase):
         """
         Check that an exception is raised when the file path is too large.
         """
-        file_path = os.path.join(
-            self.results_dir, "very_" * 50, "long_filename.txt"
-        )
+        file_path = os.path.join(self.results_dir, "very_" * 50, "long_filename.txt")
         self.assertGreater(len(file_path), CHARACTER_LIMIT)
 
         with self.assertRaises(FilepathTooLongError):
