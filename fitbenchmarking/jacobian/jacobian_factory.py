@@ -28,7 +28,7 @@ def create_jacobian(jac_method):
         module = import_module("." + module_name, __package__)
     except ImportError as e:
         raise NoJacobianError(
-            "Could not find Jacobian class with type as " f"{jac_method}."
+            f"Could not find Jacobian class with type as {jac_method}."
         ) from e
 
     classes = getmembers(

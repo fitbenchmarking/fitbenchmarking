@@ -159,7 +159,7 @@ class NLoptController(Controller):
             self.value_ranges is None or np.any(np.isinf(self.value_ranges))
         ) and self.minimizer in self.bound_minimizers:
             raise MissingBoundsError(
-                f"{self.minimizer} requires finite bounds on all" " parameters"
+                f"{self.minimizer} requires finite bounds on all parameters"
             )
 
         if self.minimizer in self.local_optimizer_minimizers:

@@ -25,7 +25,7 @@ class Checkpoint:
     This class must be finalised to create the checkpoint.
     """
 
-    def __init__(self, options: "Options"):
+    def __init__(self, options: Options):
         """
         Set up a new Checkpoint class
         """
@@ -52,7 +52,7 @@ class Checkpoint:
             self.options.results_dir, self.options.checkpoint_filename
         )
 
-    def add_result(self, result: "FittingResult"):
+    def add_result(self, result: FittingResult):
         """
         Add the result to the checkpoint file.
 
@@ -115,7 +115,7 @@ class Checkpoint:
 
         self.first_result = False
 
-    def _add_problem(self, result: "FittingResult"):
+    def _add_problem(self, result: FittingResult):
         """
         Add a problem to the problem file if it hasn't already been added.
         (assumes problems have unique names)
@@ -152,7 +152,7 @@ class Checkpoint:
             if self.problem_names:
                 f.write(",\n")
             f.write(
-                f'      "{result.name}": {{\n'
+                f"      '{result.name}': {{\n"
                 f"{json.dumps(as_dict, indent=8)[2:-2]}\n      }}"
             )
 

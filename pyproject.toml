@@ -119,11 +119,11 @@ exclude = [
 [tool.ruff.lint]
 select = [
     "E", # pycodestyle
-    "F", # Pyflakes
+    "F", # pyflakes
     "UP", # pyupgrade
     "I", # isort
-    "NPY", # Numpy
-    "PERF", # Perflint
+    "NPY", # numpy
+    "PERF", # perflint
     "LOG", # flake8-logging
     "ICN", # flake8-import-conventions
     "SIM", # flake8-simplify
