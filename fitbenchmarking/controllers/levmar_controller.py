@@ -112,11 +112,11 @@ class LevmarController(Controller):
         will be read from.
         """
 
-        if (
-            self._info[3] == "Stop by small Dp"
-            or self._info[3] == "Stopped by small gradient J^T e"
-            or self._info[3] == "Stopped by small ||e||_2"
-        ):
+        if self._info[3] in [
+            "Stop by small Dp",
+            "Stopped by small gradient J^T e",
+            "Stopped by small ||e||_2",
+        ]:
             self.flag = 0
         elif self._info[3] == "maxit":
             self.flag = 1

@@ -70,8 +70,7 @@ class ParserFactory:
 
             raise NoParserError(
                 f"Could not find parser for {filename}. "
-                "Check the input is correct and try "
-                "again."
+                "Check the input is correct and try again."
             ) from e
 
         def check_name(m):

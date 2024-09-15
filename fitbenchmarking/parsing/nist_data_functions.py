@@ -188,6 +188,8 @@ def format_function_scipy(function):
     return function
 
 
+# Due to the nature of this function it is necessary to be able to return at
+# multiple places
 def is_safe(func_str):
     """
     Verifies that a string is safe to be passed to exec in the context of an

@@ -27,14 +27,14 @@ class FittingResult:
 
     def __init__(
         self,
-        controller: "Controller",
-        accuracy: "float | list[float]" = np.inf,
-        runtimes: "float | list[float]" = np.inf,
-        emissions: "float" = np.inf,
+        controller: Controller,
+        accuracy: float | list[float] = np.inf,
+        runtimes: float | list[float] = np.inf,
+        emissions: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: "Optional[int]" = None,
+        dataset: Optional[int] = None,
     ) -> None:
         """
         Initialise the Fitting Result

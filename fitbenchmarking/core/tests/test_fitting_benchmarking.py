@@ -206,9 +206,7 @@ class PerformFitTests(unittest.TestCase):
                     assert len(runtimes) == self.options.num_runs
                     assert emissions != np.inf
 
-    @patch(
-        "fitbenchmarking.controllers." + "base_controller.Controller.eval_confidence"
-    )
+    @patch("fitbenchmarking.controllers.base_controller.Controller.eval_confidence")
     def test_eval_confidence_branches(self, mock):
         """
         The test checks the eval_confidence branches in
@@ -229,7 +227,7 @@ class PerformFitTests(unittest.TestCase):
         accuracy, _, _ = fit._Fit__perform_fit(controller)
         assert accuracy == np.inf
 
-    @patch("fitbenchmarking.controllers." + "base_controller.Controller.validate")
+    @patch("fitbenchmarking.controllers.base_controller.Controller.validate")
     def test_perform_fit_error_handling(self, mock):
         """
         The test checks ___perform_fit method
@@ -248,10 +246,9 @@ class PerformFitTests(unittest.TestCase):
             assert runtimes == [np.inf] * 5
 
     @patch("timeit.Timer.repeat")
-    @patch("fitbenchmarking.controllers.scipy_controller." + "ScipyController.cleanup")
+    @patch("fitbenchmarking.controllers.scipy_controller.ScipyController.cleanup")
     @patch(
-        "fitbenchmarking.controllers.scipy_controller."
-        + "ScipyController.check_attributes"
+        "fitbenchmarking.controllers.scipy_controller.ScipyController.check_attributes"
     )
     def test_perform_fit_runtime_warning(self, mock1, mock2, mock3):
         """
@@ -280,7 +277,7 @@ class PerformFitTests(unittest.TestCase):
                 in log.output[0]
             )
 
-    @patch("fitbenchmarking.controllers." + "base_controller.Controller.validate")
+    @patch("fitbenchmarking.controllers.base_controller.Controller.validate")
     def test_perform_fit_max_runtime_error(self, mock):
         """
         The test checks ___perform_fit method handles
@@ -299,8 +296,7 @@ class PerformFitTests(unittest.TestCase):
         assert runtimes == [np.inf] * 5
 
     @patch(
-        "fitbenchmarking.controllers."
-        + "base_controller.Controller.check_bounds_respected"
+        "fitbenchmarking.controllers.base_controller.Controller.check_bounds_respected"
     )
     def test_perform_fit_check_bounds_respected(self, mock):
         """
@@ -590,8 +586,7 @@ class MinimizersTests(unittest.TestCase):
         assert all(isinstance(r, FittingResult) for r in results)
 
     @patch(
-        "fitbenchmarking.controllers.scipy_controller"
-        + ".ScipyController.validate_minimizer"
+        "fitbenchmarking.controllers.scipy_controller.ScipyController.validate_minimizer"
     )
     def test_unknown_minimizers_error(self, mock):
         """
@@ -608,8 +603,7 @@ class MinimizersTests(unittest.TestCase):
         assert mock.call_count == 3
 
     @patch(
-        "fitbenchmarking.controllers.scipy_controller"
-        + ".ScipyController.check_minimizer_bounds"
+        "fitbenchmarking.controllers.scipy_controller.ScipyController.check_minimizer_bounds"
     )
     def test_incompatible_minimizers_error_1(self, mock):
         """
@@ -626,8 +620,7 @@ class MinimizersTests(unittest.TestCase):
         assert minimizer_failed == []
 
     @patch(
-        "fitbenchmarking.cost_func.weighted_nlls_cost_func"
-        + ".WeightedNLLSCostFunc.validate_algorithm_type"
+        "fitbenchmarking.cost_func.weighted_nlls_cost_func.WeightedNLLSCostFunc.validate_algorithm_type"
     )
     def test_incompatible_minimizers_error_2(self, mock):
         """
@@ -756,9 +749,7 @@ class CostFunctionTests(unittest.TestCase):
         assert isinstance(mock.call_args_list[0][0][0], NLLSCostFunc)
         assert isinstance(mock.call_args_list[1][0][0], WeightedNLLSCostFunc)
 
-    @patch(
-        "fitbenchmarking.cost_func.nlls_cost_func" + ".NLLSCostFunc.validate_problem"
-    )
+    @patch("fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc.validate_problem")
     @patch(
         f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
         side_effect=mock_loop_over_softwares_func_call,

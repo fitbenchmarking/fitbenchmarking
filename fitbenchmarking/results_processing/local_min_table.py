@@ -228,7 +228,7 @@ class LocalMinTable(Table):
         """
         html = super().get_description()
         html["local_min_mode"] = (
-            '"N/A" in the table indicates that the '
+            "'N/A' in the table indicates that the "
             "cost function does not provide residuals."
         )
 

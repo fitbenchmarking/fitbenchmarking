@@ -95,7 +95,7 @@ class NISTParser(Parser):
                 jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
             raise NoJacobianError(
-                "Could not find data for NIST Jacobian " f"file, {jac_file}"
+                "Could not find data for NIST Jacobian file, {jac_file}"
             ) from e
         jac_str = ""
         for line in jac_lines:
@@ -120,7 +120,7 @@ class NISTParser(Parser):
                 hes_lines = hes_data.readlines()
         except FileNotFoundError as e:
             raise NoHessianError(
-                "Could not find data for NIST Hessian " f"file, {hes_file}"
+                "Could not find data for NIST Hessian file, {hes_file}"
             ) from e
         hes_str = ""
         for line in hes_lines:
