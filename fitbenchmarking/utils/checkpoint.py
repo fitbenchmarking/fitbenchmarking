@@ -9,6 +9,7 @@ import os
 import pickle
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
+from typing import Dict
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -234,9 +235,9 @@ class Checkpoint:
                        dict,
                        dict[str, list[str]]]
         """
-        output: dict[str, list[FittingResult]] = {}
-        unselected_minimizers: dict[str, list[str]] = {}
-        failed_problems: dict[str, list[str]] = {}
+        output: Dict[str, list[FittingResult]] = {}
+        unselected_minimizers: Dict[str, list[str]] = {}
+        failed_problems: Dict[str, list[str]] = {}
 
         for f in [
             self.options.checkpoint_filename,
