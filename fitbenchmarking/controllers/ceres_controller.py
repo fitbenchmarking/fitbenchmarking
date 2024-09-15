@@ -6,13 +6,14 @@ import os
 import sys
 
 import numpy as np
-import PyCeres
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
 pyceres_location = os.environ["PYCERES_LOCATION"]
 sys.path.insert(0, pyceres_location)
+
+import PyCeres  # noqa
 
 
 class CeresCostFunction(PyCeres.CostFunction):
