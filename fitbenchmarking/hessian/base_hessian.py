@@ -1,6 +1,7 @@
 """
 Implements the base class for the Hessian.
 """
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -8,6 +9,7 @@ class Hessian:
     """
     Base class for Hessian.
     """
+
     __metaclass__ = ABCMeta
 
     # Problem formats that are incompatible with certain Hessians
@@ -69,4 +71,4 @@ class Hessian:
         :return: A unique name for this hessian/method combination
         :rtype: str
         """
-        return f'{self.__class__.__name__.lower()} {self.method}'
+        return f"{self.__class__.__name__.lower()} {self.method}"

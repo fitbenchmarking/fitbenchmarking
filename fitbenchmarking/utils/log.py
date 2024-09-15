@@ -2,12 +2,17 @@
 Utility functions to support logging for the fitbenchmarking
 project.
 """
+
 import logging
 import sys
 
 
-def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
-                 append=False, level='INFO'):
+def setup_logger(
+    log_file="./fitbenchmarking.log",
+    name="fitbenchmarking",
+    append=False,
+    level="INFO",
+):
     """
     Define the location and style of the log file.
 
@@ -22,10 +27,10 @@ def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
     :param level: The level of error to print, defaults to 'INFO'
     :type level: str, optional
     """
-    FORMAT = '[%(asctime)s]  %(levelname)s %(filename)s: %(message)s'
+    FORMAT = "[%(asctime)s]  %(levelname)s %(filename)s: %(message)s"
     formatter = logging.Formatter(FORMAT, "%Y-%m-%d %H:%M:%S")
 
-    handler = logging.FileHandler(log_file, mode='a' if append else 'w')
+    handler = logging.FileHandler(log_file, mode="a" if append else "w")
     handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
@@ -37,12 +42,14 @@ def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
     logger.addHandler(handler)
 
     # Define a Handler which writes <level> or higher messages to console
-    levels = {'CRITICAL': logging.CRITICAL,
-              'ERROR': logging.ERROR,
-              'WARNING': logging.WARNING,
-              'INFO': logging.INFO,
-              'DEBUG': logging.DEBUG,
-              'NOTSET': logging.NOTSET}
+    levels = {
+        "CRITICAL": logging.CRITICAL,
+        "ERROR": logging.ERROR,
+        "WARNING": logging.WARNING,
+        "INFO": logging.INFO,
+        "DEBUG": logging.DEBUG,
+        "NOTSET": logging.NOTSET,
+    }
     log_level = levels.get(level.upper(), logging.INFO)
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(log_level)
@@ -50,7 +57,7 @@ def setup_logger(log_file='./fitbenchmarking.log', name='fitbenchmarking',
     logger.propagate = False
 
 
-def get_logger(name='fitbenchmarking'):
+def get_logger(name="fitbenchmarking"):
     """
     Get the unique logger for the given name.
     This is a straight pass through but will be more intutive for people who
