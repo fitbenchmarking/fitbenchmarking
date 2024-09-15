@@ -169,10 +169,10 @@ class CompareTable(Table):
         val_str = val_str.split("<br>")
         val_str = (
             f"<a {color_to_class[ftext]} "
-            f"href='{self.get_link_str(result)}'>"
+            f'href="{self.get_link_str(result)}">'
             f"{val_str[0]}</a>"
             f"<a {color_to_class[stext]} "
-            f"href='{self.get_link_str(result)}'>"
+            f'href="{self.get_link_str(result)}">'
             f"{val_str[1]}</a>"
         )
         return val_str
