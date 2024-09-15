@@ -9,7 +9,7 @@ import platform
 import re
 import webbrowser
 from shutil import copytree
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Union
 
 import pandas as pd
 from dash import Dash, dcc, html
@@ -32,11 +32,8 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.write_files import write_file
-
-if TYPE_CHECKING:
-    from fitbenchmarking.utils.options import Options
-
 
 LOGGER = get_logger()
 os.environ["QT_QPA_PLATFORM"] = "offscreen"

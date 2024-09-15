@@ -387,24 +387,24 @@ class Table:
 
         # Format the table headers
         cost_func_template = (
-            "<a class='cost_function_header' "
+            '<a class="cost_function_header" '
             "href=https://fitbenchmarking.readthedocs.io/"
             "en/latest/users/options/fitting_option.html"
             "#cost-function-cost-func-type "
-            "target='_blank'>{0}</a>"
+            'target="_blank">{0}</a>'
         )
         software_template = (
-            "<a class='software_header' "
-            "href='https://fitbenchmarking.readthedocs.io/"
+            '<a class="software_header" '
+            'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
-            "#{0}' target='_blank'>{0}</a>"
+            '#{0}" target="_blank">{0}</a>'
         )
         minimizer_template = (
-            "<a class='minimizer_header' col={0} "
-            "title='{1}'"
-            "href='https://fitbenchmarking.readthedocs.io/"
+            '<a class="minimizer_header" col={0} '
+            'title="{1}"'
+            'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
-            "#{2}' target='_blank'>{3}</a>"
+            '#{2}" target="_blank">{3}</a>'
         )
 
         minimizers_list = []
@@ -442,8 +442,8 @@ class Table:
 
             double_index.append(
                 (
-                    f"<a class='problem_header' href='{rel_path}'>{i1}</a>",
-                    f"<a class='problem_header_lev1' href='{rel_path}'>{i2}</a>",
+                    f'<a class="problem_header" ' f'href="{rel_path}">{i1}</a>',
+                    f'<a class="problem_header_lev1" ' f'href="{rel_path}">{i2}</a>',
                 )
             )
 
@@ -670,8 +670,8 @@ class Table:
         :rtype: str
         """
         items = [
-            f"        <li><label class='noselect'><input "
-            f"type='checkbox' checked=true "
+            f'        <li><label class="noselect"><input '
+            f'type="checkbox" checked=true '
             f"onclick=\"toggle_problem('{problem_name}')\"/> "
             f"{problem_name}</label></li>"
             for problem_name in self.sorted_results
@@ -702,8 +702,8 @@ class Table:
         minimizers = list(dict.fromkeys(minimizers))
 
         items = [
-            f"        <li><label class='noselect'><input "
-            f"type='checkbox' checked=true "
+            f'        <li><label class="noselect"><input '
+            f'type="checkbox" checked=true '
             f"onclick=\"toggle_minimizer('{software}', "
             f"'{minimizer}')\"/> {minimizer}</label></li>"
             for software, minimizer in minimizers
@@ -729,11 +729,11 @@ class Table:
         """
         checklist_str = "\n".join(checklist)
         html = (
-            f"<div id='{list_id}' class='dropdown-check-list' "
-            f"tabindex='100'>\n"
-            f"    <span class='anchor' onclick='show_dropdown"
-            f"('{list_id}')'>{selector_text}</span>\n"
-            "    <ul class='items'>\n"
+            f'<div id="{list_id}" class="dropdown-check-list" '
+            f'tabindex="100">\n'
+            f'    <span class="anchor" onclick="show_dropdown'
+            f"('{list_id}')\">{selector_text}</span>\n"
+            '    <ul class="items">\n'
             f"{checklist_str}\n"
             "    </ul>\n"
             "</div>"
@@ -750,10 +750,10 @@ class Table:
         """
 
         html = (
-            "<label class='checkbox_container'>"
-            "<input type='checkbox' id='checkbox_prob_size' "
-            "onclick='toggle_prob_size_header()' "
-            "checked='checked'> Problem size column"
+            '<label class="checkbox_container">'
+            '<input type="checkbox" id="checkbox_prob_size" '
+            'onclick="toggle_prob_size_header()" '
+            'checked="checked"> Problem size column'
             "</label>"
         )
         return html
