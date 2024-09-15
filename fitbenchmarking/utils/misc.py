@@ -28,7 +28,7 @@ def get_problem_files(data_dir):
     test_data = glob.glob(data_dir + "/*.*")
     if not test_data:
         raise NoDataError(
-            f'"{data_dir}" not recognised as a dataset. '
+            f"'{data_dir}' not recognised as a dataset. "
             "Check that it contains problem files "
             "and try again."
         )

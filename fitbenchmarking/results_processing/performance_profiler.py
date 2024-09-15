@@ -146,8 +146,8 @@ def create_plots_and_get_paths(bounds, fig_dir, options):
             )
         else:
             warning = (
-                '<div style="font-size: 14px !important; '
-                'color: #ff0000; font-family: verdana"}><body>The '
+                "<div style='font-size: 14px !important; "
+                "color: #ff0000; font-family: verdana'}><body>The "
                 "number of solvers is too large "
                 f"(> {max_n_solvers_offline}) to be displayed in "
                 "a static offline plot. Please run Dash and use "
@@ -248,8 +248,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 
 def adjust_values_to_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> "dict[str, list]":
+    step_values: list[np.ndarray], solvers: list[str]
+) -> dict[str, list]:
     """
     Prepares the values to plot and deals with failures.
 
@@ -296,7 +296,7 @@ def adjust_values_to_plot(
     return data_to_plot
 
 
-def compute_linestyle_combinations() -> "list[tuple[str, str]]":
+def compute_linestyle_combinations() -> list[tuple[str, str]]:
     """
     Compute combinations of linestyles and colours
     to be used in performance profile plots.
@@ -323,7 +323,7 @@ def compute_linestyle_combinations() -> "list[tuple[str, str]]":
     return avail_styles
 
 
-def create_plot(step_values: "list[np.ndarray]", solvers: "list[str]") -> go.Figure:
+def create_plot(step_values: list[np.ndarray], solvers: list[str]) -> go.Figure:
     """
     Function to draw plot in plotly.
 
@@ -364,10 +364,10 @@ def create_plot(step_values: "list[np.ndarray]", solvers: "list[str]") -> go.Fig
 
 
 def create_df(
-    solvers: "list[str]",
-    labels: "list[str]",
-    solver_values: "list[np.ndarray]",
-    plot_points: "list[np.ndarray]",
+    solvers: list[str],
+    labels: list[str],
+    solver_values: list[np.ndarray],
+    plot_points: list[np.ndarray],
 ) -> pd.DataFrame:
     """
     Creates a pandas dataframe with performance profile data,

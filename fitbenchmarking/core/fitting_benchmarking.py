@@ -135,7 +135,7 @@ class Fit:
 
                 info_str = (
                     f" Running data from: {os.path.basename(fname)}"
-                    + f" {i + 1}/{len(problem_group)} "
+                    f" {i + 1}/{len(problem_group)} "
                 )
                 LOGGER.info("\n%s", "#" * len(info_str))
                 LOGGER.info(info_str)

@@ -277,7 +277,7 @@ class TestContrastRatio(TestCase):
             {"case": "3", "background": [1, 0, 0], "output": "rgb(0,0,0)"},
             {"case": "4", "background": [0, 1, 0], "output": "rgb(0,0,0)"},
             {
-                "case": "4",
+                "case": "5",
                 "background": [0, 0, 1],
                 "output": "rgb(255,255,255)",
             },

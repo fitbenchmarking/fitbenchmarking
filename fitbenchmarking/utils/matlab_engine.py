@@ -32,7 +32,7 @@ def clear_non_persistent_matlab_vars() -> None:
     ENG.clearvars("-except", r"persistent_vars{:}", nargout=0)
 
 
-def list_persistent_matlab_vars() -> "list[str]":
+def list_persistent_matlab_vars() -> list[str]:
     """
     Return a list of all persistent variables
     """

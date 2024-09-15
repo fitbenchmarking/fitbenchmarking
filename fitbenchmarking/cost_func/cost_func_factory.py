@@ -28,7 +28,7 @@ def create_cost_func(cost_func_type):
         module = import_module("." + module_name, __package__)
     except ImportError as e:
         raise CostFuncError(
-            "Could not find Cost function class with type as " f"{cost_func_type}."
+            f"Could not find Cost function class with type as {cost_func_type}."
         ) from e
     classes = getmembers(
         module,

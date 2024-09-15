@@ -39,7 +39,7 @@ class MantidDevParser(FitbenchmarkParser):
         if self.fitting_problem.multifit:
             self.fitting_problem.additional_info["mantid_ties"] = self._parse_ties()
 
-    def _dense_jacobian(self) -> "typing.Callable | None":
+    def _dense_jacobian(self) -> typing.Callable | None:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.

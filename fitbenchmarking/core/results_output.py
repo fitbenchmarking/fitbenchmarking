@@ -221,11 +221,11 @@ def preprocess_data(results: "list[FittingResult]"):
 
 
 def _extract_tags(
-    result: "FittingResult",
-    row_sorting: "List[str]",
-    col_sorting: "List[str]",
-    cat_sorting: "List[str]",
-) -> "Dict[str, str]":
+    result: FittingResult,
+    row_sorting: List[str],
+    col_sorting: List[str],
+    cat_sorting: List[str],
+) -> Dict[str, str]:
     """
     Extract the row, column, and category tags from a result based on a given
     sorting order.
@@ -262,7 +262,7 @@ def _extract_tags(
     return result_tags
 
 
-def _process_best_results(results: "List[FittingResult]") -> "FittingResult":
+def _process_best_results(results: List[FittingResult]) -> FittingResult:
     """
     Process the best result from a list of FittingResults.
     This includes:
@@ -298,7 +298,7 @@ def _process_best_results(results: "List[FittingResult]") -> "FittingResult":
     return best
 
 
-def _find_matching_tags(tag: "str", lst: "List[str]"):
+def _find_matching_tags(tag: str, lst: List[str]):
     """
     Extract the full list of matches to the regex stored in tag.
 
@@ -478,7 +478,7 @@ def create_problem_level_index(
 
 
 def create_index_page(
-    options: "Options", groups: "list[str]", result_directories: "list[str]"
+    options: Options, groups: list[str], result_directories: list[str]
 ) -> str:
     """
     Creates the results index page for the benchmark, and copies
@@ -604,13 +604,14 @@ def update_warning(solvers, max_solvers):
     :return: The warning
     :rtype: str
     """
-
-    if len(solvers) >= max_solvers:
-        return (
+    return (
+        (
             "The plot is showing the max number of minimizers "
             f"allowed ({max_solvers}). Deselect some to select others."
         )
-    return ""
+        if len(solvers) >= max_solvers
+        else ""
+    )
 
 
 def check_max_solvers(opts, solvers, max_solvers):

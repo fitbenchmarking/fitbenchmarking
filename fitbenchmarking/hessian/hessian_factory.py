@@ -28,7 +28,7 @@ def create_hessian(hes_method):
         module = import_module("." + module_name, __package__)
     except ImportError as e:
         raise NoHessianError(
-            "Could not find Hessian class with type as " f"{hes_method}."
+            f"Could not find Hessian class with type as {hes_method}."
         ) from e
 
     classes = getmembers(

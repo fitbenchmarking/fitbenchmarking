@@ -458,8 +458,8 @@ class Controller:
             if attr_type != np.ndarray:
                 if not isinstance(attr, attr_type):
                     raise ControllerAttributeError(
-                        f'Attribute "{attr_name}" in the controller is not the'
-                        f'expected type. Expected "{attr_type}", got '
+                        f"Attribute '{attr_name}' in the controller is not the"
+                        f"expected type. Expected '{attr_type}', got "
                         f"{type(attr)}."
                     )
             else:
@@ -470,7 +470,7 @@ class Controller:
                 for a in attr:
                     if any(np.isnan(n) or np.isinf(n) for n in a):
                         raise ControllerAttributeError(
-                            f'Attribute "{attr_name}" in the controller is '
+                            f"Attribute '{attr_name}' in the controller is "
                             "not the expected numpy ndarray of floats. "
                             "Expected a list or numpy ndarray of floats, got "
                             f"{attr}"

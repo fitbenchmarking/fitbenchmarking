@@ -111,15 +111,11 @@ def J_hellinger(x, p):
     Analytic Jacobian evaluation for hellinger_nlls
     cost function
     """
+    multiplier = -1 / 2 * (p[0] * np.exp(p[1] * x)) ** (-1 / 2)
     return np.column_stack(
         (
-            -1 / 2 * (p[0] * np.exp(p[1] * x)) ** (-1 / 2) * np.exp(p[1] * x),
-            -1
-            / 2
-            * (p[0] * np.exp(p[1] * x)) ** (-1 / 2)
-            * p[0]
-            * x
-            * np.exp(p[1] * x),
+            multiplier * np.exp(p[1] * x),
+            multiplier * p[0] * x * np.exp(p[1] * x),
         )
     )
 

@@ -73,7 +73,7 @@ class TheseusCostFunction(th.CostFunction):
         """
         return self._dim
 
-    def _copy_impl(self, new_name: Optional[str] = None) -> "TheseusCostFunction":
+    def _copy_impl(self, new_name: Optional[str] = None):
         return TheseusCostFunction(  # type: ignore
             var=[v.copy() for v in self.var],
             auxvar=[v.copy() for v in self.auxvar],

@@ -108,7 +108,7 @@ class UnknownMinimizerError(FitBenchmarkException):
 
     class_message = (
         "Minimizer cannot be run with Controller with "
-        'current "algorithm_type" option set.'
+        "current 'algorithm_type' option set."
     )
     error_code = 9
 
