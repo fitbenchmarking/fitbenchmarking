@@ -9,13 +9,10 @@ import os
 import pickle
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
-
-if TYPE_CHECKING:
-    from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.options import Options
 
 
 class Checkpoint:
@@ -152,7 +149,7 @@ class Checkpoint:
             if self.problem_names:
                 f.write(",\n")
             f.write(
-                f"      '{result.name}': {{\n"
+                f'      "{result.name}": {{\n'
                 f"{json.dumps(as_dict, indent=8)[2:-2]}\n      }}"
             )
 

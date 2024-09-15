@@ -165,7 +165,7 @@ class Plot:
                 )
                 if not df["best"][df["minimizer"] == minimizer].iloc[0]:
                     # add the best plot
-                    name = f"Best Fit ({df["minimizer"][df["best"]].iloc[0]})"
+                    name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
                     fig.add_trace(
                         go.Scatter(
                             x=x_best,
