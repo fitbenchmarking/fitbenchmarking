@@ -142,7 +142,7 @@ class GradientFreeController(Controller):
 
         opt = method_to_call(self.search_space)
         opt.search(
-            self._feval, n_iter=self.iteration_count['count'], verbosity=False)
+            self._feval, n_iter=self.iteration_count, verbosity=False)
         self.results = opt.best_para
         self._status = 0 if self.results is not None else 1
 
