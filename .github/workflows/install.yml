@@ -7,6 +7,7 @@ on:
 jobs:
   package_install_check:
     name: Package install check
+    if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
