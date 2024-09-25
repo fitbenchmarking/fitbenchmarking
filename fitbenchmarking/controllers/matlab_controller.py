@@ -58,10 +58,12 @@ class MatlabController(MatlabMixin, Controller):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = self.eng.fminsearch(
+        [self.result, _, exitflag, output] = self.eng.fminsearch(
             self.eng.workspace['eval_cost_mat'],
-            self.initial_params_mat, nargout=3)
+            self.initial_params_mat, nargout=4)
         self._status = int(exitflag)
+        self.iteration_count = int(output['iterations'])
+        self.count_type = 'iterations'
 
     def cleanup(self):
         """

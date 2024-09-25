@@ -2,6 +2,7 @@
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
 import os
+
 import matlab
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -95,6 +96,8 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
                        "zeros(size(x_data))', ft);")
         self._status = int(self.eng.workspace['output']['exitflag'])
+        self.iteration_count = int(self.eng.workspace['output']['iterations'])
+        self.count_type = 'iterations'
 
     def cleanup(self):
         """
