@@ -151,7 +151,6 @@ class RALFitController(Controller):
                                upper_bounds=self.param_ranges[1])
         self._status = 0 if self._popt is not None else 1
         self.iteration_count = inform['iter']
-        self.count_type = 'iterations'
 
     def cleanup(self):
         """

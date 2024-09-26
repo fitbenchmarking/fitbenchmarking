@@ -194,4 +194,3 @@ class CeresController(Controller):
 
         self.iteration_count = self.ceres_summary.num_successful_steps + \
             self.ceres_summary.num_unsuccessful_steps
-        self.count_type = 'iterations'

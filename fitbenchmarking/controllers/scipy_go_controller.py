@@ -48,7 +48,7 @@ class ScipyGOController(Controller):
         super().__init__(cost_func)
 
         self.support_for_bounds = True
-        self._popt = None
+        self._result = None
         self._status = None
         self._maxiter = None
 
@@ -79,13 +79,10 @@ class ScipyGOController(Controller):
         fun = self.cost_func.eval_cost
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
-        result = algorithm(fun, bounds, **kwargs)
-        self._popt = result.x
-        self.iteration_count = result.nit
-        self.count_type = 'iterations'
-        if result.success:
+        self._result = algorithm(fun, bounds, **kwargs)
+        if self._result.success:
             self._status = 0
-        elif "Maximum number of iteration" in result.message:
+        elif "Maximum number of iteration" in self._result.message:
             self._status = 1
         else:
             self._status = 2
@@ -102,4 +99,6 @@ class ScipyGOController(Controller):
         else:
             self.flag = 2
 
-        self.final_params = self._popt
+        self.final_params = self._result.x
+        self.iteration_count = self._result.nit
+        self.func_evals = self._result.nfev

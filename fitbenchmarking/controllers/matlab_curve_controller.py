@@ -97,7 +97,6 @@ class MatlabCurveController(MatlabMixin, Controller):
                        "zeros(size(x_data))', ft);")
         self._status = int(self.eng.workspace['output']['exitflag'])
         self.iteration_count = int(self.eng.workspace['output']['iterations'])
-        self.count_type = 'iterations'
 
     def cleanup(self):
         """

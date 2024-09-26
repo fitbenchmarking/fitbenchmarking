@@ -9,8 +9,8 @@ from iminuit import Minuit
 from iminuit import __version__ as iminuit_version
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingSoftwareError, \
-                                             UnknownMinimizerError
+from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
+                                              UnknownMinimizerError)
 
 
 class MinuitController(Controller):
@@ -114,7 +114,6 @@ class MinuitController(Controller):
         else:
             self.flag = 2
 
-        self.iteration_count = self._minuit_problem.nfcn
-        self.count_type = 'function evaluations'
+        self.func_evals = self._minuit_problem.nfcn
         self._popt = np.array(self._minuit_problem.values)
         self.final_params = self._popt

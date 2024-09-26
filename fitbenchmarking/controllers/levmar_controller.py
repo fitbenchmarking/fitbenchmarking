@@ -125,4 +125,4 @@ class LevmarController(Controller):
             self.flag = 2
 
         self.iteration_count = self._info[2]
-        self.count_type = 'iterations'
+        self.func_evals = self._info[4]

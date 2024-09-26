@@ -107,7 +107,6 @@ class MatlabOptController(MatlabMixin, Controller):
             self.param_ranges[1], self.eng.workspace['options'], nargout=5)
         self._status = int(exitflag)
         self.iteration_count = output['iterations']
-        self.count_type = 'iterations'
 
     def cleanup(self):
         """

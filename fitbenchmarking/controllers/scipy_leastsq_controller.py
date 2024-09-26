@@ -76,6 +76,6 @@ class ScipyLeastSqController(Controller):
         else:
             self.flag = 2
 
-        self.iteration_count = self.result[2]['nfev']
-        self.count_type = 'function evaluations'
+        self.func_evals = self.result[2]['nfev']
+
         self.final_params = self._popt

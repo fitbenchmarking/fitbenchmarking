@@ -10,15 +10,14 @@ from unittest.mock import patch
 
 import nlopt
 import numpy as np
+from parameterized import parameterized
 from pytest import mark
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
-from parameterized import parameterized
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.controller_factory import \
-        ControllerFactory
+from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -274,6 +273,49 @@ class BaseControllerTests(TestCase):
         controller = DummyController(self.cost_func)
         controller.flag = 1
         controller.final_params = [1, np.inf]
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
+    def test_check_valid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.check_attributes()
+
+    def test_check_invalid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10.5
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
+    def test_check_valid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.func_evals = 10
+        controller.check_attributes()
+
+    def test_check_invalid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.func_evals = 10.5
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 

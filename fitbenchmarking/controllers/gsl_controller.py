@@ -237,7 +237,6 @@ class GSLController(Controller):
         else:
             self.flag = 1
             self.iteration_count = self._maxits
-            self.count_type = 'function evaluations'
 
     def cleanup(self):
         """

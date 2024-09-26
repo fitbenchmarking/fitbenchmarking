@@ -87,7 +87,7 @@ class FittingResult:
         self.runtime_metric = runtime_metric
         self.emissions = emissions
         self.iteration_count = controller.iteration_count
-        self.count_type = controller.count_type
+        self.func_evals = controller.func_evals
 
         # Posterior pdfs for Bayesian fitting
         self.params_pdfs = controller.params_pdfs

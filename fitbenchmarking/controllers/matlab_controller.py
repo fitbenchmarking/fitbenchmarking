@@ -63,7 +63,6 @@ class MatlabController(MatlabMixin, Controller):
             self.initial_params_mat, nargout=4)
         self._status = int(exitflag)
         self.iteration_count = int(output['iterations'])
-        self.count_type = 'iterations'
 
     def cleanup(self):
         """

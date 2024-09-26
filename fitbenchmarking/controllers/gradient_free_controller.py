@@ -112,7 +112,6 @@ class GradientFreeController(Controller):
                       for i in range(len(self.initial_params))}
 
         self.iteration_count = 1000
-        self.count_type = 'iterations'
         self.initialize = {"warm_start": param_dict}
 
     def _feval(self, p):

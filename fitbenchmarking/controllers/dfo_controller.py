@@ -99,5 +99,4 @@ class DFOController(Controller):
             self.flag = 2
 
         self.final_params = self._popt
-        self.iteration_count = self._soln.nf
-        self.count_type = 'function evaluations'
+        self.func_evals = self._soln.nf
