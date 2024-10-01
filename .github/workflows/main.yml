@@ -20,15 +20,18 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
     steps:
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+        check-latest: true
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        python -m pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
+        python -m pip install --upgrade .[dev]
     - name: Run tests
       run: ci/system_tests_default.sh
     - name: Upload test results
@@ -102,7 +105,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ['3.8', '3.x']
+        python: ['3.9', '3.x']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
