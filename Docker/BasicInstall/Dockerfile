@@ -5,18 +5,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install the packages we need to build fitbenchmarking
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-dev \
-    python3-venv \
     git \
     sudo \
     cmake \
     mpich
 
+# use uv to manage python version
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN uv python install 3.12
+
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
+RUN uv venv --seed $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install wheel

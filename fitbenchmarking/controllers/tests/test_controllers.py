@@ -10,15 +10,14 @@ from unittest.mock import patch
 
 import nlopt
 import numpy as np
+from parameterized import parameterized
 from pytest import mark
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
-from parameterized import parameterized
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.controller_factory import \
-        ControllerFactory
+from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -42,7 +41,7 @@ def make_cost_func(file_name='cubic.dat', cost_func_type='weighted_nlls'):
     bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
-    fitting_problem = parse_problem_file(fname, options)
+    fitting_problem = parse_problem_file(fname, options)[0]
     fitting_problem.correct_data()
     cost_func = WeightedNLLSCostFunc(fitting_problem)\
         if cost_func_type == 'weighted_nlls'\
