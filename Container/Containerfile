@@ -61,16 +61,17 @@ RUN apt-get install -y gfortran \
 
 RUN git clone --depth 1 https://github.com/ralna/RALFit
 
-RUN mkdir -p /RALFit/libRALFit/build
-WORKDIR /RALFit/libRALFit/build
+RUN mkdir -p /RALFit-build
+WORKDIR /RALFit-build
 
 ENV CC=gcc
-RUN cmake .. && make && make install
+RUN cmake /RALFit/libRALFit && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
 RUN pip install .
 
-ENV LD_LIBRARY_PATH=/RALFit/libRALFit/build/src:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/RALFit-build/src:$LD_LIBRARY_PATH
+RUN rm -rf /RALFit/libRALFit/
 
 ################
 # Build cutest #
@@ -124,10 +125,11 @@ RUN wget -O nexus.tar.gz https://github.com/nexusformat/code/archive/refs/tags/v
 RUN tar --no-same-owner --no-same-permissions -xzf nexus.tar.gz
 RUN mv code-4.4.3 nexus
 RUN mkdir nexus/build
-WORKDIR /nexus/build
-RUN cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON
+WORKDIR /nexus-build
+RUN cmake -G Ninja /nexus -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON
 RUN cmake --build .
 RUN cmake --install .
+RUN rm -rf /nexus
 
 ARG MANTID_VERSION=6.10.0
 
@@ -190,6 +192,7 @@ WORKDIR /ceres/ceres-bin
 RUN cmake -G Ninja ../ceres-solver-2.2.0
 RUN cmake --build .
 RUN cmake --install .
+RUN rm -rf ../ceres-solver-2.2.0
 
 WORKDIR /
 ENV CXX=g++
