@@ -32,18 +32,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Update Buildah
+    - name: Fetch latest Buildah
       run: |
         sudo apt-get -y -qq update
         sudo apt-get -y install bats btrfs-progs git go-md2man golang libapparmor-dev libglib2.0-dev libgpgme11-dev libseccomp-dev libselinux1-dev make skopeo libbtrfs-dev
         git clone https://github.com/containers/buildah
-        echo "> ls ."
-        ls .
-        echo "> cd buildah"
-        cd buildah
+    - name: Build latest Buildah
+      run: |
         make runc all SECURITYTAGS="apparmor seccomp"
         sudo make install install.runc
         buildah --help
+      working-directory: buildah
     - name: Build container
       id: build-image
       uses: redhat-actions/buildah-build@v2
