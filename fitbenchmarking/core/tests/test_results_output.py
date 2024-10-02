@@ -22,11 +22,8 @@ from fitbenchmarking.core.results_output import (_extract_tags,
                                                  create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 display_page,
-                                                 preprocess_data,
-                                                 save_results,
-                                                 update_warning)
-
+                                                 display_page, preprocess_data,
+                                                 save_results, update_warning)
 from fitbenchmarking.results_processing.performance_profiler import \
     DashPerfProfile
 from fitbenchmarking.utils.checkpoint import Checkpoint
@@ -674,6 +671,33 @@ class DisplayPageTests(unittest.TestCase):
                         'visual NIST_low_difficulty-Accuracy',
                         'visual NIST_low_difficulty-Runtime']
         self.assertEqual(output_ids, expected_ids)
+
+    def test_styles_consistent_when_two_plts(self):
+        """
+        Test that the styles of lines on the graphs are consistent when
+        pathname refers to two plots.
+        """
+        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
+        pps = self.profile_instances_all_groups["NIST_low_difficulty"]
+        pp = pps["acc"]
+        pp.current_styles["solver1"] = pp.avail_styles.pop()
+
+        _ = display_page(
+            pathname,
+            self.profile_instances_all_groups,
+            self.layout,
+            self.max_solvers
+        )
+
+        self.assertDictEqual(
+            pps["acc"].current_styles,
+            pps["runtime"].current_styles
+        )
+
+        self.assertListEqual(
+            pps["acc"].avail_styles,
+            pps["runtime"].avail_styles
+        )
 
 
 if __name__ == "__main__":
