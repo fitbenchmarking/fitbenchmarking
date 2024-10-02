@@ -277,13 +277,11 @@ def adjust_values_to_plot(step_values: 'list[np.ndarray]',
         label = f"{solver}"
         plot_points = np.linspace(0.0, 1.0, solver_values.size)
         plot_points = np.append(plot_points, 1.0)
-        inf_indices = np.where(solver_values > huge)
-        solver_values[inf_indices] = huge
-        if inf_indices[0].size > 0:
-            plural_ending = "s"
-            if inf_indices[0].size == 1:
-                plural_ending = ""
-            label = f"{solver} ({len(inf_indices[0])} failure{plural_ending})"
+        failures = np.isinf(solver_values).sum()
+        huge_indices = np.where(solver_values > huge)
+        solver_values[huge_indices] = huge
+        if failures > 0:
+            label += f" ({failures} failure{'s' if failures > 1 else ''})"
         solver_values = np.append(solver_values, huge)
 
         all_labels.append(label)
@@ -342,10 +340,10 @@ def create_plot(step_values: 'list[np.ndarray]',
     avail_styles = compute_linestyle_combinations()
 
     for label, solver_values, plot_points in zip(
-                                                data_to_plot['labels'],
-                                                data_to_plot['solver_values'],
-                                                data_to_plot['plot_points']
-                                                ):
+        data_to_plot['labels'],
+        data_to_plot['solver_values'],
+        data_to_plot['plot_points']
+    ):
 
         linestyle, colour = avail_styles.pop()
 
@@ -359,7 +357,7 @@ def create_plot(step_values: 'list[np.ndarray]',
                        name=label,
                        type='scatter'
                        )
-            )
+        )
 
     return fig
 

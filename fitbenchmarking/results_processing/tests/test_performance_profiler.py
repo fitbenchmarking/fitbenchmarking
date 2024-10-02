@@ -348,6 +348,38 @@ class PerformanceProfilerTests(unittest.TestCase):
         assert np.array_equal(expected_dict['plot_points'],
                               output_dict['plot_points'])
 
+    def test_adjust_values_to_plot_failures(self):
+        """
+        Test adjust_values_to_plot when failures are present.
+        """
+        solvers = ["Solver1", "Solver2", "Solver3"]
+        step_vals = [
+            np.array([0.0, 0.0123, 0.123, 1.23, 8.2]),
+            np.array([0.0, 0.12, 1e23, np.inf, np.inf]),
+            np.array([0.0, 3.8, 5.6, 1e29, np.inf]),
+        ]
+
+        labels = ["Solver1", "Solver2 (2 failures)", "Solver3 (1 failure)"]
+        solver_vals = [
+            np.array([0.0, 0.0123, 0.123, 1.23, 8.2, 1e20]),
+            np.array([0.0, 0.12, 1e20, 1e20, 1e20, 1e20]),
+            np.array([0.0, 3.8, 5.6, 1e20, 1e20, 1e20]),
+        ]
+        plot_points = [
+            np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.0]),
+            np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.0]),
+            np.array([0.0, 0.25, 0.5, 0.75, 1.0, 1.0]),
+        ]
+
+        res = performance_profiler.adjust_values_to_plot(
+            step_values=step_vals, solvers=solvers
+        )
+
+        assert res["solvers"] == solvers
+        assert res["labels"] == labels
+        assert np.array_equal(res["solver_values"], solver_vals)
+        assert np.array_equal(res["plot_points"], plot_points)
+
     def test_compute_linestyle_combinations(self):
         """
         Test compute_linestyle_combinations returns expected styles.
