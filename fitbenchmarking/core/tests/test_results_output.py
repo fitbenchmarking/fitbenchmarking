@@ -22,11 +22,8 @@ from fitbenchmarking.core.results_output import (_extract_tags,
                                                  create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 display_page,
-                                                 preprocess_data,
-                                                 save_results,
-                                                 update_warning)
-
+                                                 display_page, preprocess_data,
+                                                 save_results, update_warning)
 from fitbenchmarking.results_processing.performance_profiler import \
     DashPerfProfile
 from fitbenchmarking.utils.checkpoint import Checkpoint
@@ -649,11 +646,13 @@ class DisplayPageTests(unittest.TestCase):
         Test that the expected layout components are returned when the
         pathname refers to one plot only.
         """
-        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc"
-        output_div = display_page(pathname,
-                                  self.profile_instances_all_groups,
-                                  self.layout,
-                                  self.max_solvers)
+        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc"
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="abc")
         output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy']
@@ -664,16 +663,71 @@ class DisplayPageTests(unittest.TestCase):
         Test that the expected layout components are returned when the
         pathname refers to two plots.
         """
-        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
-        output_div = display_page(pathname,
-                                  self.profile_instances_all_groups,
-                                  self.layout,
-                                  self.max_solvers)
+        pathname = "127.0.0.1:5009/123/NIST_low_difficulty/pp/acc+runtime"
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="123",
+        )
         output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy',
                         'visual NIST_low_difficulty-Runtime']
         self.assertEqual(output_ids, expected_ids)
+
+    def test_wrong_id(self):
+        """
+        Tests that an error is produced when the id is incorrect.
+        """
+        pathname = "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime"
+        run_id = "new_id"
+
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id=run_id,
+        )
+        assert (
+            isinstance(output_div, str) and output_div.startswith("404")
+        ), f"No error reported for {pathname=}, {run_id=}"
+
+    def test_wrong_plot_type(self):
+        """
+        Tests that an error is produced when the plot type is incorrect.
+        """
+        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime"
+
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="abc",
+        )
+        assert (
+            isinstance(output_div, str) and output_div.startswith("404")
+        ), f"No error reported for {pathname=}, ?? is not a plot type"
+
+    def test_wrong_path_format(self):
+        """
+        Tests that an error is produced when the pathname has the wrong format.
+        """
+        pathname = "127.0.0.1:5009/abc/pp/acc+runtime"
+
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="abc",
+        )
+        assert (
+            isinstance(output_div, str) and output_div.startswith("404")
+        ), f"No error reported for {pathname=}, missing group_name"
 
 
 if __name__ == "__main__":

@@ -140,6 +140,7 @@ def create_results_tables(options, results, best_results, group_dir, fig_dir,
                             os.path.relpath(table.pp_locations[p], group_dir)
                             for p in table.pps],
                         pp_dash_url=f'http://127.0.0.1:{options.port}/'
+                                    f"{options.run_id}/"
                                     f'{os.path.basename(group_dir)}/'
                                     f'pp/{"+".join(table.pps)}',
                         cbar=cbar,
