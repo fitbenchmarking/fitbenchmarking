@@ -288,7 +288,7 @@ class BaseControllerTests(TestCase):
 
     def test_check_invalid_iteration_count(self):
         """
-        BaseSoftwareController: Test iteration_count setting with valid value
+        BaseSoftwareController: Test iteration_count setting with invalid value
         """
         controller = DummyController(self.cost_func)
         controller.final_params = [1, 2, 3, 4, 5]
