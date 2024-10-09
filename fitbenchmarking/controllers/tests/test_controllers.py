@@ -310,7 +310,7 @@ class BaseControllerTests(TestCase):
 
     def test_check_invalid_func_evals(self):
         """
-        BaseSoftwareController: Test func_evals setting with valid value
+        BaseSoftwareController: Test func_evals setting with invalid value
         """
         controller = DummyController(self.cost_func)
         controller.final_params = [1, 2, 3, 4, 5]
