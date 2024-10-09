@@ -83,6 +83,12 @@ def create_prob_group(result, support_pages_dir, options):
     n_params = result.get_n_parameters()
     list_params = n_params < 100
 
+    iteration_count = str(result.iteration_count) \
+                      if result.iteration_count else 'not available'
+
+    func_evals = str(result.func_evals) \
+                 if result.func_evals else 'not available'
+
     if np.isnan(result.emissions):
         emission_disp = 'N/A'
     else:
@@ -112,7 +118,9 @@ def create_prob_group(result, support_pages_dir, options):
             pdf_plot=fig_pdf,
             n_params=n_params,
             list_params=list_params,
-            n_data_points=result.get_n_data_points()))
+            n_data_points=result.get_n_data_points(),
+            iteration_count=iteration_count,
+            func_evals=func_evals))
 
     result.fitting_report_link = os.path.abspath(file_path)
 
