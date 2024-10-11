@@ -3,10 +3,13 @@ name: Linting
 on:
   push:
   pull_request:
+  release:
+    types: [published]
 
 jobs:
   ruff_linux:
     name: Ruff (linux)
+    if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
