@@ -128,12 +128,16 @@ class CeresController(Controller):
         """
         self.result = np.array(self.initial_params)
 
-        self.ceres_problem.AddResidualBlock(self.ceres_cost_func, None, self.result)
+        self.ceres_problem.AddResidualBlock(
+            self.ceres_cost_func, None, self.result
+        )
 
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            for i, (value_ranges_lb, value_ranges_ub) in enumerate(self.value_ranges):
+            for i, (value_ranges_lb, value_ranges_ub) in enumerate(
+                self.value_ranges
+            ):
                 self.ceres_problem.SetParameterLowerBound(
                     self.result, i, value_ranges_lb
                 )
@@ -141,7 +145,9 @@ class CeresController(Controller):
                     self.result, i, value_ranges_ub
                 )
 
-        self.ceres_options.linear_solver_type = PyCeres.LinearSolverType.DENSE_QR
+        self.ceres_options.linear_solver_type = (
+            PyCeres.LinearSolverType.DENSE_QR
+        )
 
         if self.minimizer == "Levenberg_Marquardt":
             self.ceres_options.trust_region_strategy_type = (
@@ -185,7 +191,9 @@ class CeresController(Controller):
         Run problem with Ceres solver
         """
 
-        PyCeres.Solve(self.ceres_options, self.ceres_problem, self.ceres_summary)
+        PyCeres.Solve(
+            self.ceres_options, self.ceres_problem, self.ceres_summary
+        )
 
         self._status = 0 if self.ceres_summary.IsSolutionUsable() else 2
 

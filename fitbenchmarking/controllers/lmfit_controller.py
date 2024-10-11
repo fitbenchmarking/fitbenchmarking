@@ -110,7 +110,9 @@ class LmfitController(Controller):
         self.bound_minimizers = ["dual_annealing", "differential_evolution"]
         self.lmfit_out = None
         self.lmfit_params = Parameters()
-        self._param_names = [f"p{i}" for (i, _) in enumerate(self.problem.param_names)]
+        self._param_names = [
+            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
+        ]
 
     def lmfit_resdiuals(self, params):
         """
@@ -170,7 +172,10 @@ class LmfitController(Controller):
 
         if self.minimizer in self.jacobian_enabled_solvers:
             kwargs["Dfun"] = self.lmfit_jacobians
-        if self.cost_func.hessian and self.minimizer in self.hessian_enabled_solvers:
+        if (
+            self.cost_func.hessian
+            and self.minimizer in self.hessian_enabled_solvers
+        ):
             kwargs["hess"] = self.cost_func.hes_cost
         self.lmfit_out = minner.minimize(**kwargs)
 

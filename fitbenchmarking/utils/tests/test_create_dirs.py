@@ -74,7 +74,9 @@ class CreateDirsTests(unittest.TestCase):
         results_dir = results(self.results_dir)
         group_results_dir = group_results(results_dir, "test_group")
         support_pages_dir = support_pages(group_results_dir)
-        support_pages_dir_expected = os.path.join(group_results_dir, "support_pages")
+        support_pages_dir_expected = os.path.join(
+            group_results_dir, "support_pages"
+        )
 
         self.assertEqual(support_pages_dir_expected, support_pages_dir)
         self.assertTrue(os.path.exists(support_pages_dir_expected))

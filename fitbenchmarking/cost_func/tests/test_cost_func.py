@@ -89,7 +89,9 @@ class TestNLLSCostFunc(TestCase):
         """
         Test that eval_r is running the correct function
         """
-        eval_result = self.cost_function.eval_r(x=self.x_val, y=self.y_val, params=[5])
+        eval_result = self.cost_function.eval_r(
+            x=self.x_val, y=self.y_val, params=[5]
+        )
         self.assertTrue(all(eval_result == np.array([0, -3, 4])))
 
     def test_eval_cost(self):
@@ -155,7 +157,9 @@ class TestNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        jac_cost = self.cost_function.jac_cost(params=[5], x=self.x_val, y=self.y_val)
+        jac_cost = self.cost_function.jac_cost(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([-2.0])
         self.assertTrue(np.allclose(jac_cost, expected))
@@ -170,10 +174,14 @@ class TestNLLSCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(params=[5], x=self.x_val, y=self.y_val)
+        H, _ = self.cost_function.hes_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array(
             [
@@ -193,14 +201,18 @@ class TestNLLSCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
         hes_cost = self.cost_function.hes_cost(
             params=[0.01], x=self.x_val, y=self.y_val
         )
 
-        expected = np.array([[-7.35838895, -7.35838895], [-7.35838895, -7.35838895]])
+        expected = np.array(
+            [[-7.35838895, -7.35838895], [-7.35838895, -7.35838895]]
+        )
         self.assertTrue(np.allclose(hes_cost, expected))
 
 
@@ -281,7 +293,9 @@ class TestWeightedNLLSCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(
@@ -380,7 +394,9 @@ class TestLoglikeNLLSCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
         H, _ = self.cost_function.hes_res(
@@ -443,7 +459,9 @@ class TestHellingerNLLSCostFunc(TestCase):
         """
         Test that eval_r is running the correct function
         """
-        eval_result = self.cost_function.eval_r(x=self.x_val, y=self.y_val, params=[0])
+        eval_result = self.cost_function.eval_r(
+            x=self.x_val, y=self.y_val, params=[0]
+        )
         expected = np.array(
             [1.4494897427831779, 0.33385053542218923, 1.1555111646441798]
         )
@@ -481,10 +499,14 @@ class TestHellingerNLLSCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(params=[5], x=self.x_val, y=self.y_val)
+        H, _ = self.cost_function.hes_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
         expected = np.array(
             [
                 [[-2.0, -16.0, -22.0], [-2.0, -16.0, -22.0]],
@@ -558,7 +580,9 @@ class TestPoissonCostFunc(TestCase):
         self.assertTrue(
             np.isclose(
                 res,
-                np.array([0.0, 2 * np.log(2), 3 * np.log(3), 0.0, 5 * np.log(5)]),
+                np.array(
+                    [0.0, 2 * np.log(2), 3 * np.log(3), 0.0, 5 * np.log(5)]
+                ),
             ).all()
         )
 
@@ -585,10 +609,14 @@ class TestPoissonCostFunc(TestCase):
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
-        hessian = Analytic(self.cost_function.problem, self.cost_function.jacobian)
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(params=[5], x=self.x_val, y=self.y_val)
+        H, _ = self.cost_function.hes_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array(
             [
@@ -630,7 +658,9 @@ class FactoryTests(TestCase):
         for cost_func_type in valid:
             cost_func = create_cost_func(cost_func_type)
             self.assertTrue(
-                cost_func.__name__.lower().startswith(cost_func_type.replace("_", ""))
+                cost_func.__name__.lower().startswith(
+                    cost_func_type.replace("_", "")
+                )
             )
 
         for cost_func_type in invalid:

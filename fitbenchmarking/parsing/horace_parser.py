@@ -26,13 +26,17 @@ def horace_on():
         eng.evalc(f"addpath('{horace_location}')")
         eng.evalc("horace_on")
         eng.evalc(f"addpath('{spinw_location}')")
-    elif "HORACE_LOCATION" not in os.environ and "SPINW_LOCATION" in os.environ:
+    elif (
+        "HORACE_LOCATION" not in os.environ and "SPINW_LOCATION" in os.environ
+    ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
             "that HORACE_LOCATION is specfied as a environment "
             "variable"
         )
-    elif "HORACE_LOCATION" in os.environ and "SPINW_LOCATION" not in os.environ:
+    elif (
+        "HORACE_LOCATION" in os.environ and "SPINW_LOCATION" not in os.environ
+    ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
             "that SPINW_LOCATION is specfied as a environment "
@@ -92,7 +96,9 @@ class HoraceParser(FitbenchmarkParser):
                 f"{func_name}('{data_file_path}','{self._horace_path}')"
             )
         except Exception as e:
-            raise ParsingError(f"Failed to evaluate wye_function: {script}") from e
+            raise ParsingError(
+                f"Failed to evaluate wye_function: {script}"
+            ) from e
 
         signal = np.array(eng.workspace["y"], dtype=np.float64)
         error = np.array(eng.workspace["e"], dtype=np.float64)
@@ -135,14 +141,18 @@ class HoraceParser(FitbenchmarkParser):
             f_name=foreground_func_name,
             p_names=foreground_params_string,
         )
-        foreground_starting_vals = {n: foreground_func[n] for n in foreground_params}
+        foreground_starting_vals = {
+            n: foreground_func[n] for n in foreground_params
+        }
 
         if len(self._parsed_func) == 1:
             equations = frgd_eq
             start_values = [foreground_starting_vals]
         else:
             background_func = self._parsed_func[1]
-            background_params = [k for k in background_func if k != "background"]
+            background_params = [
+                k for k in background_func if k != "background"
+            ]
             background_params_string = ", ".join(background_params)
             script = pathlib.Path(background_func["background"])
             eng.addpath(str(path / script.parent))
@@ -157,7 +167,9 @@ class HoraceParser(FitbenchmarkParser):
             background_starting_vals = {
                 n: background_func[n] for n in background_params
             }
-            start_values = [{**foreground_starting_vals, **background_starting_vals}]
+            start_values = [
+                {**foreground_starting_vals, **background_starting_vals}
+            ]
 
         self._equation = equations
         self._starting_values = start_values
@@ -179,7 +191,9 @@ class HoraceParser(FitbenchmarkParser):
                 f"horace_y = {simulate_func_name}"
                 f"({self._horace_w},fitpars,{self._horace_msk})"
             )
-            return np.array(eng.workspace["horace_y"], dtype=np.float64).flatten()
+            return np.array(
+                eng.workspace["horace_y"], dtype=np.float64
+            ).flatten()
 
         return fit_function
 

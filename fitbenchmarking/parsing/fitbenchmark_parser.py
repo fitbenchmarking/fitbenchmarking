@@ -58,7 +58,9 @@ class FitbenchmarkParser(Parser):
 
         if "plot_scale" in self._entries:
             if self._entries["plot_scale"].lower() in plot_scale_options:
-                self.fitting_problem.plot_scale = self._entries["plot_scale"].lower()
+                self.fitting_problem.plot_scale = self._entries[
+                    "plot_scale"
+                ].lower()
             else:
                 raise ParsingError(
                     "The plot scale should be one of these "
@@ -367,7 +369,9 @@ class FitbenchmarkParser(Parser):
         lhs, rhs = func.strip().split("=", 1)
         name = lhs
         if not re.match(r"^\w+$", name):
-            raise ParsingError(f"Unexpected character in parameter name: {name}")
+            raise ParsingError(
+                f"Unexpected character in parameter name: {name}"
+            )
 
         if rhs[0] in "([":
             value, rem = cls._parse_parens(rhs)
@@ -542,7 +546,9 @@ def _parse_range(range_str):
             raise ParsingError(f"Expected floats in range: {r}") from e
 
         if pair[0] >= pair[1]:
-            raise ParsingError("Min value must be smaller than max value in range: {r}")
+            raise ParsingError(
+                "Min value must be smaller than max value in range: {r}"
+            )
 
         output_ranges[name] = pair
 
@@ -573,7 +579,9 @@ def _find_first_line(file_lines: "list[str]") -> int:
     raise ParsingError("Could not find data points")
 
 
-def _get_column_data(file_lines: "list[str]", first_row: int, dim: int) -> list:
+def _get_column_data(
+    file_lines: "list[str]", first_row: int, dim: int
+) -> list:
     """
     Gets the data in the file as a dictionary of x, y and e data.
 

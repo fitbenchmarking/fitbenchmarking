@@ -38,7 +38,9 @@ def pytest_generate_tests(metafunc):
     # called once per each test function
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     argnames = sorted(funcarglist[0])
-    argvals = [[funcargs[name] for name in argnames] for funcargs in funcarglist]
+    argvals = [
+        [funcargs[name] for name in argnames] for funcargs in funcarglist
+    ]
     metafunc.parametrize(argnames, argvals)
 
 
@@ -100,14 +102,19 @@ def generate_test_cases():
         for expected_file in expected_dir:
             expected_path = os.path.join(test_dir, "expected", expected_file)
             test_name = os.path.splitext(expected_file)[0]
-            test_name_with_ext = [f for f in format_dir if f.startswith(test_name)]
+            test_name_with_ext = [
+                f for f in format_dir if f.startswith(test_name)
+            ]
             if not test_name_with_ext:
                 test_file = None
             elif len(test_name_with_ext) == 1:
-                test_file = os.path.join(test_dir, file_format, test_name_with_ext[0])
+                test_file = os.path.join(
+                    test_dir, file_format, test_name_with_ext[0]
+                )
             else:
                 raise RuntimeError(
-                    f"Too many '{file_format}' files found for '{test_name}' test"
+                    f"""Too many '{file_format}' files 
+                    found for '{test_name}' test"""
                 )
 
             test_parsers = {}
@@ -121,12 +128,16 @@ def generate_test_cases():
             test_factory["test_file"] = test_file
             params["test_factory"].append(test_factory)
 
-        func_eval = os.path.join(test_dir, file_format, "function_evaluations.json")
+        func_eval = os.path.join(
+            test_dir, file_format, "function_evaluations.json"
+        )
 
         test_func_eval = form_dict(file_format, func_eval)
         params["test_function_evaluation"].append(test_func_eval)
 
-        jac_eval = os.path.join(test_dir, file_format, "jacobian_evaluations.json")
+        jac_eval = os.path.join(
+            test_dir, file_format, "jacobian_evaluations.json"
+        )
 
         test_jac_eval = form_dict(file_format, jac_eval)
         params["test_jacobian_evaluation"].append(test_jac_eval)
@@ -138,7 +149,9 @@ def generate_test_cases():
         test_sparsej_eval = form_dict(file_format, sparsej_eval)
         params["test_sparsej_evaluation"].append(test_sparsej_eval)
 
-        hes_eval = os.path.join(test_dir, file_format, "hessian_evaluations.json")
+        hes_eval = os.path.join(
+            test_dir, file_format, "hessian_evaluations.json"
+        )
 
         test_hes_eval = form_dict(file_format, hes_eval)
         params["test_hessian_evaluation"].append(test_hes_eval)
@@ -234,12 +247,13 @@ class TestParsers:
             equal = parsed_attr == expected_attr
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
-            assert (
-                equal
-            ), f"{attr} was parsed incorrectly. {parsed_attr} != {expected_attr}"
+            assert equal, f"""{attr} was parsed incorrectly. 
+            {parsed_attr} != {expected_attr}"""
 
         # Check starting_values
-        for a, e in zip(fitting_problem.starting_values, expected.starting_values):
+        for a, e in zip(
+            fitting_problem.starting_values, expected.starting_values
+        ):
             loaded_as_set = set(a.values())
             expected_as_set = set(e.values())
             assert (
@@ -291,7 +305,8 @@ class TestParsers:
 
         assert (
             evaluations_file is not None
-        ), f"No function evaluations provided to test against for {file_format}"
+        ), f"""No function evaluations provided 
+        to test against for {file_format}"""
 
         with open(evaluations_file, encoding="utf-8") as ef:
             results = load(ef)
@@ -341,9 +356,8 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the JACOBIAN_ENABLED_PARSERS list.
         if file_format in JACOBIAN_ENABLED_PARSERS:
-            message = (
-                f"No function evaluations provided to test against for {file_format}"
-            )
+            message = f"""No function evaluations provided 
+            to test against for {file_format}"""
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:
@@ -383,9 +397,8 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
-            message = (
-                f"No function evaluations provided to test against for {file_format}"
-            )
+            message = f"""No function evaluations provided 
+            to test against for {file_format}"""
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:
@@ -426,9 +439,8 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the HESSIAN_ENABLED_PARSERS list.
         if file_format in HESSIAN_ENABLED_PARSERS:
-            message = (
-                f"No function evaluations provided to test against for {file_format}"
-            )
+            message = f"""No function evaluations provided 
+            to test against for {file_format}"""
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:
@@ -520,7 +532,9 @@ class TestParserNoJac(TestCase):
          - when there is a 'jac' line but no 'sparse_func' in it.
         """
         for prob_def_file in ["simplified_anac.txt", "simplified_anac2.txt"]:
-            prob_def_file_path = os.path.join(self.test_dir, "ivp", prob_def_file)
+            prob_def_file_path = os.path.join(
+                self.test_dir, "ivp", prob_def_file
+            )
 
             parser = ParserFactory.create_parser(prob_def_file_path)
             with parser(prob_def_file_path, OPTIONS) as p:

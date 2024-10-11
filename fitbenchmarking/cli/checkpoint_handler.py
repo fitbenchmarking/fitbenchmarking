@@ -52,9 +52,11 @@ def get_parser() -> ArgumentParser:
     subparsers = parser.add_subparsers(
         metavar="ACTION",
         dest="subprog",
-        help="Which action should be performed? "
-        "For more information on options use "
-        "`fitbenchmarking-cp ACTION -h`",
+        help="""
+        Which action should be performed? 
+        For more information on options use 
+        `fitbenchmarking-cp ACTION -h`
+        """,
     )
 
     report_epilog = textwrap.dedent("""
@@ -75,9 +77,10 @@ def get_parser() -> ArgumentParser:
         "--filename",
         metavar="CHECKPOINT_FILE",
         default="",
-        help="The path to a fitbenchmarking checkpoint file. "
-        "If omitted, this will be taken from the options "
-        "file.",
+        help="""
+        The path to a fitbenchmarking checkpoint file. 
+        If omitted, this will be taken from the options file.
+        """,
     )
     report.add_argument(
         "-o",
@@ -121,9 +124,11 @@ new_results/checkpoint.json
         metavar="STRATEGY",
         default="first",
         choices=["first", "last", "accuracy", "runtime", "emissions"],
-        help="The merge strategy to use when dealing with conflicts."
-        "Selecting accuracy, emissions, or runtime will select for the "
-        "lowest from conflicting runs.",
+        help="""
+        The merge strategy to use when dealing with conflicts.
+        Selecting accuracy, emissions, or runtime will select for the 
+        lowest from conflicting runs.
+        """,
     )
     return parser
 
@@ -172,7 +177,10 @@ def generate_report(options_file="", additional_options=None, debug=False):
 
 @exception_handler
 def merge_data_sets(
-    files: "list[str]", output: "str", strategy: "str" = "first", debug: "bool" = False
+    files: "list[str]",
+    output: "str",
+    strategy: "str" = "first",
+    debug: "bool" = False,
 ):
     """
     Combine multiple checkpoint files into one following these rules:
@@ -276,7 +284,9 @@ def merge(A, B, strategy):
             A[k]["results"], B[k]["results"], strategy=strategy
         )
         A[k]["failed_problems"] = []
-        A[k]["unselected_minimisers"] = {r["software_tag"]: [] for r in A[k]["results"]}
+        A[k]["unselected_minimisers"] = {
+            r["software_tag"]: [] for r in A[k]["results"]
+        }
 
     return A
 
@@ -394,7 +404,9 @@ def main():
     if args.subprog == "report":
         if args.filename:
             additional_options["checkpoint_filename"] = args.filename
-        generate_report(args.options_file, additional_options, debug=args.debug_mode)
+        generate_report(
+            args.options_file, additional_options, debug=args.debug_mode
+        )
     elif args.subprog == "merge":
         merge_data_sets(
             files=args.files,

@@ -39,10 +39,14 @@ class Plot:
 
         if self.result.multivariate:
             self.plots_failed = True
-            raise PlottingError("Plots cannot be generated for multivariate problems")
+            raise PlottingError(
+                "Plots cannot be generated for multivariate problems"
+            )
         if self.result.problem_format == "horace":
             self.plots_failed = True
-            raise PlottingError("Plots cannot be generated for Horace problems")
+            raise PlottingError(
+                "Plots cannot be generated for Horace problems"
+            )
         if self.result.problem_format == "bal":
             self.plots_failed = True
             raise PlottingError("Plots cannot be generated for BAL problems")
@@ -219,7 +223,9 @@ class Plot:
 
         par_names = self.result.param_names
 
-        fig = make_subplots(rows=len(par_names), cols=1, subplot_titles=par_names)
+        fig = make_subplots(
+            rows=len(par_names), cols=1, subplot_titles=par_names
+        )
 
         for i, name in enumerate(par_names):
             fig.append_trace(
@@ -235,7 +241,9 @@ class Plot:
             scipy_err = result.params_pdfs["scipy_perr"]
 
             for i, name in enumerate(par_names):
-                fig.add_vline(x=scipy_fit[i], row=i + 1, col=1, line_color="red")
+                fig.add_vline(
+                    x=scipy_fit[i], row=i + 1, col=1, line_color="red"
+                )
                 fig.add_vline(
                     x=scipy_fit[i] - 2 * scipy_err[i],
                     row=i + 1,
@@ -331,7 +339,11 @@ class Plot:
                         line = cls._summary_plot_line
                         transparency = 0.5
                         line["color"] = (
-                            "rgba" + colour[3:-1] + ", " + str(transparency) + ")"
+                            "rgba"
+                            + colour[3:-1]
+                            + ", "
+                            + str(transparency)
+                            + ")"
                         )
 
                     plotlyfig.add_trace(
@@ -354,6 +366,8 @@ class Plot:
 
         html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
 
-        cls.write_html_with_link_plotlyjs(plotlyfig, figures_dir, html_fname, options)
+        cls.write_html_with_link_plotlyjs(
+            plotlyfig, figures_dir, html_fname, options
+        )
 
         return html_fname

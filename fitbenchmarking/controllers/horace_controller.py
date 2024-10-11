@@ -71,9 +71,13 @@ class HoraceController(MatlabMixin, Controller):
         self.eng.workspace["y_mat"] = matlab.double(
             np.zeros(self.data_y.shape).tolist()
         )
-        self.eng.workspace["e_mat"] = matlab.double(np.ones(self.data_y.shape).tolist())
+        self.eng.workspace["e_mat"] = matlab.double(
+            np.ones(self.data_y.shape).tolist()
+        )
         self.eng.evalc("W = struct('x', x_mat, 'y', y_mat, 'e', e_mat)")
-        self.eng.workspace["initial_params"] = matlab.double([self.initial_params])
+        self.eng.workspace["initial_params"] = matlab.double(
+            [self.initial_params]
+        )
 
         # serialize cost_func.eval_r and open within matlab engine
         # so that matlab fitting function can be called

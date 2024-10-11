@@ -103,8 +103,12 @@ class CreateResultsDictTests(TestCase):
             )
 
         for i in range(7):
-            check_result(results_dict["prob_0"][i], results_list["prob_0"]["cf1"][i])
-            check_result(results_dict["prob_1"][i], results_list["prob_1"]["cf1"][i])
+            check_result(
+                results_dict["prob_0"][i], results_list["prob_0"]["cf1"][i]
+            )
+            check_result(
+                results_dict["prob_1"][i], results_list["prob_1"]["cf1"][i]
+            )
 
 
 class DisplayStrTests(TestCase):
@@ -184,10 +188,14 @@ class SaveColourbarTests(TestCase):
         colourbar_file = f"{self.table.name}_cbar.png"
 
         figure_sub_directory = "fitbenchmarking_results"
-        figure_directory = os.path.join(self.root_directory, figure_sub_directory)
+        figure_directory = os.path.join(
+            self.root_directory, figure_sub_directory
+        )
 
         relative_path = os.path.join(figure_sub_directory, colourbar_file)
-        self.assertEqual(self.table.save_colourbar(figure_directory), relative_path)
+        self.assertEqual(
+            self.table.save_colourbar(figure_directory), relative_path
+        )
 
         savefig_mock.assert_called_once()
 
@@ -211,7 +219,9 @@ class TestContrastRatio(TestCase):
         )
         for test in luminance_test:
             with self.subTest(test["case"]):
-                self.assertAlmostEqual(calculate_luminance(test["rgb"]), test["output"])
+                self.assertAlmostEqual(
+                    calculate_luminance(test["rgb"]), test["output"]
+                )
 
     def test_calculate_contrast(self):
         """

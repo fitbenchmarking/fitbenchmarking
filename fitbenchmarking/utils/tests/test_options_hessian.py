@@ -69,7 +69,9 @@ class UserHessianOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        opts_file = os.path.join(self.test_files_dir, f"test_{opt_name}_valid.ini")
+        opts_file = os.path.join(
+            self.test_files_dir, f"test_{opt_name}_valid.ini"
+        )
         with open(opts_file, "w", encoding="utf8") as f:
             f.write(config_str)
         return opts_file

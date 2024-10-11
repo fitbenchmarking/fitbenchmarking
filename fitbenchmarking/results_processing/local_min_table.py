@@ -154,14 +154,18 @@ class LocalMinTable(Table):
         :rtype: tuple[list[str], list[str]]
         """
         rgba = cmap(
-            [cmap_range[0] if local_min else cmap_range[1] for local_min in vals]
+            [
+                cmap_range[0] if local_min else cmap_range[1]
+                for local_min in vals
+            ]
         )
         hex_strs = [
             clrs.to_hex("whitesmoke") if v is None else clrs.rgb2hex(colour)
             for colour, v in zip(rgba, vals)
         ]
         text_str = [
-            background_to_text(colour[:3], CONTRAST_RATIO_AAA) for colour in rgba
+            background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+            for colour in rgba
         ]
         return hex_strs, text_str
 

@@ -76,7 +76,9 @@ class MinuitController(Controller):
         self._initial_step = 0.1 * np.array(self.initial_params)
         # set small steps to something sensible(?)
         self._initial_step[self._initial_step < 1e-12] = 1e-12
-        self._minuit_problem = Minuit(self.cost_func.eval_cost, self.initial_params)
+        self._minuit_problem = Minuit(
+            self.cost_func.eval_cost, self.initial_params
+        )
         self._minuit_problem.errordef = 1
         self._minuit_problem.errors = self._initial_step
 
@@ -102,7 +104,9 @@ class MinuitController(Controller):
         elif self.minimizer == "migrad":
             self._minuit_problem.migrad()  # run optimizer
         else:
-            raise UnknownMinimizerError(f"No {self.minimizer} minimizer for Minuit")
+            raise UnknownMinimizerError(
+                f"No {self.minimizer} minimizer for Minuit"
+            )
         self._status = 0 if self._minuit_problem.valid else 1
 
     def cleanup(self):

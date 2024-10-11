@@ -131,8 +131,8 @@ class TestMergeDataSets(TestCase):
                 errors.append((i, l1, l2))
 
         assert not errors, (
-            'Files do not match. '
-            f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
+            "Files do not match. "
+            f"Lines {", ".join([str(e[0]) for e in errors])} disagree."
         )
 
     def test_regression_two_files(self):
@@ -153,8 +153,8 @@ class TestMergeDataSets(TestCase):
                 errors.append((i, l1, l2))
 
         assert not errors, (
-            'Files do not match. '
-            f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
+            "Files do not match. "
+            f"Lines {", ".join([str(e[0]) for e in errors])} disagree."
         )
 
     def test_strategy(self):
@@ -244,7 +244,8 @@ class TestMerge(TestCase):
             )
         with self.subTest("result name update"):
             assert M["DataSet1"]["results"][6]["name"] == "prob_0*", (
-                'Expected result name to be updated: ' f'{M["DataSet1"]["results"][6]}'
+                'Expected result name to be updated: '
+                f'{M["DataSet1"]["results"][6]}'
             )
 
 
@@ -263,9 +264,15 @@ class TestMergeProblems(TestCase):
         - Problems in A and C have matching names but not matching data
         """
         ch_test_files = Path(__file__).parent / "test_files"
-        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"]["problems"]
-        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"]["problems"]
-        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"]["problems"]
+        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"][
+            "problems"
+        ]
+        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"][
+            "problems"
+        ]
+        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"][
+            "problems"
+        ]
 
     def test_merged_problems_subset_of_input(self):
         """
@@ -275,8 +282,9 @@ class TestMergeProblems(TestCase):
         inputs = set(list(self.A)).union(set(list(self.B)))
         M, _ = merge_problems(self.A, self.B)
         M_set_norename = set(m.rstrip("*") for m in M)
-        assert M_set_norename.issubset(
-            inputs
+        M_subset_norename = M_set_norename.issubset(inputs)
+        assert (
+            M_subset_norename
         ), "Merged result contains unexpected problem name"
 
     def test_merged_problems_superset_of_input(self):
@@ -294,7 +302,8 @@ class TestMergeProblems(TestCase):
         """
         M, _ = merge_problems(self.A, self.C)
         M_set = set(list(M))
-        assert len(M_set) == len(list(M)), "Merged result contains repeated problems"
+        check = len(M_set) == len(list(M))
+        assert check, "Merged result contains repeated problems"
 
     def test_all_renamed_problems_listed(self):
         """
@@ -304,8 +313,9 @@ class TestMergeProblems(TestCase):
         M, renamed = merge_problems(self.A, self.B)
         M_set = set(list(M))
         M_set_renamed = M_set - inputs
-        assert sorted(M_set_renamed) == sorted(
-            renamed
+        check = sorted(M_set_renamed) == sorted(renamed)
+        assert (
+            check
         ), "Listed renamed problems not the same as actual renamed problems"
 
 
@@ -325,9 +335,15 @@ class TestMergeResults(TestCase):
         - Problems in A and C have matching names but not matching data
         """
         ch_test_files = Path(__file__).parent / "test_files"
-        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"]["results"]
-        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"]["results"]
-        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"]["results"]
+        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"][
+            "results"
+        ]
+        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"][
+            "results"
+        ]
+        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"][
+            "results"
+        ]
         self.uid = lambda r: (
             r["name"],
             r["software_tag"],

@@ -56,7 +56,7 @@ dev = [
     'pytest-cov>=4.0.0',
     'coveralls',
     'coverage[toml]>=6.3',
-    'ruff==0.6.4',
+    'ruff',
     'pandas',
     'iminuit>=2.25.2',
     'pre-commit',
@@ -115,6 +115,7 @@ exclude = [
     "test_files",
     "templates"
 ]
+line-length = 79
 
 [tool.ruff.lint]
 select = [

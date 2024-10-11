@@ -143,7 +143,9 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.function is None:
-            raise FittingProblemError("Cannot call function before setting function.")
+            raise FittingProblemError(
+                "Cannot call function before setting function."
+            )
 
         self.timer.check_elapsed_time()
 
@@ -276,7 +278,9 @@ class FittingProblem:
         self.value_ranges = []
         for name in lower_param_names:
             if name in value_ranges:
-                self.value_ranges.append((value_ranges[name][0], value_ranges[name][1]))
+                self.value_ranges.append(
+                    (value_ranges[name][0], value_ranges[name][1])
+                )
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 

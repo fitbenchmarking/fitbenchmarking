@@ -298,7 +298,10 @@ class Controller:
                 )
                 # check tol range is covered by hist range
                 tol_range = [popt[i] - tol, popt[i] + tol]
-                if tol_range[-1] < bin_edges[0] or tol_range[0] > bin_edges[-1]:
+                if (
+                    tol_range[-1] < bin_edges[0]
+                    or tol_range[0] > bin_edges[-1]
+                ):
                     par_conf.append(0)
                 else:
                     width = np.diff(bin_edges)[0]
@@ -321,8 +324,10 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        incompatible_problems = self.cost_func.jacobian.INCOMPATIBLE_PROBLEMS.get(
-            self.cost_func.jacobian.method, []
+        incompatible_problems = (
+            self.cost_func.jacobian.INCOMPATIBLE_PROBLEMS.get(
+                self.cost_func.jacobian.method, []
+            )
         )
 
         if self.problem.format in incompatible_problems:
@@ -341,8 +346,10 @@ class Controller:
         is not true.
         """
         if self.cost_func.hessian is not None:
-            incompatible_problems = self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
-                self.cost_func.hessian.method, []
+            incompatible_problems = (
+                self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
+                    self.cost_func.hessian.method, []
+                )
             )
 
             if self.problem.format in incompatible_problems:
@@ -430,7 +437,10 @@ class Controller:
         :type minimizer: str
         """
 
-        if self.support_for_bounds is False or minimizer in self.no_bounds_minimizers:
+        if (
+            self.support_for_bounds is False
+            or minimizer in self.no_bounds_minimizers
+        ):
             message = (
                 "The selected minimizer does not currently support "
                 "problems with parameter bounds"
@@ -443,7 +453,11 @@ class Controller:
         parameter bounds
         """
         for count, value in enumerate(self.final_params):
-            if not self.value_ranges[count][0] <= value <= self.value_ranges[count][1]:
+            if (
+                not self.value_ranges[count][0]
+                <= value
+                <= self.value_ranges[count][1]
+            ):
                 self.flag = 5
 
     def check_attributes(self):

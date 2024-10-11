@@ -24,11 +24,15 @@ class TestSetupLogger(TestCase):
         """
         Test that the logger creates the correct file.
         """
-        self.assertFalse(os.path.exists(self.log_file), "Log file already present?")
+        self.assertFalse(
+            os.path.exists(self.log_file), "Log file already present?"
+        )
         setup_logger(log_file=self.log_file, name="test1")
         logger = get_logger("test1")
         logger.info("Works?")
-        self.assertTrue(os.path.exists(self.log_file), "Failed to create log file.")
+        self.assertTrue(
+            os.path.exists(self.log_file), "Failed to create log file."
+        )
 
     def test_append_mode_on(self):
         """
