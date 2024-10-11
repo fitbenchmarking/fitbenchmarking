@@ -116,13 +116,11 @@ def mock_loop_over_cost_func_call_all_fail(problem):
     controller.cost_func.jacobian = Analytic(controller.cost_func.problem)
     controller.parameter_set = 0
     result = FittingResult(
-        **{
-            "controller": controller,
-            "accuracy": np.inf,
-            "runtimes": [np.inf],
-            "emissions": np.inf,
-            "runtime_metric": "mean",
-        }
+        controller=controller,
+        accuracy=np.inf,
+        runtimes=[np.inf],
+        emissions=np.inf,
+        runtime_metric="mean",
     )
     return [result]
 
@@ -402,13 +400,11 @@ class HessianTests(unittest.TestCase):
         handles multfit
         """
         mock.return_value = FittingResult(
-            **{
-                "controller": self.controller,
-                "accuracy": 1,
-                "runtimes": [2],
-                "emissions": 3,
-                "runtime_metric": "mean",
-            }
+            controller=self.controller,
+            accuracy=1,
+            runtimes=[2],
+            emissions=3,
+            runtime_metric="mean",
         )
         self.controller.problem.multifit = True
         self.controller.final_params = [None] * 2

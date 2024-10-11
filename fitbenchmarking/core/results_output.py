@@ -413,9 +413,9 @@ def create_plots(options, results, best_results, figures_dir):
                 plot_path = plot.best_filename(best_dict[cf])
                 best_dict[cf].figure_link = plot_path
             else:
-                best_dict[
-                    cf
-                ].figure_error = "Minimizer failed to produce any parameters"
+                best_dict[cf].figure_error = (
+                    "Minimizer failed to produce any parameters"
+                )
             best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
