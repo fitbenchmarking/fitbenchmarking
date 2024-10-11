@@ -37,7 +37,8 @@ class TheseusCostFunction(th.CostFunction):
 
         if len(var) < 1:
             raise ValueError(
-                "TheseusCostFunction must receive at least one optimization variable."
+                """TheseusCostFunction must receive at 
+                least one optimization variable."""
             )
 
         self.register_vars(var, is_optim_vars=True)
@@ -48,7 +49,9 @@ class TheseusCostFunction(th.CostFunction):
         Resdiuals in pytorch tensor form for Theseus ai
         """
 
-        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in self.optim_vars]
+        optim_vars_list = [
+            float(optim_vars1[0]) for optim_vars1 in self.optim_vars
+        ]
         res = self.fb_cf.eval_r(optim_vars_list)
         th_res = torch.Tensor(np.array([res]))
         return th_res
@@ -59,7 +62,9 @@ class TheseusCostFunction(th.CostFunction):
         """
 
         err = self.error()
-        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in self.optim_vars]
+        optim_vars_list = [
+            float(optim_vars1[0]) for optim_vars1 in self.optim_vars
+        ]
         jacs = self.fb_cf.jac_res(optim_vars_list)
         th_jac = [
             torch.Tensor([[[item] for item in jacs[:, index]]])
@@ -135,9 +140,13 @@ class TheseusController(Controller):
         th_y = th.Variable(y_tensor.float(), name="y_data")
 
         th_aux_vars = th_x, th_y
-        th_optim_vars = [th.Vector(1, name=f"{name}") for name in self._param_names]
+        th_optim_vars = [
+            th.Vector(1, name=f"{name}") for name in self._param_names
+        ]
 
-        params = [params * torch.ones((1, 1)) for params in self.initial_params]
+        params = [
+            params * torch.ones((1, 1)) for params in self.initial_params
+        ]
         param_dict = dict(zip(self.problem.param_names, params))
 
         self.th_inputs = {"x_data": th_x, "y_data": th_y, **param_dict}
@@ -155,10 +164,14 @@ class TheseusController(Controller):
         self.th_objective.add(self.th_cost_func)
 
         if self.minimizer == "Levenberg_Marquardt":
-            optimizer = th.LevenbergMarquardt(self.th_objective, max_iterations=100000)
+            optimizer = th.LevenbergMarquardt(
+                self.th_objective, max_iterations=100000
+            )
 
         elif self.minimizer == "Gauss-Newton":
-            optimizer = th.GaussNewton(self.th_objective, max_iterations=100000)
+            optimizer = th.GaussNewton(
+                self.th_objective, max_iterations=100000
+            )
         else:
             raise UnknownMinimizerError(
                 f"No {self.minimizer} minimizer for Theseus-ai "

@@ -91,7 +91,9 @@ class BALParser(FitbenchmarkParser):
         camera_params = np.array(params)[: self.n_cameras * 9].reshape(
             (self.n_cameras, 9)
         )
-        points_3d = np.array(params)[self.n_cameras * 9 :].reshape((self.n_points, 3))
+        points_3d = np.array(params)[self.n_cameras * 9 :].reshape(
+            (self.n_points, 3)
+        )
         points_proj = BALParser.project(
             points_3d[self.point_indices], camera_params[self.camera_indices]
         )
@@ -111,7 +113,9 @@ class BALParser(FitbenchmarkParser):
         self._starting_values = [
             dict(
                 enumerate(
-                    np.hstack((camera_params.ravel(), points_3d.ravel())).tolist()
+                    np.hstack(
+                        (camera_params.ravel(), points_3d.ravel())
+                    ).tolist()
                 )
             )
         ]

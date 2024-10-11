@@ -151,7 +151,9 @@ class NLoptController(Controller):
         self.opt = nlopt.opt(nlopt_minimizer, len(self.initial_params))
 
         if self.value_ranges is not None:
-            self.value_ranges_lb, self.value_ranges_ub = zip(*self.value_ranges)
+            self.value_ranges_lb, self.value_ranges_ub = zip(
+                *self.value_ranges
+            )
             self.opt.set_lower_bounds(self.value_ranges_lb)
             self.opt.set_upper_bounds(self.value_ranges_ub)
 

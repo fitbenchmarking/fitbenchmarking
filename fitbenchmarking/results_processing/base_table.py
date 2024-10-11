@@ -148,7 +148,9 @@ class Table:
         :return: The link to go to when the cell is selected
         :rtype: string
         """
-        return os.path.relpath(path=result.fitting_report_link, start=self.group_dir)
+        return os.path.relpath(
+            path=result.fitting_report_link, start=self.group_dir
+        )
 
     @staticmethod
     def get_error_str(result, error_template="[{}]"):
@@ -164,7 +166,9 @@ class Table:
         """
 
         return (
-            "" if result.error_flag == 0 else error_template.format(result.error_flag)
+            ""
+            if result.error_flag == 0
+            else error_template.format(result.error_flag)
         )
 
     def create_results_dict(self):
@@ -192,7 +196,9 @@ class Table:
         ]
 
         # Build strings for problem size to display in table
-        self.problem_sizes = [f"{m} params, {n} points" for m, n in n_points_and_params]
+        self.problem_sizes = [
+            f"{m} params, {n} points" for m, n in n_points_and_params
+        ]
 
     def get_str_dict(self, html=False):
         """
@@ -205,7 +211,8 @@ class Table:
         for k, results in self.sorted_results.items():
             _, text_arrs = self.get_colours_for_row(results)
             str_dict[k] = [
-                self.get_str_result(r, t, html) for r, t in zip(results, text_arrs)
+                self.get_str_result(r, t, html)
+                for r, t in zip(results, text_arrs)
             ]
         return str_dict
 
@@ -269,13 +276,17 @@ class Table:
         if html:
             val = self.get_value(result)
             val_str = self.display_str(val)
-            error_str = self.get_error_str(result, error_template="<sup>{}</sup>")
+            error_str = self.get_error_str(
+                result, error_template="<sup>{}</sup>"
+            )
             if "inf" in val_str and self.table_name != "local_min_table.":
                 val_str = f'<span class="blank">Error {error_str}</span>'
             elif "N/A" in val_str:
                 val_str = '<span class="blank">N/A</span>'
             else:
-                val_str = self.get_hyperlink(result, val_str + error_str, text_col)
+                val_str = self.get_hyperlink(
+                    result, val_str + error_str, text_col
+                )
         else:
             val_str = self.display_str(self.get_value(result))
             if val_str != "N/A":
@@ -334,7 +345,9 @@ class Table:
 
         col_strs = ["background-colour: #ffffff" for _ in results]
 
-        colours, text_str = self.vals_to_colour(values, cmap, cmap_range, log_ulim)
+        colours, text_str = self.vals_to_colour(
+            values, cmap, cmap_range, log_ulim
+        )
         for i, c in enumerate(colours):
             try:
                 col_strs[i] = self.colour_template.format(c)
@@ -368,11 +381,15 @@ class Table:
 
         single_index = list(str_results.keys())
 
-        multi_index = pd.MultiIndex.from_tuples(zip(single_index, self.problem_sizes))
+        multi_index = pd.MultiIndex.from_tuples(
+            zip(single_index, self.problem_sizes)
+        )
 
         results_only = np.array(list(str_results.values()))
 
-        table = pd.DataFrame(results_only, index=multi_index, columns=multi_columns)
+        table = pd.DataFrame(
+            results_only, index=multi_index, columns=multi_columns
+        )
 
         return table
 
@@ -412,7 +429,9 @@ class Table:
             for i, result in enumerate(row):
                 formatted = (
                     cost_func_template.format(result.costfun_tag),
-                    software_template.format(result.software.replace("_", "-")),
+                    software_template.format(
+                        result.software.replace("_", "-")
+                    ),
                     minimizer_template.format(
                         i,
                         result.algorithm_type,
@@ -442,8 +461,10 @@ class Table:
 
             double_index.append(
                 (
-                    f'<a class="problem_header" ' f'href="{rel_path}">{i1}</a>',
-                    f'<a class="problem_header_lev1" ' f'href="{rel_path}">{i2}</a>',
+                    f'<a class="problem_header" '
+                    f'href="{rel_path}">{i1}</a>',
+                    f'<a class="problem_header_lev1" '
+                    f'href="{rel_path}">{i2}</a>',
                 )
             )
 
@@ -592,7 +613,8 @@ class Table:
             for colour, v in zip(rgba, vals)
         ]
         text_str = [
-            background_to_text(colour[:3], CONTRAST_RATIO_AAA) for colour in rgba
+            background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+            for colour in rgba
         ]
 
         return hex_strs, text_str
@@ -677,7 +699,9 @@ class Table:
             for problem_name in self.sorted_results
         ]
 
-        return self._dropdown_html("problem_dropdown", "Select Problems", items)
+        return self._dropdown_html(
+            "problem_dropdown", "Select Problems", items
+        )
 
     def minimizer_dropdown_html(self) -> str:
         """
@@ -709,10 +733,14 @@ class Table:
             for software, minimizer in minimizers
         ]
 
-        return self._dropdown_html("minimizer_dropdown", "Select Minimizers", items)
+        return self._dropdown_html(
+            "minimizer_dropdown", "Select Minimizers", items
+        )
 
     @staticmethod
-    def _dropdown_html(list_id: str, selector_text: str, checklist: list) -> str:
+    def _dropdown_html(
+        list_id: str, selector_text: str, checklist: list
+    ) -> str:
         """
         Generates the HTML for a dropdown checklist. The list of items
         must be provided to this function.

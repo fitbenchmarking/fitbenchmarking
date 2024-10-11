@@ -73,13 +73,17 @@ def generate_results():
         controller.final_params = [0.1 + i, 0.2 + i]
         controller.flag = 0
         results[key].append(
-            FittingResult(controller=controller, accuracy=0.02 + i, runtimes=[0.15 + i])
+            FittingResult(
+                controller=controller, accuracy=0.02 + i, runtimes=[0.15 + i]
+            )
         )
         controller.minimizer = "CG"
         controller.final_params = [0.3 + i, 0.4 + i]
         controller.flag = 2
         results[key].append(
-            FittingResult(controller=controller, accuracy=0.3 + i, runtimes=[0.01 + i])
+            FittingResult(
+                controller=controller, accuracy=0.3 + i, runtimes=[0.01 + i]
+            )
         )
         cost_func.jacobian = jac[1]
         controller = ScipyController(cost_func)
@@ -133,7 +137,9 @@ class CheckpointTests(TestCase):
         """
         with TemporaryDirectory() as temp_dir:
             cp_file = pathlib.Path(temp_dir, "cp.json")
-            options = Options(additional_options={"checkpoint_filename": cp_file})
+            options = Options(
+                additional_options={"checkpoint_filename": cp_file}
+            )
             cp = Checkpoint(options)
             # Generate fake results
             expected_res = generate_results()
@@ -173,14 +179,18 @@ class CheckpointTests(TestCase):
 
         expected = cp_file.read_text(encoding="utf8").splitlines()
 
-        options = Options(additional_options={"checkpoint_filename": str(cp_file)})
+        options = Options(
+            additional_options={"checkpoint_filename": str(cp_file)}
+        )
         cp = Checkpoint(options)
 
         res, unselected, failed = cp.load()
 
         with TemporaryDirectory() as temp_dir:
             cp_file = pathlib.Path(temp_dir, "cp.json")
-            options = Options(additional_options={"checkpoint_filename": cp_file})
+            options = Options(
+                additional_options={"checkpoint_filename": cp_file}
+            )
             cp = Checkpoint(options)
             for key, set_results in res.items():
                 for r in set_results:
@@ -216,7 +226,9 @@ class CheckpointTests(TestCase):
         """
         Test correct exception for missing file.
         """
-        options = Options(additional_options={"checkpoint_filename": "not_a_file"})
+        options = Options(
+            additional_options={"checkpoint_filename": "not_a_file"}
+        )
         cp = Checkpoint(options=options)
 
         with self.assertRaises(CheckpointError):

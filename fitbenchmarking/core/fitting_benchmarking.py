@@ -284,7 +284,9 @@ class Fit:
                     f"No minimizer given for software: {s}"
                 ) from e
             with self.__grabbed_output:
-                controller_cls = ControllerFactory.create_controller(software=s)
+                controller_cls = ControllerFactory.create_controller(
+                    software=s
+                )
                 controller = controller_cls(cost_func=cost_func)
 
             controller.parameter_set = self.__start_values_index
@@ -348,7 +350,9 @@ class Fit:
 
                         # Calling prepare to fill in the initial parameters
                         controller.prepare(skip_setup=True)
-                        dummy_result = fitbm_result.FittingResult(controller=controller)
+                        dummy_result = fitbm_result.FittingResult(
+                            controller=controller
+                        )
                         self._checkpointer.add_result(dummy_result)
                         results.append(dummy_result)
                         LOGGER.warning(str(excp))
@@ -468,7 +472,9 @@ class Fit:
                     if cost_func.hessian is not None:
                         cost_func.hessian.method = num_method
                         hess_name = cost_func.hessian.name()
-                    LOGGER.info("%sHessian: %s", self.__logger_prefix * 6, hess_name)
+                    LOGGER.info(
+                        "%sHessian: %s", self.__logger_prefix * 6, hess_name
+                    )
 
                 # Perform the fit a number of times specified by num_runs
                 accuracy, runtimes, emissions = self.__perform_fit(controller)
@@ -521,10 +527,14 @@ class Fit:
                 controller.prepare()
                 if tracker:
                     tracker.start_task()
-                    runtimes = timeit.Timer(stmt=controller.execute).repeat(num_runs, 1)
+                    runtimes = timeit.Timer(stmt=controller.execute).repeat(
+                        num_runs, 1
+                    )
                     emissions = tracker.stop_task().emissions / num_runs
                 else:
-                    runtimes = timeit.Timer(stmt=controller.execute).repeat(num_runs, 1)
+                    runtimes = timeit.Timer(stmt=controller.execute).repeat(
+                        num_runs, 1
+                    )
                 controller.cleanup()
                 controller.check_attributes()
             min_time = np.min(runtimes)
@@ -605,7 +615,9 @@ class Fit:
                 None if not multi_fit else [None] * len(controller.data_x)
             )
 
-            accuracy = np.inf if not multi_fit else [np.inf] * len(controller.data_x)
+            accuracy = (
+                np.inf if not multi_fit else [np.inf] * len(controller.data_x)
+            )
         elif controller.problem.value_ranges is not None:
             # If bounds have been set, check that they have
             # been respected by the minimizer and set error

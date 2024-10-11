@@ -159,9 +159,13 @@ class FitbmResultTests(unittest.TestCase):
         self.assertTrue(np.isclose(result.data_x, problem.data_x[1]).all())
         self.assertTrue(np.isclose(result.data_y, problem.data_y[1]).all())
         self.assertTrue(np.isclose(result.data_e, problem.data_e[1]).all())
-        self.assertTrue(np.isclose(result.sorted_index, problem.sorted_index[1]).all())
+        self.assertTrue(
+            np.isclose(result.sorted_index, problem.sorted_index[1]).all()
+        )
 
-        self.assertTrue(np.isclose(controller.final_params[1], result.params).all())
+        self.assertTrue(
+            np.isclose(controller.final_params[1], result.params).all()
+        )
         self.assertEqual(chi_sq[1], result.accuracy)
 
     @parameterized.expand(
@@ -223,7 +227,9 @@ class FitbmResultTests(unittest.TestCase):
             ("trim", [0, 5.00, 4.00, 6.00, 10.0, 20.0], 0.25, 25),
         ]
     )
-    def test_norm_runtime_finite_min(self, metric, runtimes, min_runtime, expected):
+    def test_norm_runtime_finite_min(
+        self, metric, runtimes, min_runtime, expected
+    ):
         """
         Test that norm_runtime is correct when min_runtime is finite.
         """
@@ -259,7 +265,9 @@ class FitbmResultTests(unittest.TestCase):
         self.result.minimizer_tag = "m1"
         self.result.jacobian_tag = "j1"
         self.result.hessian_tag = "h1"
-        self.assertEqual(self.result.modified_minimizer_name(False), "m1: j:j1 h:h1")
+        self.assertEqual(
+            self.result.modified_minimizer_name(False), "m1: j:j1 h:h1"
+        )
 
     def test_modified_minimizer_name_with_software(self):
         """
@@ -291,7 +299,9 @@ class FitbmResultTests(unittest.TestCase):
         self.result.minimizer_tag = "m1"
         self.result.jacobian_tag = "j1"
         self.result.hessian_tag = "h1"
-        self.assertEqual(self.result.sanitised_min_name(True), "m1_[s1]_jj1_hh1")
+        self.assertEqual(
+            self.result.sanitised_min_name(True), "m1_[s1]_jj1_hh1"
+        )
 
 
 if __name__ == "__main__":

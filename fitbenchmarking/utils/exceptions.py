@@ -21,7 +21,9 @@ class FitBenchmarkException(Exception):
 
     def __str__(self):
         if self._obj_message != "":
-            self._error_string = f"{self.class_message}\nDetails: {self._obj_message}"
+            self._error_string = (
+                f"{self.class_message}\nDetails: {self._obj_message}"
+            )
         else:
             self._error_string = self.class_message
 
@@ -182,7 +184,9 @@ class IncompatibleMinimizerError(FitBenchmarkException):
     with selected options/problem set
     """
 
-    class_message = "Minimizer cannot be used with selected options/problem set"
+    class_message = (
+        "Minimizer cannot be used with selected options/problem set"
+    )
     error_code = 17
 
 
@@ -192,9 +196,8 @@ class IncompatibleTableError(FitBenchmarkException):
     not compatible
     """
 
-    class_message = (
-        "The table type selected is not compatible with the selected cost function"
-    )
+    class_message = """The table type selected is not 
+    compatible with the selected cost function"""
     error_code = 18
 
 
@@ -216,7 +219,9 @@ class MissingBoundsError(FitBenchmarkException):
     Indicates that `parameter_ranges` have not been set but are required
     """
 
-    class_message = "Bounds on all parameters are required to use this software."
+    class_message = (
+        "Bounds on all parameters are required to use this software."
+    )
     error_code = 20
 
 
@@ -288,7 +293,9 @@ class IncompatibleProblemError(ValidationException):
     options.
     """
 
-    class_message = "The selected software can not be used with the given problem."
+    class_message = (
+        "The selected software can not be used with the given problem."
+    )
     error_code = 27
 
 
@@ -306,7 +313,9 @@ class IncompatibleCostFunctionError(FitBenchmarkException):
     Indicates that the cost function is not compatible with the given problem.
     """
 
-    class_message = "The selected cost function cannot be used with the given problem"
+    class_message = (
+        "The selected cost function cannot be used with the given problem"
+    )
     error_code = 29
 
 

@@ -196,17 +196,25 @@ class PerformFitTests(unittest.TestCase):
             with self.subTest(case["file"]):
                 controller = set_up_controller(case["file"], self.options)
 
-                fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
+                fit = Fit(
+                    options=self.options, data_dir="test", checkpointer=self.cp
+                )
 
-                for minimizer, acc in zip(["Nelder-Mead", "Powell"], case["results"]):
+                for minimizer, acc in zip(
+                    ["Nelder-Mead", "Powell"], case["results"]
+                ):
                     controller.minimizer = minimizer
-                    accuracy, runtimes, emissions = fit._Fit__perform_fit(controller)
+                    accuracy, runtimes, emissions = fit._Fit__perform_fit(
+                        controller
+                    )
 
                     self.assertAlmostEqual(accuracy, acc, 6)
                     assert len(runtimes) == self.options.num_runs
                     assert emissions != np.inf
 
-    @patch("fitbenchmarking.controllers.base_controller.Controller.eval_confidence")
+    @patch(
+        "fitbenchmarking.controllers.base_controller.Controller.eval_confidence"
+    )
     def test_eval_confidence_branches(self, mock):
         """
         The test checks the eval_confidence branches in
@@ -246,7 +254,9 @@ class PerformFitTests(unittest.TestCase):
             assert runtimes == [np.inf] * 5
 
     @patch("timeit.Timer.repeat")
-    @patch("fitbenchmarking.controllers.scipy_controller.ScipyController.cleanup")
+    @patch(
+        "fitbenchmarking.controllers.scipy_controller.ScipyController.cleanup"
+    )
     @patch(
         "fitbenchmarking.controllers.scipy_controller.ScipyController.check_attributes"
     )
@@ -265,7 +275,9 @@ class PerformFitTests(unittest.TestCase):
             controller = set_up_controller("ENSO.dat", self.options)
             controller.minimizer = "Powell"
 
-            fit = Fit(options=self.options, data_dir="test4", checkpointer=self.cp)
+            fit = Fit(
+                options=self.options, data_dir="test4", checkpointer=self.cp
+            )
 
             _ = fit._Fit__perform_fit(controller)
             self.assertTrue(
@@ -339,7 +351,9 @@ class HessianTests(unittest.TestCase):
 
         self.controller = ScipyController(cost_func=cost_func)
 
-        self.controller.cost_func.jacobian = Analytic(self.controller.cost_func.problem)
+        self.controller.cost_func.jacobian = Analytic(
+            self.controller.cost_func.problem
+        )
         self.controller.parameter_set = 0
         self.controller.minimizer = "Newton-CG"
 
@@ -372,7 +386,9 @@ class HessianTests(unittest.TestCase):
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
         assert (results[0].hess is None) and (results[1].hess is None)
-        assert (results[0].hessian_tag == "") and (results[1].hessian_tag == "")
+        assert (results[0].hessian_tag == "") and (
+            results[1].hessian_tag == ""
+        )
         assert perform_fit.call_count == 2
 
     @patch("fitbenchmarking.utils.fitbm_result.FittingResult")
@@ -413,7 +429,9 @@ class HessianTests(unittest.TestCase):
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
         assert (results[0].hess is None) and (results[1].hess is None)
-        assert (results[0].hessian_tag == "") and (results[1].hessian_tag == "")
+        assert (results[0].hessian_tag == "") and (
+            results[1].hessian_tag == ""
+        )
         assert perform_fit.call_count == 2
 
 
@@ -470,7 +488,9 @@ class JacobianTests(unittest.TestCase):
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
     @patch("fitbenchmarking.jacobian.default_jacobian.Default.__init__")
     @patch("fitbenchmarking.jacobian.analytic_jacobian.Analytic.__init__")
-    def test_loop_over_jacobians_fallback(self, analytic, default, loop_over_hessians):
+    def test_loop_over_jacobians_fallback(
+        self, analytic, default, loop_over_hessians
+    ):
         """
         The test checks __loop_over_jacobians method
         handles fallback correctly.
@@ -507,7 +527,9 @@ class JacobianTests(unittest.TestCase):
         assert len(results) == 0
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
-    def test_loop_over_jacobians_sparsity_check_false(self, loop_over_hessians):
+    def test_loop_over_jacobians_sparsity_check_false(
+        self, loop_over_hessians
+    ):
         """
         The test checks __loop_over_jacobians method
         handles the check for sparsity correctly
@@ -669,7 +691,9 @@ class SoftwareTests(unittest.TestCase):
         Enso.dat /NIST/average_difficulty problem set
         is run with 2 softwares.
         """
-        fit = Fit(options=self.options, data_dir=self.data_file, checkpointer=self.cp)
+        fit = Fit(
+            options=self.options, data_dir=self.data_file, checkpointer=self.cp
+        )
 
         results = fit._Fit__loop_over_fitting_software(self.cost_func)
 
@@ -699,7 +723,9 @@ class SoftwareTests(unittest.TestCase):
         handles the UnsupportedMinimizerError correctly.
         """
         self.options.minimizers = {}
-        fit = Fit(options=self.options, data_dir=self.data_file, checkpointer=self.cp)
+        fit = Fit(
+            options=self.options, data_dir=self.data_file, checkpointer=self.cp
+        )
 
         with self.assertRaises(UnsupportedMinimizerError) as _:
             fit._Fit__loop_over_fitting_software(self.cost_func)
@@ -749,12 +775,16 @@ class CostFunctionTests(unittest.TestCase):
         assert isinstance(mock.call_args_list[0][0][0], NLLSCostFunc)
         assert isinstance(mock.call_args_list[1][0][0], WeightedNLLSCostFunc)
 
-    @patch("fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc.validate_problem")
+    @patch(
+        "fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc.validate_problem"
+    )
     @patch(
         f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
         side_effect=mock_loop_over_softwares_func_call,
     )
-    def test_loop_over_cost_function_error(self, loop_over_fitting_software, mock):
+    def test_loop_over_cost_function_error(
+        self, loop_over_fitting_software, mock
+    ):
         """
         The test checks __loop_over_cost_function method
         handles IncompatibleCostFunctionError correctly
@@ -857,7 +887,9 @@ class BenchmarkTests(unittest.TestCase):
         with the orginal benchmark function. The /NIST/average_difficulty
         problem set is run with scipy_ls software.
         """
-        results_dir = os.path.join(TEST_FILES_DIR, "regression_checkpoint.json")
+        results_dir = os.path.join(
+            TEST_FILES_DIR, "regression_checkpoint.json"
+        )
 
         results, failed_problems, unselected_minimizers = self.fit.benchmark()
 
@@ -884,7 +916,9 @@ class BenchmarkTests(unittest.TestCase):
                 "costfun_tag",
             ]:
                 assert getattr(r, attr) == expected["results"][ix][attr]
-            self.assertAlmostEqual(r.accuracy, expected["results"][ix]["accuracy"], 6)
+            self.assertAlmostEqual(
+                r.accuracy, expected["results"][ix]["accuracy"], 6
+            )
             assert r.hess == expected["results"][ix]["hessian"]
             assert r.jac == expected["results"][ix]["jacobian"]
 
@@ -893,7 +927,9 @@ class BenchmarkTests(unittest.TestCase):
         f"{FITTING_DIR}.misc.get_problem_files",
         return_value=["problem_1", "problem_2"],
     )
-    def test_benchmark_method_exp(self, get_problem_files, mock_parse_problem_file):
+    def test_benchmark_method_exp(
+        self, get_problem_files, mock_parse_problem_file
+    ):
         """
         This test checks if FitBenchmarkException is caught
         during the method execution and no results are returned.
@@ -916,7 +952,9 @@ class BenchmarkTests(unittest.TestCase):
         """
         This test checks that repeat problem manes are handles correctly
         """
-        mock_problem_files.return_value = [os.path.join(DATA_DIR, "ENSO.dat")] * 2
+        mock_problem_files.return_value = [
+            os.path.join(DATA_DIR, "ENSO.dat")
+        ] * 2
         results, failed_problems, unselected_minimizers = self.fit.benchmark()
         assert len(results) == 2
         assert results[0].name == "ENSO 1"

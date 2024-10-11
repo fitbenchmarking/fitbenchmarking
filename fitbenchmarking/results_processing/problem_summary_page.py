@@ -103,7 +103,8 @@ def _create_summary_page(
     else:
         best_plot_available = [False] * len(results)
         fig_start = (
-            "Re-run with make_plots set to yes in the ini file to generate plots."
+            "Re-run with make_plots set to yes ",
+            "in the ini file to generate plots.",
         )
         best_fits = [fig_start] * len(results)
 

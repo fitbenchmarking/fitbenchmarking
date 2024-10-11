@@ -501,4 +501,6 @@ class TestFactory(TestCase):
             self.assertTrue(jac == jac_class)
 
         for jac_method in invalid:
-            self.assertRaises(exceptions.NoJacobianError, create_jacobian, jac_method)
+            self.assertRaises(
+                exceptions.NoJacobianError, create_jacobian, jac_method
+            )

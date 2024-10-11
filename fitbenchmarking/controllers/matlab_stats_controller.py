@@ -86,4 +86,6 @@ class MatlabStatsController(MatlabMixin, Controller):
         else:
             self.flag = 2
 
-        self.final_params = np.array(self.result[0], dtype=np.float64).flatten()
+        self.final_params = np.array(
+            self.result[0], dtype=np.float64
+        ).flatten()

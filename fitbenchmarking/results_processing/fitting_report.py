@@ -70,7 +70,8 @@ def create_prob_group(result, support_pages_dir, options):
             fig_pdf = result.figure_error
     else:
         fig_fit = fig_start = fig_pdf = (
-            "Re-run with make_plots set to yes in the ini file to generate plots."
+            "Re-run with make_plots set to yes ",
+            "in the ini file to generate plots.",
         )
 
     run_name = f"{options.run_name}: " if options.run_name else ""

@@ -229,7 +229,9 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         new_line = f'\n{" " * (len(software) + 2)}'
         config_str = f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
-        opts_file = os.path.join(self.test_files_dir, f"test_{software}_valid.ini")
+        opts_file = os.path.join(
+            self.test_files_dir, f"test_{software}_valid.ini"
+        )
         with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         return opts_file

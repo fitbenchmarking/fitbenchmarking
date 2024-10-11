@@ -117,12 +117,14 @@ class GetFigurePathsTests(unittest.TestCase):
         self.result.figure_link = "some_link"
         self.result.start_figure_link = "other_link"
         self.result.posterior_plots = "another_link"
-        figure_link, start_link, posterior_link = fitting_report.get_figure_paths(
-            self.result
+        figure_link, start_link, posterior_link = (
+            fitting_report.get_figure_paths(self.result)
         )
         self.assertEqual(figure_link, os.path.join("figures", "some_link"))
         self.assertEqual(start_link, os.path.join("figures", "other_link"))
-        self.assertEqual(posterior_link, os.path.join("figures", "another_link"))
+        self.assertEqual(
+            posterior_link, os.path.join("figures", "another_link")
+        )
 
     def test_no_links(self):
         """
@@ -131,8 +133,8 @@ class GetFigurePathsTests(unittest.TestCase):
         self.result.figure_link = ""
         self.result.start_figure_link = ""
         self.result.posterior_plots = ""
-        figure_link, start_link, posterior_link = fitting_report.get_figure_paths(
-            self.result
+        figure_link, start_link, posterior_link = (
+            fitting_report.get_figure_paths(self.result)
         )
         self.assertEqual(figure_link, "")
         self.assertEqual(start_link, "")

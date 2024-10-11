@@ -118,7 +118,9 @@ class RALFitController(Controller):
             self._options[b"model"] = 4
             self._options[b"type_of_method"] = 2
         else:
-            raise UnknownMinimizerError(f"No {self.minimizer} minimizer for RALFit")
+            raise UnknownMinimizerError(
+                f"No {self.minimizer} minimizer for RALFit"
+            )
 
         if self.cost_func.hessian:
             self._options[b"exact_second_derivatives"] = True

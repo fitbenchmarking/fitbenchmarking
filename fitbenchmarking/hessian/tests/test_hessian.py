@@ -198,7 +198,9 @@ class TestHessianClass(TestCase):
         self.fitting_problem.data_x = np.array([1, 2, 3, 4, 5])
         self.fitting_problem.data_y = np.array([1, 2, 4, 8, 16])
         self.params = [6, 0.1]
-        self.actual_hessian = H_ls(x=self.fitting_problem.data_x, p=self.params)
+        self.actual_hessian = H_ls(
+            x=self.fitting_problem.data_x, p=self.params
+        )
         self.cost_func = NLLSCostFunc(self.fitting_problem)
         self.jacobian = JacobianClass(self.fitting_problem)
         self.hessian = Analytic(self.fitting_problem, self.jacobian)
@@ -446,4 +448,6 @@ class TestFactory(TestCase):
             self.assertTrue(hes.__name__.lower().startswith(hes_method))
 
         for hes_method in invalid:
-            self.assertRaises(exceptions.NoHessianError, create_hessian, hes_method)
+            self.assertRaises(
+                exceptions.NoHessianError, create_hessian, hes_method
+            )

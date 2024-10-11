@@ -37,7 +37,9 @@ class MantidDevParser(FitbenchmarkParser):
         Sets any additional info for a fitting problem.
         """
         if self.fitting_problem.multifit:
-            self.fitting_problem.additional_info["mantid_ties"] = self._parse_ties()
+            self.fitting_problem.additional_info["mantid_ties"] = (
+                self._parse_ties()
+            )
 
     def _dense_jacobian(self) -> "typing.Callable | None":
         """
@@ -120,7 +122,9 @@ class MantidDevParser(FitbenchmarkParser):
         :rtype: callable
         """
         # Get mantid to build the function
-        ifun = msapi.FunctionFactory.createInitialized(self._entries["function"])
+        ifun = msapi.FunctionFactory.createInitialized(
+            self._entries["function"]
+        )
 
         # Extract the parameter info
         all_params = [
@@ -132,7 +136,9 @@ class MantidDevParser(FitbenchmarkParser):
         all_params_dict = {name: value for name, value, _ in all_params}
 
         # Extract starting parameters
-        params = {name: value for name, value, fixed in all_params if not fixed}
+        params = {
+            name: value for name, value, fixed in all_params if not fixed
+        }
 
         self._equation = ifun.name()
         self._starting_values = [params]
@@ -188,7 +194,9 @@ class MantidDevParser(FitbenchmarkParser):
             num_files = len(data_points)
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]
-            self.fitting_problem.data_e = [d.get("e", None) for d in data_points]
+            self.fitting_problem.data_e = [
+                d.get("e", None) for d in data_points
+            ]
 
             if not fit_ranges:
                 fit_ranges = [{} for _ in range(num_files)]

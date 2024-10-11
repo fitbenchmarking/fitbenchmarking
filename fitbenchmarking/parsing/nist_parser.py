@@ -39,7 +39,9 @@ class NISTParser(Parser):
 
         fitting_problem = FittingProblem(self.options)
 
-        equation, data, starting_values, name, description = self._parse_line_by_line()
+        equation, data, starting_values, name, description = (
+            self._parse_line_by_line()
+        )
         data = self._parse_data(data)
 
         fitting_problem.data_x = data[:, 1]
@@ -77,7 +79,9 @@ class NISTParser(Parser):
                 hessian=hessian, param_names=starting_values[0].keys()
             )
         except NoHessianError:
-            LOGGER.warning("Could not find Hessian information for %s problem", name)
+            LOGGER.warning(
+                "Could not find Hessian information for %s problem", name
+            )
 
         return fitting_problem
 
@@ -154,7 +158,9 @@ class NISTParser(Parser):
             if line.startswith("Model:"):
                 equation_text, idx = self._get_nist_model(lines, idx)
             elif "Starting values" in line or "Starting Values" in line:
-                starting_values, idx = self._get_nist_starting_values(lines, idx)
+                starting_values, idx = self._get_nist_starting_values(
+                    lines, idx
+                )
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self._get_data_txt(lines, idx)
@@ -167,7 +173,9 @@ class NISTParser(Parser):
             else:
                 ignored_lines += 1
 
-        LOGGER.debug("%s lines were ignored in this problem file", ignored_lines)
+        LOGGER.debug(
+            "%s lines were ignored in this problem file", ignored_lines
+        )
 
         return (
             equation_text,

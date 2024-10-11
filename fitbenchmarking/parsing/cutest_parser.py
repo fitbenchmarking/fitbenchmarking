@@ -19,7 +19,9 @@ if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
     # when dill.load is called in controller
     for cached_problem in pycutest.all_cached_problems():
         file_age = time.time() - os.path.getmtime(
-            os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder/" + cached_problem[0]
+            os.environ["PYCUTEST_CACHE"]
+            + "/pycutest_cache_holder/"
+            + cached_problem[0]
         )
         if file_age > 7200:
             pycutest.clear_cache(cached_problem[0], cached_problem[1])
@@ -177,7 +179,9 @@ class CutestParser(Parser):
         return gx
 
     def _get_starting_values(self):
-        starting_values = [{f"f{i}": self._p.x0[i] for i in range(self._num_params)}]
+        starting_values = [
+            {f"f{i}": self._p.x0[i] for i in range(self._num_params)}
+        ]
 
         return starting_values
 
@@ -230,7 +234,9 @@ class CutestParser(Parser):
                 x = np.array([x])
             x, y, e, to_write = _write_x(lines, x)
 
-        file_path = os.path.join(self.mastsif_dir.name, f"{str(id(x))[-10:]}.SIF")
+        file_path = os.path.join(
+            self.mastsif_dir.name, f"{str(id(x))[-10:]}.SIF"
+        )
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.writelines(to_write)
@@ -356,11 +362,17 @@ def _check_data(count, x, y, e):
     """
 
     if x != count:
-        raise ParsingError(f"Wrong number of x data points. Got {x}, expected {count}")
+        raise ParsingError(
+            f"Wrong number of x data points. Got {x}, expected {count}"
+        )
     if y != count:
-        raise ParsingError(f"Wrong number of y data points. Got {y}, expected {count}")
+        raise ParsingError(
+            f"Wrong number of y data points. Got {y}, expected {count}"
+        )
     if e not in (0, count):
-        raise ParsingError(f"Wrong number of e data points. Got {e}, expected {count}")
+        raise ParsingError(
+            f"Wrong number of e data points. Got {e}, expected {count}"
+        )
 
 
 def _import_problem(file_name):

@@ -45,7 +45,8 @@ class ControllerFactory:
             )
             if os.path.exists(full_path):
                 raise MissingSoftwareError(
-                    f"Requirements are missing for the {software} controller: {e}"
+                    f"""Requirements are missing for 
+                    the {software} controller: {e}"""
                 ) from e
             raise NoControllerError(
                 "Could not find controller for "

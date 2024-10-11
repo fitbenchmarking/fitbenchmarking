@@ -70,7 +70,9 @@ class Checkpoint:
                     f.write("{\n")
 
             self.dir = TemporaryDirectory()
-            self.problems_file = os.path.join(self.dir.name, "problems_tmp.txt")
+            self.problems_file = os.path.join(
+                self.dir.name, "problems_tmp.txt"
+            )
             self.results_file = os.path.join(self.dir.name, "results_tmp.txt")
             with open(self.results_file, "w", encoding="utf-8") as f:
                 f.write("[\n")
@@ -241,7 +243,9 @@ class Checkpoint:
 
         for f in [
             self.options.checkpoint_filename,
-            os.path.join(self.options.results_dir, self.options.checkpoint_filename),
+            os.path.join(
+                self.options.results_dir, self.options.checkpoint_filename
+            ),
         ]:
             if os.path.isfile(f):
                 filename: str = f
