@@ -132,7 +132,7 @@ class TestMergeDataSets(TestCase):
 
         assert not errors, (
             "Files do not match. "
-            f"Lines {", ".join([str(e[0]) for e in errors])} disagree."
+            f"Lines {', '.join([str(e[0]) for e in errors])} disagree."
         )
 
     def test_regression_two_files(self):
@@ -154,7 +154,7 @@ class TestMergeDataSets(TestCase):
 
         assert not errors, (
             "Files do not match. "
-            f"Lines {", ".join([str(e[0]) for e in errors])} disagree."
+            f"Lines {', '.join([str(e[0]) for e in errors])} disagree."
         )
 
     def test_strategy(self):
