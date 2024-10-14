@@ -102,7 +102,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ['3.8', '3.x']
+        python: ['3.8', '3.12']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
@@ -123,7 +123,7 @@ jobs:
       if: runner.os == 'Windows'
       run: bash ci/unit_tests_default.sh
     - name: Upload test results
-      if: runner.os == 'Linux' && matrix.python == '3.x'
+      if: runner.os == 'Linux' && matrix.python == '3.12'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
@@ -139,7 +139,7 @@ jobs:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.x'
+        python-version: '3.12'
         check-latest: true
     - name: Install default dependencies for fitbenchmarking
       run: |
