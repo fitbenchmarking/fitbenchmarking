@@ -588,8 +588,12 @@ def check_max_solvers(opts, solvers, max_solvers):
     return opts
 
 
-def display_page(pathname, profile_instances_all_groups,
-                 layout, max_solvers):
+def display_page(
+    pathname: str,
+    profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
+    layout: "list",
+    max_solvers: int
+):
     """
     Update the layout of the dash app.
 
@@ -621,7 +625,18 @@ def display_page(pathname, profile_instances_all_groups,
     new_layout = layout
 
     try:
+        first_metric = True
+        current_styles = {}
+        avail_styles = []
         for metric in metric_str.split('+'):
+            if first_metric:
+                current_styles = group_profiles[metric].current_styles
+                avail_styles = group_profiles[metric].avail_styles
+                first_metric = False
+            else:
+                group_profiles[metric].current_styles = current_styles
+                group_profiles[metric].avail_styles = avail_styles
+
             new_layout = new_layout + [group_profiles[metric].layout()]
     except KeyError:
         return ("404 Page Error! The path was not recognized. \n"
