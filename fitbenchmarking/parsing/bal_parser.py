@@ -2,6 +2,7 @@
 This file implements a parser for the Bundle
 Adjustment problem in the Large (BAL) dataset.
 """
+
 import bz2
 import typing
 
@@ -20,10 +21,10 @@ class BALParser(FitbenchmarkParser):
         """
         Read in datafile
         """
-        # pylint: disable=W0201
         with bz2.open(file_name, "rt") as file:
             self.n_cameras, self.n_points, n_observations = map(
-                int, file.readline().split())
+                int, file.readline().split()
+            )
 
             self.camera_indices = np.empty(n_observations, dtype=int)
             self.point_indices = np.empty(n_observations, dtype=int)
@@ -53,14 +54,17 @@ class BALParser(FitbenchmarkParser):
         Rodrigues' rotation formula is used.
         """
         theta = np.linalg.norm(rot_vecs, axis=1)[:, np.newaxis]
-        with np.errstate(invalid='ignore'):
+        with np.errstate(invalid="ignore"):
             v = rot_vecs / theta
             v = np.nan_to_num(v)
         dot = np.sum(points * v, axis=1)[:, np.newaxis]
         cos_theta = np.cos(theta)
         sin_theta = np.sin(theta)
-        return cos_theta * points + sin_theta * \
-            np.cross(v, points) + dot * (1 - cos_theta) * v
+        return (
+            cos_theta * points
+            + sin_theta * np.cross(v, points)
+            + dot * (1 - cos_theta) * v
+        )
 
     @staticmethod
     def project(points, camera_params):
@@ -84,12 +88,15 @@ class BALParser(FitbenchmarkParser):
 
         `params` contains camera parameters and 3-D coordinates.
         """
-        camera_params = np.array(
-            params)[:self.n_cameras * 9].reshape((self.n_cameras, 9))
-        points_3d = np.array(
-            params)[self.n_cameras * 9:].reshape((self.n_points, 3))
-        points_proj = BALParser.project(points_3d[self.point_indices],
-                                        camera_params[self.camera_indices])
+        camera_params = np.array(params)[: self.n_cameras * 9].reshape(
+            (self.n_cameras, 9)
+        )
+        points_3d = np.array(params)[self.n_cameras * 9 :].reshape(
+            (self.n_points, 3)
+        )
+        points_proj = BALParser.project(
+            points_3d[self.point_indices], camera_params[self.camera_indices]
+        )
         return points_proj.ravel()
 
     def _create_function(self) -> typing.Callable:
@@ -101,16 +108,19 @@ class BALParser(FitbenchmarkParser):
         """
         data_file = self._get_data_file()[0]
         camera_params, points_3d = self.read_bal_data(data_file)
-        # pylint: disable=attribute-defined-outside-init
         self._equation = None
 
-        # pylint: disable=attribute-defined-outside-init
         self._starting_values = [
-            dict(enumerate(np.hstack((camera_params.ravel(),
-                                      points_3d.ravel())).tolist()))
+            dict(
+                enumerate(
+                    np.hstack(
+                        (camera_params.ravel(), points_3d.ravel())
+                    ).tolist()
+                )
+            )
         ]
 
-        def fitFunction(x, *params):  # pylint: disable=W0613
+        def fitFunction(x, *params):
             y = self.fun(params)
             return y
 
@@ -134,8 +144,7 @@ class BALParser(FitbenchmarkParser):
                 _, _, x, y = file.readline().split()
                 points_2d[i] = [float(x), float(y)]
 
-        return {'x': np.zeros((n_observations*2)),
-                'y': points_2d.ravel()}
+        return {"x": np.zeros(n_observations * 2), "y": points_2d.ravel()}
 
     def _get_equation(self) -> str:
         """
@@ -185,7 +194,7 @@ class BALParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
-        # pylint: disable=W0613
+
         def sparse_jac(x, *params):
             A = self.bundle_adjustment_sparsity()
             return A

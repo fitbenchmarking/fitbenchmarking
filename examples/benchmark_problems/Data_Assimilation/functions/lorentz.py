@@ -4,7 +4,6 @@ This file contains the functions required to run lorentz system examples.
 import numpy as np
 
 
-# pylint: disable=unused-argument
 def lorentz3d(t, x, sigma, r, b):
     """
     Calculates the rhs of a Lorentz system defined by:

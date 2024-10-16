@@ -2,18 +2,23 @@
 This file implements a parser for the NIST style data format.
 """
 
-import re
 import os
+import re
 
 import numpy as np
 
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.nist_data_functions import nist_func_definition, \
-    nist_jacobian_definition, nist_hessian_definition
-from fitbenchmarking.utils.exceptions import ParsingError, NoJacobianError, \
-    NoHessianError
-
+from fitbenchmarking.parsing.nist_data_functions import (
+    nist_func_definition,
+    nist_hessian_definition,
+    nist_jacobian_definition,
+)
+from fitbenchmarking.utils.exceptions import (
+    NoHessianError,
+    NoJacobianError,
+    ParsingError,
+)
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -34,8 +39,9 @@ class NISTParser(Parser):
 
         fitting_problem = FittingProblem(self.options)
 
-        equation, data, starting_values, name, description = \
+        equation, data, starting_values, name, description = (
             self._parse_line_by_line()
+        )
         data = self._parse_data(data)
 
         fitting_problem.data_x = data[:, 1]
@@ -51,27 +57,31 @@ class NISTParser(Parser):
 
         fitting_problem.starting_values = starting_values
 
-        fitting_problem.function = \
-            nist_func_definition(function=fitting_problem.equation,
-                                 param_names=starting_values[0].keys())
+        fitting_problem.function = nist_func_definition(
+            function=fitting_problem.equation,
+            param_names=starting_values[0].keys(),
+        )
         fitting_problem.format = "nist"
         try:
             jacobian = self._parse_jacobian(name)
-            fitting_problem.jacobian = \
-                nist_jacobian_definition(jacobian=jacobian,
-                                         param_names=starting_values[0].keys())
+            fitting_problem.jacobian = nist_jacobian_definition(
+                jacobian=jacobian, param_names=starting_values[0].keys()
+            )
         except NoJacobianError:
-            LOGGER.warning("Could not find analytic Jacobian "
-                           "information for %s problem", name)
+            LOGGER.warning(
+                "Could not find analytic Jacobian information for %s problem",
+                name,
+            )
 
         try:
             hessian = self._parse_hessian(name)
-            fitting_problem.hessian = \
-                nist_hessian_definition(hessian=hessian,
-                                        param_names=starting_values[0].keys())
+            fitting_problem.hessian = nist_hessian_definition(
+                hessian=hessian, param_names=starting_values[0].keys()
+            )
         except NoHessianError:
-            LOGGER.warning("Could not find Hessian "
-                           "information for %s problem", name)
+            LOGGER.warning(
+                "Could not find Hessian information for %s problem", name
+            )
 
         return fitting_problem
 
@@ -85,11 +95,12 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         jac_file = os.path.join(file_dir, "data_files", f"{name}.jac")
         try:
-            with open(jac_file, "r", encoding='utf-8') as jac_data:
+            with open(jac_file, encoding="utf-8") as jac_data:
                 jac_lines = jac_data.readlines()
         except FileNotFoundError as e:
-            raise NoJacobianError('Could not find data for NIST Jacobian '
-                                  f'file, {jac_file}') from e
+            raise NoJacobianError(
+                "Could not find data for NIST Jacobian file, {jac_file}"
+            ) from e
         jac_str = ""
         for line in jac_lines:
             if not line.lstrip().startswith("#"):
@@ -109,17 +120,18 @@ class NISTParser(Parser):
         file_dir = os.path.abspath(os.path.join(self._filename, os.pardir))
         hes_file = os.path.join(file_dir, "data_files", f"{name}.hes")
         try:
-            with open(hes_file, "r", encoding='utf-8') as hes_data:
+            with open(hes_file, encoding="utf-8") as hes_data:
                 hes_lines = hes_data.readlines()
         except FileNotFoundError as e:
-            raise NoHessianError('Could not find data for NIST Hessian '
-                                 f'file, {hes_file}') from e
+            raise NoHessianError(
+                "Could not find data for NIST Hessian file, {hes_file}"
+            ) from e
         hes_str = ""
         for line in hes_lines:
             if not line.lstrip().startswith("#"):
                 hes_str += line.rstrip("\n").strip(" ")
 
-        hes = hes_str.replace('**', '^')
+        hes = hes_str.replace("**", "^")
         hes = hes.split("=")[1].replace("[", "").replace("]", "")
         return hes.split(",")
 
@@ -133,8 +145,8 @@ class NISTParser(Parser):
         """
         lines = self.file.readlines()
         idx, ignored_lines = 0, 0
-        equation_text = data_pattern_text = ''
-        description = ''
+        equation_text = data_pattern_text = ""
+        description = ""
         starting_values = []
 
         while idx < len(lines):
@@ -143,28 +155,35 @@ class NISTParser(Parser):
             if not line:
                 continue
 
-            if line.startswith('Model:'):
+            if line.startswith("Model:"):
                 equation_text, idx = self._get_nist_model(lines, idx)
-            elif 'Starting values' in line or 'Starting Values' in line:
-                starting_values, idx = self._get_nist_starting_values(lines,
-                                                                      idx)
+            elif "Starting values" in line or "Starting Values" in line:
+                starting_values, idx = self._get_nist_starting_values(
+                    lines, idx
+                )
             elif line.startswith("Data:"):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self._get_data_txt(lines, idx)
             elif line.startswith("Dataset Name:"):
-                name = line.split(':', 1)[1]
-                name = name.split('(', 1)[0]
+                name = line.split(":", 1)[1]
+                name = name.split("(", 1)[0]
                 name = name.strip()
             elif line.startswith("Description:"):
                 description, idx = self._get_description(lines, idx)
             else:
                 ignored_lines += 1
 
-        LOGGER.debug("%s lines were ignored in this problem file",
-                     ignored_lines)
+        LOGGER.debug(
+            "%s lines were ignored in this problem file", ignored_lines
+        )
 
-        return (equation_text, data_pattern_text, starting_values, name,
-                description)
+        return (
+            equation_text,
+            data_pattern_text,
+            starting_values,
+            name,
+            description,
+        )
 
     def _get_nist_model(self, lines, idx):
         """
@@ -183,10 +202,10 @@ class NISTParser(Parser):
 
         equation_text, idxerr = None, False
         try:
-            while (not re.match(r'\s*y\s*=(.+)', lines[idx])
-                   and not re.match(r'\s*log\[y\]\s*=(.+)', lines[idx]))\
-                    and idx < len(lines):
-
+            while (
+                not re.match(r"\s*y\s*=(.+)", lines[idx])
+                and not re.match(r"\s*log\[y\]\s*=(.+)", lines[idx])
+            ) and idx < len(lines):
                 idx += 1
         except IndexError:
             LOGGER.error("Could not find equation, index went out of bounds!")
@@ -215,7 +234,7 @@ class NISTParser(Parser):
         """
 
         # Next non-empty lines are assumed to continue the equation
-        equation_text = ''
+        equation_text = ""
         if idxerr is False:
             while lines[idx].strip():
                 equation_text += lines[idx].strip()
@@ -327,13 +346,15 @@ class NISTParser(Parser):
         :rtype: str
         """
 
-        start_normal = r'\s*y\s*=(.+)'
+        start_normal = r"\s*y\s*=(.+)"
         if re.match(start_normal, eq_text):
-            match = re.search(r'y\s*=(.+)\s*\+\s*e', eq_text)
+            match = re.search(r"y\s*=(.+)\s*\+\s*e", eq_text)
             equation = match.group(1).strip()
         else:
-            raise ParsingError("Unrecognized equation syntax when trying to "
-                               "parse a NIST equation: " + eq_text)
+            raise ParsingError(
+                "Unrecognized equation syntax when trying to "
+                "parse a NIST equation: " + eq_text
+            )
 
         equation = self._convert_nist_to_muparser(equation)
         return equation
@@ -351,10 +372,10 @@ class NISTParser(Parser):
         """
 
         # 'NIST equation syntax' => muparser syntax
-        equation = equation.replace('[', '(')
-        equation = equation.replace(']', ')')
-        equation = equation.replace('arctan', 'atan')
-        equation = equation.replace('**', '^')
+        equation = equation.replace("[", "(")
+        equation = equation.replace("]", ")")
+        equation = equation.replace("arctan", "atan")
+        equation = equation.replace("**", "^")
         return equation
 
     def _get_nist_starting_values(self, lines, idx):
@@ -390,12 +411,12 @@ class NISTParser(Parser):
         """
         starting_vals = []
         for line in lines:
-            if not line.strip() or line.startswith('Residual'):
+            if not line.strip() or line.startswith("Residual"):
                 break
 
             startval_str = line.split()
             if not startval_str[0].isalnum():
-                raise ParsingError('Could not parse starting parameters.')
+                raise ParsingError("Could not parse starting parameters.")
 
             alt_values = self._get_startvals_floats(startval_str)
 
@@ -426,7 +447,9 @@ class NISTParser(Parser):
             alt_values = [float(startval_str[2])]
         # In the NIST format this can only contain 5 or 6 columns
         else:
-            raise ParsingError("Failed to parse this line as starting "
-                               f"values information: {startval_str}")
+            raise ParsingError(
+                "Failed to parse this line as starting "
+                f"values information: {startval_str}"
+            )
 
         return alt_values

@@ -1,6 +1,7 @@
 """
 compare table
 """
+
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -16,14 +17,24 @@ class CompareTable(Table):
     scipy.optimize.curve_fit).
 
     """
-    name = 'compare'
-    colour_template = 'background-image: linear-gradient({0},{0},{1},{1})'
-    cbar_title = "Problem-Specific Cell Shading:\n"\
-                 "Top Colour - Relative Accuracy\n"\
-                 "Bottom Colour - Relative Runtime\n"
 
-    def __init__(self, results, best_results, options, group_dir, pp_locations,
-                 table_name):
+    name = "compare"
+    colour_template = "background-image: linear-gradient({0},{0},{1},{1})"
+    cbar_title = (
+        "Problem-Specific Cell Shading:\n"
+        "Top Colour - Relative Accuracy\n"
+        "Bottom Colour - Relative Runtime\n"
+    )
+
+    def __init__(
+        self,
+        results,
+        best_results,
+        options,
+        group_dir,
+        pp_locations,
+        table_name,
+    ):
         """
         Initialise the compare table which shows both accuracy and runtime
         results
@@ -44,9 +55,10 @@ class CompareTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, best_results, options, group_dir,
-                         pp_locations, table_name)
-        self.pps = ['acc', 'runtime']
+        super().__init__(
+            results, best_results, options, group_dir, pp_locations, table_name
+        )
+        self.pps = ["acc", "runtime"]
 
     def get_value(self, result):
         """
@@ -70,8 +82,7 @@ class CompareTable(Table):
         runtime_rel = result.norm_runtime
         runtime_abs = result.runtime
 
-        return [[acc_rel, runtime_rel],
-                [acc_abs, runtime_abs]]
+        return [[acc_rel, runtime_rel], [acc_abs, runtime_abs]]
 
     def display_str(self, value):
         """
@@ -89,14 +100,23 @@ class CompareTable(Table):
         result_template = self.output_string_type[self.options.comparison_mode]
 
         if comp_mode == "abs":
-            return result_template.format(acc_abs) + '<br>' + \
-                result_template.format(runtime_abs)
+            return (
+                result_template.format(acc_abs)
+                + "<br>"
+                + result_template.format(runtime_abs)
+            )
         if comp_mode == "rel":
-            return result_template.format(acc_rel) + '<br>' + \
-                result_template.format(runtime_rel)
+            return (
+                result_template.format(acc_rel)
+                + "<br>"
+                + result_template.format(runtime_rel)
+            )
         # comp_mode == "both":
-        return result_template.format(acc_abs, acc_rel) + '<br>' + \
-            result_template.format(runtime_abs, runtime_rel)
+        return (
+            result_template.format(acc_abs, acc_rel)
+            + "<br>"
+            + result_template.format(runtime_abs, runtime_rel)
+        )
 
     @staticmethod
     def vals_to_colour(vals, cmap, cmap_range, log_ulim):
@@ -118,14 +138,12 @@ class CompareTable(Table):
         :rtype: tuple[zip[list[str], list[str]], zip[list[str], list[str]]]
         """
         acc, runtime = zip(*vals)
-        acc_colours, acc_text = Table.vals_to_colour(acc,
-                                                     cmap,
-                                                     cmap_range,
-                                                     log_ulim)
-        runtime_colours, runtime_text = Table.vals_to_colour(runtime,
-                                                             cmap,
-                                                             cmap_range,
-                                                             log_ulim)
+        acc_colours, acc_text = Table.vals_to_colour(
+            acc, cmap, cmap_range, log_ulim
+        )
+        runtime_colours, runtime_text = Table.vals_to_colour(
+            runtime, cmap, cmap_range, log_ulim
+        )
         background_col = zip(acc_colours, runtime_colours)
         foreground_text = zip(acc_text, runtime_text)
         return background_col, foreground_text
@@ -145,14 +163,18 @@ class CompareTable(Table):
         :return: The hyperlink representation.
         :rtype: str
         """
-        color_to_class = {'rgb(0,0,0)': 'class="dark"',
-                          'rgb(255,255,255)': 'class="light"'}
+        color_to_class = {
+            "rgb(0,0,0)": 'class="dark"',
+            "rgb(255,255,255)": 'class="light"',
+        }
         ftext, stext = text_col
-        val_str = val_str.split('<br>')
-        val_str = (f'<a {color_to_class[ftext]} '
-                   f'href="{self.get_link_str(result)}">'
-                   f'{val_str[0]}</a>'
-                   f'<a {color_to_class[stext]} '
-                   f'href="{self.get_link_str(result)}">'
-                   f'{val_str[1]}</a>')
+        val_str = val_str.split("<br>")
+        val_str = (
+            f"<a {color_to_class[ftext]} "
+            f'href="{self.get_link_str(result)}">'
+            f"{val_str[0]}</a>"
+            f"<a {color_to_class[stext]} "
+            f'href="{self.get_link_str(result)}">'
+            f"{val_str[1]}</a>"
+        )
         return val_str

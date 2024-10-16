@@ -1,6 +1,7 @@
-'''
+"""
 Test the options write function
-'''
+"""
+
 import os
 import unittest
 
@@ -14,9 +15,9 @@ class OptionsWriteTests(unittest.TestCase):
     """
 
     def setUp(self):
-        '''
+        """
         Create an options file and store input
-        '''
+        """
         config_str = """
             [MINIMIZERS]
             scipy: CG
@@ -50,8 +51,8 @@ class OptionsWriteTests(unittest.TestCase):
             external_output: display
             """
 
-        opts_file = 'test_options_tests.ini'
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        opts_file = "test_options_tests.ini"
+        with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         self.options_file = opts_file
 
@@ -66,7 +67,7 @@ class OptionsWriteTests(unittest.TestCase):
         Test that the options writer works.
         """
         options = Options(file_name=self.options_file)
-        new_file_name = f'copy_of_{self.options_file}'
+        new_file_name = f"copy_of_{self.options_file}"
 
         options.write(new_file_name)
         new_options = Options(new_file_name)
@@ -91,9 +92,9 @@ class OptionsWriteTests(unittest.TestCase):
         Test that the stream options writer works.
         """
         options = Options(file_name=self.options_file)
-        new_file_name = f'copy_of_{self.options_file}'
+        new_file_name = f"copy_of_{self.options_file}"
 
-        with open(new_file_name, 'w', encoding='utf-8') as f:
+        with open(new_file_name, "w", encoding="utf-8") as f:
             options.write_to_stream(f)
 
         new_options = Options(new_file_name)
@@ -113,7 +114,6 @@ class OptionsWriteTests(unittest.TestCase):
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_create_config(self):
-        # pylint: disable=W0212
         """
         Test that created config object contains all valid sections.
         """
@@ -132,8 +132,8 @@ class OptionsWriteTests(unittest.TestCase):
 
             [FITTING]
             """
-        opts_file = 'test_options_tests_valid.ini'
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        opts_file = "test_options_tests_valid.ini"
+        with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         options = Options(opts_file)
         self.assertEqual(options.stored_file_name, opts_file)
@@ -148,13 +148,13 @@ class OptionsWriteTests(unittest.TestCase):
 
             [FITTING]
             """
-        opts_file = 'test_options_tests_valid.ini'
-        with open(opts_file, 'w', encoding='utf-8') as f:
+        opts_file = "test_options_tests_valid.ini"
+        with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
         os.remove(opts_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

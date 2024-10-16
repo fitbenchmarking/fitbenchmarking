@@ -15,19 +15,20 @@ class DFOController(Controller):
     """
 
     algorithm_check = {
-            'all': ['dfols'],
-            'ls': ['dfols'],
-            'deriv_free': ['dfols'],
-            'general': [],
-            'simplex': [],
-            'trust_region': ['dfols'],
-            'levenberg-marquardt': [],
-            'gauss_newton': [],
-            'bfgs': [],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': [],
-            'MCMC': []}
+        "all": ["dfols"],
+        "ls": ["dfols"],
+        "deriv_free": ["dfols"],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["dfols"],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
     def __init__(self, cost_func):
         """
@@ -56,32 +57,36 @@ class DFOController(Controller):
         # set parameter ranges
         if self.value_ranges is not None:
             lb, ub = zip(*self.value_ranges)
-            lb = [-10e+20 if x == -np.inf else x for x in lb]
-            ub = [10e+20 if x == np.inf else x for x in ub]
+            lb = [-10e20 if x == -np.inf else x for x in lb]
+            ub = [10e20 if x == np.inf else x for x in ub]
             self.param_ranges = (np.array(lb), np.array(ub))
 
             # if bounds are set then gap between lower and upper bound must
             # be at least 2*rhobeg so check that default rhobeg value
             # satisfies this condition
             bound_range = np.array(
-                [ub_i - lb_i for lb_i, ub_i in self.value_ranges])
-            self.rhobeg = 0.1*max(np.linalg.norm(self._pinit, np.inf), 1)
-            if min(bound_range) <= 2*self.rhobeg:
-                self.rhobeg = min(bound_range/2)
+                [ub_i - lb_i for lb_i, ub_i in self.value_ranges]
+            )
+            self.rhobeg = 0.1 * max(np.linalg.norm(self._pinit, np.inf), 1)
+            if min(bound_range) <= 2 * self.rhobeg:
+                self.rhobeg = min(bound_range / 2)
         else:
             self.param_ranges = (
-                np.array([-10e+20]*len(self.initial_params)),
-                np.array([10e+20]*len(self.initial_params)))
-            self.rhobeg = 0.1*max(np.linalg.norm(self._pinit, np.inf), 1)
+                np.array([-10e20] * len(self.initial_params)),
+                np.array([10e20] * len(self.initial_params)),
+            )
+            self.rhobeg = 0.1 * max(np.linalg.norm(self._pinit, np.inf), 1)
 
     def fit(self):
         """
         Run problem with DFO.
         """
-        self._soln = dfols.solve(self.cost_func.eval_r,
-                                 self._pinit,
-                                 rhobeg=self.rhobeg,
-                                 bounds=self.param_ranges)
+        self._soln = dfols.solve(
+            self.cost_func.eval_r,
+            self._pinit,
+            rhobeg=self.rhobeg,
+            bounds=self.param_ranges,
+        )
 
         self._popt = self._soln.x
         self._status = self._soln.flag
