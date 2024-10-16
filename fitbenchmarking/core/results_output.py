@@ -588,8 +588,13 @@ def check_max_solvers(opts, solvers, max_solvers):
     return opts
 
 
-def display_page(pathname, profile_instances_all_groups,
-                 layout, max_solvers):
+def display_page(
+    pathname: str,
+    profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
+    layout: "list",
+    max_solvers: int,
+    run_id: str
+):
     """
     Update the layout of the dash app.
 
@@ -601,18 +606,25 @@ def display_page(pathname, profile_instances_all_groups,
     :type layout: list of dcc or html components
     :param max_solvers: Maximum number of solvers that can be plotted
     :type max_solvers: int
+    :param run_id: The id for the run that is plotted in dash
+    :type run_id: str
 
     :return: The updated layout
     :rtype: html.Div
     """
 
     try:
-        _, group, plot, metric_str = pathname.split('/')
+        _, plot_id, group, plot, metric_str = pathname.split('/')
     except ValueError:
-        return ("404 Page Error! Path does not have the expected shape. "
+        return ("404 Page Error! Path does not have the expected format. "
                 "Please provide it in the following form:  \n"
-                "ip-address:port/problem_set/plot/performance_profile.")
+                "ip-address:port/run_id/problem_set/plot/performance_profile.")
 
+    if run_id != plot_id:
+        return (
+            "404 Page Error! Dash plots are not available for these results."
+            "You can use `fitbenchmarking --load-checkpoint` to fix this."
+        )
     if plot != "pp":
         return f"404 Page Error! Plot type '{plot}' not available."
 
@@ -621,7 +633,18 @@ def display_page(pathname, profile_instances_all_groups,
     new_layout = layout
 
     try:
+        first_metric = True
+        current_styles = {}
+        avail_styles = []
         for metric in metric_str.split('+'):
+            if first_metric:
+                current_styles = group_profiles[metric].current_styles
+                avail_styles = group_profiles[metric].avail_styles
+                first_metric = False
+            else:
+                group_profiles[metric].current_styles = current_styles
+                group_profiles[metric].avail_styles = avail_styles
+
             new_layout = new_layout + [group_profiles[metric].layout()]
     except KeyError:
         return ("404 Page Error! The path was not recognized. \n"
@@ -729,7 +752,9 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                 x,
                 profile_instances_all_groups=profile_instances_all_groups,
                 layout=layout,
-                max_solvers=max_solvers)
+                max_solvers=max_solvers,
+                run_id=options.run_id,
+            )
     )
 
     app.run(port=options.port)

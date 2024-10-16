@@ -80,6 +80,10 @@ class OptionsWriteTests(unittest.TestCase):
         options.stored_file_name = ""
         new_options.stored_file_name = ""
 
+        # Overwrite run_id
+        options.run_id = ""
+        new_options.run_id = ""
+
         self.assertDictEqual(options.__dict__, new_options.__dict__)
 
     def test_write_to_stream(self):
@@ -100,6 +104,10 @@ class OptionsWriteTests(unittest.TestCase):
         # Overwrite file names
         options.stored_file_name = ""
         new_options.stored_file_name = ""
+
+        # Overwrite run_id
+        options.run_id = ""
+        new_options.run_id = ""
 
         os.remove(new_file_name)
         self.assertDictEqual(options.__dict__, new_options.__dict__)
