@@ -113,8 +113,8 @@ def generate_test_cases():
                 )
             else:
                 raise RuntimeError(
-                    f"""Too many '{file_format}' files 
-                    found for '{test_name}' test"""
+                    f"Too many '{file_format}' files "
+                    f"found for '{test_name}' test"
                 )
 
             test_parsers = {}
@@ -247,8 +247,10 @@ class TestParsers:
             equal = parsed_attr == expected_attr
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
-            assert equal, f"""{attr} was parsed incorrectly. 
-            {parsed_attr} != {expected_attr}"""
+            assert equal, (
+                f"{attr} was parsed incorrectly. "
+                f"{parsed_attr} != {expected_attr}"
+            )
 
         # Check starting_values
         for a, e in zip(
@@ -305,8 +307,10 @@ class TestParsers:
 
         assert (
             evaluations_file is not None
-        ), f"""No function evaluations provided 
-        to test against for {file_format}"""
+        ), (
+            "No function evaluations provided "
+            f"to test against for {file_format}"
+        )
 
         with open(evaluations_file, encoding="utf-8") as ef:
             results = load(ef)
@@ -356,8 +360,10 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the JACOBIAN_ENABLED_PARSERS list.
         if file_format in JACOBIAN_ENABLED_PARSERS:
-            message = f"""No function evaluations provided 
-            to test against for {file_format}"""
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:
@@ -397,8 +403,10 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
-            message = f"""No function evaluations provided 
-            to test against for {file_format}"""
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:

@@ -100,8 +100,8 @@ class MatlabCurveController(MatlabMixin, Controller):
         Run problem with Matlab
         """
         self.eng.evalc(
-            """[fitobj, gof, output] = fit([x_data', y_data'],
-            zeros(size(x_data))', ft);"""
+            "[fitobj, gof, output] = fit([x_data', y_data'], "
+            "zeros(size(x_data))', ft);"
         )
         self._status = int(self.eng.workspace["output"]["exitflag"])
 

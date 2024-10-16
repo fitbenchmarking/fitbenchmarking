@@ -69,8 +69,8 @@ class BestAvailable(Hessian):
         """
         if value != "default":
             LOGGER.warning(
-                f"""Method cannot be selected for best_available, 
-                using default of {self.sub_hes.method}."""
+                "Method cannot be selected for best_available, "
+                f"using default of {self.sub_hes.method}."
             )
 
     def name(self) -> str:

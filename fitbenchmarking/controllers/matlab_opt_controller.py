@@ -103,8 +103,8 @@ class MatlabOptController(MatlabMixin, Controller):
         else:
             self.eng.workspace["eval_func"] = self.eng.workspace["f_wrapper"]
             self.eng.evalc(
-                """options = optimoptions("lsqcurvefit", 
-                "Algorithm", minimizer);"""
+                'options = optimoptions("lsqcurvefit", ' 
+                '"Algorithm", minimizer);'
             )
 
     def fit(self):

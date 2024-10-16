@@ -15,8 +15,8 @@ def add_persistent_matlab_var(name: str) -> None:
     :type name: str
     """
     ENG.evalc(
-        """if ~exist('persistent_vars'); 
-        persistent_vars = {'persistent_vars'};end;"""
+        "if ~exist('persistent_vars'); "
+        "persistent_vars = {'persistent_vars'};end;"
     )
     ENG.evalc(
         f"if ~ismember('{name}', persistent_vars);"

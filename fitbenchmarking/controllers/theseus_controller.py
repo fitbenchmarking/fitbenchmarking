@@ -37,8 +37,8 @@ class TheseusCostFunction(th.CostFunction):
 
         if len(var) < 1:
             raise ValueError(
-                """TheseusCostFunction must receive at 
-                least one optimization variable."""
+                "TheseusCostFunction must receive at " 
+                "least one optimization variable."
             )
 
         self.register_vars(var, is_optim_vars=True)
