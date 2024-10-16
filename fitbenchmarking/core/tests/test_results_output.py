@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 import pandas as pd
 from dash import dcc, html
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
@@ -22,11 +23,8 @@ from fitbenchmarking.core.results_output import (_extract_tags,
                                                  create_directories,
                                                  create_plots,
                                                  create_problem_level_index,
-                                                 display_page,
-                                                 preprocess_data,
-                                                 save_results,
-                                                 update_warning)
-
+                                                 display_page, preprocess_data,
+                                                 save_results, update_warning)
 from fitbenchmarking.results_processing.performance_profiler import \
     DashPerfProfile
 from fitbenchmarking.utils.checkpoint import Checkpoint
@@ -649,11 +647,13 @@ class DisplayPageTests(unittest.TestCase):
         Test that the expected layout components are returned when the
         pathname refers to one plot only.
         """
-        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc"
-        output_div = display_page(pathname,
-                                  self.profile_instances_all_groups,
-                                  self.layout,
-                                  self.max_solvers)
+        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc"
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="abc")
         output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy']
@@ -664,16 +664,67 @@ class DisplayPageTests(unittest.TestCase):
         Test that the expected layout components are returned when the
         pathname refers to two plots.
         """
-        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
-        output_div = display_page(pathname,
-                                  self.profile_instances_all_groups,
-                                  self.layout,
-                                  self.max_solvers)
+        pathname = "127.0.0.1:5009/123/NIST_low_difficulty/pp/acc+runtime"
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id="123",
+        )
         output_ids = list(output_div)
         expected_ids = ['Log axis toggle', 'dropdown', 'warning',
                         'visual NIST_low_difficulty-Accuracy',
                         'visual NIST_low_difficulty-Runtime']
         self.assertEqual(output_ids, expected_ids)
+
+    @parameterized.expand([
+        ("127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime", "new_id"),
+        ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
+        ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+    ])
+    def test_dash_url_404(self, pathname, run_id):
+        """
+        Tests that errors are reported when the dash url is not correct.
+        """
+        output_div = display_page(
+            pathname=pathname,
+            profile_instances_all_groups=self.profile_instances_all_groups,
+            layout=self.layout,
+            max_solvers=self.max_solvers,
+            run_id=run_id,
+        )
+        assert (
+            isinstance(output_div, str) and output_div.startswith("404")
+        )
+
+    def test_styles_consistent_when_two_plts(self):
+        """
+        Test that the styles of lines on the graphs are consistent when
+        pathname refers to two plots.
+        """
+        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc+runtime"
+        pps = self.profile_instances_all_groups["NIST_low_difficulty"]
+        pp = pps["acc"]
+        pp.current_styles["solver1"] = pp.avail_styles.pop()
+
+        _ = display_page(
+            pathname,
+            self.profile_instances_all_groups,
+            self.layout,
+            self.max_solvers,
+            run_id="abc"
+        )
+
+        self.assertDictEqual(
+            pps["acc"].current_styles,
+            pps["runtime"].current_styles
+        )
+
+        self.assertListEqual(
+            pps["acc"].avail_styles,
+            pps["runtime"].avail_styles
+        )
 
 
 if __name__ == "__main__":
