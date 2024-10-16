@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 import pandas as pd
 from dash import dcc, html
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (_extract_tags,
@@ -677,13 +678,15 @@ class DisplayPageTests(unittest.TestCase):
                         'visual NIST_low_difficulty-Runtime']
         self.assertEqual(output_ids, expected_ids)
 
-    def test_wrong_id(self):
+    @parameterized.expand([
+        ("127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime", "new_id"),
+        ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
+        ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+    ])
+    def test_dash_url_404(self, pathname, run_id):
         """
-        Tests that an error is produced when the id is incorrect.
+        Tests that errors are reported when the dash url is not correct.
         """
-        pathname = "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime"
-        run_id = "new_id"
-
         output_div = display_page(
             pathname=pathname,
             profile_instances_all_groups=self.profile_instances_all_groups,
@@ -693,48 +696,14 @@ class DisplayPageTests(unittest.TestCase):
         )
         assert (
             isinstance(output_div, str) and output_div.startswith("404")
-        ), f"No error reported for {pathname=}, {run_id=}"
-
-    def test_wrong_plot_type(self):
-        """
-        Tests that an error is produced when the plot type is incorrect.
-        """
-        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime"
-
-        output_div = display_page(
-            pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
-            max_solvers=self.max_solvers,
-            run_id="abc",
         )
-        assert (
-            isinstance(output_div, str) and output_div.startswith("404")
-        ), f"No error reported for {pathname=}, ?? is not a plot type"
-
-    def test_wrong_path_format(self):
-        """
-        Tests that an error is produced when the pathname has the wrong format.
-        """
-        pathname = "127.0.0.1:5009/abc/pp/acc+runtime"
-
-        output_div = display_page(
-            pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
-            max_solvers=self.max_solvers,
-            run_id="abc",
-        )
-        assert (
-            isinstance(output_div, str) and output_div.startswith("404")
-        ), f"No error reported for {pathname=}, missing group_name"
 
     def test_styles_consistent_when_two_plts(self):
         """
         Test that the styles of lines on the graphs are consistent when
         pathname refers to two plots.
         """
-        pathname = "127.0.0.1:5009/NIST_low_difficulty/pp/acc+runtime"
+        pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc+runtime"
         pps = self.profile_instances_all_groups["NIST_low_difficulty"]
         pp = pps["acc"]
         pp.current_styles["solver1"] = pp.avail_styles.pop()
@@ -743,7 +712,8 @@ class DisplayPageTests(unittest.TestCase):
             pathname,
             self.profile_instances_all_groups,
             self.layout,
-            self.max_solvers
+            self.max_solvers,
+            run_id="abc"
         )
 
         self.assertDictEqual(
