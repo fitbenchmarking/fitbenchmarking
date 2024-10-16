@@ -53,6 +53,7 @@ class RALFitController(Controller):
         self.param_ranges = None
         self._status = None
         self._popt = None
+        self._iter = None
         self._options = {}
 
     # pylint: disable=too-many-branches
@@ -150,7 +151,7 @@ class RALFitController(Controller):
                                lower_bounds=self.param_ranges[0],
                                upper_bounds=self.param_ranges[1])
         self._status = 0 if self._popt is not None else 1
-        self.iteration_count = inform['iter']
+        self._iter = inform['iter']
 
     def cleanup(self):
         """
@@ -163,3 +164,4 @@ class RALFitController(Controller):
             self.flag = 2
 
         self.final_params = self._popt
+        self.iteration_count = self._iter

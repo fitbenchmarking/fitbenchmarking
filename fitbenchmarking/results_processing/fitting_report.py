@@ -84,10 +84,10 @@ def create_prob_group(result, support_pages_dir, options):
     list_params = n_params < 100
 
     iteration_count = str(result.iteration_count) \
-                      if result.iteration_count else 'not available'
+        if result.iteration_count else 'not available'
 
     func_evals = str(result.func_evals) \
-                 if result.func_evals else 'not available'
+        if result.func_evals else 'not available'
 
     if np.isnan(result.emissions):
         emission_disp = 'N/A'

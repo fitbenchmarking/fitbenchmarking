@@ -49,7 +49,6 @@ class ScipyGOController(Controller):
 
         self.support_for_bounds = True
         self._result = None
-        self._status = None
         self._maxiter = None
 
     def setup(self):
@@ -80,21 +79,15 @@ class ScipyGOController(Controller):
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
         self._result = algorithm(fun, bounds, **kwargs)
-        if self._result.success:
-            self._status = 0
-        elif "Maximum number of iteration" in self._result.message:
-            self._status = 1
-        else:
-            self._status = 2
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status == 0:
+        if self._result.success:
             self.flag = 0
-        elif self._status == 1:
+        elif "Maximum number of iteration" in self._result.message:
             self.flag = 1
         else:
             self.flag = 2

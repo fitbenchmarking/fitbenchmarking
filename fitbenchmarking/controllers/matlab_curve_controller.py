@@ -96,7 +96,6 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.eng.evalc("[fitobj, gof, output] = fit([x_data', y_data'],"
                        "zeros(size(x_data))', ft);")
         self._status = int(self.eng.workspace['output']['exitflag'])
-        self.iteration_count = int(self.eng.workspace['output']['iterations'])
 
     def cleanup(self):
         """
@@ -112,3 +111,5 @@ class MatlabCurveController(MatlabMixin, Controller):
 
         self.final_params = self.eng.coeffvalues(
             self.eng.workspace['fitobj'])[0]
+
+        self.iteration_count = int(self.eng.workspace['output']['iterations'])

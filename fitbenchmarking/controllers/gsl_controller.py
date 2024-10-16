@@ -58,6 +58,7 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
+        self._nits = None
 
     # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):
@@ -230,13 +231,12 @@ class GSLController(Controller):
                                                      self._gradient_tol)
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
-                self.iteration_count = n+1
+                self._nits = n+1
                 break
             if status != errno.GSL_CONTINUE:
                 self.flag = 2
         else:
             self.flag = 1
-            self.iteration_count = self._maxits
 
     def cleanup(self):
         """
@@ -244,3 +244,5 @@ class GSLController(Controller):
         will be read from
         """
         self.final_params = self._solver.getx()
+        self.iteration_count = \
+            self._maxits if self._nits is None else self._nits
