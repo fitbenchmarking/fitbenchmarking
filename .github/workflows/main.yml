@@ -20,8 +20,6 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -43,7 +41,10 @@ jobs:
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -67,7 +68,10 @@ jobs:
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
