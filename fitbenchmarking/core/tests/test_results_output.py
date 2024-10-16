@@ -15,17 +15,22 @@ from dash import dcc, html
 from parameterized import parameterized
 
 from fitbenchmarking import test_files
-from fitbenchmarking.core.results_output import (_extract_tags,
-                                                 _find_matching_tags,
-                                                 _process_best_results,
-                                                 check_max_solvers,
-                                                 create_directories,
-                                                 create_plots,
-                                                 create_problem_level_index,
-                                                 display_page, preprocess_data,
-                                                 save_results, update_warning)
-from fitbenchmarking.results_processing.performance_profiler import \
-    DashPerfProfile
+from fitbenchmarking.core.results_output import (
+    _extract_tags,
+    _find_matching_tags,
+    _process_best_results,
+    check_max_solvers,
+    create_directories,
+    create_plots,
+    create_problem_level_index,
+    display_page,
+    preprocess_data,
+    save_results,
+    update_warning,
+)
+from fitbenchmarking.results_processing.performance_profiler import (
+    DashPerfProfile,
+)
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
@@ -725,7 +730,8 @@ class DisplayPageTests(unittest.TestCase):
             profile_instances_all_groups=self.profile_instances_all_groups,
             layout=self.layout,
             max_solvers=self.max_solvers,
-            run_id="abc")
+            run_id="abc",
+        )
         output_ids = list(output_div)
         expected_ids = [
             "Log axis toggle",
@@ -758,11 +764,16 @@ class DisplayPageTests(unittest.TestCase):
         ]
         self.assertEqual(output_ids, expected_ids)
 
-    @parameterized.expand([
-        ("127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime", "new_id"),
-        ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
-        ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
-    ])
+    @parameterized.expand(
+        [
+            (
+                "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime",
+                "new_id",
+            ),
+            ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
+            ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+        ]
+    )
     def test_dash_url_404(self, pathname, run_id):
         """
         Tests that errors are reported when the dash url is not correct.
@@ -774,9 +785,7 @@ class DisplayPageTests(unittest.TestCase):
             max_solvers=self.max_solvers,
             run_id=run_id,
         )
-        assert (
-            isinstance(output_div, str) and output_div.startswith("404")
-        )
+        assert isinstance(output_div, str) and output_div.startswith("404")
 
     def test_styles_consistent_when_two_plts(self):
         """
@@ -793,17 +802,15 @@ class DisplayPageTests(unittest.TestCase):
             self.profile_instances_all_groups,
             self.layout,
             self.max_solvers,
-            run_id="abc"
+            run_id="abc",
         )
 
         self.assertDictEqual(
-            pps["acc"].current_styles,
-            pps["runtime"].current_styles
+            pps["acc"].current_styles, pps["runtime"].current_styles
         )
 
         self.assertListEqual(
-            pps["acc"].avail_styles,
-            pps["runtime"].avail_styles
+            pps["acc"].avail_styles, pps["runtime"].avail_styles
         )
 
 

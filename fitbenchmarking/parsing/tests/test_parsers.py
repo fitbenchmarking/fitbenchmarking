@@ -305,9 +305,7 @@ class TestParsers:
         :type evaluations_file: string
         """
 
-        assert (
-            evaluations_file is not None
-        ), (
+        assert evaluations_file is not None, (
             "No function evaluations provided "
             f"to test against for {file_format}"
         )
@@ -447,8 +445,10 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the HESSIAN_ENABLED_PARSERS list.
         if file_format in HESSIAN_ENABLED_PARSERS:
-            message = f"""No function evaluations provided 
-            to test against for {file_format}"""
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
             assert evaluations_file is not None, message
 
             with open(evaluations_file, encoding="utf-8") as ef:

@@ -575,8 +575,8 @@ class Fit:
             )
             if np.isnan(runtimes).any() or accuracy_check:
                 raise ControllerAttributeError(
-                    """Either the computed runtime
-                    or accuracy values were a NaN."""
+                    "Either the computed runtime "
+                    "or accuracy values were a NaN."
                 )
         except ValidationException as ex:
             LOGGER.warning(str(ex))

@@ -53,9 +53,9 @@ def get_parser() -> ArgumentParser:
         metavar="ACTION",
         dest="subprog",
         help=(
-           "Which action should be performed? "
-           "For more information on options use "
-           "`fitbenchmarking-cp ACTION -h`"
+            "Which action should be performed? "
+            "For more information on options use "
+            "`fitbenchmarking-cp ACTION -h`"
         ),
     )
 
