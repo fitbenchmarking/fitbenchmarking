@@ -657,7 +657,7 @@ def display_page(
     profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
     layout: "list",
     max_solvers: int,
-    run_id: str
+    run_id: str,
 ):
     """
     Update the layout of the dash app.
@@ -678,11 +678,13 @@ def display_page(
     """
 
     try:
-        _, plot_id, group, plot, metric_str = pathname.split('/')
+        _, plot_id, group, plot, metric_str = pathname.split("/")
     except ValueError:
-        return ("404 Page Error! Path does not have the expected format. "
-                "Please provide it in the following form:  \n"
-                "ip-address:port/run_id/problem_set/plot/performance_profile.")
+        return (
+            "404 Page Error! Path does not have the expected format. "
+            "Please provide it in the following form:  \n"
+            "ip-address:port/run_id/problem_set/plot/performance_profile."
+        )
 
     if run_id != plot_id:
         return (
@@ -700,7 +702,7 @@ def display_page(
         first_metric = True
         current_styles = {}
         avail_styles = []
-        for metric in metric_str.split('+'):
+        for metric in metric_str.split("+"):
             if first_metric:
                 current_styles = group_profiles[metric].current_styles
                 avail_styles = group_profiles[metric].avail_styles
@@ -825,15 +827,15 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
 
     # Create the callback to handle multiple pages
     app.callback(
-        Output('page-content', 'children'),
-        [Input('url', 'pathname')])(
-            lambda x: display_page(
-                x,
-                profile_instances_all_groups=profile_instances_all_groups,
-                layout=layout,
-                max_solvers=max_solvers,
-                run_id=options.run_id,
-            )
+        Output("page-content", "children"), [Input("url", "pathname")]
+    )(
+        lambda x: display_page(
+            x,
+            profile_instances_all_groups=profile_instances_all_groups,
+            layout=layout,
+            max_solvers=max_solvers,
+            run_id=options.run_id,
+        )
     )
 
     app.run(port=options.port)

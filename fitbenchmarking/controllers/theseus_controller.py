@@ -37,7 +37,7 @@ class TheseusCostFunction(th.CostFunction):
 
         if len(var) < 1:
             raise ValueError(
-                "TheseusCostFunction must receive at " 
+                "TheseusCostFunction must receive at "
                 "least one optimization variable."
             )
 

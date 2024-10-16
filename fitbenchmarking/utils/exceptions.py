@@ -196,8 +196,10 @@ class IncompatibleTableError(FitBenchmarkException):
     not compatible
     """
 
-    class_message = """The table type selected is not 
-    compatible with the selected cost function"""
+    class_message = (
+        "The table type selected is not "
+        "compatible with the selected cost function"
+    )
     error_code = 18
 
 
