@@ -611,7 +611,7 @@ def display_page(pathname, profile_instances_all_groups,
     try:
         _, plot_id, group, plot, metric_str = pathname.split('/')
     except ValueError:
-        return ("404 Page Error! Path does not have the expected shape. "
+        return ("404 Page Error! Path does not have the expected format. "
                 "Please provide it in the following form:  \n"
                 "ip-address:port/run_id/problem_set/plot/performance_profile.")
 
