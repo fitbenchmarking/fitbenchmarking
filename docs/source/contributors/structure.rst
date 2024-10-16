@@ -30,9 +30,9 @@ to run our Continuous Integration tests.
 The specific tests run are defined in a series of Bash scripts,
 which are stored in this folder.
 
-###################
+##########################
 Container (``Container``)
-###################
+##########################
 
 The continuous integration process on Github Actions currently run on a container,
 and this directory holds the Containerfiles.
