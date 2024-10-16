@@ -191,10 +191,8 @@ class BumpsController(Controller):
                     self.params_pdfs[name1] = mcmc_draw.points[:, ind].tolist()
             else:
                 self.params_pdfs = {
-                    self.problem.param_names[i]: mcmc_draw.points[
-                        :, i
-                    ].tolist()
-                    for i in range(len(self._param_names))
+                    param: mcmc_draw.points[:, i].tolist()
+                    for i, param in enumerate(self.problem.param_names)
                 }
 
         self.final_params = result

@@ -122,9 +122,10 @@ of the Fitbenchmarking docs. """
         nargs="+",
         type=str,
         default=[],
-        help="""
-        Select what type of algorithm is used within a specific software.
-        """,
+        help=(
+            "Select what type of algorithm is used within a specific "
+            "software."
+        ),
     )
     parser.add_argument(
         "-s",
@@ -183,54 +184,66 @@ of the Fitbenchmarking docs. """
     group1.add_argument(
         "--make_plots",
         action="store_true",
-        help="""
-        Use this option if you have decided to create plots during runtime.
-        """,
+        help=(
+            "Use this option if you have decided to create plots "
+            "during runtime."
+        ),
     )
     group1.add_argument(
         "--dont_make_plots",
         action="store_true",
-        help="""
-        Use this option if you have decided not to create plots during runtime.
-        """,
+        help=(
+            "Use this option if you have decided not to create plots "
+            "during runtime."
+        ),
     )
 
     group2 = parser.add_mutually_exclusive_group()
     group2.add_argument(
         "--results_browser",
         action="store_true",
-        help="Use this option if you have decided to "
-        "open a browser window to show the results "
-        "of a fit benchmark.",
+        help=(
+            "Use this option if you have decided to "
+            "open a browser window to show the results "
+            "of a fit benchmark."
+        ),
     )
     group2.add_argument(
         "--no_results_browser",
         action="store_true",
-        help="Use this option if you have decided not to "
-        "open a browser window to show the results "
-        "of a fit benchmark.",
+        help=(
+            "Use this option if you have decided not to "
+            "open a browser window to show the results "
+            "of a fit benchmark."
+        ),
     )
 
     group3 = parser.add_mutually_exclusive_group()
     group3.add_argument(
         "--pbar",
         action="store_true",
-        help="Use this option if you would like to "
-        "see the progress bar during runtime.",
+        help=(
+            "Use this option if you would like to "
+            "see the progress bar during runtime."
+        ),
     )
     group3.add_argument(
         "--no_pbar",
         action="store_true",
-        help="Use this option if you do not want to "
-        "see the progress bar during runtime.",
+        help=(
+            "Use this option if you do not want to "
+            "see the progress bar during runtime."
+        ),
     )
 
     parser.add_argument(
         "--run_name",
         metavar="RUN_NAME",
         default="",
-        help="Use this option if you would like to "
-        "prefix the html title of results pages.",
+        help=(
+            "Use this option if you would like to "
+            "prefix the html title of results pages."
+        ),
     )
 
     parser.add_argument(
@@ -261,17 +274,21 @@ of the Fitbenchmarking docs. """
     group2.add_argument(
         "--append_log",
         action="store_true",
-        help="Use this option if you have decided to "
-        "log in append mode. If append mode is active, "
-        "the log file will be extended with each "
-        "subsequent run.",
+        help=(
+            "Use this option if you have decided to "
+            "log in append mode. If append mode is active, "
+            "the log file will be extended with each "
+            "subsequent run."
+        ),
     )
     group2.add_argument(
         "--overwrite_log",
         action="store_true",
-        help="Use this option if you have decided not to "
-        "log in append mode. If append mode is not active, "
-        "the log will be cleared after each run.",
+        help=(
+            "Use this option if you have decided not to "
+            "log in append mode. If append mode is not active, "
+            "the log will be cleared after each run."
+        ),
     )
 
     parser.add_argument(
@@ -279,8 +296,10 @@ of the Fitbenchmarking docs. """
         "--level",
         metavar="LEVEL",
         default="",
-        help="Specify the minimum level of logging to display "
-        "on console during runtime.",
+        help=(
+            "Specify the minimum level of logging to display "
+            "on console during runtime."
+        ),
     )
     parser.add_argument(
         "-e",
@@ -294,23 +313,28 @@ of the Fitbenchmarking docs. """
         "--load_checkpoint",
         default=False,
         action="store_true",
-        help="Load results from the checkpoint and generate"
-        "reports. Will not run any new tests.",
+        help=(
+            "Load results from the checkpoint and generate"
+            "reports. Will not run any new tests."
+        ),
     )
 
     group4 = parser.add_mutually_exclusive_group()
     group4.add_argument(
         "--run_dash",
         action="store_true",
-        help="""
-        Use this option if you have decided to run dash for interactive plots.
-        """,
+        help=(
+            "Use this option if you have decided to run dash for "
+            "interactive plots."
+        ),
     )
     group4.add_argument(
         "--dont_run_dash",
         action="store_true",
-        help="Use this option if you have decided not to "
-        "run dash for interactive plots.",
+        help=(
+            "Use this option if you have decided not to "
+            "run dash for interactive plots."
+        ),
     )
     return parser
 
@@ -461,10 +485,10 @@ def main():
     parser = get_parser()
 
     if len(sys.argv) == 1:
-        print("""
-              Running NIST average_difficulty problem set 
-              with scipy minimizers \n
-              """)
+        print(
+            "Running NIST average_difficulty problem set "
+            "with scipy minimizers \n"
+        )
 
     args = parser.parse_args(sys.argv[1:])
 

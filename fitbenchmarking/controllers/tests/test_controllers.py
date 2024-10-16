@@ -904,8 +904,8 @@ class ExternalControllerTests(TestCase):
         self.assertEqual(
             expected,
             actual,
-            """Mantid controller found a different 
-            chi squared for single fit problem.""",
+            "Mantid controller found a different "
+            "chi squared for single fit problem.",
         )
 
     def test_mantid_multifit_chisquared(self):
@@ -945,8 +945,8 @@ class ExternalControllerTests(TestCase):
         self.assertListEqual(
             expected,
             actual,
-            """Mantid controller found a different chi 
-            squared for multi fit problem.""",
+            "Mantid controller found a different chi "
+            "squared for multi fit problem.",
         )
 
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
@@ -1177,8 +1177,10 @@ class GlobalOptimizationControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, "all")
 @mark.skipif(
     platform.system() == "Windows",
-    reason="""Paramonte doesn't automatically detect MPI 
-    libraries installed on Windows""",
+    reason=(
+        "Paramonte doesn't automatically detect MPI "
+        "libraries installed on Windows"
+    ),
 )
 class BayesianControllerTests(TestCase):
     """
@@ -1217,8 +1219,10 @@ class BayesianControllerTests(TestCase):
 @run_for_test_types(TEST_TYPE, "all")
 @mark.skipif(
     platform.system() == "Windows",
-    reason="""Paramonte doesn't automatically detect MPI 
-    libraries installed on Windows""",
+    reason=(
+        "Paramonte doesn't automatically detect MPI "
+        "libraries installed on Windows"
+    ),
 )
 class BayesianControllerBoundsTests(TestCase):
     """

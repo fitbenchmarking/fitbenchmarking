@@ -52,11 +52,11 @@ def get_parser() -> ArgumentParser:
     subparsers = parser.add_subparsers(
         metavar="ACTION",
         dest="subprog",
-        help="""
-        Which action should be performed? 
-        For more information on options use 
-        `fitbenchmarking-cp ACTION -h`
-        """,
+        help=(
+           "Which action should be performed? "
+           "For more information on options use "
+           "`fitbenchmarking-cp ACTION -h`"
+        ),
     )
 
     report_epilog = textwrap.dedent("""
@@ -77,10 +77,10 @@ def get_parser() -> ArgumentParser:
         "--filename",
         metavar="CHECKPOINT_FILE",
         default="",
-        help="""
-        The path to a fitbenchmarking checkpoint file. 
-        If omitted, this will be taken from the options file.
-        """,
+        help=(
+            "The path to a fitbenchmarking checkpoint file. "
+            "If omitted, this will be taken from the options file."
+        ),
     )
     report.add_argument(
         "-o",
@@ -124,11 +124,11 @@ new_results/checkpoint.json
         metavar="STRATEGY",
         default="first",
         choices=["first", "last", "accuracy", "runtime", "emissions"],
-        help="""
-        The merge strategy to use when dealing with conflicts.
-        Selecting accuracy, emissions, or runtime will select for the 
-        lowest from conflicting runs.
-        """,
+        help=(
+            "The merge strategy to use when dealing with conflicts. "
+            "Selecting accuracy, emissions, or runtime will select for the "
+            "lowest from conflicting runs."
+        ),
     )
     return parser
 

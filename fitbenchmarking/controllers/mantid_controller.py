@@ -180,10 +180,8 @@ class MantidController(Controller):
                     ]
 
                 constraints = ",".join(
-                    f"""
-                    {self.value_ranges[i][0]} < {p} <{self.value_ranges[i][1]}
-                    """
-                    for i, p in enumerate(self._param_names)
+                    f"{vr[0]} < {p} < {vr[1]}"
+                    for vr, p in zip(self.value_ranges, self._param_names)
                 )
                 function_def += f"; constraints=({constraints})"
 

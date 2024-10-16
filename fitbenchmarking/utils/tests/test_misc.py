@@ -34,8 +34,8 @@ class CreateDirsTests(unittest.TestCase):
 
             with open(filepath, "w+", encoding="utf-8") as f:
                 f.write(
-                    """This is a mock data file to check 
-                    that finding files is correct"""
+                    "This is a mock data file to check "
+                    "that finding files is correct"
                 )
 
         self.expected = sorted(expected)
