@@ -15,12 +15,11 @@ Ceres Solver
 ------------
 
 Ceres Solver is used as a fitting software in FitBenchmarking, and is called via the
-PyCeres interface.
+pyceres interface.
 
-Install instructions can be found on the `PyCeres <https://github.com/Edwinem/ceres_python_bindings#recommended-build-alongside-ceres>`__ Github page and 
+Install instructions can be found on the `pyveres <https://github.com/cvg/pyceres#installation>`__ Github page and 
 `Ceres Solver documentation <http://ceres-solver.org/installation.html>`__ 
 
-Please note that the ``PYCERES_LOCATION`` environment variable must be set.
 
 CUTEst
 ------
