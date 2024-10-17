@@ -27,9 +27,10 @@ RUN pip install "pytest>3.6" \
     pytest-cov \
     coveralls \
     "coverage~=4.5.4" \ 
-    "urllib3==1.23" \
+    urllib3 \
     mock \
-    meson 
+    meson \
+    "numpy<2.0"
 
 WORKDIR /
 
@@ -108,6 +109,8 @@ WORKDIR $CUTEST
 RUN meson setup builddir
 RUN meson compile -C builddir
 RUN meson install -C builddir
+RUN ln -s /usr/local/libcutest_single.a object/pc64.lnx.gfo/single/libcutest.a
+RUN ln -s /usr/local/libcutest_double.a object/pc64.lnx.gfo/double/libcutest.a
 
 # install pycutest
 RUN python -m pip install pycutest
@@ -146,7 +149,7 @@ RUN cmake -G Ninja /mantid-$MANTID_VERSION -DENABLE_MANTIDQT=OFF -DENABLE_WORKBE
 RUN cmake --build .
 
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
-RUN python -m pip install IPython six python-dateutil pyyaml h5py
+RUN python -m pip install --no-binary=h5py IPython six python-dateutil pyyaml h5py
 ENV HDF5_DISABLE_VERSION_CHECK=2
 RUN /opt/Mantid/bin/mantidpython -m  mantid.simpleapi || echo "expected segfault on first run"
 
