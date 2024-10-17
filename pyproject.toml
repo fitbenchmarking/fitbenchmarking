@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "FitBenchmarkign Team" }]
 description = "FitBenchmarking: A tool for comparing fitting software"
 readme = "README.md"
-requires-python = ">=3.8.1"
+requires-python = ">=3.9.1"
 keywords = [
     "benchmark",
     "fitting",

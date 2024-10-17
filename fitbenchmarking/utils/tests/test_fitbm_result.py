@@ -6,7 +6,6 @@ import inspect
 import os
 import textwrap
 import unittest
-from typing import TYPE_CHECKING
 
 import numpy as np
 from parameterized import parameterized
@@ -17,12 +16,10 @@ from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import \
     Analytic as AnalyticHessian
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
-
-if TYPE_CHECKING:
-    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 class FitbmResultTests(unittest.TestCase):
@@ -38,7 +35,7 @@ class FitbmResultTests(unittest.TestCase):
         test_files_dir = os.path.dirname(inspect.getfile(test_files))
         problem_dir = os.path.join(test_files_dir, "cubic.dat")
 
-        problem: 'FittingProblem' = parse_problem_file(
+        problem: FittingProblem = parse_problem_file(
             problem_dir, self.options)
         problem.correct_data()
 
