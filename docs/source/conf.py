@@ -38,7 +38,7 @@ autodoc_mock_imports = ['mantid', 'ral_nlls', 'pycutest', 'dfols',
                         'bumps.fitters', 'tempfile', 'backports',
                         'gradient_free_optimizers', 'levmar', 'PyCeres',
                         'theseus', 'torch', 'lmfit', 'nlopt', 'codecarbon',
-                        'paramonte']
+                        'paramonte', 'pyro']
 
 
 # -- General configuration ------------------------------------------------
