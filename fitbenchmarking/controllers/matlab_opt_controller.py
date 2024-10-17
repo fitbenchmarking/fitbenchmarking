@@ -49,6 +49,7 @@ class MatlabOptController(MatlabMixin, Controller):
         self.y_data_mat = None
         self._status = None
         self.result = None
+        self._nits = None
 
     def setup(self):
         """
@@ -101,11 +102,12 @@ class MatlabOptController(MatlabMixin, Controller):
         """
         Run problem with Matlab Optimization Toolbox
         """
-        self.result, _, _, exitflag, _ = self.eng.lsqcurvefit(
+        self.result, _, _, exitflag, output = self.eng.lsqcurvefit(
             self.eng.workspace['eval_func'], self.initial_params_mat,
             self.x_data_mat, self.y_data_mat, self.param_ranges[0],
             self.param_ranges[1], self.eng.workspace['options'], nargout=5)
         self._status = int(exitflag)
+        self._nits = output['iterations']
 
     def cleanup(self):
         """
@@ -122,3 +124,5 @@ class MatlabOptController(MatlabMixin, Controller):
 
         self.final_params = np.array(self.result[0],
                                      dtype=np.float64).flatten()
+
+        self.iteration_count = self._nits

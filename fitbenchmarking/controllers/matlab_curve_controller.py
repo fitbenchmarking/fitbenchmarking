@@ -2,6 +2,7 @@
 Implements a controller for MATLAB Curve Fitting Toolbox
 """
 import os
+
 import matlab
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -110,3 +111,5 @@ class MatlabCurveController(MatlabMixin, Controller):
 
         self.final_params = self.eng.coeffvalues(
             self.eng.workspace['fitobj'])[0]
+
+        self.iteration_count = int(self.eng.workspace['output']['iterations'])
