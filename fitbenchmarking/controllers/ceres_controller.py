@@ -103,7 +103,7 @@ class CeresController(Controller):
         self._status = None
         self.ceres_problem = pyceres.Problem()
         self.ceres_options = pyceres.SolverOptions()
-        self.ceres_summary = pyceres.Summary()
+        self.ceres_summary = pyceres.SolverSummary()
         self.ceres_cost_func = CeresCostFunction(self.cost_func)
 
     def setup(self):
@@ -112,8 +112,9 @@ class CeresController(Controller):
         """
         self.result = np.array(self.initial_params)
 
-        self.ceres_problem.add_residual_block(self.ceres_cost_func, None,
-                                              self.result)
+        self.ceres_problem.add_residual_block(
+            self.ceres_cost_func, None, [self.result]
+        )
 
         self.ceres_options.max_num_iterations = 10000
 
