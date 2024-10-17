@@ -117,7 +117,7 @@ ignored-modules = [
     "mantid",
     "matlab",
     "nlopt",
-    "PyCeres",
+    "pyceres",
     "pycutest",
     "pygsl",
     "ral_nlls",
