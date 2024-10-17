@@ -1,9 +1,8 @@
 """
 FitBenchmarking results object
 """
-
 from statistics import fmean, harmonic_mean, median
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import numpy as np
 from scipy import stats
@@ -21,28 +20,30 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(
-        self,
-        controller: "Controller",
-        accuracy: "float | list[float]" = np.inf,
-        runtimes: "float | list[float]" = np.inf,
-        emissions: "float" = np.inf,
-        runtime_metric: Literal[
-            "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
-        ] = "mean",
-        dataset: "Optional[int]" = None,
-    ) -> None:
+    def __init__(self,
+                 controller: Controller,
+                 accuracy: Union[float, list[float]] = np.inf,
+                 runtimes: Union[float, list[float]] = np.inf,
+                 emissions: float = np.inf,
+                 runtime_metric: Literal['mean',
+                                         'minimum',
+                                         'maximum',
+                                         'first',
+                                         'median',
+                                         'harmonic',
+                                         'trim'] = 'mean',
+                 dataset: Optional[int] = None) -> None:
         """
         Initialise the Fitting Result
 
         :param controller: Controller used to fit
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
-        :type accuracy: float | list[float], optional
+        :type accuracy: Union[float, list[float]], optional
         :param runtimes: All runtimes of the fit, defaults to np.inf
-        :type runtimes: float | list[float], optional
+        :type runtimes: Union[float, list[float]], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
-        :type emissions: float | list[float], optional
+        :type emissions: float, optional
         :param dataset: The index of the dataset (Only used for MultiFit),
                         defaults to None
         :type dataset: int, optional

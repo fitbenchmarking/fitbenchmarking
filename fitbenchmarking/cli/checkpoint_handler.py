@@ -177,10 +177,10 @@ def generate_report(options_file="", additional_options=None, debug=False):
 
 @exception_handler
 def merge_data_sets(
-    files: "list[str]",
-    output: "str",
-    strategy: "str" = "first",
-    debug: "bool" = False,
+    files: list[str],
+    output: str,
+    strategy: str = 'first',
+    debug: bool = False,
 ):
     """
     Combine multiple checkpoint files into one following these rules:
@@ -291,7 +291,7 @@ def merge(A, B, strategy):
     return A
 
 
-def merge_problems(A: "dict[str, dict]", B: "dict[str, dict]"):
+def merge_problems(A: dict[str, dict], B: dict[str, dict]):
     """
     Merge the problem sections of 2 checkpoint files.
     If problems have matching names but different values, the problem from
@@ -345,7 +345,7 @@ def merge_problems(A: "dict[str, dict]", B: "dict[str, dict]"):
     return A, update_keys
 
 
-def merge_results(A: "list[dict]", B: "list[dict]", strategy: str):
+def merge_results(A: list[dict], B: list[dict], strategy: str):
     """
     Merge the results sections of 2 checkpoint files.
 
@@ -360,8 +360,7 @@ def merge_results(A: "list[dict]", B: "list[dict]", strategy: str):
     :return: Merged results list
     :rtype: list[dict[str, any]]
     """
-
-    def key_gen(k: "dict"):
+    def key_gen(k: dict):
         """
         Get a uid for a result entry in cp file.
         """

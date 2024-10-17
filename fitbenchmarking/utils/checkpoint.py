@@ -9,7 +9,7 @@ import os
 import pickle
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Dict
+from typing import Union
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -41,9 +41,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: TemporaryDirectory[str] | None = None
-        self.problems_file: str | None = None
-        self.results_file: str | None = None
+        self.dir: Union[TemporaryDirectory, None] = None
+        self.problems_file: Union[str, None] = None
+        self.results_file: Union[str, None] = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(
@@ -236,13 +236,13 @@ class Checkpoint:
 
         :return: Instantiated fitting results,
                  unselected minimisers, failed problems
-        :rtype: Tuple[ dict[str, list[FittingResult]],
+        :rtype: tuple[ dict[str, list[FittingResult]],
                        dict,
                        dict[str, list[str]]]
         """
-        output: Dict[str, list[FittingResult]] = {}
-        unselected_minimizers: Dict[str, list[str]] = {}
-        failed_problems: Dict[str, list[str]] = {}
+        output: dict[str, list[FittingResult]] = {}
+        unselected_minimizers: dict[str, list[str]] = {}
+        failed_problems: dict[str, list[str]] = {}
 
         for f in [
             self.options.checkpoint_filename,
@@ -331,7 +331,7 @@ def _compress(value):
     Compress a python object into an ascii string
 
     :param value: The value to compress
-    :type value: List
+    :type value: list
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
@@ -345,6 +345,6 @@ def _decompress(value: str):
     :param value: The string to decompress
     :type value: str
     :return: The decompressed value
-    :rtype: List
+    :rtype: list
     """
     return pickle.loads(a85decode(value.encode("ascii")))

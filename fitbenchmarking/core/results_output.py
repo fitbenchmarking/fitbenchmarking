@@ -9,7 +9,7 @@ import platform
 import re
 import webbrowser
 from shutil import copytree
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union
+from typing import Optional, Union
 
 import pandas as pd
 from dash import Dash, dcc, html
@@ -34,10 +34,6 @@ from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import get_css, get_js
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.write_files import write_file
-
-if TYPE_CHECKING:
-    from fitbenchmarking.utils.options import Options
-
 
 LOGGER = get_logger()
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
@@ -134,7 +130,7 @@ def create_directories(options, group_name):
     return group_dir, support_dir, figures_dir
 
 
-def preprocess_data(results: "list[FittingResult]"):
+def preprocess_data(results: list[FittingResult]):
     """
     Generate a dictionary of results lists sorted into the correct order
     with rows and columns as the key and list elements respectively.
@@ -163,7 +159,7 @@ def preprocess_data(results: "list[FittingResult]"):
     col_sections = ["costfun"]
 
     # Generate the columns, category, and row tags and sort
-    rows: Union[List[str], Set[str]] = set()
+    rows: Union[list[str], set[str]] = set()
     columns = {}
     for r in results:
         # Error 4 means none of the jacobians ran so can't infer the
@@ -191,7 +187,7 @@ def preprocess_data(results: "list[FittingResult]"):
     }
 
     # Build the sorted results dictionary
-    sorted_results: Dict[str, Dict[str, List[Optional[FittingResult]]]] = {
+    sorted_results: dict[str, dict[str, list[Optional[FittingResult]]]] = {
         r.strip(":"): {
             k: [None for _ in category] for k, category in columns.items()
         }
@@ -235,10 +231,10 @@ def preprocess_data(results: "list[FittingResult]"):
 
 def _extract_tags(
     result: FittingResult,
-    row_sorting: List[str],
-    col_sorting: List[str],
-    cat_sorting: List[str],
-) -> Dict[str, str]:
+    row_sorting: list[str],
+    col_sorting: list[str],
+    cat_sorting: list[str],
+) -> dict[str, str]:
     """
     Extract the row, column, and category tags from a result based on a given
     sorting order.
@@ -275,7 +271,7 @@ def _extract_tags(
     return result_tags
 
 
-def _process_best_results(results: List[FittingResult]) -> FittingResult:
+def _process_best_results(results: list[FittingResult]) -> FittingResult:
     """
     Process the best result from a list of FittingResults.
     This includes:
@@ -285,7 +281,7 @@ def _process_best_results(results: List[FittingResult]) -> FittingResult:
      - Setting the `min_emissions` value
 
     :param results: The results to compare and update
-    :type results: List[FittingResult]
+    :type results: list[FittingResult]
 
     :return: The result with the lowest accuracy
     :rtype: FittingResult
@@ -311,14 +307,14 @@ def _process_best_results(results: List[FittingResult]) -> FittingResult:
     return best
 
 
-def _find_matching_tags(tag: str, lst: List[str]):
+def _find_matching_tags(tag: str, lst: list[str]):
     """
     Extract the full list of matches to the regex stored in tag.
 
     :param tag: A regex to search for
     :type tag: str
     :param lst: A set of tags to search
-    :type lst: List[str]
+    :type lst: list[str]
 
     :return: The matching tags from lst
     :rtype: list[str]
@@ -495,7 +491,7 @@ def create_problem_level_index(
 
 
 def create_index_page(
-    options: "Options", groups: "list[str]", result_directories: "list[str]"
+    options: Options, groups: list[str], result_directories: list[str]
 ) -> str:
     """
     Creates the results index page for the benchmark, and copies

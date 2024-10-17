@@ -251,9 +251,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
     return values[~np.isnan(values)]
 
 
-def adjust_values_to_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> "dict[str, list]":
+def adjust_values_to_plot(step_values: list[np.ndarray],
+                          solvers: list[str]) -> dict[str, list]:
     """
     Prepares the values to plot and deals with failures.
 
@@ -327,9 +326,8 @@ def compute_linestyle_combinations() -> "list[tuple[str, str]]":
     return avail_styles
 
 
-def create_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> go.Figure:
+def create_plot(step_values: list[np.ndarray],
+                solvers: list[str]) -> go.Figure:
     """
     Function to draw plot in plotly.
 
@@ -371,12 +369,9 @@ def create_plot(
     return fig
 
 
-def create_df(
-    solvers: "list[str]",
-    labels: "list[str]",
-    solver_values: "list[np.ndarray]",
-    plot_points: "list[np.ndarray]",
-) -> pd.DataFrame:
+def create_df(solvers: list[str], labels: list[str],
+              solver_values: list[np.ndarray],
+              plot_points: list[np.ndarray]) -> pd.DataFrame:
     """
     Creates a pandas dataframe with performance profile data,
     which Dash uses to plot the profiles.

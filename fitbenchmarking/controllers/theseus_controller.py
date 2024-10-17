@@ -2,7 +2,7 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from typing import List, Optional, Sequence, Tuple
+from typing import Optional, Sequence
 
 import numpy as np
 import theseus as th
@@ -20,7 +20,7 @@ class TheseusCostFunction(th.CostFunction):
     def __init__(
         self,
         fb_cf,
-        var: List[th.Vector],
+        var: list[th.Vector],
         auxvar: Sequence[th.Variable],
         dim: int,
         cost_weight: Optional[th.CostWeight] = None,
@@ -44,7 +44,7 @@ class TheseusCostFunction(th.CostFunction):
         self.register_vars(var, is_optim_vars=True)
         self.register_vars(auxvar, is_optim_vars=False)
 
-    def error(self) -> Tuple[List[torch.Tensor], List[float]]:
+    def error(self) -> tuple[list[torch.Tensor], list[float]]:
         """
         Resdiuals in pytorch tensor form for Theseus ai
         """
@@ -56,7 +56,7 @@ class TheseusCostFunction(th.CostFunction):
         th_res = torch.Tensor(np.array([res]))
         return th_res
 
-    def jacobians(self) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    def jacobians(self) -> tuple[list[torch.Tensor], torch.Tensor]:
         """
         Jacobians in pytorch tensor form for Theseus ai
         """
