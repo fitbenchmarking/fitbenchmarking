@@ -109,8 +109,10 @@ WORKDIR $CUTEST
 RUN meson setup builddir
 RUN meson compile -C builddir
 RUN meson install -C builddir
-RUN ln -s /usr/local/libcutest_single.a object/pc64.lnx.gfo/single/libcutest.a
-RUN ln -s /usr/local/libcutest_double.a object/pc64.lnx.gfo/double/libcutest.a
+RUN mkdir -p objects/pc64.lnx.gfo/single
+RUN mkdir -p objects/pc64.lnx.gfo/double
+RUN ln -s /usr/local/lib/libcutest_single.a objects/pc64.lnx.gfo/single/libcutest.a
+RUN ln -s /usr/local/lib/libcutest_double.a objects/pc64.lnx.gfo/double/libcutest.a
 
 # install pycutest
 RUN python -m pip install pycutest
