@@ -1,18 +1,18 @@
 """
 This file contains unit tests for the main CLI script
 """
+import inspect
+import os
 from unittest import TestCase
 from unittest.mock import patch
-import os
-import inspect
 
-from fitbenchmarking.cli import main
 from fitbenchmarking import test_files
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cli import main
 from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.utils import fitbm_result, exceptions
-from fitbenchmarking.utils.options import Options
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions, fitbm_result
+from fitbenchmarking.utils.options import Options
 
 
 def make_controller(file_name='cubic.dat', minimizers=None):
@@ -41,13 +41,13 @@ def mock_func_call(*args, **kwargs):
     """
     controller = make_controller()
 
-    results: 'list[fitbm_result.FittingResult]' = []
+    results: list[fitbm_result.FittingResult] = []
     controller.flag = 4
     controller.parameter_set = 0
     result = fitbm_result.FittingResult(controller=controller)
     results.append(result)
 
-    failed_problems: 'list[str]' = []
+    failed_problems: list[str] = []
     unselected_minimizers = {}
     return results, failed_problems, unselected_minimizers
 

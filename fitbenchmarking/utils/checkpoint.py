@@ -9,13 +9,11 @@ import os
 import pickle
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING
+from typing import Union
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
-
-if TYPE_CHECKING:
-    from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.options import Options
 
 
 class Checkpoint:
@@ -25,33 +23,33 @@ class Checkpoint:
     This class must be finalised to create the checkpoint.
     """
 
-    def __init__(self, options: 'Options'):
+    def __init__(self, options: Options):
         """
         Set up a new Checkpoint class
         """
         # Labels for all finalised groups
-        self.finalised_labels: 'list[str]' = []
+        self.finalised_labels: list[str] = []
         # Flag for if the file has been locked post writing
         self.finalised: bool = False
 
         # True if next result is the first in a group
         self.first_result = True
         # Problems that have been written already in the current group
-        self.problem_names: 'list[str]' = []
+        self.problem_names: list[str] = []
 
         # Options to define behavior
         self.options = options
 
         # File paths for temp files
-        self.dir: 'TemporaryDirectory[str] | None' = None
-        self.problems_file: 'str | None' = None
-        self.results_file: 'str | None' = None
+        self.dir: Union[TemporaryDirectory, None] = None
+        self.problems_file: Union[str, None] = None
+        self.results_file: Union[str, None] = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(self.options.results_dir,
                                          self.options.checkpoint_filename)
 
-    def add_result(self, result: 'FittingResult'):
+    def add_result(self, result: FittingResult):
         """
         Add the result to the checkpoint file.
 
@@ -115,7 +113,7 @@ class Checkpoint:
 
         self.first_result = False
 
-    def _add_problem(self, result: 'FittingResult'):
+    def _add_problem(self, result: FittingResult):
         """
         Add a problem to the problem file if it hasn't already been added.
         (assumes problems have unique names)
@@ -221,13 +219,13 @@ class Checkpoint:
 
         :return: Instantiated fitting results,
                  unselected minimisers, failed problems
-        :rtype: Tuple[ dict[str, list[FittingResult]],
+        :rtype: tuple[ dict[str, list[FittingResult]],
                        dict,
                        dict[str, list[str]]]
         """
-        output: 'dict[str,list[FittingResult]]' = {}
-        unselected_minimizers: 'dict[str, list[str]]' = {}
-        failed_problems: 'dict[str, list[str]]' = {}
+        output: dict[str, list[FittingResult]] = {}
+        unselected_minimizers: dict[str, list[str]] = {}
+        failed_problems: dict[str, list[str]] = {}
 
         for f in [self.options.checkpoint_filename,
                   os.path.join(self.options.results_dir,
@@ -311,7 +309,7 @@ def _compress(value):
     Compress a python object into an ascii string
 
     :param value: The value to compress
-    :type value: List
+    :type value: list
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
@@ -325,6 +323,6 @@ def _decompress(value: str):
     :param value: The string to decompress
     :type value: str
     :return: The decompressed value
-    :rtype: List
+    :rtype: list
     """
     return pickle.loads(a85decode(value.encode('ascii')))

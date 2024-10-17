@@ -8,7 +8,7 @@ evaluations - using the same problem in both mantid and
 nist formats gives mantiddev different rankings in terms of
 speed.
 """
-import typing
+from typing import Callable, Union
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -39,7 +39,7 @@ class MantidDevParser(FitbenchmarkParser):
             self.fitting_problem.additional_info['mantid_ties'] \
                 = self._parse_ties()
 
-    def _dense_jacobian(self) -> 'typing.Callable | None':
+    def _dense_jacobian(self) -> Union[Callable, None]:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
@@ -112,7 +112,7 @@ class MantidDevParser(FitbenchmarkParser):
                 jac[i, j] = J.get(i, j)
         return jac
 
-    def _create_function(self) -> typing.Callable:
+    def _create_function(self) -> Callable:
         """
         Processing the function in the Mantid problem definition into a
         python callable.

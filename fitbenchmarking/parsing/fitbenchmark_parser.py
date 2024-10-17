@@ -5,7 +5,7 @@ import importlib
 import os
 import re
 import sys
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import numpy as np
 
@@ -293,7 +293,7 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _dense_jacobian(self) -> 'Callable | None':
+    def _dense_jacobian(self) -> Union[Callable, None]:
         """
         Function to help getting dense jac.
 
@@ -302,7 +302,7 @@ class FitbenchmarkParser(Parser):
         """
         return self._get_jacobian('dense_func')
 
-    def _sparse_jacobian(self) -> 'Callable | None':
+    def _sparse_jacobian(self) -> Union[Callable, None]:
         """
         Function to help getting sparse jac.
 
@@ -311,7 +311,7 @@ class FitbenchmarkParser(Parser):
         """
         return self._get_jacobian('sparse_func')
 
-    def _get_jacobian(self, jac_type) -> 'Callable | None':
+    def _get_jacobian(self, jac_type) -> Union[Callable, None]:
         """
         Process the dense/sparse jac function into a callable.
         Returns None if this is not possible.
@@ -421,7 +421,7 @@ class FitbenchmarkParser(Parser):
         return value, rem
 
     @staticmethod
-    def _parse_function_value(value: str) -> 'int | float | bool | str':
+    def _parse_function_value(value: str) -> Union[int, float, bool, str]:
         """
         Parse a value from a string into a numerical type if possible.
 
@@ -550,7 +550,7 @@ def _parse_range(range_str):
     return output_ranges
 
 
-def _find_first_line(file_lines: "list[str]") -> int:
+def _find_first_line(file_lines: list[str]) -> int:
     """
     Finds the first line where the data starts i.e. the
     first line with a float on it.
@@ -574,7 +574,7 @@ def _find_first_line(file_lines: "list[str]") -> int:
     raise ParsingError('Could not find data points')
 
 
-def _get_column_data(file_lines: "list[str]", first_row: int,
+def _get_column_data(file_lines: list[str], first_row: int,
                      dim: int) -> list:
     """
     Gets the data in the file as a dictionary of x, y and e data.
