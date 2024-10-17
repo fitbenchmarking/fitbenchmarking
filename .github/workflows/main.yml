@@ -18,9 +18,8 @@ on:
 jobs:
   default_system_linux:
     name: Default System Tests (Linux)
+    if: github.event.repository.fork == false
     runs-on: ubuntu-latest
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -39,9 +38,13 @@ jobs:
 
   full_system_linux:
     name: Full System Tests (Linux)
+    if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -62,9 +65,13 @@ jobs:
 
   full_unit_linux:
     name: Full Unit Tests (Linux)
+    if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -93,12 +100,13 @@ jobs:
         path: test-results/full_unit_pytest.xml
 
   default_unit_tests:
-    name: Default Unit Tests (Linux)
+    name: Default Unit Tests
+    if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python: ['3.8', '3.x']
+        python: ['3.8', '3.12']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
@@ -119,7 +127,7 @@ jobs:
       if: runner.os == 'Windows'
       run: bash ci/unit_tests_default.sh
     - name: Upload test results
-      if: runner.os == 'Linux' && matrix.python == '3.x'
+      if: runner.os == 'Linux' && matrix.python == '3.12'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
@@ -127,6 +135,7 @@ jobs:
 
   linting_test:
     name: Linting Tests (Linux)
+    if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -134,7 +143,7 @@ jobs:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.x'
+        python-version: '3.12'
         check-latest: true
     - name: Install default dependencies for fitbenchmarking
       run: |
@@ -145,9 +154,9 @@ jobs:
 
   publish-test-results:
     name: Publish Test Results
+    if: github.event.repository.fork == false && always()
     needs: [default_system_linux, full_system_linux, default_unit_tests, full_unit_linux]
     runs-on: ubuntu-latest
-    if: always()
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4

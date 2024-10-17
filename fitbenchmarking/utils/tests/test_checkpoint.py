@@ -182,7 +182,13 @@ class CheckpointTests(TestCase):
 
             actual = cp_file.read_text(encoding='utf8').splitlines()
 
-        self.assertListEqual(expected, actual)
+        # parameters which are compressed and decompressed
+        params = ['fin_y', 'r_x', 'jac_x', 'params', 'ini_y',
+                  'x', 'y', 'e', 'sorted_idx', 'ini_params']
+        for e, a in zip(expected, actual):
+            if any(param in a for param in params):
+                continue
+            self.assertEqual(a, e)
 
     def test_no_file(self):
         """

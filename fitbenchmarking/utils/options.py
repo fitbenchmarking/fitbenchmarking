@@ -6,6 +6,7 @@ This file will handle all interaction with the options configuration file.
 import configparser
 import glob
 import os
+import uuid
 
 import matplotlib.pyplot as plt
 
@@ -348,6 +349,8 @@ class Options:
         :type additional_options: dict
 
         """
+        self.run_id = uuid.uuid4().hex
+
         # additional_options is initialied to an empty dict if
         # no value is given
         if additional_options is None:
