@@ -10,15 +10,14 @@ from unittest.mock import patch
 
 import nlopt
 import numpy as np
+from parameterized import parameterized
 from pytest import mark
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
-from parameterized import parameterized
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.controllers.controller_factory import \
-        ControllerFactory
+from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
     LoglikeNLLSCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
@@ -573,7 +572,6 @@ class ControllerBoundsTests(TestCase):
         ('dfo', 'dfols'),
         ('bumps', 'amoeba'),
         ('ralfit', 'gn'),
-        ('levmar', 'levmar'),
         ('mantid', 'Levenberg-Marquardt'),
         ('nlopt', 'LD_LBFGS'),
         ('ceres', 'Levenberg_Marquardt'),
@@ -748,26 +746,6 @@ class ExternalControllerTests(TestCase):
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
         self.cost_func.jacobian = self.jac
-
-    def test_levmar(self):
-        """
-        LevmarController: Tests for output shape
-        """
-        controller = create_controller('levmar', self.cost_func)
-        controller.minimizer = 'levmar'
-        self.shared_tests.controller_run_test(controller)
-
-        controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "Stopped by small gradient J^T e",
-                            4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "Stopped by small ||e||_2", 4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "maxit", 4, 5, 6)
-        self.shared_tests.check_max_iterations(controller)
-        controller._info = (0, 1, 2, "diverged", 4, 5, 6)
-        self.shared_tests.check_diverged(controller)
 
     @parameterized.expand(['Levenberg_Marquardt', 'Gauss-Newton'])
     def test_theseus(self, minimizer):
