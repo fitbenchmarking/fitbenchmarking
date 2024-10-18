@@ -35,7 +35,7 @@ index a2f61284629..6a61faea95e 100644
    tracebackToStream(msg, traceback->tb_next, false);
  }
 diff --git a/Framework/PythonInterface/mantid/kernel/funcinspect.py b/Framework/PythonInterface/mantid/kernel/funcinspect.py
-index e5aad721..7f59ad0a 100644
+index e5aad721..25bae43f 100644
 --- a/Framework/PythonInterface/mantid/kernel/funcinspect.py
 +++ b/Framework/PythonInterface/mantid/kernel/funcinspect.py
 @@ -31,52 +31,8 @@ def replace_signature(func, signature):
@@ -90,4 +90,14 @@ index e5aad721..7f59ad0a 100644
 -        # endif
 +        code_attr = "__code__"
 +        c = func.__code__.replace(co_nlocals=2, co_varnames=signature)
-         setattr(func, code_attr, c) 
+         setattr(func, code_attr, c)
+
+
+@@ -222,6 +178,7 @@ def decompile(code_object):
+ # We must list all of the operators that behave like a function calls in byte-code
+ # This is for the lhs functionality
+ OPERATOR_NAMES = {
++    "CALL",
+     "CALL_FUNCTION",
+     "CALL_FUNCTION_VAR",
+     "CALL_FUNCTION_KW",
