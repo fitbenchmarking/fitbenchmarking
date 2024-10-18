@@ -110,7 +110,7 @@ exclude = ['*mock*', '*test*']
 source = "versioningit"
 
 [tool.pylint.main]
-ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
+ignore = ["benchmark_problems", "fonts", "test_files", "templates", "conf.py"]
 ignored-modules = [
     "levmar",
     "lmfit",
