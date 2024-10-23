@@ -212,7 +212,7 @@ def setup_options(override_software: list = None,
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
-    software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl", "levmar",
+    software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl",
                         "lmfit", "mantid", "minuit", "nlopt", "ralfit",
                         "scipy", "scipy_ls", "scipy_leastsq", "theseus"],
                 "default": ["bumps", "scipy", "scipy_ls"],
@@ -226,7 +226,6 @@ def setup_options(override_software: list = None,
                   "gofit": "regularisation",
                   "gsl": "lmsder",
                   "horace": "lm-lsqr",
-                  "levmar": "levmar",
                   "lmfit": "least_squares",
                   "mantid": "Levenberg-Marquardt",
                   "matlab": "Nelder-Mead Simplex",

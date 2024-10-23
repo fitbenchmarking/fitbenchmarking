@@ -59,18 +59,10 @@ Levmar
 ------
 
 Levmar is available on pip, however the latest release will only work up to Python 3.8.
-In order to use Levmar with newer versions of python, you are required to clone the
-repository and build it locally. This is fast and has been tested on Ubuntu 20.04.
+The python interface to levmar is unmaintained and no longer easy to install on the latest versions of python.
+The bindings may be installable from the `github repo <https://github.com/bjodah/levmar>`__ though
+we have not tested them on python >= 3.12.
 
-Instructions for linux are below, for other operating systems the process will be the same.
-
-```
-git clone git@github.com:bjodah/levmar.git
-cd levmar
-pip install .
-cd ..
-rm -rf levmar
-```
 
 Mantid
 ------
