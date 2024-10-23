@@ -34,6 +34,7 @@ index a2f61284629..6a61faea95e 100644
 +      << extract<const char *>(PyFrame_GetCode(traceback->tb_frame)->co_filename)() << "\'";
    tracebackToStream(msg, traceback->tb_next, false);
  }
+
 diff --git a/Framework/PythonInterface/mantid/kernel/funcinspect.py b/Framework/PythonInterface/mantid/kernel/funcinspect.py
 index e5aad721..25bae43f 100644
 --- a/Framework/PythonInterface/mantid/kernel/funcinspect.py
