@@ -276,6 +276,49 @@ class BaseControllerTests(TestCase):
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
+    def test_check_valid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.check_attributes()
+
+    def test_check_invalid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with invalid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10.5
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
+    def test_check_valid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.func_evals = 10
+        controller.check_attributes()
+
+    def test_check_invalid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with invalid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.func_evals = 10.5
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
     def test_validate_minimizer_true(self):
         """
         BaseSoftwareController: Test validate_minimizer with valid

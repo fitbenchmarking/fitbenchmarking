@@ -892,7 +892,9 @@ class BenchmarkTests(unittest.TestCase):
                          'minimizer_tag',
                          'jacobian_tag',
                          'hessian_tag',
-                         'costfun_tag']:
+                         'costfun_tag',
+                         'iteration_count',
+                         'func_evals']:
                 assert getattr(r, attr) == \
                     expected['results'][ix][attr]
             self.assertAlmostEqual(r.accuracy,
