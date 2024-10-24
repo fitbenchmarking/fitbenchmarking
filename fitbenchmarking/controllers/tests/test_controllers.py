@@ -615,7 +615,6 @@ class ControllerBoundsTests(TestCase):
         ('dfo', 'dfols'),
         ('bumps', 'amoeba'),
         ('ralfit', 'gn'),
-        ('levmar', 'levmar'),
         ('mantid', 'Levenberg-Marquardt'),
         ('nlopt', 'LD_LBFGS'),
         ('ceres', 'Levenberg_Marquardt'),
@@ -790,26 +789,6 @@ class ExternalControllerTests(TestCase):
         self.jac.method = '2-point'
         self.shared_tests = ControllerSharedTesting()
         self.cost_func.jacobian = self.jac
-
-    def test_levmar(self):
-        """
-        LevmarController: Tests for output shape
-        """
-        controller = create_controller('levmar', self.cost_func)
-        controller.minimizer = 'levmar'
-        self.shared_tests.controller_run_test(controller)
-
-        controller._info = (0, 1, 2, "Stop by small Dp", 4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "Stopped by small gradient J^T e",
-                            4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "Stopped by small ||e||_2", 4, 5, 6)
-        self.shared_tests.check_converged(controller)
-        controller._info = (0, 1, 2, "maxit", 4, 5, 6)
-        self.shared_tests.check_max_iterations(controller)
-        controller._info = (0, 1, 2, "diverged", 4, 5, 6)
-        self.shared_tests.check_diverged(controller)
 
     @parameterized.expand(['Levenberg_Marquardt', 'Gauss-Newton'])
     def test_theseus(self, minimizer):
