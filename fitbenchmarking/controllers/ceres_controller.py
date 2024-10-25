@@ -1,6 +1,7 @@
 """
 Implements a controller for the Ceres fitting software.
 """
+
 import numpy as np
 import pyceres
 
@@ -12,7 +13,6 @@ class CeresCostFunction(pyceres.CostFunction):
     """
     Cost function for Ceres solver
     """
-
 
     def __init__(self, fb_cf):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
@@ -128,8 +128,9 @@ class CeresController(Controller):
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            for i, (value_ranges_lb, value_ranges_ub) in \
-                    enumerate(self.value_ranges):
+            for i, (value_ranges_lb, value_ranges_ub) in enumerate(
+                self.value_ranges
+            ):
                 self.ceres_problem.set_parameter_lower_bound(
                     self.result, i, value_ranges_lb
                 )
@@ -137,33 +138,42 @@ class CeresController(Controller):
                     self.result, i, value_ranges_ub
                 )
 
-        self.ceres_options.linear_solver_type = \
+        self.ceres_options.linear_solver_type = (
             pyceres.LinearSolverType.DENSE_QR
+        )
 
         if self.minimizer == "Levenberg_Marquardt":
-            self.ceres_options.trust_region_strategy_type =  \
+            self.ceres_options.trust_region_strategy_type = (
                 pyceres.TrustRegionStrategyType.LEVENBERG_MARQUARDT
+            )
         elif self.minimizer == "Dogleg":
-            self.ceres_options.trust_region_strategy_type = \
+            self.ceres_options.trust_region_strategy_type = (
                 pyceres.TrustRegionStrategyType.DOGLEG
+            )
         elif self.minimizer == "BFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.BFGS
+            )
         elif self.minimizer == "LBFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.LBFGS
+            )
         elif self.minimizer == "steepest_descent":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.STEEPEST_DESCENT
+            )
         elif self.minimizer == "Fletcher_Reeves":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.FLETCHER_REEVES
+            )
         elif self.minimizer == "Polak_Ribiere":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.POLAK_RIBIERE
+            )
         elif self.minimizer == "Hestenes_Stiefel":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.HESTENES_STIEFEL
+            )
         else:
             raise UnknownMinimizerError(
                 f"No {self.minimizer} minimizer for Ceres solver"

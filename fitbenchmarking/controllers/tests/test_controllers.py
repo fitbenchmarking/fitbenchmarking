@@ -18,10 +18,12 @@ from conftest import run_for_test_types
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.controllers.controller_factory import ControllerFactory
-from fitbenchmarking.cost_func.loglike_nlls_cost_func import \
-    LoglikeNLLSCostFunc
-from fitbenchmarking.cost_func.weighted_nlls_cost_func import \
-    WeightedNLLSCostFunc
+from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
+    LoglikeNLLSCostFunc,
+)
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
+    WeightedNLLSCostFunc,
+)
 from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
@@ -573,18 +575,20 @@ class ControllerBoundsTests(TestCase):
             self.assertLessEqual(controller.value_ranges[count][0], value)
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
-    @parameterized.expand([
-        ('scipy', 'L-BFGS-B'),
-        ('scipy_ls', 'trf'),
-        ('minuit', 'migrad'),
-        ('dfo', 'dfols'),
-        ('bumps', 'amoeba'),
-        ('ralfit', 'gn'),
-        ('mantid', 'Levenberg-Marquardt'),
-        ('nlopt', 'LD_LBFGS'),
-        ('ceres', 'Levenberg_Marquardt'),
-        ('lmfit', 'least_squares'),
-    ])
+    @parameterized.expand(
+        [
+            ("scipy", "L-BFGS-B"),
+            ("scipy_ls", "trf"),
+            ("minuit", "migrad"),
+            ("dfo", "dfols"),
+            ("bumps", "amoeba"),
+            ("ralfit", "gn"),
+            ("mantid", "Levenberg-Marquardt"),
+            ("nlopt", "LD_LBFGS"),
+            ("ceres", "Levenberg_Marquardt"),
+            ("lmfit", "least_squares"),
+        ]
+    )
     def test_controller_bounds(self, controller_name, minimizer):
         """
         Test that parameter bounds are respected for
@@ -759,7 +763,7 @@ class ExternalControllerTests(TestCase):
         self.shared_tests = ControllerSharedTesting()
         self.cost_func.jacobian = self.jac
 
-    @parameterized.expand(['Levenberg_Marquardt', 'Gauss-Newton'])
+    @parameterized.expand(["Levenberg_Marquardt", "Gauss-Newton"])
     def test_theseus(self, minimizer):
         """
         TheseusController: Tests for output shape

@@ -229,33 +229,55 @@ def setup_options(
     # The software to test for the different test types.
     # - 'dfo' and 'minuit' are included but are unstable for other datasets.
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
-    software = {"all": ["bumps", "dfo", "ceres", "gofit", "gsl",
-                        "lmfit", "mantid", "minuit", "nlopt", "ralfit",
-                        "scipy", "scipy_ls", "scipy_leastsq", "theseus"],
-                "default": ["bumps", "scipy", "scipy_ls"],
-                "matlab": ["horace", "matlab", "matlab_curve", "matlab_opt",
-                           "matlab_stats"]}
+    software = {
+        "all": [
+            "bumps",
+            "dfo",
+            "ceres",
+            "gofit",
+            "gsl",
+            "lmfit",
+            "mantid",
+            "minuit",
+            "nlopt",
+            "ralfit",
+            "scipy",
+            "scipy_ls",
+            "scipy_leastsq",
+            "theseus",
+        ],
+        "default": ["bumps", "scipy", "scipy_ls"],
+        "matlab": [
+            "horace",
+            "matlab",
+            "matlab_curve",
+            "matlab_opt",
+            "matlab_stats",
+        ],
+    }
 
     # The minimizers to test for each software
-    minimizers = {"bumps": "lm-bumps",
-                  "dfo": "dfols",
-                  "ceres": "Levenberg_Marquardt",
-                  "gofit": "regularisation",
-                  "gsl": "lmsder",
-                  "horace": "lm-lsqr",
-                  "lmfit": "least_squares",
-                  "mantid": "Levenberg-Marquardt",
-                  "matlab": "Nelder-Mead Simplex",
-                  "matlab_curve": "Levenberg-Marquardt",
-                  "matlab_opt": "levenberg-marquardt",
-                  "matlab_stats": "Levenberg-Marquardt",
-                  "minuit": "migrad",
-                  "nlopt": "LD_VAR1",
-                  "ralfit": "gn",
-                  "scipy": "Nelder-Mead",
-                  "scipy_ls": "lm-scipy",
-                  "scipy_leastsq": "lm-leastsq",
-                  "theseus": "Levenberg_Marquardt"}
+    minimizers = {
+        "bumps": "lm-bumps",
+        "dfo": "dfols",
+        "ceres": "Levenberg_Marquardt",
+        "gofit": "regularisation",
+        "gsl": "lmsder",
+        "horace": "lm-lsqr",
+        "lmfit": "least_squares",
+        "mantid": "Levenberg-Marquardt",
+        "matlab": "Nelder-Mead Simplex",
+        "matlab_curve": "Levenberg-Marquardt",
+        "matlab_opt": "levenberg-marquardt",
+        "matlab_stats": "Levenberg-Marquardt",
+        "minuit": "migrad",
+        "nlopt": "LD_VAR1",
+        "ralfit": "gn",
+        "scipy": "Nelder-Mead",
+        "scipy_ls": "lm-scipy",
+        "scipy_leastsq": "lm-leastsq",
+        "theseus": "Levenberg_Marquardt",
+    }
 
     opts.software = (
         software.get(TEST_TYPE)
