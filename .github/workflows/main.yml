@@ -20,12 +20,12 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    container:
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - name: Install python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-        check-latest: true
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Install dependencies
