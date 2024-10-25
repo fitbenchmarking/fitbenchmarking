@@ -20,11 +20,6 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
-    container:
-      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
