@@ -1,0 +1,7 @@
+# FitBenchmark Problem 
+software = 'Mantiddev' 
+name = 'MUSR62260_Group_bottom_Asymmetry_MA.nxs' 
+description = 'This data comes from MUSR62260_Group_bottom_Asymmetry_MA.nxs and it is used in the ExecuteGeneratedPythonFitScriptTest system test' 
+input_file ='MUSR62260_Group_bottom_Asymmetry_MA.dat' 
+function = "name=GausOsc,A=0.2,Sigma=0.2,Frequency=1.3,Phi=0"
+fit_ranges = {'x': [0.11, 20.0]}
