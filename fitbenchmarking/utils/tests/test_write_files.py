@@ -7,7 +7,7 @@ import shutil
 import unittest
 
 from fitbenchmarking.utils.create_dirs import results
-from fitbenchmarking.utils.exceptions import FilepathTooLongError
+from fitbenchmarking.utils.exceptions import FilePathError
 from fitbenchmarking.utils.write_files import CHARACTER_LIMIT, write_file
 
 
@@ -54,7 +54,7 @@ class WriteFilesTests(unittest.TestCase):
         )
         self.assertGreater(len(file_path), CHARACTER_LIMIT)
 
-        with self.assertRaises(FilepathTooLongError):
+        with self.assertRaises(FilePathError):
             write_to_a_file(file_path, "Hello")
 
         self.assertTrue(not os.path.exists(file_path))

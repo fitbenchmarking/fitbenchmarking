@@ -10,6 +10,7 @@ import glob
 import inspect
 import os
 import sys
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import fitbenchmarking
@@ -22,7 +23,7 @@ from fitbenchmarking.core.results_output import (
     save_results,
 )
 from fitbenchmarking.utils.checkpoint import Checkpoint
-from fitbenchmarking.utils.exceptions import NoResultsError
+from fitbenchmarking.utils.exceptions import FilePathError, NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.options import find_options_file
 
@@ -73,104 +74,70 @@ of the Fitbenchmarking docs. """
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    root = Path(inspect.getfile(fitbenchmarking)).parent
 
-    parser.add_argument(
-        "-o",
-        "--options-file",
-        metavar="OPTIONS_FILE",
-        default="",
-        help="The path to a %(prog)s options file.",
-    )
-    parser.add_argument(
-        "-p",
-        "--problem_sets",
-        nargs="+",
-        default=glob.glob(
-            os.path.join(
-                root, "benchmark_problems", "NIST", "average_difficulty"
-            )
-        ),
-        help="Paths to directories containing problem sets.",
-    )
-    parser.add_argument(
-        "-r",
-        "--results_dir",
-        metavar="RESULTS_DIR",
-        default="",
-        help="The directory to store resulting files in.",
-    )
-    parser.add_argument(
-        "-d",
-        "--debug-mode",
-        default=False,
-        action="store_true",
-        help="Enable debug mode (prints traceback).",
-    )
-    parser.add_argument(
-        "-n",
-        "--num_runs",
-        metavar="NUM_RUNS",
-        type=int,
-        default=0,
-        help="Set the number of runs to average each fit over.",
-    )
-    parser.add_argument(
-        "-a",
-        "--algorithm_type",
-        metavar="ALGORITHM_TYPE",
-        nargs="+",
-        type=str,
-        default=[],
-        help=(
-            "Select what type of algorithm is used within a specific "
-            "software."
-        ),
-    )
-    parser.add_argument(
-        "-s",
-        "--software",
-        metavar="SOFTWARE",
-        nargs="+",
-        type=str,
-        default=[],
-        help="Select the fitting software to benchmark.",
-    )
-    parser.add_argument(
-        "-j",
-        "--jac_method",
-        metavar="JAC_METHOD",
-        nargs="+",
-        type=str,
-        default=[],
-        help="Set the Jacobian to be used.",
-    )
-    parser.add_argument(
-        "-c",
-        "--cost_func_type",
-        metavar="COST_FUNC_TYPE",
-        nargs="+",
-        type=str,
-        default=[],
-        help="Set the cost functions to be used for the given data.",
-    )
-    parser.add_argument(
-        "-rt",
-        "--runtime_metric",
-        metavar="RUNTIME_METRIC",
-        choices=[
-            "mean",
-            "minimum",
-            "maximum",
-            "first",
-            "median",
-            "harmonic",
-            "trim",
-        ],
-        type=str,
-        default="",
-        help="Set the metric for the runtime.",
-    )
+    parser.add_argument('-o', '--options-file',
+                        metavar='OPTIONS_FILE',
+                        default='',
+                        help='The path to a %(prog)s options file.')
+    parser.add_argument('-p', '--problem_sets',
+                        nargs='+',
+                        default=[root.joinpath("benchmark_problems",
+                                               "NIST",
+                                               "average_difficulty")],
+                        help='Paths to directories containing problem sets.')
+    parser.add_argument('-r', '--results_dir',
+                        metavar='RESULTS_DIR',
+                        default='',
+                        help='The directory to store resulting files in.')
+    parser.add_argument('-d', '--debug-mode',
+                        default=False,
+                        action='store_true',
+                        help='Enable debug mode (prints traceback).',)
+    parser.add_argument('-n', '--num_runs',
+                        metavar='NUM_RUNS',
+                        type=int,
+                        default=0,
+                        help="Set the number of runs to average "
+                        "each fit over.")
+    parser.add_argument('-a', '--algorithm_type',
+                        metavar='ALGORITHM_TYPE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Select what type of algorithm is used within a "
+                        "specific software.")
+    parser.add_argument('-s', '--software',
+                        metavar='SOFTWARE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Select the fitting software to benchmark.")
+    parser.add_argument('-j', '--jac_method',
+                        metavar='JAC_METHOD',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Set the Jacobian to be used.")
+    parser.add_argument('-c', '--cost_func_type',
+                        metavar='COST_FUNC_TYPE',
+                        nargs='+',
+                        type=str,
+                        default=[],
+                        help="Set the cost functions to be used "
+                        "for the given data.")
+    parser.add_argument('-rt', '--runtime_metric',
+                        metavar='RUNTIME_METRIC',
+                        choices=['mean',
+                                 'minimum',
+                                 'maximum',
+                                 'first',
+                                 'median',
+                                 'harmonic',
+                                 'trim'],
+                        type=str,
+                        default='',
+                        help="Set the metric for the runtime.")
 
     parser.add_argument(
         "--port",
@@ -483,14 +450,20 @@ def main():
     Entry point to be exposed as the `fitbenchmarking` command.
     """
     parser = get_parser()
+    args = parser.parse_args(sys.argv[1:])
 
     if len(sys.argv) == 1:
+        if not args.problem_sets[0].exists():
+            raise FilePathError(
+                "The default problem set has either been "
+                "deleted or moved. Please specify a file "
+                "path to a different problem set with the "
+                "-p option."
+            )
         print(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
         )
-
-    args = parser.parse_args(sys.argv[1:])
 
     # Dictionary of options which can be set via argparse
     # rather than from an ini file or from the default options

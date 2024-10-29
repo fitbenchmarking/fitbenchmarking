@@ -267,12 +267,11 @@ class IncompatibleJacobianError(ValidationException):
     error_code = 24
 
 
-class FilepathTooLongError(FitBenchmarkException):
+class FilePathError(FitBenchmarkException):
     """
-    Indicates the filepath to save a file to is too long.
+    Indicates the filepath is invalid.
     """
-
-    class_message = "The filepath for saving a file is too long."
+    class_message = "The filepath is invalid."
     error_code = 25
 
 
