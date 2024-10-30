@@ -1,0 +1,7 @@
+Mantid_Test_Data_(leastsquares)
+
+This folder contains data used in the mantid system tests.
+
+The data comes from the WeightedLeastSquaresTest.py and the UnweightedLeastSquaresTest.py file.
+The data for TwoGaussPeaksEVSData comes from EVS14188-90_processed.txt and the data for the
+rest of the datasets is defined within the tests of the same name.

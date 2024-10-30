@@ -1,0 +1,11 @@
+Mantid_Test_Data_(musr62260)
+
+This folder contains data used in the mantid system tests.
+
+The data comes from the ExecuteGeneratedPythonFitScriptTest.py file.
+The data comes from
+1) MUSR62260_Group_fwd_Asymmetry_MA.nxs
+2) MUSR62260_Group_bottom_Asymmetry_MA.nxs
+3) MUSR62260_Group_top_Asymmetry_MA.nxs 
+4) MUSR62260_Group_bkwd_Asymmetry_MA.nxs
+the data files are renamed for easier integration.
