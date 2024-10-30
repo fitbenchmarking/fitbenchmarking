@@ -296,12 +296,9 @@ class FittingProblem:
         """
         if parameter_set not in self._ini_y:
             params = self.starting_values[parameter_set].values()
-            if self.multifit:
-                self._ini_y[parameter_set] = [
-                    self.eval_model(params=params, x=x) for x in self.data_x
-                ]
-            else:
-                self._ini_y[parameter_set] = self.eval_model(params=params)
+            self._ini_y[parameter_set] = self.eval_model(params=params,
+                                                         x=self.data_x[0]) \
+                if self.multifit else self.eval_model(params=params)
         return self._ini_y[parameter_set]
 
 
