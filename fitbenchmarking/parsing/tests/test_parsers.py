@@ -562,6 +562,9 @@ class TestParserNoJac(TestCase):
 
 
 class TestFitbenchmarkParser(TestCase):
+    """
+    Tests the FitbenchmarkParser.
+    """
 
     @parameterized.expand([
         (["name = '\\sample_problem'"],
@@ -578,13 +581,14 @@ class TestFitbenchmarkParser(TestCase):
         (["function = 'Userdefined = a/4 ** 6'"],
          {"function": "Userdefined = a/4 ** 6"}),
     ])
-    @patch.object(FitbenchmarkParser, "__init__", lambda x: None)
+    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
     def test_get_data_problem_entries(self, file_data, expected):
         """
-        Test verifies that forward and backward slashes are removed
+        Verifies the output of _get_data_problem_entries() method.
         """
-        parser = FitbenchmarkParser()
+        parser = FitbenchmarkParser('test_file.txt', {"parse"})
         parser.file = MagicMock()
         parser.file.readlines.return_value = file_data
+        # pylint: disable=protected-access
         result = parser._get_data_problem_entries()
         assert result == expected
