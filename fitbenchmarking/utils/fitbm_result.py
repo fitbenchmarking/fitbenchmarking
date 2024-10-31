@@ -380,7 +380,7 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_runtime is None:
-            if self.min_runtime in [np.nan, np.inf, 0]:
+            if self.min_runtime in [np.nan, np.inf]:
                 self._norm_runtime = np.inf
             else:
                 self._norm_runtime = self.runtime / self.min_runtime
