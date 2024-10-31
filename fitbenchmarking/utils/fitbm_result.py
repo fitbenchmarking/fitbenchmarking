@@ -1,7 +1,6 @@
 """
 FitBenchmarking results object
 """
-
 from statistics import fmean, harmonic_mean, median
 from typing import Literal, Optional
 
@@ -357,7 +356,9 @@ class FittingResult:
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             else:
-                self._norm_acc = self.accuracy / self.min_accuracy
+                best = 1e-10 if self.min_accuracy in [0.0, 0]\
+                    else self.min_accuracy
+                self._norm_acc = self.accuracy / best
         return self._norm_acc
 
     @norm_acc.setter
@@ -379,7 +380,7 @@ class FittingResult:
         :rtype: float
         """
         if self._norm_runtime is None:
-            if self.min_runtime in [np.nan, np.inf]:
+            if self.min_runtime in [np.nan, np.inf, 0]:
                 self._norm_runtime = np.inf
             else:
                 self._norm_runtime = self.runtime / self.min_runtime

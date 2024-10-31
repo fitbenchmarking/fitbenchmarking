@@ -200,20 +200,18 @@ class FitbmResultTests(unittest.TestCase):
         )
         self.assertAlmostEqual(expected, result.runtime, places=5)
 
-    def test_norm_acc_finite_min(self):
+    @parameterized.expand([(np.inf, np.inf, np.inf),
+                           (np.nan, np.nan, np.inf),
+                           (1, 0.01, 100),
+                           (1e-10, 0, 1),
+                           (2e-10, 0, 2),
+                           (1e-5, 0, 1e+5)])
+    def test_norm_acc(self, acc, min_acc, expected):
         """
-        Test that norm_acc is correct when min_acc is finite.
+        Test norm_acc returns the expected results.
         """
-        expected = self.accuracy / self.min_accuracy
-        self.assertEqual(self.result.norm_acc, expected)
-
-    def test_norm_acc_infinite_min(self):
-        """
-        Test that norm_acc is correct when min_acc is infinite.
-        """
-        expected = np.inf
-        self.result.accuracy = np.inf
-        self.result.min_accuracy = np.inf
+        self.result.accuracy = acc
+        self.result.min_accuracy = min_acc
         self.assertEqual(self.result.norm_acc, expected)
 
     @parameterized.expand(
@@ -245,10 +243,9 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test that norm_runtime is correct when min_runtime is infinite.
         """
-        expected = np.inf
         self.result.runtime = np.inf
         self.result.min_runtime = np.inf
-        self.assertEqual(self.result.norm_runtime, expected)
+        self.assertEqual(self.result.norm_runtime, np.inf)
 
     def test_sanitised_name(self):
         """
