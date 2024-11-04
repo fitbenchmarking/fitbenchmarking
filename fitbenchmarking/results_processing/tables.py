@@ -155,10 +155,11 @@ def create_results_tables(
                             os.path.relpath(table.pp_locations[p], group_dir)
                             for p in table.pps
                         ],
-                        pp_dash_url=f'http://127.0.0.1:{options.port}/'
-                        f"{options.run_id}/"
-                        f'{os.path.basename(group_dir)}/'
-                        f'pp/{"+".join(table.pps)}',
+                        pp_dash_url=(
+                            f"http://127.0.0.1:{options.port}/"
+                            f"{options.run_id}/{os.path.basename(group_dir)}/"
+                            f"pp/{'+'.join(table.pps)}"
+                        ),
                         cbar=cbar,
                         run_name=run_name,
                         error_message=ERROR_OPTIONS,
