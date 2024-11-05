@@ -1,6 +1,7 @@
 """
 FitBenchmarking results object
 """
+
 from statistics import fmean, harmonic_mean, median
 from typing import Literal, Optional
 
@@ -359,9 +360,11 @@ class FittingResult:
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
             elif self.min_accuracy in [0.0, 0]:
-                LOGGER.warning("The min accuracy of the dataset is 0. "
-                               "The relative performance will be "
-                               "approximated using a min of 1e-10.")
+                LOGGER.warning(
+                    "The min accuracy of the dataset is 0. "
+                    "The relative performance will be "
+                    "approximated using a min of 1e-10."
+                )
                 self._norm_acc = self.accuracy / 1e-10
             else:
                 self._norm_acc = self.accuracy / self.min_accuracy

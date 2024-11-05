@@ -203,12 +203,16 @@ class FitbmResultTests(unittest.TestCase):
         )
         self.assertAlmostEqual(expected, result.runtime, places=5)
 
-    @parameterized.expand([(np.inf, np.inf, np.inf, False),
-                           (np.nan, np.nan, np.inf, False),
-                           (1, 0.01, 100, False),
-                           (1e-10, 0, 1, True),
-                           (2e-10, 0, 2, True),
-                           (1e-5, 0, 1e+5, True)])
+    @parameterized.expand(
+        [
+            (np.inf, np.inf, np.inf, False),
+            (np.nan, np.nan, np.inf, False),
+            (1, 0.01, 100, False),
+            (1e-10, 0, 1, True),
+            (2e-10, 0, 2, True),
+            (1e-5, 0, 1e5, True),
+        ]
+    )
     def test_norm_acc(self, acc, min_acc, expected, warn):
         """
         Test norm_acc returns the expected results and raises the warning.
@@ -218,9 +222,12 @@ class FitbmResultTests(unittest.TestCase):
         if warn:
             with self.assertLogs(LOGGER, level="WARNING") as log:
                 self.assertEqual(self.result.norm_acc, expected)
-                self.assertIn("The min accuracy of the dataset is 0. The "
-                              "relative performance will be approximated "
-                              "using a min of 1e-10.", log.output[0])
+                self.assertIn(
+                    "The min accuracy of the dataset is 0. The "
+                    "relative performance will be approximated "
+                    "using a min of 1e-10.",
+                    log.output[0],
+                )
         else:
             self.assertEqual(self.result.norm_acc, expected)
 

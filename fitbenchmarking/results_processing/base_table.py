@@ -16,10 +16,10 @@ from fitbenchmarking.utils.misc import get_js
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
     "rel": "Relative values are displayed in the table. Incase "
-           "of a perfect fit on a problem ``rel = abs / 1e-10``.",
+    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
     "both": "Absolute and relative values are displayed in "
-            "the table in the format ``abs (rel)``. Incase "
-            "of a perfect fit on a problem ``rel = abs / 1e-10``.",
+    "the table in the format ``abs (rel)``. Incase "
+    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
 }
 CONTRAST_RATIO_AAA = 7.0
 
