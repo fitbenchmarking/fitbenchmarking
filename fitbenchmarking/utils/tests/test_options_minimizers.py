@@ -345,11 +345,13 @@ class UserMininimizerOptionTests(unittest.TestCase):
         Tests the error msg when wrong minimizer is selected.
         """
         opts_file = self.generate_user_ini_file(["ameoba", "de"], "bumps")
-        msg = ("Failed to process options.\nDetails: The option 'bumps:"
-               " ['ameoba', 'de']' in the ini file is invalid. ['ameoba']"
-               " is not a valid option. bumps must be one or more of"
-               " ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq',"
-               " 'dream']")
+        msg = (
+            "Failed to process options.\nDetails: The option 'bumps:"
+            " ['ameoba', 'de']' in the ini file is invalid. ['ameoba']"
+            " is not a valid option. bumps must be one or more of"
+            " ['amoeba', 'lm-bumps', 'newton', 'de', 'scipy-leastsq',"
+            " 'dream']"
+        )
         with self.assertRaises(exceptions.OptionsError) as exp:
             Options(opts_file)
         self.assertEqual(str(exp.exception), msg)

@@ -710,14 +710,16 @@ class Options:
 
         if option in self.VALID[section]:
             value_list = [value] if not isinstance(value, list) else value
-            invalid_values = [v for v in value_list if v not
-                              in self.VALID[section][option]]
+            invalid_values = [
+                v for v in value_list if v not in self.VALID[section][option]
+            ]
             if invalid_values:
                 self.error_message.append(
                     f"The option '{option}: {value}' in the ini "
                     f"file is invalid. {invalid_values} is not a "
                     f"valid option. {option} must be one or "
-                    f"more of {self.VALID[section][option]}")
+                    f"more of {self.VALID[section][option]}"
+                )
         return value
 
     @property
