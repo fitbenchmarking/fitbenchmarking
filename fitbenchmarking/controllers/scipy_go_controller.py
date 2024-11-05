@@ -15,26 +15,30 @@ class ScipyGOController(Controller):
     """
     Controller for the Scipy fitting software.
     """
-    controller_name = 'scipy_go'
+
+    controller_name = "scipy_go"
 
     algorithm_check = {
-        'all': ['differential_evolution', 'shgo', 'dual_annealing'],
-        'ls': [None],
-        'deriv_free': ['differential_evolution'],
-        'general': ['differential_evolution', 'shgo', 'dual_annealing'],
-        'simplex': [],
-        'trust_region': [],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': ['differential_evolution', 'shgo',
-                                'dual_annealing'],
-        'MCMC': []
+        "all": ["differential_evolution", "shgo", "dual_annealing"],
+        "ls": [None],
+        "deriv_free": ["differential_evolution"],
+        "general": ["differential_evolution", "shgo", "dual_annealing"],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [
+            "differential_evolution",
+            "shgo",
+            "dual_annealing",
+        ],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['shgo', 'dual_annealing']
+    jacobian_enabled_solvers = ["shgo", "dual_annealing"]
 
     def __init__(self, cost_func):
         """
@@ -61,15 +65,20 @@ class ScipyGOController(Controller):
             self._maxiter = 1000
         if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
             raise MissingBoundsError(
-                "SciPy GO requires finite bounds on all parameters")
+                "SciPy GO requires finite bounds on all parameters"
+            )
 
     def fit(self):
         """
         Run problem with Scipy GO.
         """
         if self.minimizer == "shgo":
-            kwargs = {"options": {"maxiter": self._maxiter,
-                                  "jac": self.cost_func.jac_cost}}
+            kwargs = {
+                "options": {
+                    "maxiter": self._maxiter,
+                    "jac": self.cost_func.jac_cost,
+                }
+            }
         elif self.minimizer == "dual_annealing":
             kwargs = {
                 "maxiter": self._maxiter,

@@ -1,6 +1,7 @@
 """
 Accuracy table
 """
+
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -16,7 +17,8 @@ class AccTable(Table):
     scipy.optimize.curve_fit).
 
     """
-    name = 'acc'
+
+    name = "acc"
     cbar_title = "Problem-Specific Cell Shading: Relative Accuracy"
 
     def get_value(self, result):

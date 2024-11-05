@@ -20,13 +20,12 @@ class BestAvailable(Jacobian):
     """
 
     def __init__(self, problem):
-        # pylint: disable=super-init-not-called
         if callable(problem.jacobian):
             self.sub_jac = Analytic(problem)
-            self.sub_jac.method = 'default'
+            self.sub_jac.method = "default"
         else:
             self.sub_jac = Scipy(problem)
-            self.sub_jac.method = '2-point'
+            self.sub_jac.method = "2-point"
 
     def eval(self, params, **kwargs):
         """
@@ -60,8 +59,10 @@ class BestAvailable(Jacobian):
         :type value: str
         """
         if value != "default":
-            LOGGER.warning("Method cannot be selected for best_available, "
-                           "using default of %s.", self.sub_jac.method)
+            LOGGER.warning(
+                "Method cannot be selected for best_available, "
+                f"using default of {self.sub_jac.method}."
+            )
 
     def name(self) -> str:
         """
@@ -73,16 +74,19 @@ class BestAvailable(Jacobian):
         return "best_available"
 
     def __getattribute__(self, __name: str) -> Any:
-        if __name in ['sub_jac', 'method', 'name', 'eval']:
+        if __name in ["sub_jac", "method", "name", "eval"]:
             return super().__getattribute__(__name)
         return self.sub_jac.__getattribute__(__name)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name in ['sub_jac', 'name', 'eval']:
+        if __name in ["sub_jac", "name", "eval"]:
             return super().__setattr__(__name, __value)
-        if __name == 'method':
+        if __name == "method":
             if __value != "default":
-                LOGGER.warning("Method cannot be selected for best_available, "
-                               "using default of %s.", self.sub_jac.method)
+                LOGGER.warning(
+                    "Method cannot be selected for best_available, "
+                    "using default of %s.",
+                    self.sub_jac.method,
+                )
             return None
         return setattr(self.sub_jac, __name, __value)

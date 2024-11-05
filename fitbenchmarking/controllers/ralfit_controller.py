@@ -16,28 +16,58 @@ class RALFitController(Controller):
     """
 
     algorithm_check = {
-        'all': ['gn', 'hybrid', 'newton', 'newton-tensor',
-                'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-        'ls': ['gn', 'hybrid', 'newton', 'newton-tensor',
-               'gn_reg', 'hybrid_reg', 'newton_reg', 'newton-tensor_reg'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['gn', 'hybrid', 'newton', 'newton-tensor'],
-        'levenberg-marquardt': ['gn', 'gn_reg'],
-        'gauss_newton': ['gn', 'gn_reg'],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []}
+        "all": [
+            "gn",
+            "hybrid",
+            "newton",
+            "newton-tensor",
+            "gn_reg",
+            "hybrid_reg",
+            "newton_reg",
+            "newton-tensor_reg",
+        ],
+        "ls": [
+            "gn",
+            "hybrid",
+            "newton",
+            "newton-tensor",
+            "gn_reg",
+            "hybrid_reg",
+            "newton_reg",
+            "newton-tensor_reg",
+        ],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["gn", "hybrid", "newton", "newton-tensor"],
+        "levenberg-marquardt": ["gn", "gn_reg"],
+        "gauss_newton": ["gn", "gn_reg"],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
-    jacobian_enabled_solvers = ['gn', 'hybrid', 'newton', 'newton-tensor',
-                                'gn_reg', 'hybrid_reg', 'newton_reg',
-                                'newton-tensor_reg']
+    jacobian_enabled_solvers = [
+        "gn",
+        "hybrid",
+        "newton",
+        "newton-tensor",
+        "gn_reg",
+        "hybrid_reg",
+        "newton_reg",
+        "newton-tensor_reg",
+    ]
 
-    hessian_enabled_solvers = ['hybrid', 'newton', 'newton-tensor',
-                               'hybrid_reg', 'newton_reg', 'newton-tensor_reg']
+    hessian_enabled_solvers = [
+        "hybrid",
+        "newton",
+        "newton-tensor",
+        "hybrid_reg",
+        "newton_reg",
+        "newton-tensor_reg",
+    ]
 
     def __init__(self, cost_func):
         """
@@ -56,7 +86,6 @@ class RALFitController(Controller):
         self._iter = None
         self._options = {}
 
-    # pylint: disable=too-many-branches
     def setup(self):
         """
         Setup for RALFit
@@ -91,7 +120,8 @@ class RALFitController(Controller):
             self._options[b"type_of_method"] = 2
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for RALFit")
+                f"No {self.minimizer} minimizer for RALFit"
+            )
 
         if self.cost_func.hessian:
             self._options[b"exact_second_derivatives"] = True
@@ -107,11 +137,10 @@ class RALFitController(Controller):
             self.param_ranges = (value_ranges_lb, value_ranges_ub)
         else:
             self.param_ranges = (
-                [-np.inf]*len(self.initial_params),
-                [np.inf]*len(self.initial_params))
-    # pylint: enable=too-many-branches
+                [-np.inf] * len(self.initial_params),
+                [np.inf] * len(self.initial_params),
+            )
 
-    # pylint: disable=unused-argument
     def hes_eval(self, params, r):
         """
         Function to ensure correct inputs and outputs
@@ -127,29 +156,30 @@ class RALFitController(Controller):
         """
         H, _ = self.cost_func.hes_res(params)
         return np.matmul(H, r)
-    # pylint: enable=unused-argument
 
     def fit(self):
         """
         Run problem with RALFit.
         """
         if self.cost_func.hessian:
-            (self._popt, inform) = \
-                ral_nlls.solve(self.initial_params,
-                               self.cost_func.eval_r,
-                               self.cost_func.jac_res,
-                               self.hes_eval,
-                               options=self._options,
-                               lower_bounds=self.param_ranges[0],
-                               upper_bounds=self.param_ranges[1])
+            (self._popt, inform) = ral_nlls.solve(
+                self.initial_params,
+                self.cost_func.eval_r,
+                self.cost_func.jac_res,
+                self.hes_eval,
+                options=self._options,
+                lower_bounds=self.param_ranges[0],
+                upper_bounds=self.param_ranges[1],
+            )
         else:
-            (self._popt, inform) = \
-                ral_nlls.solve(self.initial_params,
-                               self.cost_func.eval_r,
-                               self.cost_func.jac_res,
-                               options=self._options,
-                               lower_bounds=self.param_ranges[0],
-                               upper_bounds=self.param_ranges[1])
+            (self._popt, inform) = ral_nlls.solve(
+                self.initial_params,
+                self.cost_func.eval_r,
+                self.cost_func.jac_res,
+                options=self._options,
+                lower_bounds=self.param_ranges[0],
+                upper_bounds=self.param_ranges[1],
+            )
         self._status = 0 if self._popt is not None else 1
         self._iter = inform['iter']
 

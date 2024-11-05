@@ -1,6 +1,7 @@
 """
 This file implements a parser for the Fitbenchmark data format.
 """
+
 import importlib
 import os
 import re
@@ -38,7 +39,6 @@ class FitbenchmarkParser(Parser):
         """
         self._entries = self._get_data_problem_entries()
 
-        # pylint: disable=attribute-defined-outside-init
         self.fitting_problem = FittingProblem(self.options)
 
         self._parsed_func = self._parse_function()
@@ -46,36 +46,39 @@ class FitbenchmarkParser(Parser):
 
         self.fitting_problem.multifit = self._is_multifit()
 
-        self.fitting_problem.name = self._entries['name']
-        self.fitting_problem.description = self._entries['description']
+        self.fitting_problem.name = self._entries["name"]
+        self.fitting_problem.description = self._entries["description"]
 
         data_points = [self._get_data_points(p) for p in self._get_data_file()]
 
         self.fitting_problem.function = self._create_function()
-        self.fitting_problem.format = self._entries['software'].lower()
+        self.fitting_problem.format = self._entries["software"].lower()
 
-        plot_scale_options = ['loglog', 'logy', 'logx', 'linear']
+        plot_scale_options = ["loglog", "logy", "logx", "linear"]
 
-        if 'plot_scale' in self._entries:
-            if self._entries['plot_scale'].lower() in plot_scale_options:
-                self.fitting_problem.plot_scale =  \
-                    self._entries['plot_scale'].lower()
+        if "plot_scale" in self._entries:
+            if self._entries["plot_scale"].lower() in plot_scale_options:
+                self.fitting_problem.plot_scale = self._entries[
+                    "plot_scale"
+                ].lower()
             else:
-                raise ParsingError('The plot scale should be one of these '
-                                   f'options {plot_scale_options}')
+                raise ParsingError(
+                    "The plot scale should be one of these "
+                    f"options {plot_scale_options}"
+                )
         else:
-            self.fitting_problem.plot_scale = 'linear'
+            self.fitting_problem.plot_scale = "linear"
 
         # If using a multivariate function wrap the call to take a single
         # argument
-        if len(data_points[0]['x'].shape) > 1:
+        if len(data_points[0]["x"].shape) > 1:
             old_function = self.fitting_problem.function
             all_data = []
             count = 0
             for dp in data_points:
-                all_data.append(dp['x'])
-                dp['x'] = np.arange(count, count + dp['x'].shape[0])
-                count = count + dp['x'].shape[0]
+                all_data.append(dp["x"])
+                dp["x"] = np.arange(count, count + dp["x"].shape[0])
+                count = count + dp["x"].shape[0]
             all_data = np.concatenate(all_data)
 
             def new_function(x, *p):
@@ -86,7 +89,7 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.multivariate = True
 
         # Set this flag if the output is non-scalar either
-        if len(data_points[0]['y'].shape) > 2:
+        if len(data_points[0]["y"].shape) > 2:
             self.fitting_problem.multivariate = True
 
         # EQUATION
@@ -98,15 +101,17 @@ class FitbenchmarkParser(Parser):
         # PARAMETER RANGES
         # Creates list containing tuples of lower and upper bounds
         # (lb,ub) for each parameter
-        vr = _parse_range(self._entries.get('parameter_ranges', ''))
+        vr = _parse_range(self._entries.get("parameter_ranges", ""))
         if vr:
             self.fitting_problem.set_value_ranges(vr)
 
         # FIT RANGES
-        fit_ranges_str = self._entries.get('fit_ranges', '')
+        fit_ranges_str = self._entries.get("fit_ranges", "")
         # this creates a list of strs like '{key: val, ...}' and parses each
-        fit_ranges = [_parse_range('{' + r.split('}')[0] + '}')
-                      for r in fit_ranges_str.split('{')[1:]]
+        fit_ranges = [
+            _parse_range("{" + r.split("}")[0] + "}")
+            for r in fit_ranges_str.split("{")[1:]
+        ]
 
         self._set_data_points(data_points, fit_ranges)
 
@@ -142,7 +147,7 @@ class FitbenchmarkParser(Parser):
         """
         equation_count = len(self._parsed_func)
         if equation_count == 1:
-            return self._parsed_func[0]['name']
+            return self._parsed_func[0]["name"]
         return f"{equation_count} Functions"
 
     def _get_starting_values(self) -> list:
@@ -153,12 +158,15 @@ class FitbenchmarkParser(Parser):
         :rtype: list
         """
         # SasView functions can have reserved keywords so ignore these
-        ignore = ['name']
+        ignore = ["name"]
 
         starting_values = [
-            {name: val
-             for name, val in self._parsed_func[0].items()
-             if name not in ignore}]
+            {
+                name: val
+                for name, val in self._parsed_func[0].items()
+                if name not in ignore
+            }
+        ]
 
         return starting_values
 
@@ -171,14 +179,14 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        self.fitting_problem.data_x = data_points[0]['x']
-        self.fitting_problem.data_y = data_points[0]['y']
-        if 'e' in data_points[0]:
-            self.fitting_problem.data_e = data_points[0]['e']
+        self.fitting_problem.data_x = data_points[0]["x"]
+        self.fitting_problem.data_y = data_points[0]["y"]
+        if "e" in data_points[0]:
+            self.fitting_problem.data_e = data_points[0]["e"]
 
-        if fit_ranges and 'x' in fit_ranges[0]:
-            self.fitting_problem.start_x = fit_ranges[0]['x'][0]
-            self.fitting_problem.end_x = fit_ranges[0]['x'][1]
+        if fit_ranges and "x" in fit_ranges[0]:
+            self.fitting_problem.start_x = fit_ranges[0]["x"][0]
+            self.fitting_problem.end_x = fit_ranges[0]["x"][1]
 
     def _set_additional_info(self) -> None:
         """
@@ -195,12 +203,13 @@ class FitbenchmarkParser(Parser):
         :return: (full) path to a data file. Return None if not found
         :rtype: list<str>
         """
-        data_file_name = self._entries['input_file']
-        if data_file_name.startswith('['):
+        data_file_name = self._entries["input_file"]
+        if data_file_name.startswith("["):
             # Parse list assuming filenames do not have quote symbols or commas
             data_file_names = [
-                d.replace('"', '').replace("'", '').strip('[').strip(']')
-                for d in data_file_name.split(',')]
+                d.replace('"', "").replace("'", "").strip("[").strip("]")
+                for d in data_file_name.split(",")
+            ]
         else:
             data_file_names = [data_file_name]
 
@@ -231,12 +240,16 @@ class FitbenchmarkParser(Parser):
         entries = {}
         for line in self.file.readlines():
             # Discard comments
-            line = line.split('#', 1)[0]
-            if line.strip() == '':
+            line = line.split("#", 1)[0]
+            if line.strip() == "":
                 continue
 
             lhs, rhs = line.split("=", 1)
-            entries[lhs.strip()] = rhs.strip().strip('"').strip("'")
+            key = lhs.strip()
+            value = rhs.strip().strip('"').strip("'")
+            if key == "name":
+                value = re.sub(r"[\\/]", "", value)
+            entries[key] = value
 
         return entries
 
@@ -252,13 +265,12 @@ class FitbenchmarkParser(Parser):
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
-        # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
         if func is None:
-            func = self._entries['function']
+            func = self._entries["function"]
 
-        for f in func.split(';'):
+        for f in func.split(";"):
             func_dict = self._parse_single_function(f)
             function_def.append(func_dict)
 
@@ -278,40 +290,39 @@ class FitbenchmarkParser(Parser):
         :rtype: list of dict
         """
 
-        # pylint: disable=too-many-branches, too-many-statements
         function_def = []
 
-        if 'jac' not in self._entries:
+        if "jac" not in self._entries:
             return None
 
         if func is None:
-            func = self._entries['jac']
+            func = self._entries["jac"]
 
-        for f in func.split(';'):
+        for f in func.split(";"):
             func_dict = self._parse_single_function(f)
             function_def.append(func_dict)
 
         return function_def
 
-    def _dense_jacobian(self) -> 'Callable | None':
+    def _dense_jacobian(self) -> "Callable | None":
         """
         Function to help getting dense jac.
 
         :return: A callable function or None
         :rtype: callable or None
         """
-        return self._get_jacobian('dense_func')
+        return self._get_jacobian("dense_func")
 
-    def _sparse_jacobian(self) -> 'Callable | None':
+    def _sparse_jacobian(self) -> "Callable | None":
         """
         Function to help getting sparse jac.
 
         :return: A callable function or None
         :rtype: callable or None
         """
-        return self._get_jacobian('sparse_func')
+        return self._get_jacobian("sparse_func")
 
-    def _get_jacobian(self, jac_type) -> 'Callable | None':
+    def _get_jacobian(self, jac_type) -> "Callable | None":
         """
         Process the dense/sparse jac function into a callable.
         Returns None if this is not possible.
@@ -325,12 +336,11 @@ class FitbenchmarkParser(Parser):
         if self._parsed_jac_func is None:
             return None
 
-        if jac_type not in self._parsed_jac_func[0].keys():
+        if jac_type not in self._parsed_jac_func[0]:
             return None
 
         pf = self._parsed_jac_func[0]
-        path = os.path.join(os.path.dirname(self._filename),
-                            pf['module'])
+        path = os.path.join(os.path.dirname(self._filename), pf["module"])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
         func = getattr(module, pf[jac_type])
@@ -360,17 +370,17 @@ class FitbenchmarkParser(Parser):
         :return: The function as a dict of name, value pairs.
         :rtype: dict
         """
-        # pylint: disable=too-many-branches
-        lhs, rhs = func.strip().split('=', 1)
+        lhs, rhs = func.strip().split("=", 1)
         name = lhs
-        if not re.match(r'^\w+$', name):
+        if not re.match(r"^\w+$", name):
             raise ParsingError(
-                f'Unexpected character in parameter name: {name}')
+                f"Unexpected character in parameter name: {name}"
+            )
 
-        if rhs[0] in '([':
+        if rhs[0] in "([":
             value, rem = cls._parse_parens(rhs)
         else:
-            value, _, rem = rhs.partition(',')
+            value, _, rem = rhs.partition(",")
             value = cls._parse_function_value(value)
 
         func_dict = {name: value}
@@ -395,10 +405,7 @@ class FitbenchmarkParser(Parser):
         :rtype: Union[dict, list], str
         """
         count = 0
-        if string[0] == '[':
-            delim = '[]'
-        else:  # '('
-            delim = '()'
+        delim = "[]" if string[0] == "[" else "()"
 
         for i, c in enumerate(string):
             if c == delim[0]:
@@ -407,21 +414,24 @@ class FitbenchmarkParser(Parser):
                 count -= 1
             if count == 0:
                 value = string[:i]
-                rem = string[i+1:].strip(',')
+                rem = string[i + 1 :].strip(",")
                 break
         else:
-            raise ParsingError('Not all brackets are closed in function.')
+            raise ParsingError("Not all brackets are closed in function.")
 
-        if delim == '()':
+        if delim == "()":
             value = cls._parse_single_function(value[1:])
         else:  # []
-            value = [cls._parse_function_value(v.strip())
-                     for v in value[1:].split(',') if v != '']
+            value = [
+                cls._parse_function_value(v.strip())
+                for v in value[1:].split(",")
+                if v != ""
+            ]
 
         return value, rem
 
     @staticmethod
-    def _parse_function_value(value: str) -> 'int | float | bool | str':
+    def _parse_function_value(value: str) -> "int | float | bool | str":
         """
         Parse a value from a string into a numerical type if possible.
 
@@ -431,9 +441,9 @@ class FitbenchmarkParser(Parser):
         :return: The parsed value
         :rtype: bool, int, float, or str
         """
-        if value.lower() == 'true':
+        if value.lower() == "true":
             return True
-        if value.lower() == 'false':
+        if value.lower() == "false":
             return False
         for convert in [int, float]:
             try:
@@ -453,17 +463,17 @@ class FitbenchmarkParser(Parser):
         :rtype: dict[str, np.ndarray]
         """
 
-        with open(data_file_path, 'r', encoding='utf-8') as f:
+        with open(data_file_path, encoding="utf-8") as f:
             data_text = f.readlines()
 
         first_row = _find_first_line(data_text)
         dim = len(data_text[first_row].split())
         cols = _get_column_data(data_text, first_row, dim)
 
-        if not cols['x'] or not cols['y']:
-            raise ParsingError('Input files need both X and Y values.')
-        if cols['e'] and len(cols['y']) != len(cols['e']):
-            raise ParsingError('Error must be of the same dimension as Y.')
+        if not cols["x"] or not cols["y"]:
+            raise ParsingError("Input files need both X and Y values.")
+        if cols["e"] and len(cols["y"]) != len(cols["e"]):
+            raise ParsingError("Error must be of the same dimension as Y.")
 
         data_points = np.zeros((len(data_text) - first_row, dim))
 
@@ -480,10 +490,9 @@ class FitbenchmarkParser(Parser):
         data_points = data_points[~np.isnan(data_points[:, 0]), :]
 
         # Split into x, y, and e
-        data = {key: data_points[:, cols[key]]
-                for key in ['x', 'y']}
-        if cols['e']:
-            data['e'] = data_points[:, cols['e']]
+        data = {key: data_points[:, cols[key]] for key in ["x", "y"]}
+        if cols["e"]:
+            data["e"] = data_points[:, cols["e"]]
 
         # Flatten if the columns are 1D
         for key, col in cols.items():
@@ -510,40 +519,40 @@ def _parse_range(range_str):
         return {}
 
     output_ranges = {}
-    range_str = range_str.strip('{').strip('}')
-    tmp_ranges = range_str.split(',')
+    range_str = range_str.strip("{").strip("}")
+    tmp_ranges = range_str.split(",")
     ranges = []
-    cur_str = ''
+    cur_str = ""
     for r in tmp_ranges:
         cur_str += r
         balanced = True
-        for lb, rb in ['[]', '{}', '()']:
+        for lb, rb in ["[]", "{}", "()"]:
             if cur_str.count(lb) > cur_str.count(rb):
                 balanced = False
             elif cur_str.count(lb) < cur_str.count(rb):
-                raise ParsingError(
-                    f'Unbalanced brackets in range: {r}')
+                raise ParsingError(f"Unbalanced brackets in range: {r}")
         if balanced:
             ranges.append(cur_str)
-            cur_str = ''
+            cur_str = ""
         else:
-            cur_str += ','
+            cur_str += ","
 
     for r in ranges:
-        name, val = r.split(':')
+        name, val = r.split(":")
         name = name.strip().strip('"').strip("'").lower()
 
         # Strip off brackets and split on comma
-        val = val.strip(' ')[1:-1].split(',')
+        val = val.strip(" ")[1:-1].split(",")
         val = [v.strip() for v in val]
         try:
             pair = [float(val[0]), float(val[1])]
         except ValueError as e:
-            raise ParsingError(f'Expected floats in range: {r}') from e
+            raise ParsingError(f"Expected floats in range: {r}") from e
 
         if pair[0] >= pair[1]:
-            raise ParsingError('Min value must be smaller than max value '
-                               f'in range: {r}')
+            raise ParsingError(
+                "Min value must be smaller than max value in range: {r}"
+            )
 
         output_ranges[name] = pair
 
@@ -571,11 +580,12 @@ def _find_first_line(file_lines: "list[str]") -> int:
             continue
         return i
 
-    raise ParsingError('Could not find data points')
+    raise ParsingError("Could not find data points")
 
 
-def _get_column_data(file_lines: "list[str]", first_row: int,
-                     dim: int) -> list:
+def _get_column_data(
+    file_lines: "list[str]", first_row: int, dim: int
+) -> list:
     """
     Gets the data in the file as a dictionary of x, y and e data.
 
@@ -589,36 +599,36 @@ def _get_column_data(file_lines: "list[str]", first_row: int,
     :return: index of the first file line with data.
     :rtype: int
     """
-    cols = {'x': [],
-            'y': [],
-            'e': []}
+    cols = {"x": [], "y": [], "e": []}
     num_cols = 0
     if first_row != 0:
         header = file_lines[0].split()
         for heading in header:
-            if heading == '#':
+            if heading == "#":
                 continue
-            if heading[0] == '<' and heading[-1] == '>':
+            if heading[0] == "<" and heading[-1] == ">":
                 heading = heading[1:-1]
             col_type = heading[0].lower()
-            if col_type in ['x', 'y', 'e']:
+            if col_type in ["x", "y", "e"]:
                 cols[col_type].append(num_cols)
                 num_cols += 1
             else:
                 raise ParsingError(
-                    'Unrecognised header line, header names must start with '
+                    "Unrecognised header line, header names must start with "
                     '"x", "y", or "e".'
-                    'Examples are: '
+                    "Examples are: "
                     '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
-                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...')
+                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...'
+                )
         if dim != num_cols:
-            raise ParsingError('Could not match header to columns.')
+            raise ParsingError("Could not match header to columns.")
     else:
-        cols['x'], cols['y'] = [0], [1]
+        cols["x"], cols["y"] = [0], [1]
         if dim == 3:
-            cols['e'] = [2]
+            cols["e"] = [2]
         elif dim != 2:
             raise ParsingError(
-                'Cannot infer size of inputs and outputs in datafile. '
-                'Headers are required when not using 1D inputs and outputs.')
+                "Cannot infer size of inputs and outputs in datafile. "
+                "Headers are required when not using 1D inputs and outputs."
+            )
     return cols

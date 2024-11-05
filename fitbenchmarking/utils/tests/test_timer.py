@@ -1,8 +1,9 @@
 """
 Tests for fitbenchmarking.utils.timer.TimerWithMaxTime
 """
-from unittest import TestCase
+
 from time import sleep
+from unittest import TestCase
 
 from fitbenchmarking.utils.exceptions import MaxRuntimeError
 from fitbenchmarking.utils.timer import TimerWithMaxTime
