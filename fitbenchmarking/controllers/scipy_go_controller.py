@@ -52,8 +52,7 @@ class ScipyGOController(Controller):
         super().__init__(cost_func)
 
         self.support_for_bounds = True
-        self._popt = None
-        self._status = None
+        self._result = None
         self._maxiter = None
 
     def setup(self):
@@ -90,25 +89,20 @@ class ScipyGOController(Controller):
         fun = self.cost_func.eval_cost
         bounds = self.value_ranges
         algorithm = getattr(optimize, self.minimizer)
-        result = algorithm(fun, bounds, **kwargs)
-        self._popt = result.x
-        if result.success:
-            self._status = 0
-        elif "Maximum number of iteration" in result.message:
-            self._status = 1
-        else:
-            self._status = 2
+        self._result = algorithm(fun, bounds, **kwargs)
 
     def cleanup(self):
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if self._status == 0:
+        if self._result.success:
             self.flag = 0
-        elif self._status == 1:
+        elif "Maximum number of iteration reached" in self._result.message:
             self.flag = 1
         else:
             self.flag = 2
 
-        self.final_params = self._popt
+        self.final_params = self._result.x
+        self.iteration_count = self._result.nit
+        self.func_evals = self._result.nfev

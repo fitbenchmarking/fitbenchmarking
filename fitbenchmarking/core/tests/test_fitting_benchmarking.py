@@ -910,6 +910,8 @@ class BenchmarkTests(unittest.TestCase):
                 "jacobian_tag",
                 "hessian_tag",
                 "costfun_tag",
+                "iteration_count",
+                "func_evals",
             ]:
                 assert getattr(r, attr) == expected["results"][ix][attr]
             self.assertAlmostEqual(

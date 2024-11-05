@@ -80,6 +80,7 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
+        self._nits = None
 
     def _prediction_error(self, p, data=None):
         """
@@ -225,7 +226,7 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        for _ in range(self._maxits):
+        for n in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
@@ -244,6 +245,7 @@ class GSLController(Controller):
                 )
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
+                self._nits = n + 1
                 break
             if status != errno.GSL_CONTINUE:
                 self.flag = 2
@@ -256,3 +258,6 @@ class GSLController(Controller):
         will be read from
         """
         self.final_params = self._solver.getx()
+        self.iteration_count = (
+            self._maxits if self._nits is None else self._nits
+        )

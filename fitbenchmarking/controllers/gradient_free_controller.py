@@ -123,6 +123,7 @@ class GradientFreeController(Controller):
             for i in range(len(self.initial_params))
         }
 
+        self.iteration_count = 1000
         self.initialize = {"warm_start": param_dict}
 
     def _feval(self, p):
@@ -151,7 +152,7 @@ class GradientFreeController(Controller):
         method_to_call = getattr(gfo, self.minimizer)
 
         opt = method_to_call(self.search_space)
-        opt.search(self._feval, n_iter=1000, verbosity=False)
+        opt.search(self._feval, n_iter=self.iteration_count, verbosity=False)
         self.results = opt.best_para
         self._status = 0 if self.results is not None else 1
 

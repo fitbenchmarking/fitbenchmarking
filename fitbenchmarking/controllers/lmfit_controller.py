@@ -185,6 +185,8 @@ class LmfitController(Controller):
         will be read from
         """
 
+        self.func_evals = self.lmfit_out.nfev
+
         if self.lmfit_out.success:
             self.flag = 0
         else:

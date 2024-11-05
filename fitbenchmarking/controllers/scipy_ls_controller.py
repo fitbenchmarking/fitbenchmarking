@@ -110,4 +110,5 @@ class ScipyLSController(Controller):
         else:
             self.flag = 2
 
+        self.func_evals = self.result.nfev
         self.final_params = self._popt

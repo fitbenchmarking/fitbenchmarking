@@ -120,3 +120,4 @@ class MatlabCurveController(MatlabMixin, Controller):
         self.final_params = self.eng.coeffvalues(self.eng.workspace["fitobj"])[
             0
         ]
+        self.iteration_count = int(self.eng.workspace["output"]["iterations"])

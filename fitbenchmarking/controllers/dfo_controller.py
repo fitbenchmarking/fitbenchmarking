@@ -104,3 +104,4 @@ class DFOController(Controller):
             self.flag = 2
 
         self.final_params = self._popt
+        self.func_evals = self._soln.nf

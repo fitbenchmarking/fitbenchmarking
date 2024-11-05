@@ -83,6 +83,7 @@ class RALFitController(Controller):
         self.param_ranges = None
         self._status = None
         self._popt = None
+        self._iter = None
         self._options = {}
 
     def setup(self):
@@ -161,7 +162,7 @@ class RALFitController(Controller):
         Run problem with RALFit.
         """
         if self.cost_func.hessian:
-            self._popt = ral_nlls.solve(
+            (self._popt, inform) = ral_nlls.solve(
                 self.initial_params,
                 self.cost_func.eval_r,
                 self.cost_func.jac_res,
@@ -169,17 +170,18 @@ class RALFitController(Controller):
                 options=self._options,
                 lower_bounds=self.param_ranges[0],
                 upper_bounds=self.param_ranges[1],
-            )[0]
+            )
         else:
-            self._popt = ral_nlls.solve(
+            (self._popt, inform) = ral_nlls.solve(
                 self.initial_params,
                 self.cost_func.eval_r,
                 self.cost_func.jac_res,
                 options=self._options,
                 lower_bounds=self.param_ranges[0],
                 upper_bounds=self.param_ranges[1],
-            )[0]
+            )
         self._status = 0 if self._popt is not None else 1
+        self._iter = inform["iter"]
 
     def cleanup(self):
         """
@@ -192,3 +194,4 @@ class RALFitController(Controller):
             self.flag = 2
 
         self.final_params = self._popt
+        self.iteration_count = self._iter

@@ -284,6 +284,49 @@ class BaseControllerTests(TestCase):
         with self.assertRaises(exceptions.ControllerAttributeError):
             controller.check_attributes()
 
+    def test_check_valid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.check_attributes()
+
+    def test_check_invalid_iteration_count(self):
+        """
+        BaseSoftwareController: Test iteration_count setting with invalid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10.5
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
+    def test_check_valid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with valid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.iteration_count = 10
+        controller.func_evals = 10
+        controller.check_attributes()
+
+    def test_check_invalid_func_evals(self):
+        """
+        BaseSoftwareController: Test func_evals setting with invalid value
+        """
+        controller = DummyController(self.cost_func)
+        controller.final_params = [1, 2, 3, 4, 5]
+        controller.flag = 3
+        controller.func_evals = 10.5
+        with self.assertRaises(exceptions.ControllerAttributeError):
+            controller.check_attributes()
+
     def test_validate_minimizer_true(self):
         """
         BaseSoftwareController: Test validate_minimizer with valid
@@ -1125,11 +1168,12 @@ class GlobalOptimizationControllerTests(TestCase):
 
         self.shared_tests.controller_run_test(controller)
 
-        controller._status = 0
         self.shared_tests.check_converged(controller)
-        controller._status = 1
+        controller._result.success = False
         self.shared_tests.check_max_iterations(controller)
-        controller._status = 2
+        controller._result.message = [
+            "Maximum number of iteration NOT reached"
+        ]
         self.shared_tests.check_diverged(controller)
 
     def test_gradient_free(self):

@@ -172,6 +172,12 @@ class Controller:
 
         self.par_names = self.problem.param_names
 
+        # save iteration count
+        self.iteration_count = None
+
+        # save number of function evaluations
+        self.func_evals = None
+
     @property
     def flag(self):
         """
@@ -465,7 +471,12 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {"_flag": int, "final_params": np.ndarray}
+        values = {
+            "_flag": int,
+            "final_params": np.ndarray,
+            "iteration_count": (int, type(None)),
+            "func_evals": (int, type(None)),
+        }
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)

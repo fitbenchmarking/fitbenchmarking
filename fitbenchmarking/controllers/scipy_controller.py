@@ -153,4 +153,7 @@ class ScipyController(Controller):
         else:
             self.flag = 2
 
+        self.func_evals = self.result.nfev
+        self.iteration_count = self.result.nit
+
         self.final_params = self._popt

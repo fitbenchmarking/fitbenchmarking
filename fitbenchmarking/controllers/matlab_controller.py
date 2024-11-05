@@ -43,6 +43,7 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
+        self._nits = None
 
     def setup(self):
         """
@@ -59,12 +60,13 @@ class MatlabController(MatlabMixin, Controller):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = self.eng.fminsearch(
+        [self.result, _, exitflag, output] = self.eng.fminsearch(
             self.eng.workspace["eval_cost_mat"],
             self.initial_params_mat,
-            nargout=3,
+            nargout=4,
         )
         self._status = int(exitflag)
+        self._nits = int(output["iterations"])
 
     def cleanup(self):
         """
@@ -77,7 +79,7 @@ class MatlabController(MatlabMixin, Controller):
             self.flag = 1
         else:
             self.flag = 2
-
         self.final_params = np.array(
             self.result[0], dtype=np.float64
         ).flatten()
+        self.iteration_count = self._nits

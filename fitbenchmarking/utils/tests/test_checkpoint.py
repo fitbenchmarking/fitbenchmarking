@@ -71,6 +71,8 @@ def generate_results():
         controller.minimizer = "Powell"
         controller.prepare()
         controller.final_params = [0.1 + i, 0.2 + i]
+        controller.iteration_count = 10
+        controller.func_evals = 15
         controller.flag = 0
         results[key].append(
             FittingResult(
@@ -91,6 +93,8 @@ def generate_results():
         controller.minimizer = "CG"
         controller.prepare()
         controller.final_params = [0.5 + i, 0.6 + i]
+        controller.iteration_count = 10
+        controller.func_evals = 15
         controller.flag = 0
         results[key].append(
             FittingResult(controller=controller, accuracy=0.4, runtimes=[13])
@@ -103,6 +107,8 @@ def generate_results():
         controller.minimizer = "Powell"
         controller.prepare()
         controller.final_params = [0.7 + i, 0.8 + i]
+        controller.iteration_count = 10
+        controller.func_evals = 15
         controller.flag = 0
         results[key].append(
             FittingResult(controller=controller, accuracy=1.2, runtimes=[0.15])
@@ -119,6 +125,8 @@ def generate_results():
         controller.minimizer = "CG"
         controller.prepare()
         controller.final_params = [0.11 + i, 0.21 + i]
+        controller.iteration_count = 10
+        controller.func_evals = 15
         controller.flag = 0
         results[key].append(
             FittingResult(controller=controller, accuracy=1.4, runtimes=[0.13])

@@ -89,6 +89,8 @@ class Checkpoint:
             "runtime": result.runtime,
             "runtimes": result.runtimes,
             "emissions": result.emissions,
+            "iteration_count": result.iteration_count,
+            "func_evals": result.func_evals,
             "flag": result.error_flag,
             "params_pdfs": result.params_pdfs,
             "software": result.software,
@@ -227,6 +229,7 @@ class Checkpoint:
         self.finalised = True
 
     def load(self):
+        # pylint: disable=R0915
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
@@ -284,6 +287,8 @@ class Checkpoint:
                 new_result.runtime = r["runtime"]
                 new_result.runtimes = r["runtimes"]
                 new_result.emissions = r["emissions"]
+                new_result.iteration_count = r["iteration_count"]
+                new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]
                 new_result.params_pdfs = r["params_pdfs"]
                 new_result.software = r["software"]

@@ -122,5 +122,6 @@ class MinuitController(Controller):
         else:
             self.flag = 2
 
+        self.func_evals = self._minuit_problem.nfcn
         self._popt = np.array(self._minuit_problem.values)
         self.final_params = self._popt
