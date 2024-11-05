@@ -358,15 +358,13 @@ class FittingResult:
         if self._norm_acc is None:
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
+            elif self.min_accuracy in [0.0, 0]:
+                LOGGER.warning("The min accuracy of the dataset is 0. "
+                               "The relative performance will be "
+                               "approximated using a min of 1e-10.")
+                self._norm_acc = self.accuracy / 1e-10
             else:
-                if self.min_accuracy in [0.0, 0]:
-                    LOGGER.warning("The min accuracy of the dataset is 0. "
-                                   "The relative performance will be "
-                                   "approximated using a min of 1e-10.")
-                    best = 1e-10
-                else:
-                    best = self.min_accuracy
-                self._norm_acc = self.accuracy / best
+                self._norm_acc = self.accuracy / self.min_accuracy
         return self._norm_acc
 
     @norm_acc.setter
