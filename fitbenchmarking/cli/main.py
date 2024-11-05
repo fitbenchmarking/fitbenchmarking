@@ -454,7 +454,7 @@ def main():
 
     if len(sys.argv) == 1:
         if not args.problem_sets[0].exists():
-            raise FilePathError(
+            print(
                 "The default problem set has either been "
                 "deleted or moved. Please specify a file "
                 "path to a different problem set with the "
