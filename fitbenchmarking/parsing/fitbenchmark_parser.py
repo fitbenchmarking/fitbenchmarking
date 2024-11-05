@@ -245,7 +245,11 @@ class FitbenchmarkParser(Parser):
                 continue
 
             lhs, rhs = line.split("=", 1)
-            entries[lhs.strip()] = rhs.strip().strip('"').strip("'")
+            key = lhs.strip()
+            value = rhs.strip().strip('"').strip("'")
+            if key == "name":
+                value = re.sub(r"[\\/]", "", value)
+            entries[key] = value
 
         return entries
 
