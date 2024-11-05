@@ -1,7 +1,0 @@
-# FitBenchmark Problem 
-software = 'Mantiddev' 
-name = 'TwoGaussPeaksEVSData system test data' 
-description = 'This data comes from EVS14188-90_processed.txt and it is used in the TwoGaussPeaksEVSData system test' 
-input_file ='TwoGaussPeaksEVSData.dat' 
-function = 'name=Gaussian, Height=0.0271028, PeakCentre=0.000371946, Sigma=1e-05 ; name=LinearBackground, A0=0 ,A1=0; name=Gaussian, Height=0.0979798,PeakCentre=0.000167,Sigma=1.7267e-05'
-fit_ranges = {'x': [5.35e-05, 0.00056]}

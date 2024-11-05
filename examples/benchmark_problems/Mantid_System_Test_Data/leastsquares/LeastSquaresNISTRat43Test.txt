@@ -1,7 +1,0 @@
-# FitBenchmark Problem 
-software = 'Mantiddev' 
-name = 'LeastSquaresNISTRat43Test system test data' 
-description = 'This data comes from the LeastSquaresNISTRat43Test system test' 
-input_file ='LeastSquaresNISTRat43Test.dat' 
-function = "name=UserFunction,Formula=b1/((1+exp(b2-b3*x))^(1/b4)),b1=700,b2=5,b3=0.75,b4=1.3"
-fit_ranges = {'x': [1, 15]}

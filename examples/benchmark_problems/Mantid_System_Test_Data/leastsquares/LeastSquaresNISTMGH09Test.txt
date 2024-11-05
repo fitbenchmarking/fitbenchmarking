@@ -1,7 +1,0 @@
-# FitBenchmark Problem 
-software = 'Mantiddev' 
-name = 'LeastSquaresNISTMGH09Test system test data' 
-description = 'This data comes from the LeastSquaresNISTMGH09Test system test' 
-input_file ='LeastSquaresNISTMGH09Test.dat' 
-function = "name=UserFunction,Formula=b1*(x^2+x*b2) / (x^2+x*b3+b4),b1=0.25,b2=0.39,b3=0.415,b4=0.39"
-fit_ranges = {'x': [0, 4]}
