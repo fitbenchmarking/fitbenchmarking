@@ -162,12 +162,15 @@ class TestFittingProblem(TestCase):
         Tests that correct data gives the expected result
         """
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.data_x = np.array([-0.5, 0.0, 1.0, 0.5, 1.5,
-                                           2.0, 2.5, 3.0, 4.0])
-        fitting_problem.data_y = np.array([0.0, 1.0, 2.0, 3.0, 4.0,
-                                           5.0, 6.0, 7.0, 8.0])
-        fitting_problem.data_e = np.array([1.0, 20.0, 30.0, 40.0, 50.0,
-                                           60.0, 70.0, 80.0, 9.0])
+        fitting_problem.data_x = np.array(
+            [-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0]
+        )
+        fitting_problem.data_y = np.array(
+            [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
+        )
+        fitting_problem.data_e = np.array(
+            [1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 9.0]
+        )
         fitting_problem.start_x = 0.5
         fitting_problem.end_x = 2.5
 
@@ -178,19 +181,24 @@ class TestFittingProblem(TestCase):
         fitting_problem.correct_data()
 
         sort = fitting_problem.sorted_index
-        self.assertTrue((fitting_problem.data_x[sort]
-                         == expected_x_data).all())
-        self.assertTrue((fitting_problem.data_y[sort]
-                         == expected_y_data).all())
-        self.assertTrue((fitting_problem.data_e[sort]
-                         == expected_e_data).all())
+        self.assertTrue(
+            (fitting_problem.data_x[sort] == expected_x_data).all()
+        )
+        self.assertTrue(
+            (fitting_problem.data_y[sort] == expected_y_data).all()
+        )
+        self.assertTrue(
+            (fitting_problem.data_e[sort] == expected_e_data).all()
+        )
 
         self.options.cost_func_type = ["nlls"]
         fitting_problem.correct_data()
-        self.assertTrue((fitting_problem.data_x[sort]
-                         == expected_x_data).all())
-        self.assertTrue((fitting_problem.data_y[sort]
-                         == expected_y_data).all())
+        self.assertTrue(
+            (fitting_problem.data_x[sort] == expected_x_data).all()
+        )
+        self.assertTrue(
+            (fitting_problem.data_y[sort] == expected_y_data).all()
+        )
         self.assertIs(fitting_problem.data_e, None)
 
     def test_correct_data_multi_fit(self):
@@ -199,59 +207,70 @@ class TestFittingProblem(TestCase):
         """
         fitting_problem = FittingProblem(self.options)
         fitting_problem.multifit = True
-        fitting_problem.data_x = [np.array([-0.5, 0.0, 1.0, 0.5, 1.5,
-                                            2.0, 2.5, 3.0, 4.0]),
-                                  np.array([-0.5, 0.0, 1.0, 0.5, 1.4,
-                                            2.0, 2.5, 3.0, 4.0]),
-                                  np.array([-0.5, 0.0, 1.0, 0.5, 1.7,
-                                            2.0, 2.5, 3.0, 4.0])]
-        fitting_problem.data_y = [np.array([0.0, 1.0, 2.0, 3.0, 4.0,
-                                            5.0, 6.0, 7.0, 8.0]),
-                                  np.array([0.0, 1.0, 2.0, 3.0, 24.0,
-                                            5.0, 6.0, 7.0, 8.0]),
-                                  np.array([0.0, 1.0, 2.8, 3.0, 4.0,
-                                            5.0, 6.0, 7.0, 8.0])]
-        fitting_problem.data_e = [np.array([1.0, 20.0, 30.0, 40.0, 50.0,
-                                            60.0, 1.0, 6.0, 9.0]),
-                                  np.array([1.0, 20.0, 30.0, 40.0, 50.0,
-                                            60.0, 1.0, 6.0, 9.0]),
-                                  np.array([1.0, 20.0, 30.0, 40.0, 50.0,
-                                            60.0, 1.0, 6.0, 9.0])]
+        fitting_problem.data_x = [
+            np.array([-0.5, 0.0, 1.0, 0.5, 1.5, 2.0, 2.5, 3.0, 4.0]),
+            np.array([-0.5, 0.0, 1.0, 0.5, 1.4, 2.0, 2.5, 3.0, 4.0]),
+            np.array([-0.5, 0.0, 1.0, 0.5, 1.7, 2.0, 2.5, 3.0, 4.0]),
+        ]
+        fitting_problem.data_y = [
+            np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
+            np.array([0.0, 1.0, 2.0, 3.0, 24.0, 5.0, 6.0, 7.0, 8.0]),
+            np.array([0.0, 1.0, 2.8, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
+        ]
+        fitting_problem.data_e = [
+            np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0]),
+            np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0]),
+            np.array([1.0, 20.0, 30.0, 40.0, 50.0, 60.0, 1.0, 6.0, 9.0]),
+        ]
         fitting_problem.start_x = [0.5, 1.1, 0.0]
         fitting_problem.end_x = [2.5, 2.6, 1.0]
 
-        expected_x_data = [np.array([0.5, 1.0, 1.5, 2.0, 2.5]),
-                           np.array([1.4, 2.0, 2.5]),
-                           np.array([0.0, 0.5, 1.0])]
-        expected_y_data = [np.array([3.0, 2.0, 4.0, 5.0, 6.0]),
-                           np.array([24.0, 5.0, 6.0]),
-                           np.array([1.0, 3.0, 2.8])]
-        expected_e_data = [np.array([40.0, 30.0, 50.0, 60.0, 1.0]),
-                           np.array([50.0, 60.0, 1.0]),
-                           np.array([20.0, 40.0, 30.0])]
+        expected_x_data = [
+            np.array([0.5, 1.0, 1.5, 2.0, 2.5]),
+            np.array([1.4, 2.0, 2.5]),
+            np.array([0.0, 0.5, 1.0]),
+        ]
+        expected_y_data = [
+            np.array([3.0, 2.0, 4.0, 5.0, 6.0]),
+            np.array([24.0, 5.0, 6.0]),
+            np.array([1.0, 3.0, 2.8]),
+        ]
+        expected_e_data = [
+            np.array([40.0, 30.0, 50.0, 60.0, 1.0]),
+            np.array([50.0, 60.0, 1.0]),
+            np.array([20.0, 40.0, 30.0]),
+        ]
 
         fitting_problem.correct_data()
 
         for ix, sort in enumerate(fitting_problem.sorted_index):
-            self.assertTrue((fitting_problem.data_x[ix][sort]
-                             == expected_x_data[ix]).all())
-            self.assertTrue((fitting_problem.data_y[ix][sort]
-                             == expected_y_data[ix]).all())
-            self.assertTrue((fitting_problem.data_e[ix][sort]
-                             == expected_e_data[ix]).all())
+            self.assertTrue(
+                (fitting_problem.data_x[ix][sort] == expected_x_data[ix]).all()
+            )
+            self.assertTrue(
+                (fitting_problem.data_y[ix][sort] == expected_y_data[ix]).all()
+            )
+            self.assertTrue(
+                (fitting_problem.data_e[ix][sort] == expected_e_data[ix]).all()
+            )
 
         self.options.cost_func_type = ["nlls"]
         fitting_problem.correct_data()
         for ix, sort in enumerate(fitting_problem.sorted_index):
-            self.assertTrue((fitting_problem.data_x[ix][sort]
-                             == expected_x_data[ix]).all())
-            self.assertTrue((fitting_problem.data_y[ix][sort]
-                             == expected_y_data[ix]).all())
+            self.assertTrue(
+                (fitting_problem.data_x[ix][sort] == expected_x_data[ix]).all()
+            )
+            self.assertTrue(
+                (fitting_problem.data_y[ix][sort] == expected_y_data[ix]).all()
+            )
             self.assertIs(fitting_problem.data_e[ix], None)
 
-    @parameterized.expand([(True, [np.array([1, 2]), np.array([3, 4])],
-                            ['params', 'x']),
-                           (False, np.array([1, 2]), ['params'])])
+    @parameterized.expand(
+        [
+            (True, [np.array([1, 2]), np.array([3, 4])], ["params", "x"]),
+            (False, np.array([1, 2]), ["params"]),
+        ]
+    )
     @patch("fitbenchmarking.parsing.fitting_problem.FittingProblem.eval_model")
     def test_ini_y_args(self, multifit, data_x, args, mock):
         """
@@ -260,7 +279,7 @@ class TestFittingProblem(TestCase):
         fitting_problem = FittingProblem(self.options)
         fitting_problem.multifit = multifit
         fitting_problem.data_x = data_x
-        fitting_problem.starting_values = [{0: '0'}]
+        fitting_problem.starting_values = [{0: "0"}]
 
         fitting_problem.ini_y()
         self.assertEqual(mock.call_count, 1)
