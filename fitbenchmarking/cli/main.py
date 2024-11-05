@@ -23,7 +23,7 @@ from fitbenchmarking.core.results_output import (
     save_results,
 )
 from fitbenchmarking.utils.checkpoint import Checkpoint
-from fitbenchmarking.utils.exceptions import FilePathError, NoResultsError
+from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
 from fitbenchmarking.utils.options import find_options_file
 

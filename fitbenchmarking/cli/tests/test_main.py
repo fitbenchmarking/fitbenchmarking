@@ -90,10 +90,10 @@ class TestMain(TestCase):
     @patch("sys.argv", new=["fitbenchmarking"])
     def test_file_path_exception_raised(self, mock):
         """
-        Checks that FilePathError exception is raised if default
+        Checks that SystemExit exception is raised if default
         problem set has been deleted or moved.
         """
         mock.return_value = Path("my/test/path")
-
-        with self.assertRaises(exceptions.FilePathError):
+        with self.assertRaises(SystemExit) as exp:
             main.main()
+        self.assertEqual(exp.exception.code, 1)
