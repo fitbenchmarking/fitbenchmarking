@@ -123,7 +123,7 @@ class MatlabOptController(MatlabMixin, Controller):
             nargout=5,
         )
         self._status = int(exitflag)
-        self._nits = output['iterations']
+        self._nits = output["iterations"]
 
     def cleanup(self):
         """

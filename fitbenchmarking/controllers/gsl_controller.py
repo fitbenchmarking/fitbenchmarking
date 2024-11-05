@@ -245,7 +245,7 @@ class GSLController(Controller):
                 )
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
-                self._nits = n+1
+                self._nits = n + 1
                 break
             if status != errno.GSL_CONTINUE:
                 self.flag = 2
@@ -258,5 +258,6 @@ class GSLController(Controller):
         will be read from
         """
         self.final_params = self._solver.getx()
-        self.iteration_count = \
+        self.iteration_count = (
             self._maxits if self._nits is None else self._nits
+        )

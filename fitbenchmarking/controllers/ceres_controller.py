@@ -205,5 +205,7 @@ class CeresController(Controller):
 
         self.final_params = self.result
 
-        self.iteration_count = self.ceres_summary.num_successful_steps + \
-            self.ceres_summary.num_unsuccessful_steps
+        self.iteration_count = (
+            self.ceres_summary.num_successful_steps
+            + self.ceres_summary.num_unsuccessful_steps
+        )

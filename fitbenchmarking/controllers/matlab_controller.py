@@ -63,7 +63,7 @@ class MatlabController(MatlabMixin, Controller):
         [self.result, _, exitflag, output] = self.eng.fminsearch(
             self.eng.workspace["eval_cost_mat"],
             self.initial_params_mat,
-            nargout=4
+            nargout=4,
         )
         self._status = int(exitflag)
         self._nits = int(output["iterations"])

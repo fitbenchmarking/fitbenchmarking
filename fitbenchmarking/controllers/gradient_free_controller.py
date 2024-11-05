@@ -152,8 +152,7 @@ class GradientFreeController(Controller):
         method_to_call = getattr(gfo, self.minimizer)
 
         opt = method_to_call(self.search_space)
-        opt.search(
-            self._feval, n_iter=self.iteration_count, verbosity=False)
+        opt.search(self._feval, n_iter=self.iteration_count, verbosity=False)
         self.results = opt.best_para
         self._status = 0 if self.results is not None else 1
 
