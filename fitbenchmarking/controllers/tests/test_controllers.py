@@ -1168,11 +1168,12 @@ class GlobalOptimizationControllerTests(TestCase):
 
         self.shared_tests.controller_run_test(controller)
 
-        controller._status = 0
         self.shared_tests.check_converged(controller)
-        controller._status = 1
+        controller._result.success = False
         self.shared_tests.check_max_iterations(controller)
-        controller._status = 2
+        controller._result.message = [
+            "Maximum number of iteration NOT reached"
+        ]
         self.shared_tests.check_diverged(controller)
 
     def test_gradient_free(self):

@@ -96,10 +96,10 @@ class ScipyGOController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        if "Maximum number of iteration" in self._result.message:
-            self.flag = 1
-        elif self._result.success:
+        if self._result.success:
             self.flag = 0
+        elif "Maximum number of iteration reached" in self._result.message:
+            self.flag = 1
         else:
             self.flag = 2
 
