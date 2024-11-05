@@ -20,10 +20,13 @@ from fitbenchmarking.hessian.analytic_hessian import (
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
 
 if TYPE_CHECKING:
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
+
+LOGGER = get_logger()
 
 
 class FitbmResultTests(unittest.TestCase):
@@ -200,19 +203,26 @@ class FitbmResultTests(unittest.TestCase):
         )
         self.assertAlmostEqual(expected, result.runtime, places=5)
 
-    @parameterized.expand([(np.inf, np.inf, np.inf),
-                           (np.nan, np.nan, np.inf),
-                           (1, 0.01, 100),
-                           (1e-10, 0, 1),
-                           (2e-10, 0, 2),
-                           (1e-5, 0, 1e+5)])
-    def test_norm_acc(self, acc, min_acc, expected):
+    @parameterized.expand([(np.inf, np.inf, np.inf, False),
+                           (np.nan, np.nan, np.inf, False),
+                           (1, 0.01, 100, False),
+                           (1e-10, 0, 1, True),
+                           (2e-10, 0, 2, True),
+                           (1e-5, 0, 1e+5, True)])
+    def test_norm_acc(self, acc, min_acc, expected, warn):
         """
-        Test norm_acc returns the expected results.
+        Test norm_acc returns the expected results and raises the warning.
         """
         self.result.accuracy = acc
         self.result.min_accuracy = min_acc
-        self.assertEqual(self.result.norm_acc, expected)
+        if warn:
+            with self.assertLogs(LOGGER, level="WARNING") as log:
+                self.assertEqual(self.result.norm_acc, expected)
+                self.assertIn("The min accuracy of the dataset is 0. The "
+                              "relative performance will be approximated "
+                              "using a min of 1e-10.", log.output[0])
+        else:
+            self.assertEqual(self.result.norm_acc, expected)
 
     @parameterized.expand(
         [
