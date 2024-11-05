@@ -2,7 +2,8 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from typing import Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 
 import numpy as np
 import theseus as th

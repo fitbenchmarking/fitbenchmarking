@@ -8,6 +8,7 @@ evaluations - using the same problem in both mantid and
 nist formats gives mantiddev different rankings in terms of
 speed.
 """
+
 from typing import Callable, Union
 
 import mantid.simpleapi as msapi

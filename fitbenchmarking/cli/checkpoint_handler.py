@@ -179,7 +179,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
 def merge_data_sets(
     files: list[str],
     output: str,
-    strategy: str = 'first',
+    strategy: str = "first",
     debug: bool = False,
 ):
     """
@@ -360,6 +360,7 @@ def merge_results(A: list[dict], B: list[dict], strategy: str):
     :return: Merged results list
     :rtype: list[dict[str, any]]
     """
+
     def key_gen(k: dict):
         """
         Get a uid for a result entry in cp file.

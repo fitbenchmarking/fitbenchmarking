@@ -1,6 +1,7 @@
 """
 FitBenchmarking results object
 """
+
 from statistics import fmean, harmonic_mean, median
 from typing import Literal, Optional, Union
 
@@ -20,19 +21,17 @@ class FittingResult:
     fitting problem test.
     """
 
-    def __init__(self,
-                 controller: Controller,
-                 accuracy: Union[float, list[float]] = np.inf,
-                 runtimes: Union[float, list[float]] = np.inf,
-                 emissions: float = np.inf,
-                 runtime_metric: Literal['mean',
-                                         'minimum',
-                                         'maximum',
-                                         'first',
-                                         'median',
-                                         'harmonic',
-                                         'trim'] = 'mean',
-                 dataset: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        controller: Controller,
+        accuracy: Union[float, list[float]] = np.inf,
+        runtimes: Union[float, list[float]] = np.inf,
+        emissions: float = np.inf,
+        runtime_metric: Literal[
+            "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
+        ] = "mean",
+        dataset: Optional[int] = None,
+    ) -> None:
         """
         Initialise the Fitting Result
 

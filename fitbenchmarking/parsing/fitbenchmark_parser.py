@@ -583,9 +583,7 @@ def _find_first_line(file_lines: list[str]) -> int:
     raise ParsingError("Could not find data points")
 
 
-def _get_column_data(
-    file_lines: list[str], first_row: int, dim: int
-) -> list:
+def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
     """
     Gets the data in the file as a dictionary of x, y and e data.
 

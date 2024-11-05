@@ -36,8 +36,7 @@ class FitbmResultTests(unittest.TestCase):
         test_files_dir = os.path.dirname(inspect.getfile(test_files))
         problem_dir = os.path.join(test_files_dir, "cubic.dat")
 
-        problem: FittingProblem = parse_problem_file(
-            problem_dir, self.options)
+        problem: FittingProblem = parse_problem_file(problem_dir, self.options)
         problem.correct_data()
 
         cost_func = NLLSCostFunc(problem)
