@@ -7,13 +7,16 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 from json import load
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 import numpy as np
+from parameterized import parameterized
 from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
 from scipy.sparse import issparse
 
 from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import (ParserFactory,
                                                     parse_problem_file)
@@ -556,3 +559,36 @@ class TestParserNoJac(TestCase):
 
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
+
+
+class TestFitbenchmarkParser(TestCase):
+    """
+    Tests the FitbenchmarkParser.
+    """
+
+    @parameterized.expand([
+        (["name = '\\sample_problem'"],
+         {"name": "sample_problem"}),
+        (["name = 'sample_problem/'"],
+         {"name": "sample_problem"}),
+        (["name = '\\sample_problem/////'"],
+         {"name": "sample_problem"}),
+        (["#fitbenchmarking"], {}),
+        (["name = 'sample_problem' # my important comment"],
+         {"name": "sample_problem"}),
+        (["function = 'Userdefined: a/4 ** 6'"],
+         {"function": "Userdefined: a/4 ** 6"}),
+        (["function = 'Userdefined = a/4 ** 6'"],
+         {"function": "Userdefined = a/4 ** 6"}),
+    ])
+    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
+    def test_get_data_problem_entries(self, file_data, expected):
+        """
+        Verifies the output of _get_data_problem_entries() method.
+        """
+        parser = FitbenchmarkParser('test_file.txt', {"parse"})
+        parser.file = MagicMock()
+        parser.file.readlines.return_value = file_data
+        # pylint: disable=protected-access
+        result = parser._get_data_problem_entries()
+        assert result == expected
