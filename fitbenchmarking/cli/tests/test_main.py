@@ -1,6 +1,7 @@
 """
 This file contains unit tests for the main CLI script
 """
+
 import inspect
 import os
 from pathlib import Path

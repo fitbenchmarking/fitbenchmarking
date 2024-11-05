@@ -271,6 +271,7 @@ class FilePathError(FitBenchmarkException):
     """
     Indicates the filepath is invalid.
     """
+
     class_message = "The filepath is invalid."
     error_code = 25
 
