@@ -1,6 +1,7 @@
 """
 Implements a controller for the Ceres fitting software.
 """
+
 import numpy as np
 import pyceres
 
@@ -50,45 +51,53 @@ class CeresController(Controller):
     """
 
     algorithm_check = {
-        'all': ['Levenberg_Marquardt',
-                'Dogleg',
-                'BFGS',
-                'LBFGS',
-                'steepest_descent',
-                'Fletcher_Reeves',
-                'Polak_Ribiere',
-                'Hestenes_Stiefel'],
-        'ls': ['Levenberg_Marquardt',
-               'Dogleg',
-               'BFGS',
-               'LBFGS',
-               'steepest_descent',
-               'Fletcher_Reeves',
-               'Polak_Ribiere',
-               'Hestenes_Stiefel'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': ['Levenberg_Marquardt', 'Dogleg'],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': ['BFGS', 'LBFGS'],
-        'conjugate_gradient': ['Fletcher_Reeves',
-                               'Polak_Ribiere',
-                               'Hestenes_Stiefel'],
-        'steepest_descent': ['steepest_descent'],
-        'global_optimization': [],
-        'MCMC': []
+        "all": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "ls": [
+            "Levenberg_Marquardt",
+            "Dogleg",
+            "BFGS",
+            "LBFGS",
+            "steepest_descent",
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["Levenberg_Marquardt", "Dogleg"],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": ["BFGS", "LBFGS"],
+        "conjugate_gradient": [
+            "Fletcher_Reeves",
+            "Polak_Ribiere",
+            "Hestenes_Stiefel",
+        ],
+        "steepest_descent": ["steepest_descent"],
+        "global_optimization": [],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['Levenberg_Marquardt',
-                                'Dogleg',
-                                'BFGS',
-                                'LBFGS',
-                                'steepest_descent',
-                                'Fletcher_Reeves',
-                                'Polak_Ribiere',
-                                'Hestenes_Stiefel']
+    jacobian_enabled_solvers = [
+        "Levenberg_Marquardt",
+        "Dogleg",
+        "BFGS",
+        "LBFGS",
+        "steepest_descent",
+        "Fletcher_Reeves",
+        "Polak_Ribiere",
+        "Hestenes_Stiefel",
+    ]
 
     def __init__(self, cost_func):
         """
@@ -119,8 +128,9 @@ class CeresController(Controller):
         self.ceres_options.max_num_iterations = 10000
 
         if self.value_ranges is not None:
-            for i, (value_ranges_lb, value_ranges_ub) in \
-                    enumerate(self.value_ranges):
+            for i, (value_ranges_lb, value_ranges_ub) in enumerate(
+                self.value_ranges
+            ):
                 self.ceres_problem.set_parameter_lower_bound(
                     self.result, i, value_ranges_lb
                 )
@@ -128,36 +138,46 @@ class CeresController(Controller):
                     self.result, i, value_ranges_ub
                 )
 
-        self.ceres_options.linear_solver_type = \
+        self.ceres_options.linear_solver_type = (
             pyceres.LinearSolverType.DENSE_QR
+        )
 
         if self.minimizer == "Levenberg_Marquardt":
-            self.ceres_options.trust_region_strategy_type =  \
+            self.ceres_options.trust_region_strategy_type = (
                 pyceres.TrustRegionStrategyType.LEVENBERG_MARQUARDT
+            )
         elif self.minimizer == "Dogleg":
-            self.ceres_options.trust_region_strategy_type = \
+            self.ceres_options.trust_region_strategy_type = (
                 pyceres.TrustRegionStrategyType.DOGLEG
+            )
         elif self.minimizer == "BFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.BFGS
+            )
         elif self.minimizer == "LBFGS":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.LBFGS
+            )
         elif self.minimizer == "steepest_descent":
-            self.ceres_options.line_search_direction_type = \
+            self.ceres_options.line_search_direction_type = (
                 pyceres.LineSearchDirectionType.STEEPEST_DESCENT
+            )
         elif self.minimizer == "Fletcher_Reeves":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.FLETCHER_REEVES
+            )
         elif self.minimizer == "Polak_Ribiere":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.POLAK_RIBIERE
+            )
         elif self.minimizer == "Hestenes_Stiefel":
-            self.ceres_options.nonlinear_conjugate_gradient_type = \
+            self.ceres_options.nonlinear_conjugate_gradient_type = (
                 pyceres.NonlinearConjugateGradientType.HESTENES_STIEFEL
+            )
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for Ceres solver")
+                f"No {self.minimizer} minimizer for Ceres solver"
+            )
 
     def fit(self):
         """
@@ -170,8 +190,7 @@ class CeresController(Controller):
             self.ceres_summary,
         )
 
-        self._status = 0 if self.ceres_summary.IsSolutionUsable()  \
-            else 2
+        self._status = 0 if self.ceres_summary.IsSolutionUsable() else 2
 
     def cleanup(self):
         """

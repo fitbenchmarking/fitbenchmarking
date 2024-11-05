@@ -3,6 +3,7 @@ Implements the weighted non-linear least squares cost function,
 to be used for Bayesian Fitting when evaluation of the
 log-likelihood is required.
 """
+
 from numpy import ravel
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc

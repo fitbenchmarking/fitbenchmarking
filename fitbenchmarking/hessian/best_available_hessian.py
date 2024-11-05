@@ -30,13 +30,12 @@ class BestAvailable(Hessian):
         :type jacobian: subclass of
             :class:`~fitbenchmarking.jacobian.base_jacobian`
         """
-        # pylint: disable=super-init-not-called
         if callable(problem.hessian):
             self.sub_hes = Analytic(problem, jacobian)
-            self.sub_hes.method = 'default'
+            self.sub_hes.method = "default"
         else:
             self.sub_hes = Scipy(problem, jacobian)
-            self.sub_hes.method = '2-point'
+            self.sub_hes.method = "2-point"
 
     def eval(self, params, **kwargs):
         """
@@ -69,8 +68,10 @@ class BestAvailable(Hessian):
         :type value: str
         """
         if value != "default":
-            LOGGER.warning("Method cannot be selected for best_available, "
-                           "using default of %s.", self.sub_hes.method)
+            LOGGER.warning(
+                "Method cannot be selected for best_available, "
+                f"using default of {self.sub_hes.method}."
+            )
 
     def name(self) -> str:
         """
@@ -82,16 +83,19 @@ class BestAvailable(Hessian):
         return "best_available"
 
     def __getattribute__(self, __name: str) -> Any:
-        if __name in ['sub_hes', 'method', 'name', 'eval']:
+        if __name in ["sub_hes", "method", "name", "eval"]:
             return super().__getattribute__(__name)
         return self.sub_hes.__getattribute__(__name)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
-        if __name in ['sub_hes', 'name', 'eval']:
+        if __name in ["sub_hes", "name", "eval"]:
             return super().__setattr__(__name, __value)
-        if __name == 'method':
+        if __name == "method":
             if __value != "default":
-                LOGGER.warning("Method cannot be selected for best_available, "
-                               "using default of %s.", self.sub_hes.method)
+                LOGGER.warning(
+                    "Method cannot be selected for best_available, "
+                    "using default of %s.",
+                    self.sub_hes.method,
+                )
             return None
         return setattr(self.sub_hes, __name, __value)

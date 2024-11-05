@@ -56,9 +56,7 @@ dev = [
     'pytest-cov>=4.0.0',
     'coveralls',
     'coverage[toml]>=6.3',
-    'pylint==3.2.6',
-    'flake8==7.1.1',
-    'pylint-exit',
+    'ruff',
     'pandas',
     'iminuit>=2.25.2',
     'pre-commit',
@@ -109,43 +107,32 @@ exclude = ['*mock*', '*test*']
 [tool.hatch.version]
 source = "versioningit"
 
-[tool.pylint.main]
-ignore = ["benchmark_problems", "fonts", "test_files", "templates", "conf.py"]
-ignored-modules = [
-    "levmar",
-    "lmfit",
-    "mantid",
-    "matlab",
-    "nlopt",
-    "pyceres",
-    "pycutest",
-    "pygsl",
-    "ral_nlls",
-    "theseus",
-    "gofit",
-    "paramonte"
+[tool.ruff]
+output-format = "grouped"
+exclude = [
+    "benchmark_problems",
+    "fonts",
+    "test_files",
+    "templates"
 ]
+line-length = 79
 
-[tool.pylint.design]
-max-args = 10
-max-branches = 15
-max-locals = 35
-max-public-methods = 25
-max-statements = 60
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "UP", # pyupgrade
+    "I", # isort
+    "NPY", # numpy
+    "PERF", # perflint
+    "LOG", # flake8-logging
+    "ICN", # flake8-import-conventions
+    "SIM", # flake8-simplify
+    ]
+ignore = ["PERF203"]
 
-[tool.pylint."messages control"]
-disable = [
-    "too-many-instance-attributes",
-    "invalid-name",
-    "too-few-public-methods",
-    "duplicate-code",
-]
-
-[tool.pylint.reports]
-output-format = 'colorized'
-
-[tool.pylint.variables]
-ignored-argument-names = "arg|args|kwargs"
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.versioningit]
 default-version = '0.0.0dev1'

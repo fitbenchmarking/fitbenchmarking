@@ -1,6 +1,7 @@
 """
 Module which calculates numdifftools finite difference approximations
 """
+
 import numdifftools as nd
 
 from fitbenchmarking.jacobian.base_jacobian import Jacobian
@@ -31,6 +32,5 @@ class Numdifftools(Jacobian):
         # __init__ to see if this was a large overhead, but it
         # seemed not to make a difference.
         # Details of the experiment are in the GitHub issue.
-        jac_func = nd.Jacobian(self.problem.eval_model,
-                               method=self.method)
+        jac_func = nd.Jacobian(self.problem.eval_model, method=self.method)
         return jac_func(params)

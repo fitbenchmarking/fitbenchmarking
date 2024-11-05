@@ -1,6 +1,6 @@
-'''
+"""
 Test plots
-'''
+"""
 
 import inspect
 import os
@@ -12,8 +12,10 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from fitbenchmarking import test_files
-from fitbenchmarking.core.results_output import (create_directories,
-                                                 create_index_page)
+from fitbenchmarking.core.results_output import (
+    create_directories,
+    create_index_page,
+)
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
@@ -29,7 +31,7 @@ def load_mock_result():
     """
     options = Options()
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+    options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
     results, _, _ = cp.load()
@@ -50,7 +52,7 @@ def find_error_bar_count(path):
     """
     Reads an html file and counts the error_y count
     """
-    with open(path, 'r', encoding='utf-8') as file:
+    with open(path, encoding="utf-8") as file:
         html_content = file.read()
     return html_content.count("error_y")
 
@@ -66,23 +68,25 @@ class PlotTests(unittest.TestCase):
         self.opts = Options()
         self.opts.use_errors = True
 
-        # pylint: disable=consider-using-with
         self._dir = TemporaryDirectory()
         self.opts.results_dir = self._dir.name
-        # pylint: enable=consider-using-with
 
-        _, _, self.figures_dir = create_directories(options=self.opts,
-                                                    group_name='NIST_low')
+        _, _, self.figures_dir = create_directories(
+            options=self.opts, group_name="NIST_low"
+        )
 
         # This copies the js directory, and therefore plotly.js, into the
         # results directory. This is needed as plotly.js is used in a test.
-        create_index_page(self.opts, ['NIST_low'], self.figures_dir)
+        create_index_page(self.opts, ["NIST_low"], self.figures_dir)
 
-        best = [r for r in self.fr['Fake_Test_Data']
-                if r.is_best_fit and r.problem_tag == 'prob_1'][0]
-        self.plot = plots.Plot(best_result=best,
-                               options=self.opts,
-                               figures_dir=self.figures_dir)
+        best = [
+            r
+            for r in self.fr["Fake_Test_Data"]
+            if r.is_best_fit and r.problem_tag == "prob_1"
+        ][0]
+        self.plot = plots.Plot(
+            best_result=best, options=self.opts, figures_dir=self.figures_dir
+        )
 
         self.df = {}
         # Create a dataframe for each row
@@ -90,31 +94,44 @@ class PlotTests(unittest.TestCase):
             for result in dataset:
                 key = (label, result.problem_tag)
                 if key not in self.df:
-                    self.df[key] = pd.concat([
-                        pd.DataFrame({'x': result.data_x,
-                                      'y': result.data_y,
-                                      'e': result.data_e,
-                                      'minimizer': 'Data',
-                                      'cost_function': '',
-                                      'best': False}),
-                        pd.DataFrame({'x': result.data_x,
-                                      'y': result.ini_y,
-                                      'e': result.data_e,
-                                      'minimizer': 'Starting Guess',
-                                      'cost_function': label,
-                                      'best': False})
-                    ])
+                    self.df[key] = pd.concat(
+                        [
+                            pd.DataFrame(
+                                {
+                                    "x": result.data_x,
+                                    "y": result.data_y,
+                                    "e": result.data_e,
+                                    "minimizer": "Data",
+                                    "cost_function": "",
+                                    "best": False,
+                                }
+                            ),
+                            pd.DataFrame(
+                                {
+                                    "x": result.data_x,
+                                    "y": result.ini_y,
+                                    "e": result.data_e,
+                                    "minimizer": "Starting Guess",
+                                    "cost_function": label,
+                                    "best": False,
+                                }
+                            ),
+                        ]
+                    )
 
-                result_dict = {'x': result.data_x,
-                               'y': result.fin_y,
-                               'e': result.data_e,
-                               'minimizer': result.sanitised_min_name(True),
-                               'cost_function': 'NLLS',
-                               'best': result.is_best_fit}
-                self.df[key] = pd.concat([self.df[key],
-                                          pd.DataFrame(result_dict)],
-                                         axis=0,
-                                         ignore_index=True)
+                result_dict = {
+                    "x": result.data_x,
+                    "y": result.fin_y,
+                    "e": result.data_e,
+                    "minimizer": result.sanitised_min_name(True),
+                    "cost_function": "NLLS",
+                    "best": result.is_best_fit,
+                }
+                self.df[key] = pd.concat(
+                    [self.df[key], pd.DataFrame(result_dict)],
+                    axis=0,
+                    ignore_index=True,
+                )
 
     def test_plot_initial_guess_create_files(self):
         """
@@ -122,9 +139,10 @@ class PlotTests(unittest.TestCase):
         added to the plot.
         """
         file_name = self.plot.plot_initial_guess(
-            self.df[('Fake_Test_Data', 'prob_1')])
+            self.df[("Fake_Test_Data", "prob_1")]
+        )
 
-        self.assertEqual(file_name, 'start_for_prob_1.html')
+        self.assertEqual(file_name, "start_for_prob_1.html")
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
         self.assertEqual(find_error_bar_count(path), 2)
@@ -133,9 +151,8 @@ class PlotTests(unittest.TestCase):
         """
         Test that best_filename returns the correct filename
         """
-        file_name = self.plot.best_filename(self.fr['Fake_Test_Data'][0])
-        self.assertEqual(file_name,
-                         'm10_[s1]_jj0_fit_for_cf1_prob_0.html')
+        file_name = self.plot.best_filename(self.fr["Fake_Test_Data"][0])
+        self.assertEqual(file_name, "m10_[s1]_jj0_fit_for_cf1_prob_0.html")
 
     def test_plotly_fit_create_files(self):
         """
@@ -143,17 +160,19 @@ class PlotTests(unittest.TestCase):
         added to the plot.
         """
         file_names = self.plot.plotly_fit(
-            self.df[('Fake_Test_Data', 'prob_1')])
+            self.df[("Fake_Test_Data", "prob_1")]
+        )
 
-        for m, s, j in zip(['m10', 'm11', 'm01', 'm00',
-                            'm10', 'm11', 'm01', 'm00'],
-                           ['s1', 's1', 's0', 's0',
-                            's1', 's1', 's0', 's0'],
-                           ['jj0', 'jj0', 'jj0', 'jj0',
-                            'jj1', 'jj1', 'jj1', 'jj1']):
-            file_name_prefix = f'{m}_[{s}]_{j}'
-            self.assertEqual(file_names[file_name_prefix],
-                             file_name_prefix+'_fit_for_cf1_prob_1.html')
+        for m, s, j in zip(
+            ["m10", "m11", "m01", "m00", "m10", "m11", "m01", "m00"],
+            ["s1", "s1", "s0", "s0", "s1", "s1", "s0", "s0"],
+            ["jj0", "jj0", "jj0", "jj0", "jj1", "jj1", "jj1", "jj1"],
+        ):
+            file_name_prefix = f"{m}_[{s}]_{j}"
+            self.assertEqual(
+                file_names[file_name_prefix],
+                file_name_prefix + "_fit_for_cf1_prob_1.html",
+            )
             path = os.path.join(self.figures_dir, file_names[file_name_prefix])
             self.assertTrue(os.path.exists(path))
             self.assertEqual(find_error_bar_count(path), 2)
@@ -163,19 +182,23 @@ class PlotTests(unittest.TestCase):
         Test that plot_posteriors creates a file
         """
 
-        self.plot.result.param_names = ['a', 'b']
+        self.plot.result.param_names = ["a", "b"]
 
         result = mock.Mock()
-        result.params_pdfs = {"scipy_pfit": [1.0, 1.0], "scipy_perr": [
-            0.1, 0.2], "a": [1.5, 1.0, 1.2], "b": [0.9, 1.6, 1.1]}
-        result.sanitised_min_name.return_value = 'm10_[s1]_jj0'
-        result.sanitised_name = 'cf1_prob_1'
+        result.params_pdfs = {
+            "scipy_pfit": [1.0, 1.0],
+            "scipy_perr": [0.1, 0.2],
+            "a": [1.5, 1.0, 1.2],
+            "b": [0.9, 1.6, 1.1],
+        }
+        result.sanitised_min_name.return_value = "m10_[s1]_jj0"
+        result.sanitised_name = "cf1_prob_1"
 
         file_name = self.plot.plot_posteriors(result)
 
-        self.assertEqual(file_name,
-                         'm10_[s1]_jj0_posterior_'
-                         'pdf_plot_for_cf1_prob_1.html')
+        self.assertEqual(
+            file_name, "m10_[s1]_jj0_posterior_pdf_plot_for_cf1_prob_1.html"
+        )
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
@@ -183,26 +206,30 @@ class PlotTests(unittest.TestCase):
         """
         Test that the plotting fails gracefully for multivariate problems.
         """
-        self.fr['Fake_Test_Data'][0].multivariate = True
+        self.fr["Fake_Test_Data"][0].multivariate = True
 
         with self.assertRaises(PlottingError):
-            self.plot = plots.Plot(best_result=self.fr['Fake_Test_Data'][0],
-                                   options=self.opts,
-                                   figures_dir=self.figures_dir)
+            self.plot = plots.Plot(
+                best_result=self.fr["Fake_Test_Data"][0],
+                options=self.opts,
+                figures_dir=self.figures_dir,
+            )
 
     def test_write_html_with_link_plotlyjs(self):
         """
         Test that the function is producing output files smaller than 50KB.
         """
         fig = go.Figure()
-        htmlfile_name = 'figure.html'
-        self.plot.write_html_with_link_plotlyjs(fig=fig,
-                                                figures_dir=self.figures_dir,
-                                                htmlfile=htmlfile_name,
-                                                options=self.opts)
+        htmlfile_name = "figure.html"
+        self.plot.write_html_with_link_plotlyjs(
+            fig=fig,
+            figures_dir=self.figures_dir,
+            htmlfile=htmlfile_name,
+            options=self.opts,
+        )
 
         htmlfile_path = os.path.join(self.figures_dir, htmlfile_name)
-        file_size_KB = os.path.getsize(htmlfile_path)/1000
+        file_size_KB = os.path.getsize(htmlfile_path) / 1000
 
         assert file_size_KB < 50
 

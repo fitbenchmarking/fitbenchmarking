@@ -1,6 +1,7 @@
 """
 Emissions table
 """
+
 from fitbenchmarking.results_processing.base_table import Table
 
 
@@ -20,7 +21,8 @@ class EmissionsTable(Table):
     <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
 
     """
-    name = 'emissions'
+
+    name = "emissions"
     cbar_title = "Problem-Specific Cell Shading: Relative Emissions"
 
     def get_value(self, result):

@@ -1,6 +1,7 @@
 """
 Implements the weighted non-linear least squares cost function
 """
+
 from numpy import ravel
 from scipy.sparse import issparse
 
@@ -38,9 +39,11 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
         if len(x) != len(y) or len(x) != len(e):
-            raise CostFuncError('The length of the x, y and e are not '
-                                f'the same, len(x)={len(x)}, len(y)={len(y)}'
-                                f' and len(e)={len(e)}')
+            raise CostFuncError(
+                "The length of the x, y and e are not "
+                f"the same, len(x)={len(x)}, len(y)={len(y)}"
+                f" and len(e)={len(e)}"
+            )
         result = (y - self.problem.eval_model(params=params, x=x)) / e
 
         # Flatten in case of a vector function
@@ -63,9 +66,9 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         jac = self.jacobian.eval(params, **kwargs)
 
         if issparse(jac):
-            return - jac.transpose().multiply(1/e).transpose()
+            return -jac.transpose().multiply(1 / e).transpose()
 
-        return - jac / e[:, None]
+        return -jac / e[:, None]
 
     def hes_res(self, params, **kwargs):
         """
@@ -84,6 +87,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
 
         hes = self.hessian.eval(params, **kwargs)
         for i, e_i in enumerate(e):
-            hes[:, :, i] = - hes[:, :, i] / e_i
+            hes[:, :, i] = -hes[:, :, i] / e_i
 
         return hes, self.jac_res(params, **kwargs)

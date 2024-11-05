@@ -1,9 +1,11 @@
 """
 This file implements a parser for HOGBEN problem sets.
 """
+
 import os
-import typing
 import pickle
+import typing
+
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -26,22 +28,23 @@ class HogbenParser(FitbenchmarkParser):
         """
 
         pf = self._parsed_func[0]
-        model = os.path.join(os.path.dirname(self._filename),
-                             "Models", pf['function'])
-        with open(model, 'rb') as f:
+        model = os.path.join(
+            os.path.dirname(self._filename), "Models", pf["function"]
+        )
+        with open(model, "rb") as f:
             refnx_model = pickle.load(f)
 
-        # pylint: disable=attribute-defined-outside-init
-        self._equation = pf['function'].split('.')[0].replace('_', ' ')
+        self._equation = pf["function"].split(".")[0].replace("_", " ")
 
         varying_params = refnx_model.parameters.varying_parameters()
 
         # remove spaces and hyphens from parameter names
-        p_names = [" ".join(p.name.replace("-", "").split()).replace(" ", "_")
-                   for p in list(varying_params)]
+        p_names = [
+            " ".join(p.name.replace("-", "").split()).replace(" ", "_")
+            for p in list(varying_params)
+        ]
         svals = np.array(varying_params)
 
-        # pylint: disable=attribute-defined-outside-init
         self._starting_values = [dict(zip(p_names, svals))]
 
         def fitFunction(x, *params):

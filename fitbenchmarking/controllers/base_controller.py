@@ -7,12 +7,14 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from scipy.optimize import curve_fit
 
-from fitbenchmarking.utils.exceptions import (ControllerAttributeError,
-                                              IncompatibleHessianError,
-                                              IncompatibleJacobianError,
-                                              IncompatibleMinimizerError,
-                                              IncompatibleProblemError,
-                                              UnknownMinimizerError)
+from fitbenchmarking.utils.exceptions import (
+    ControllerAttributeError,
+    IncompatibleHessianError,
+    IncompatibleJacobianError,
+    IncompatibleMinimizerError,
+    IncompatibleProblemError,
+    UnknownMinimizerError,
+)
 
 
 class Controller:
@@ -57,19 +59,21 @@ class Controller:
     #: to run given the ``algorithm_type`` selected in Fitting Options.
     #: For guidance on how to catagorise minimizers, see the Optimization
     #: Algorithms section of the FitBenchmarking docs.
-    algorithm_check = {'all': [],
-                       'ls': [],
-                       'deriv_free': [],
-                       'general': [],
-                       'simplex': [],
-                       'trust_region': [],
-                       'levenberg-marquardt': [],
-                       'gauss_newton': [],
-                       'bfgs': [],
-                       'conjugate_gradient': [],
-                       'steepest_descent': [],
-                       'global_optimization': [],
-                       'MCMC': []}
+    algorithm_check = {
+        "all": [],
+        "ls": [],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
     #: Within the controller class, you must define the list
     #: ``jacobian_enabled_solvers`` if any of the minimizers
@@ -143,7 +147,7 @@ class Controller:
         self.minimizer = None
         # Software: Use a property to get the name of the software from the
         # class
-        self._software = ''
+        self._software = ""
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = None
@@ -185,11 +189,11 @@ class Controller:
 
     @flag.setter
     def flag(self, value):
-
         if value not in self.VALID_FLAGS:
             raise ControllerAttributeError(
-                'controller.flag must be one of '
-                f'{list(self.VALID_FLAGS)}. Got: {value}.')
+                "controller.flag must be one of "
+                f"{list(self.VALID_FLAGS)}. Got: {value}."
+            )
         self._flag = int(value)
 
     @property
@@ -222,14 +226,16 @@ class Controller:
         """
 
         if (self.minimizer is not None) and (self.parameter_set is not None):
-            self.initial_params = \
-                list(self.starting_values[self.parameter_set].values())
+            self.initial_params = list(
+                self.starting_values[self.parameter_set].values()
+            )
 
             if not skip_setup:
                 self.setup()
         else:
-            raise ControllerAttributeError('Either minimizer or parameter_set '
-                                           'is set to None.')
+            raise ControllerAttributeError(
+                "Either minimizer or parameter_set is set to None."
+            )
 
     def execute(self):
         """
@@ -257,7 +263,7 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        kwargs = {k: v for k, v in zip('xye', [x, y, e]) if v is not None}
+        kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
         out = self.cost_func.eval_cost(params=params, **kwargs)
         return out
 
@@ -265,45 +271,50 @@ class Controller:
         """
         Computes overall confidence in MCMC fit
         """
-        self.params_pdfs['scipy_pfit'] = None
-        self.params_pdfs['scipy_perr'] = None
+        self.params_pdfs["scipy_pfit"] = None
+        self.params_pdfs["scipy_perr"] = None
         try:
-            popt, pcov = curve_fit(self.problem.function,
-                                   xdata=self.data_x,
-                                   ydata=self.data_y,
-                                   p0=self.initial_params,
-                                   sigma=self.data_e)
+            popt, pcov = curve_fit(
+                self.problem.function,
+                xdata=self.data_x,
+                ydata=self.data_y,
+                p0=self.initial_params,
+                sigma=self.data_e,
+            )
 
             perr = np.sqrt(np.diag(pcov))
 
-            self.params_pdfs['scipy_pfit'] = popt.tolist()
-            self.params_pdfs['scipy_perr'] = perr.tolist()
+            self.params_pdfs["scipy_pfit"] = popt.tolist()
+            self.params_pdfs["scipy_perr"] = perr.tolist()
 
             # calculate overall confidence within 2 sigma tolerance
             par_conf = []
             for i, name in enumerate(self.par_names):
-                tol = 2*perr[i]
+                tol = 2 * perr[i]
                 hist, bin_edges = np.histogram(
-                    self.params_pdfs[name.replace('.', '_')],
-                    bins=100, density=True
+                    self.params_pdfs[name.replace(".", "_")],
+                    bins=100,
+                    density=True,
                 )
                 # check tol range is covered by hist range
-                tol_range = [popt[i]-tol, popt[i]+tol]
-                if tol_range[-1] < bin_edges[0] or \
-                        tol_range[0] > bin_edges[-1]:
+                tol_range = [popt[i] - tol, popt[i] + tol]
+                if (
+                    tol_range[-1] < bin_edges[0]
+                    or tol_range[0] > bin_edges[-1]
+                ):
                     par_conf.append(0)
                 else:
                     width = np.diff(bin_edges)[0]
-                    start_bin = np.argmin(abs(bin_edges-(popt[i]-tol)))
-                    end_bin = np.argmin(abs(bin_edges-(popt[i]+tol)))
+                    start_bin = np.argmin(abs(bin_edges - (popt[i] - tol)))
+                    end_bin = np.argmin(abs(bin_edges - (popt[i] + tol)))
                     if start_bin == end_bin:
-                        par_conf.append(hist[start_bin]*width)
+                        par_conf.append(hist[start_bin] * width)
                     else:
-                        par_conf.append(sum(hist[start_bin:end_bin]*width))
+                        par_conf.append(sum(hist[start_bin:end_bin] * width))
         except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
-            print("\n"+str(error_msg))
+            print("\n" + str(error_msg))
 
         return np.prod(par_conf)
 
@@ -313,15 +324,19 @@ class Controller:
         other options and problem definition. An exception is raised if this
         is not true.
         """
-        incompatible_problems = \
+        incompatible_problems = (
             self.cost_func.jacobian.INCOMPATIBLE_PROBLEMS.get(
-                self.cost_func.jacobian.method, [])
+                self.cost_func.jacobian.method, []
+            )
+        )
 
         if self.problem.format in incompatible_problems:
-            message = f"The {self.cost_func.jacobian.__class__.__name__} " \
-                      f"Jacobian '{self.cost_func.jacobian.method}' " \
-                      f"method is incompatible with the problem format " \
-                      f"'{self.problem.format}'."
+            message = (
+                f"The {self.cost_func.jacobian.__class__.__name__} "
+                f"Jacobian '{self.cost_func.jacobian.method}' "
+                f"method is incompatible with the problem format "
+                f"'{self.problem.format}'."
+            )
             raise IncompatibleJacobianError(message)
 
     def _validate_hessian(self) -> None:
@@ -331,15 +346,19 @@ class Controller:
         is not true.
         """
         if self.cost_func.hessian is not None:
-            incompatible_problems = \
+            incompatible_problems = (
                 self.cost_func.hessian.INCOMPATIBLE_PROBLEMS.get(
-                    self.cost_func.hessian.method, [])
+                    self.cost_func.hessian.method, []
+                )
+            )
 
             if self.problem.format in incompatible_problems:
-                message = f"The {self.cost_func.hessian.__class__.__name__} " \
-                          f"Hessian '{self.cost_func.hessian.method}' " \
-                          f"method is incompatible with the problem format " \
-                          f"'{self.problem.format}'."
+                message = (
+                    f"The {self.cost_func.hessian.__class__.__name__} "
+                    f"Hessian '{self.cost_func.hessian.method}' "
+                    f"method is incompatible with the problem format "
+                    f"'{self.problem.format}'."
+                )
                 raise IncompatibleHessianError(message)
 
     def _validate_problem_format(self):
@@ -348,8 +367,9 @@ class Controller:
         """
         if self.problem.format in self.incompatible_problems:
             raise IncompatibleProblemError(
-                f'{self.problem.format} problems cannot be used with '
-                f'{self.software} controllers.')
+                f"{self.problem.format} problems cannot be used with "
+                f"{self.software} controllers."
+            )
 
     def validate_minimizer(self, minimizer, algorithm_type):
         """
@@ -371,16 +391,20 @@ class Controller:
         result = any(minimizer in list for list in minimzer_selection)
 
         if minimzer_selection == [[]]:
-            message = 'For the selected software, there are no minimizers '\
-                      'with the algorithm type(s) selected in the '\
-                      'options file'
+            message = (
+                "For the selected software, there are no minimizers "
+                "with the algorithm type(s) selected in the "
+                "options file"
+            )
             raise UnknownMinimizerError(message)
 
         if not result:
-            message = f'The algorithm type(s) of the minimizer selected,'\
-                      f'{minimizer}, does not match the algorithm type(s)'\
-                      'selected in the options file. For this software, '\
-                      f'available minimizers are: {minimzer_selection}'
+            message = (
+                f"The algorithm type(s) of the minimizer selected,"
+                f"{minimizer}, does not match the algorithm type(s)"
+                "selected in the options file. For this software, "
+                f"available minimizers are: {minimzer_selection}"
+            )
             raise UnknownMinimizerError(message)
 
     def record_alg_type(self, minimizer, algorithm_type):
@@ -394,8 +418,11 @@ class Controller:
         :param algorithm_type: the algorithm type selected from the options
         :type algorithm_type: list
         """
-        types = [k for k, v in self.algorithm_check.items()
-                 if minimizer in v and k in algorithm_type]
+        types = [
+            k
+            for k, v in self.algorithm_check.items()
+            if minimizer in v and k in algorithm_type
+        ]
         type_str = ", ".join(types)
 
         return type_str
@@ -410,20 +437,27 @@ class Controller:
         :type minimizer: str
         """
 
-        if self.support_for_bounds is False or \
-                minimizer in self.no_bounds_minimizers:
-            message = 'The selected minimizer does not currently support ' \
-                      'problems with parameter bounds'
+        if (
+            self.support_for_bounds is False
+            or minimizer in self.no_bounds_minimizers
+        ):
+            message = (
+                "The selected minimizer does not currently support "
+                "problems with parameter bounds"
+            )
             raise IncompatibleMinimizerError(message)
 
     def check_bounds_respected(self):
         """
-            Check whether the selected minimizer has respected
-            parameter bounds
+        Check whether the selected minimizer has respected
+        parameter bounds
         """
         for count, value in enumerate(self.final_params):
-            if not self.value_ranges[count][0] <= value \
-                    <= self.value_ranges[count][1]:
+            if (
+                not self.value_ranges[count][0]
+                <= value
+                <= self.value_ranges[count][1]
+            ):
                 self.flag = 5
 
     def check_attributes(self):
@@ -431,16 +465,17 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        values = {'_flag': int, 'final_params': np.ndarray}
+        values = {"_flag": int, "final_params": np.ndarray}
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             if attr_type != np.ndarray:
                 if not isinstance(attr, attr_type):
                     raise ControllerAttributeError(
-                        f'Attribute "{attr_name}" in the controller is not the'
-                        f'expected type. Expected "{attr_type}", got '
-                        f'{type(attr)}.')
+                        f"Attribute '{attr_name}' in the controller is not the"
+                        f"expected type. Expected '{attr_type}', got "
+                        f"{type(attr)}."
+                    )
             else:
                 # Mantid multifit produces final params as a list of final
                 # params.
@@ -449,10 +484,11 @@ class Controller:
                 for a in attr:
                     if any(np.isnan(n) or np.isinf(n) for n in a):
                         raise ControllerAttributeError(
-                            f'Attribute "{attr_name}" in the controller is '
-                            'not the expected numpy ndarray of floats. '
-                            'Expected a list or numpy ndarray of floats, got '
-                            f'{attr}')
+                            f"Attribute '{attr_name}' in the controller is "
+                            "not the expected numpy ndarray of floats. "
+                            "Expected a list or numpy ndarray of floats, got "
+                            f"{attr}"
+                        )
 
     @abstractmethod
     def setup(self):

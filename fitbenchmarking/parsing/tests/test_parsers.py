@@ -11,23 +11,25 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 from parameterized import parameterized
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+from pytest import test_type as TEST_TYPE
 from scipy.sparse import issparse
 
 from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.parser_factory import (ParserFactory,
-                                                    parse_problem_file)
+from fitbenchmarking.parsing.parser_factory import (
+    ParserFactory,
+    parse_problem_file,
+)
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 OPTIONS = Options()
-JACOBIAN_ENABLED_PARSERS = ['cutest', 'nist', 'hogben']
-SPARSE_JACOBIAN_ENABLED_PARSERS = ['cutest', 'hogben', 'mantiddev']
-HESSIAN_ENABLED_PARSERS = ['nist']
-BOUNDS_ENABLED_PARSERS = ['cutest', 'fitbenchmark']
+JACOBIAN_ENABLED_PARSERS = ["cutest", "nist", "hogben"]
+SPARSE_JACOBIAN_ENABLED_PARSERS = ["cutest", "hogben", "mantiddev"]
+HESSIAN_ENABLED_PARSERS = ["nist"]
+BOUNDS_ENABLED_PARSERS = ["cutest", "fitbenchmark"]
 
 
 def pytest_generate_tests(metafunc):
@@ -39,11 +41,10 @@ def pytest_generate_tests(metafunc):
     # called once per each test function
     funcarglist = metafunc.cls.params[metafunc.function.__name__]
     argnames = sorted(funcarglist[0])
-    argvals = [[funcargs[name]
-                for name in argnames]
-               for funcargs in funcarglist]
-    metafunc.parametrize(argnames,
-                         argvals)
+    argvals = [
+        [funcargs[name] for name in argnames] for funcargs in funcarglist
+    ]
+    metafunc.parametrize(argnames, argvals)
 
 
 def form_dict(file_format, evaluations):
@@ -58,10 +59,7 @@ def form_dict(file_format, evaluations):
     :return: Dictionary with provided elements
     :rtype: dict
     """
-    test_dict = {
-        'file_format': file_format,
-        'evaluations_file': evaluations
-    }
+    test_dict = {"file_format": file_format, "evaluations_file": evaluations}
     return test_dict
 
 
@@ -73,83 +71,93 @@ def generate_test_cases():
              parameter dictionaries for the value
     :rtype: dict
     """
-    params = {'test_parsers': [],
-              'test_factory': [],
-              'test_function_evaluation': [],
-              'test_jacobian_evaluation': [],
-              'test_sparsej_evaluation': [],
-              'test_hessian_evaluation': []}
+    params = {
+        "test_parsers": [],
+        "test_factory": [],
+        "test_function_evaluation": [],
+        "test_jacobian_evaluation": [],
+        "test_sparsej_evaluation": [],
+        "test_hessian_evaluation": [],
+    }
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
     if TEST_TYPE == "all":
-        formats = ['cutest', 'nist', 'mantid',
-                   'ivp', 'sasview',
-                   'hogben', 'mantiddev',
-                   'bal']
+        formats = [
+            "cutest",
+            "nist",
+            "mantid",
+            "ivp",
+            "sasview",
+            "hogben",
+            "mantiddev",
+            "bal",
+        ]
     elif TEST_TYPE == "default":
-        formats = ['nist']
+        formats = ["nist"]
     else:
-        formats = ['nist', 'horace']
+        formats = ["nist", "horace"]
 
     # create list of test_cases
-    expected_dir = os.listdir(os.path.join(test_dir, 'expected'))
+    expected_dir = os.listdir(os.path.join(test_dir, "expected"))
     for file_format in formats:
         format_dir = os.listdir(os.path.join(test_dir, file_format))
         for expected_file in expected_dir:
-            expected_path = os.path.join(test_dir, 'expected', expected_file)
+            expected_path = os.path.join(test_dir, "expected", expected_file)
             test_name = os.path.splitext(expected_file)[0]
-            test_name_with_ext = [f for f in format_dir
-                                  if f.startswith(test_name)]
+            test_name_with_ext = [
+                f for f in format_dir if f.startswith(test_name)
+            ]
             if not test_name_with_ext:
                 test_file = None
             elif len(test_name_with_ext) == 1:
-                test_file = os.path.join(test_dir,
-                                         file_format,
-                                         test_name_with_ext[0])
+                test_file = os.path.join(
+                    test_dir, file_format, test_name_with_ext[0]
+                )
             else:
                 raise RuntimeError(
-                    f'Too many "{file_format}" files found for "{test_name}"'
-                    ' test')
+                    f"Too many '{file_format}' files "
+                    f"found for '{test_name}' test"
+                )
 
             test_parsers = {}
-            test_parsers['file_format'] = file_format
-            test_parsers['test_file'] = test_file
-            test_parsers['expected'] = load_expectation(expected_path)
-            params['test_parsers'].append(test_parsers)
+            test_parsers["file_format"] = file_format
+            test_parsers["test_file"] = test_file
+            test_parsers["expected"] = load_expectation(expected_path)
+            params["test_parsers"].append(test_parsers)
 
             test_factory = {}
-            test_factory['file_format'] = file_format
-            test_factory['test_file'] = test_file
-            params['test_factory'].append(test_factory)
+            test_factory["file_format"] = file_format
+            test_factory["test_file"] = test_file
+            params["test_factory"].append(test_factory)
 
-        func_eval = os.path.join(test_dir,
-                                 file_format,
-                                 'function_evaluations.json')
+        func_eval = os.path.join(
+            test_dir, file_format, "function_evaluations.json"
+        )
 
         test_func_eval = form_dict(file_format, func_eval)
-        params['test_function_evaluation'].append(test_func_eval)
+        params["test_function_evaluation"].append(test_func_eval)
 
-        jac_eval = os.path.join(test_dir,
-                                file_format,
-                                'jacobian_evaluations.json')
+        jac_eval = os.path.join(
+            test_dir, file_format, "jacobian_evaluations.json"
+        )
 
         test_jac_eval = form_dict(file_format, jac_eval)
-        params['test_jacobian_evaluation'].append(test_jac_eval)
+        params["test_jacobian_evaluation"].append(test_jac_eval)
 
-        sparsej_eval = os.path.join(test_dir,
-                                    file_format,
-                                    'sparse_jacobian_evaluations.json')
+        sparsej_eval = os.path.join(
+            test_dir, file_format, "sparse_jacobian_evaluations.json"
+        )
 
         test_sparsej_eval = form_dict(file_format, sparsej_eval)
-        params['test_sparsej_evaluation'].append(test_sparsej_eval)
+        params["test_sparsej_evaluation"].append(test_sparsej_eval)
 
-        hes_eval = os.path.join(test_dir,
-                                file_format,
-                                'hessian_evaluations.json')
+        hes_eval = os.path.join(
+            test_dir, file_format, "hessian_evaluations.json"
+        )
 
         test_hes_eval = form_dict(file_format, hes_eval)
-        params['test_hessian_evaluation'].append(test_hes_eval)
+        params["test_hessian_evaluation"].append(test_hes_eval)
 
     return params
 
@@ -163,20 +171,20 @@ def load_expectation(filename):
     :return: A fitting problem to test against
     :rtype: fitbenchmarking.parsing.FittingProblem
     """
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, encoding="utf-8") as f:
         expectation_dict = load(f)
 
     expectation = FittingProblem(OPTIONS)
-    expectation.name = expectation_dict['name']
-    expectation.start_x = expectation_dict['start_x']
-    expectation.end_x = expectation_dict['end_x']
-    expectation.data_x = np.array(expectation_dict['data_x'])
-    expectation.data_y = np.array(expectation_dict['data_y'])
-    expectation.data_e = expectation_dict['data_e']
+    expectation.name = expectation_dict["name"]
+    expectation.start_x = expectation_dict["start_x"]
+    expectation.end_x = expectation_dict["end_x"]
+    expectation.data_x = np.array(expectation_dict["data_x"])
+    expectation.data_y = np.array(expectation_dict["data_y"])
+    expectation.data_e = expectation_dict["data_e"]
     if expectation.data_e is not None:
         expectation.data_e = np.array(expectation.data_e)
-    expectation.starting_values = expectation_dict['starting_values']
-    expectation.value_ranges = expectation_dict['value_ranges']
+    expectation.starting_values = expectation_dict["starting_values"]
+    expectation.value_ranges = expectation_dict["value_ranges"]
 
     return expectation
 
@@ -197,25 +205,28 @@ class TestParsers:
         :param test_file: The path to the test file
         :type test_file: string
         """
-        assert (test_file is not None), \
-            f'No test file for {file_format}'
+        assert test_file is not None, f"No test file for {file_format}"
 
-        with open(test_file, encoding='utf-8') as f:
-            if f.readline() == 'NA':
+        with open(test_file, encoding="utf-8") as f:
+            if f.readline() == "NA":
                 # Test File cannot be written
                 return
 
         # Test import
-        module = import_module(name=f'.{file_format}_parser',
-                               package='fitbenchmarking.parsing')
+        module = import_module(
+            name=f".{file_format}_parser", package="fitbenchmarking.parsing"
+        )
 
-        parser = getmembers(module, lambda m: (isclass(m)
-                                               and not isabstract(m)
-                                               and issubclass(m, Parser)
-                                               and m is not Parser
-                                               and file_format.lower()
-                                               in str(m.__name__.lower())
-                                               ))[0][1]
+        parser = getmembers(
+            module,
+            lambda m: (
+                isclass(m)
+                and not isabstract(m)
+                and issubclass(m, Parser)
+                and m is not Parser
+                and file_format.lower() in str(m.__name__.lower())
+            ),
+        )[0][1]
 
         # Test parse
         with parser(test_file, OPTIONS) as p:
@@ -223,7 +234,7 @@ class TestParsers:
 
         # Allow for problems not supporting certain test cases
         # (e.g. value_ranges)
-        if fitting_problem.name == 'NA':
+        if fitting_problem.name == "NA":
             return
 
         # Check against expected
@@ -233,22 +244,26 @@ class TestParsers:
         # generic across problem types.
         # similarly starting_values uses the param name so must be checked
         # separately
-        for attr in ['name', 'data_x', 'data_y', 'data_e', 'start_x', 'end_x']:
+        for attr in ["name", "data_x", "data_y", "data_e", "start_x", "end_x"]:
             parsed_attr = getattr(fitting_problem, attr)
             expected_attr = getattr(expected, attr)
             equal = parsed_attr == expected_attr
             if isinstance(equal, np.ndarray):
                 equal = equal.all()
-            assert (equal), f'{attr} was parsed incorrectly.' \
-                + f'{parsed_attr} != {expected_attr}'
+            assert equal, (
+                f"{attr} was parsed incorrectly. "
+                f"{parsed_attr} != {expected_attr}"
+            )
 
         # Check starting_values
-        for a, e in zip(fitting_problem.starting_values,
-                        expected.starting_values):
+        for a, e in zip(
+            fitting_problem.starting_values, expected.starting_values
+        ):
             loaded_as_set = set(a.values())
             expected_as_set = set(e.values())
-            assert (loaded_as_set == expected_as_set), \
-                'starting_values were parsed incorrectly.'
+            assert (
+                loaded_as_set == expected_as_set
+            ), "starting_values were parsed incorrectly."
 
         # check value ranges
         if file_format in BOUNDS_ENABLED_PARSERS:
@@ -256,8 +271,9 @@ class TestParsers:
                 act_val = str(fitting_problem.value_ranges)
             else:
                 act_val = fitting_problem.value_ranges
-            assert (act_val == expected.value_ranges), \
-                'value_ranges were parsed incorrectly.'
+            assert (
+                act_val == expected.value_ranges
+            ), "value_ranges were parsed incorrectly."
 
         # Check that the function is callable
         assert callable(fitting_problem.function)
@@ -292,11 +308,12 @@ class TestParsers:
         :type evaluations_file: string
         """
 
-        assert (evaluations_file is not None), \
-            f'No function evaluations provided to test against for'\
-            f' {file_format}'
+        assert evaluations_file is not None, (
+            "No function evaluations provided "
+            f"to test against for {file_format}"
+        )
 
-        with open(evaluations_file, 'r', encoding='utf-8') as ef:
+        with open(evaluations_file, encoding="utf-8") as ef:
             results = load(ef)
 
         format_dir = os.path.dirname(evaluations_file)
@@ -309,20 +326,20 @@ class TestParsers:
                 fitting_problem = p.parse()
 
             for r in tests:
-
                 # for problems with too many params to type out individually
                 if isinstance(r[1], dict):
-                    r[1] = np.ones(r[1]["n_params"])*r[1]["param_value"]
-                    r[2] = np.ones(r[2]["n_data_points"])*r[2]["func_val"]
+                    r[1] = np.ones(r[1]["n_params"]) * r[1]["param_value"]
+                    r[2] = np.ones(r[2]["n_data_points"]) * r[2]["func_val"]
 
-                if r[0] == 'NA':
+                if r[0] == "NA":
                     actual = fitting_problem.eval_model(params=r[1])
                 else:
                     x = np.array(r[0])
                     actual = fitting_problem.eval_model(x=x, params=r[1])
 
-                assert np.isclose(actual, r[2]).all(), \
-                    print(f'Expected: {r[2]}\nReceived: {actual}')
+                assert np.isclose(actual, r[2]).all(), print(
+                    f"Expected: {r[2]}\nReceived: {actual}"
+                )
 
     def test_jacobian_evaluation(self, file_format, evaluations_file):
         """
@@ -344,11 +361,13 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the JACOBIAN_ENABLED_PARSERS list.
         if file_format in JACOBIAN_ENABLED_PARSERS:
-            message = 'No function evaluations provided to test ' \
-                f'against for {file_format}'
-            assert (evaluations_file is not None), message
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
+            assert evaluations_file is not None, message
 
-            with open(evaluations_file, 'r', encoding='utf-8') as ef:
+            with open(evaluations_file, encoding="utf-8") as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -385,11 +404,13 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the SPARSE_JACOBIAN_ENABLED_PARSERS list.
         if file_format in SPARSE_JACOBIAN_ENABLED_PARSERS:
-            message = 'No function evaluations provided to test ' \
-                f'against for {file_format}'
-            assert (evaluations_file is not None), message
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
+            assert evaluations_file is not None, message
 
-            with open(evaluations_file, 'r', encoding='utf-8') as ef:
+            with open(evaluations_file, encoding="utf-8") as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -427,11 +448,13 @@ class TestParsers:
         # Note that this test is optional so will only run if the file_format
         # is added to the HESSIAN_ENABLED_PARSERS list.
         if file_format in HESSIAN_ENABLED_PARSERS:
-            message = 'No function evaluations provided to test ' \
-                f'against for {file_format}'
-            assert (evaluations_file is not None), message
+            message = (
+                "No function evaluations provided "
+                f"to test against for {file_format}"
+            )
+            assert evaluations_file is not None, message
 
-            with open(evaluations_file, 'r', encoding='utf-8') as ef:
+            with open(evaluations_file, encoding="utf-8") as ef:
                 results = load(ef)
 
             format_dir = os.path.dirname(evaluations_file)
@@ -457,16 +480,17 @@ class TestParsers:
         :param test_file: The path to the test file
         :type test_file: string
         """
-        with open(test_file, encoding='utf-8') as f:
-            if f.readline() == 'NA':
+        with open(test_file, encoding="utf-8") as f:
+            if f.readline() == "NA":
                 # Skip the test files with no data
                 return
 
         parser = ParserFactory.create_parser(test_file)
-        assert (parser.__name__.lower().startswith(file_format.lower())), \
-            f'Factory failed to get associated parser for {test_file}: got '\
-            f'{parser.__name__.lower()}, required starting with'\
-            f' {parser.__name__.lower()}'
+        assert parser.__name__.lower().startswith(file_format.lower()), (
+            f"Factory failed to get associated parser for {test_file}: got "
+            f"{parser.__name__.lower()}, required starting with"
+            f" {parser.__name__.lower()}"
+        )
 
 
 class TestParserFactory(TestCase):
@@ -481,9 +505,9 @@ class TestParserFactory(TestCase):
         Tests that the parser factory raises a NoParserError when an erroneous
         parser is requested.
         """
-        filename = os.path.join(os.getcwd(), 'this_is_a_fake_parser.txt')
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write('this_is_a_fake_parser')
+        filename = os.path.join(os.getcwd(), "this_is_a_fake_parser.txt")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("this_is_a_fake_parser")
 
         factory = ParserFactory()
         with self.assertRaises(exceptions.NoParserError):
@@ -495,11 +519,9 @@ class TestParserFactory(TestCase):
         """
         Tests the parse_problem_file method
         """
-        filename = os.path.join(os.path.dirname(__file__),
-                                'nist',
-                                'basic.dat')
+        filename = os.path.join(os.path.dirname(__file__), "nist", "basic.dat")
         fitting_problem = parse_problem_file(filename, OPTIONS)
-        self.assertEqual(fitting_problem.name, 'basic')
+        self.assertEqual(fitting_problem.name, "basic")
 
 
 class TestParserNoJac(TestCase):
@@ -520,10 +542,10 @@ class TestParserNoJac(TestCase):
          - when no 'jac' line in prob def file
          - when there is a 'jac' line but no 'sparse_func' in it.
         """
-        for prob_def_file in ['simplified_anac.txt', 'simplified_anac2.txt']:
-            prob_def_file_path = os.path.join(self.test_dir,
-                                              'ivp',
-                                              prob_def_file)
+        for prob_def_file in ["simplified_anac.txt", "simplified_anac2.txt"]:
+            prob_def_file_path = os.path.join(
+                self.test_dir, "ivp", prob_def_file
+            )
 
             parser = ParserFactory.create_parser(prob_def_file_path)
             with parser(prob_def_file_path, OPTIONS) as p:
@@ -531,20 +553,20 @@ class TestParserNoJac(TestCase):
 
             assert fitting_problem.sparse_jacobian is None
 
-    @run_for_test_types(TEST_TYPE, 'all')
+    @run_for_test_types(TEST_TYPE, "all")
     def test_mantid_jac_when_no_func_by_user(self):
         """
         Tests that, for mantid problems, when no jacobian is provided
         by the user, the jacobian function from mantid is used.
         """
-        evaluations_file = 'jacobian_evaluations.json'
-        format_dir = 'mantiddev'
+        evaluations_file = "jacobian_evaluations.json"
+        format_dir = "mantiddev"
 
-        evaluations_file_path = os.path.join(self.test_dir,
-                                             format_dir,
-                                             evaluations_file)
+        evaluations_file_path = os.path.join(
+            self.test_dir, format_dir, evaluations_file
+        )
 
-        with open(evaluations_file_path, 'r', encoding='utf-8') as ef:
+        with open(evaluations_file_path, encoding="utf-8") as ef:
             results = load(ef)
 
             for f, tests in results.items():
@@ -566,27 +588,32 @@ class TestFitbenchmarkParser(TestCase):
     Tests the FitbenchmarkParser.
     """
 
-    @parameterized.expand([
-        (["name = '\\sample_problem'"],
-         {"name": "sample_problem"}),
-        (["name = 'sample_problem/'"],
-         {"name": "sample_problem"}),
-        (["name = '\\sample_problem/////'"],
-         {"name": "sample_problem"}),
-        (["#fitbenchmarking"], {}),
-        (["name = 'sample_problem' # my important comment"],
-         {"name": "sample_problem"}),
-        (["function = 'Userdefined: a/4 ** 6'"],
-         {"function": "Userdefined: a/4 ** 6"}),
-        (["function = 'Userdefined = a/4 ** 6'"],
-         {"function": "Userdefined = a/4 ** 6"}),
-    ])
+    @parameterized.expand(
+        [
+            (["name = '\\sample_problem'"], {"name": "sample_problem"}),
+            (["name = 'sample_problem/'"], {"name": "sample_problem"}),
+            (["name = '\\sample_problem/////'"], {"name": "sample_problem"}),
+            (["#fitbenchmarking"], {}),
+            (
+                ["name = 'sample_problem' # my important comment"],
+                {"name": "sample_problem"},
+            ),
+            (
+                ["function = 'Userdefined: a/4 ** 6'"],
+                {"function": "Userdefined: a/4 ** 6"},
+            ),
+            (
+                ["function = 'Userdefined = a/4 ** 6'"],
+                {"function": "Userdefined = a/4 ** 6"},
+            ),
+        ]
+    )
     @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
     def test_get_data_problem_entries(self, file_data, expected):
         """
         Verifies the output of _get_data_problem_entries() method.
         """
-        parser = FitbenchmarkParser('test_file.txt', {"parse"})
+        parser = FitbenchmarkParser("test_file.txt", {"parse"})
         parser.file = MagicMock()
         parser.file.readlines.return_value = file_data
         # pylint: disable=protected-access

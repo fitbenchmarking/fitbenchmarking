@@ -2,7 +2,6 @@
 Results output tests
 """
 
-
 import inspect
 import os
 import shutil
@@ -16,23 +15,28 @@ from dash import dcc, html
 from parameterized import parameterized
 
 from fitbenchmarking import test_files
-from fitbenchmarking.core.results_output import (_extract_tags,
-                                                 _find_matching_tags,
-                                                 _process_best_results,
-                                                 check_max_solvers,
-                                                 create_directories,
-                                                 create_plots,
-                                                 create_problem_level_index,
-                                                 display_page, preprocess_data,
-                                                 save_results, update_warning)
-from fitbenchmarking.results_processing.performance_profiler import \
-    DashPerfProfile
+from fitbenchmarking.core.results_output import (
+    _extract_tags,
+    _find_matching_tags,
+    _process_best_results,
+    check_max_solvers,
+    create_directories,
+    create_plots,
+    create_problem_level_index,
+    display_page,
+    preprocess_data,
+    save_results,
+    update_warning,
+)
+from fitbenchmarking.results_processing.performance_profiler import (
+    DashPerfProfile,
+)
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
 
-def load_mock_results(additional_options=None, filename='checkpoint.json'):
+def load_mock_results(additional_options=None, filename="checkpoint.json"):
     """
     Load a predictable set of results.
 
@@ -44,14 +48,17 @@ def load_mock_results(additional_options=None, filename='checkpoint.json'):
     if additional_options is None:
         additional_options = {}
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    additional_options.update({
-        'checkpoint_filename': os.path.join(cp_dir, filename),
-        'external_output': 'debug'})
+    additional_options.update(
+        {
+            "checkpoint_filename": os.path.join(cp_dir, filename),
+            "external_output": "debug",
+        }
+    )
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
     results, _, _ = cp.load()
 
-    return results['Fake_Test_Data'], options
+    return results["Fake_Test_Data"], options
 
 
 class SaveResultsTests(unittest.TestCase):
@@ -65,9 +72,11 @@ class SaveResultsTests(unittest.TestCase):
         """
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'fitbenchmarking_results')
+            "fitbenchmarking_results",
+        )
         self.results, self.options = load_mock_results(
-            {'results_dir': self.results_dir})
+            {"results_dir": self.results_dir}
+        )
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -95,9 +104,13 @@ class SaveResultsTests(unittest.TestCase):
         failed_problems = []
         unselected_minimizers = {}
         group_name = "group_name"
-        group_dir, pp_dfs = save_results(self.options, self.results,
-                                         group_name, failed_problems,
-                                         unselected_minimizers)
+        group_dir, pp_dfs = save_results(
+            self.options,
+            self.results,
+            group_name,
+            failed_problems,
+            unselected_minimizers,
+        )
 
         self.assertEqual(group_dir, os.path.join(self.results_dir, group_name))
         assert isinstance(pp_dfs, dict)
@@ -116,9 +129,10 @@ class CreateDirectoriesTests(unittest.TestCase):
         Setting up paths and results folders
         """
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.results_dir = os.path.join(test_path, 'fitbenchmarking_results')
-        self.options = Options(additional_options={
-                               'results_dir': self.results_dir})
+        self.results_dir = os.path.join(test_path, "fitbenchmarking_results")
+        self.options = Options(
+            additional_options={"results_dir": self.results_dir}
+        )
         os.mkdir(self.results_dir)
 
     def tearDown(self):
@@ -131,15 +145,17 @@ class CreateDirectoriesTests(unittest.TestCase):
         """
         Test to check that the directories are correctly made.
         """
-        group_name = 'test_group'
+        group_name = "test_group"
         expected_results_dir = self.results_dir
         expected_group_dir = os.path.join(expected_results_dir, group_name)
-        expected_support_dir = os.path.join(expected_group_dir,
-                                            'support_pages')
-        expected_figures_dir = os.path.join(expected_support_dir, 'figures')
+        expected_support_dir = os.path.join(
+            expected_group_dir, "support_pages"
+        )
+        expected_figures_dir = os.path.join(expected_support_dir, "figures")
 
-        group_dir, support_dir, figures_dir = \
-            create_directories(self.options, group_name)
+        group_dir, support_dir, figures_dir = create_directories(
+            self.options, group_name
+        )
 
         self.assertEqual(group_dir, expected_group_dir)
         self.assertEqual(support_dir, expected_support_dir)
@@ -161,9 +177,11 @@ class PreprocessDataTests(unittest.TestCase):
         """
         self.results_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            'fitbenchmarking_results')
+            "fitbenchmarking_results",
+        )
         self.results, self.options = load_mock_results(
-            {'results_dir': self.results_dir})
+            {"results_dir": self.results_dir}
+        )
         self.min_accuracy = 0.2
         self.min_runtime = 1.0
 
@@ -194,70 +212,83 @@ class CreatePlotsTests(unittest.TestCase):
         Setting up paths and results folders
         """
         with TemporaryDirectory() as directory:
-            self.results_dir = os.path.join(directory, 'figures_dir')
+            self.results_dir = os.path.join(directory, "figures_dir")
 
             results, self.options = load_mock_results(
-                {'results_dir': self.results_dir})
+                {"results_dir": self.results_dir}
+            )
             self.best_results, self.results = preprocess_data(results)
 
-    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch("fitbenchmarking.results_processing.plots.Plot")
     def test_create_plots_with_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are not None
         """
         expected_plot_initial_guess = "initial_guess"
-        expected_plot_best = {'prob_0': "plotly_fit4",
-                              'prob_1': "plotly_fit3"}
-        expected_plotly_fit = {'m00_[s0]': "plotly_fit1",
-                               'm01_[s0]_jj0': "plotly_fit2",
-                               'm01_[s0]_jj1': "plotly_fit3",
-                               'm10_[s1]_jj0': "plotly_fit4",
-                               'm10_[s1]_jj1': "plotly_fit5",
-                               'm11_[s1]_jj0': "plotly_fit6",
-                               'm11_[s1]_jj1': "plotly_fit7",
-                               'm00_[s0]_jj0': "plotly_fit8",
-                               'm00_[s0]_jj1': "plotly_fit9"}
+        expected_plot_best = {"prob_0": "plotly_fit4", "prob_1": "plotly_fit3"}
+        expected_plotly_fit = {
+            "m00_[s0]": "plotly_fit1",
+            "m01_[s0]_jj0": "plotly_fit2",
+            "m01_[s0]_jj1": "plotly_fit3",
+            "m10_[s1]_jj0": "plotly_fit4",
+            "m10_[s1]_jj1": "plotly_fit5",
+            "m11_[s1]_jj0": "plotly_fit6",
+            "m11_[s1]_jj1": "plotly_fit7",
+            "m00_[s0]_jj0": "plotly_fit8",
+            "m00_[s0]_jj1": "plotly_fit9",
+        }
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = \
+        plot_instance.plot_initial_guess.return_value = (
             expected_plot_initial_guess
+        )
         plot_instance.plot_best.return_value = expected_plot_best
         plot_instance.plotly_fit.return_value = expected_plotly_fit
 
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
-        create_plots(self.options, self.results,
-                     self.best_results, self.results_dir)
-        for problem_key in self.results.keys():
+        create_plots(
+            self.options, self.results, self.best_results, self.results_dir
+        )
+        for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
-            for category_key in results_in_prob.keys():
+            for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
 
                 # Check initial guess is correctly set in results
-                self.assertEqual(best_in_cat.start_figure_link,
-                                 expected_plot_initial_guess)
-                self.assertTrue(all(
-                    r.start_figure_link == expected_plot_initial_guess
-                    for r in results))
+                self.assertEqual(
+                    best_in_cat.start_figure_link, expected_plot_initial_guess
+                )
+                self.assertTrue(
+                    all(
+                        r.start_figure_link == expected_plot_initial_guess
+                        for r in results
+                    )
+                )
 
                 # Check plot is correctly set in results
-                self.assertEqual(best_in_cat.figure_link,
-                                 expected_plot_best[problem_key])
-                self.assertTrue(all(
-                    r.figure_link == expected_plotly_fit[
-                        r.sanitised_min_name(True)]
-                    for r in results if not r.is_best_fit))
+                self.assertEqual(
+                    best_in_cat.figure_link, expected_plot_best[problem_key]
+                )
+                self.assertTrue(
+                    all(
+                        r.figure_link
+                        == expected_plotly_fit[r.sanitised_min_name(True)]
+                        for r in results
+                        if not r.is_best_fit
+                    )
+                )
 
-    @mock.patch('fitbenchmarking.results_processing.plots.Plot')
+    @mock.patch("fitbenchmarking.results_processing.plots.Plot")
     def test_create_plots_without_params(self, plot_mock):
         """
         Tests for create_plots where the results object params are None
         """
-        for problem_key in self.results.keys():
+        for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
-            for category_key in results_in_prob.keys():
+            for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
                 best_in_cat.params = None
@@ -266,56 +297,73 @@ class CreatePlotsTests(unittest.TestCase):
 
         expected_plot_initial_guess = "initial_guess"
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = \
+        plot_instance.plot_initial_guess.return_value = (
             expected_plot_initial_guess
+        )
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
-        create_plots(self.options, self.results,
-                     self.best_results, self.results_dir)
+        create_plots(
+            self.options, self.results, self.best_results, self.results_dir
+        )
 
-        for problem_key in self.results.keys():
+        for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
-            for category_key in results_in_prob.keys():
+            for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
 
                 # Check initial guess is correctly set in results
-                self.assertEqual(best_in_cat.start_figure_link,
-                                 expected_plot_initial_guess)
-                self.assertTrue(all(
-                    r.start_figure_link == expected_plot_initial_guess
-                    for r in results))
+                self.assertEqual(
+                    best_in_cat.start_figure_link, expected_plot_initial_guess
+                )
+                self.assertTrue(
+                    all(
+                        r.start_figure_link == expected_plot_initial_guess
+                        for r in results
+                    )
+                )
 
                 # Check plot is correctly set in results
-                self.assertEqual(best_in_cat.figure_link, '')
-                self.assertTrue(all(r.figure_link == ''
-                                    for r in results if not r.is_best_fit))
+                self.assertEqual(best_in_cat.figure_link, "")
+                self.assertTrue(
+                    all(
+                        r.figure_link == ""
+                        for r in results
+                        if not r.is_best_fit
+                    )
+                )
 
                 # Checks that when no params are given the correct error
                 # message is produced
                 expected_message = "Minimizer failed to produce any parameters"
                 self.assertEqual(best_in_cat.figure_error, expected_message)
-                self.assertTrue(all(r.figure_error == expected_message
-                                    for r in results if not r.is_best_fit))
+                self.assertTrue(
+                    all(
+                        r.figure_error == expected_message
+                        for r in results
+                        if not r.is_best_fit
+                    )
+                )
 
     def test_plot_error(self):
         """
         Test that errors are passed correctly when the plotting fails.
         """
         with mock.patch(
-                'fitbenchmarking.results_processing.plots.Plot',
-                side_effect=PlottingError('Faked plot')):
+            "fitbenchmarking.results_processing.plots.Plot",
+            side_effect=PlottingError("Faked plot"),
+        ):
+            create_plots(
+                self.options, self.results, self.best_results, self.results_dir
+            )
 
-            create_plots(self.options, self.results,
-                         self.best_results, self.results_dir)
+        expected = "An error occurred during plotting.\nDetails: Faked plot"
 
-        expected = 'An error occurred during plotting.\nDetails: Faked plot'
-
-        for problem_key in self.results.keys():
+        for problem_key in self.results:
             best_in_prob = self.best_results[problem_key]
             results_in_prob = self.results[problem_key]
-            for category_key in results_in_prob.keys():
+            for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
                 self.assertEqual(best_in_cat.figure_error, expected)
@@ -325,8 +373,8 @@ class CreatePlotsTests(unittest.TestCase):
 
 class CreateProblemLevelIndex(unittest.TestCase):
     """
-   Unit tests for create_problem_level_index function
-   """
+    Unit tests for create_problem_level_index function
+    """
 
     def setUp(self):
         """
@@ -334,13 +382,17 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         self.options = Options()
         test_path = os.path.dirname(os.path.realpath(__file__))
-        self.group_dir = os.path.join(test_path, 'fitbenchmarking_results')
+        self.group_dir = os.path.join(test_path, "fitbenchmarking_results")
         os.mkdir(self.group_dir)
-        self.table_names = {"compare": "compare_table_name.",
-                            "runtime": "runtime_table_name."}
-        self.table_descriptions = {"compare": "compare table descriptions",
-                                   "runtime": "runtime table descriptions",
-                                   "both": "both table descriptions"}
+        self.table_names = {
+            "compare": "compare_table_name.",
+            "runtime": "runtime_table_name.",
+        }
+        self.table_descriptions = {
+            "compare": "compare table descriptions",
+            "runtime": "runtime table descriptions",
+            "both": "both table descriptions",
+        }
         self.group_name = "random_name"
 
     def tearDown(self):
@@ -353,11 +405,16 @@ class CreateProblemLevelIndex(unittest.TestCase):
         """
         Tests to see that the index page are correctly created
         """
-        create_problem_level_index(self.options, self.table_names,
-                                   self.group_name, self.group_dir,
-                                   self.table_descriptions)
-        expected_file = os.path.join(self.group_dir,
-                                     f'{self.group_name}_index.html')
+        create_problem_level_index(
+            self.options,
+            self.table_names,
+            self.group_name,
+            self.group_dir,
+            self.table_descriptions,
+        )
+        expected_file = os.path.join(
+            self.group_dir, f"{self.group_name}_index.html"
+        )
         self.assertTrue(os.path.isfile(expected_file))
 
 
@@ -371,30 +428,33 @@ class ExtractTagsTests(unittest.TestCase):
         Setup function for extract tags tests.
         """
         with TemporaryDirectory() as directory:
-            self.results_dir = os.path.join(directory, 'figures_dir')
+            self.results_dir = os.path.join(directory, "figures_dir")
             results, self.options = load_mock_results(
-                {'results_dir': self.results_dir})
+                {"results_dir": self.results_dir}
+            )
             self.result = results[0]
-            self.result.costfun_tag = 'cf0'
-            self.result.problem_tag = 'p0'
-            self.result.software_tag = 's0'
-            self.result.minimizer_tag = 'm0'
-            self.result.jacobian_tag = 'j0'
-            self.result.hessian_tag = 'h0'
+            self.result.costfun_tag = "cf0"
+            self.result.problem_tag = "p0"
+            self.result.software_tag = "s0"
+            self.result.minimizer_tag = "m0"
+            self.result.jacobian_tag = "j0"
+            self.result.hessian_tag = "h0"
             self.result.error_flag = 0
 
     def test_correct_tags(self):
         """
         Test that for a general result, the tags are correctly populated.
         """
-        tags = _extract_tags(self.result,
-                             row_sorting=['costfun', 'problem'],
-                             col_sorting=['jacobian', 'hessian'],
-                             cat_sorting=['software', 'minimizer'])
+        tags = _extract_tags(
+            self.result,
+            row_sorting=["costfun", "problem"],
+            col_sorting=["jacobian", "hessian"],
+            cat_sorting=["software", "minimizer"],
+        )
 
-        self.assertDictEqual(tags, {'row': 'cf0:p0',
-                                    'col': 'j0:h0',
-                                    'cat': 's0:m0'})
+        self.assertDictEqual(
+            tags, {"row": "cf0:p0", "col": "j0:h0", "cat": "s0:m0"}
+        )
 
     def test_correct_tags_error_flag_4(self):
         """
@@ -402,14 +462,16 @@ class ExtractTagsTests(unittest.TestCase):
         is missing jacobian and hessian information.
         """
         self.result.error_flag = 4
-        tags = _extract_tags(self.result,
-                             row_sorting=['jacobian', 'problem'],
-                             col_sorting=['hessian'],
-                             cat_sorting=['costfun', 'software', 'minimizer'])
+        tags = _extract_tags(
+            self.result,
+            row_sorting=["jacobian", "problem"],
+            col_sorting=["hessian"],
+            cat_sorting=["costfun", "software", "minimizer"],
+        )
 
-        self.assertDictEqual(tags, {'row': '[^:]*:p0',
-                                    'col': '[^:]*',
-                                    'cat': 'cf0:s0:m0'})
+        self.assertDictEqual(
+            tags, {"row": "[^:]*:p0", "col": "[^:]*", "cat": "cf0:s0:m0"}
+        )
 
 
 class FindMatchingTagsTests(unittest.TestCase):
@@ -421,27 +483,32 @@ class FindMatchingTagsTests(unittest.TestCase):
         """
         Test that the matching tags include all correct tags.
         """
-        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
-                                                        'cf0:j0:p1',
-                                                        'cf0:j1:p0',
-                                                        'cf0:j1:p1',
-                                                        'cf1:j0:p0',
-                                                        'cf1:j0:p1',
-                                                        'cf1:j1:p0',
-                                                        'cf1:j1:p1'])
-        self.assertIn('cf0:j0:p0', matching)
-        self.assertIn('cf0:j1:p0', matching)
+        matching = _find_matching_tags(
+            "cf0:[^:]*:p0",
+            [
+                "cf0:j0:p0",
+                "cf0:j0:p1",
+                "cf0:j1:p0",
+                "cf0:j1:p1",
+                "cf1:j0:p0",
+                "cf1:j0:p1",
+                "cf1:j1:p0",
+                "cf1:j1:p1",
+            ],
+        )
+        self.assertIn("cf0:j0:p0", matching)
+        self.assertIn("cf0:j1:p0", matching)
 
     def test_non_matching_tags_excluded(self):
         """
         Test that all tags that don't match are excluded.
         """
-        matching = _find_matching_tags('cf0:[^:]*:p0', ['cf0:j0:p0',
-                                                        'cf0:j1:p0',
-                                                        'cf1:j0:p0',
-                                                        'cf1:j1:p0'])
-        self.assertNotIn('cf1:j0:p0', matching)
-        self.assertNotIn('cf1:j1:p0', matching)
+        matching = _find_matching_tags(
+            "cf0:[^:]*:p0",
+            ["cf0:j0:p0", "cf0:j1:p0", "cf1:j0:p0", "cf1:j1:p0"],
+        )
+        self.assertNotIn("cf1:j0:p0", matching)
+        self.assertNotIn("cf1:j1:p0", matching)
 
 
 class ProcessBestResultsTests(unittest.TestCase):
@@ -454,13 +521,14 @@ class ProcessBestResultsTests(unittest.TestCase):
         Setup function for _process_best_results tests.
         """
         with TemporaryDirectory() as directory:
-            self.results_dir = os.path.join(directory, 'figures_dir')
+            self.results_dir = os.path.join(directory, "figures_dir")
             results, self.options = load_mock_results(
-                {'results_dir': self.results_dir})
+                {"results_dir": self.results_dir}
+            )
             self.results = results[:5]
-            for r, accuracy, runtime in zip(self.results,
-                                            [2, 1, 5, 3, 4],
-                                            [5, 4, 1, 2, 3]):
+            for r, accuracy, runtime in zip(
+                self.results, [2, 1, 5, 3, 4], [5, 4, 1, 2, 3]
+            ):
                 r.accuracy = accuracy
                 r.runtime = runtime
             self.best = _process_best_results(self.results)
@@ -524,9 +592,9 @@ class UpdateWarningTests(unittest.TestCase):
         Test that an empty string is returned when the number of
         solvers is less than the maximum allowed.
         """
-        solvers = [f'Solver {i}' for i in range(3)]
+        solvers = [f"Solver {i}" for i in range(3)]
         output = update_warning(solvers, self.max_solvers)
-        expected_output = ''
+        expected_output = ""
         self.assertEqual(output, expected_output)
 
     def test_warning_when_too_many_solvers(self):
@@ -534,11 +602,13 @@ class UpdateWarningTests(unittest.TestCase):
         Test that the expected warning is returned when the number of
         solvers exceeds the maximum allowed.
         """
-        solvers = [f'Solver {i}' for i in range(20)]
+        solvers = [f"Solver {i}" for i in range(20)]
         output = update_warning(solvers, self.max_solvers)
-        expected_output = 'The plot is showing the max number ' \
-                          f'of minimizers allowed ({self.max_solvers}). '\
-                          'Deselect some to select others.'
+        expected_output = (
+            "The plot is showing the max number "
+            f"of minimizers allowed ({self.max_solvers}). "
+            "Deselect some to select others."
+        )
         self.assertEqual(output, expected_output)
 
 
@@ -558,20 +628,16 @@ class CheckMaxSolversTests(unittest.TestCase):
         Test that options displayed in the dropdown are disabled when
         the number of solvers exceeds the maximum allowed.
         """
-        solvers = [f'solver{i}' for i in range(5)]
-        input_opts = [{"value": solver, "label": solver}
-                      for solver in solvers]
+        solvers = [f"solver{i}" for i in range(5)]
+        input_opts = [{"value": solver, "label": solver} for solver in solvers]
 
-        expec_output = [{'value': 'solver0', 'label': 'solver0',
-                         'disabled': True},
-                        {'value': 'solver1', 'label': 'solver1',
-                         'disabled': True},
-                        {'value': 'solver2', 'label': 'solver2',
-                         'disabled': True},
-                        {'value': 'solver3', 'label': 'solver3',
-                         'disabled': True},
-                        {'value': 'solver4', 'label': 'solver4',
-                         'disabled': True}]
+        expec_output = [
+            {"value": "solver0", "label": "solver0", "disabled": True},
+            {"value": "solver1", "label": "solver1", "disabled": True},
+            {"value": "solver2", "label": "solver2", "disabled": True},
+            {"value": "solver3", "label": "solver3", "disabled": True},
+            {"value": "solver4", "label": "solver4", "disabled": True},
+        ]
 
         output = check_max_solvers(input_opts, solvers, self.max_solvers)
         self.assertEqual(output, expec_output)
@@ -581,16 +647,14 @@ class CheckMaxSolversTests(unittest.TestCase):
         Test that options displayed in the dropdown are enabled when
         the number of solvers is less than the maximum allowed.
         """
-        solvers = [f'solver{i}' for i in range(3)]
-        input_opts = [{"value": solver, "label": solver}
-                      for solver in solvers]
+        solvers = [f"solver{i}" for i in range(3)]
+        input_opts = [{"value": solver, "label": solver} for solver in solvers]
 
-        expec_output = [{'value': 'solver0', 'label': 'solver0',
-                         'disabled': False},
-                        {'value': 'solver1', 'label': 'solver1',
-                         'disabled': False},
-                        {'value': 'solver2', 'label': 'solver2',
-                         'disabled': False}]
+        expec_output = [
+            {"value": "solver0", "label": "solver0", "disabled": False},
+            {"value": "solver1", "label": "solver1", "disabled": False},
+            {"value": "solver2", "label": "solver2", "disabled": False},
+        ]
 
         output = check_max_solvers(input_opts, solvers, self.max_solvers)
         self.assertEqual(output, expec_output)
@@ -608,23 +672,36 @@ class DisplayPageTests(unittest.TestCase):
         self.max_solvers = 4
         group = "NIST_low_difficulty"
 
-        pp_df = pd.DataFrame.from_dict({
-            'solver': ['solver1', 'solver1', 'solver1',
-                       'solver2', 'solver2', 'solver2'],
-            'x': [20.0, 30.5, 41.0, 10.0, 50.5, 70.0],
-            'y': [0.0, 0.5, 1.0, 0.0, 0.5, 1.0]
-        }, orient='columns')
+        pp_df = pd.DataFrame.from_dict(
+            {
+                "solver": [
+                    "solver1",
+                    "solver1",
+                    "solver1",
+                    "solver2",
+                    "solver2",
+                    "solver2",
+                ],
+                "x": [20.0, 30.5, 41.0, 10.0, 50.5, 70.0],
+                "y": [0.0, 0.5, 1.0, 0.0, 0.5, 1.0],
+            },
+            orient="columns",
+        )
 
-        pp_dfs = {'acc': pp_df, 'runtime': pp_df}
+        pp_dfs = {"acc": pp_df, "runtime": pp_df}
 
         self.profile_instances_all_groups = {
             group: {
-                'acc': DashPerfProfile(profile_name='Accuracy',
-                                       pp_df=pp_dfs['acc'],
-                                       group_label=group),
-                'runtime': DashPerfProfile(profile_name='Runtime',
-                                           pp_df=pp_dfs['runtime'],
-                                           group_label=group)
+                "acc": DashPerfProfile(
+                    profile_name="Accuracy",
+                    pp_df=pp_dfs["acc"],
+                    group_label=group,
+                ),
+                "runtime": DashPerfProfile(
+                    profile_name="Runtime",
+                    pp_df=pp_dfs["runtime"],
+                    group_label=group,
+                ),
             }
         }
         self.layout = [
@@ -634,11 +711,11 @@ class DisplayPageTests(unittest.TestCase):
                 value="Log x-axis",
             ),
             dcc.Dropdown(
-                id='dropdown',
+                id="dropdown",
                 multi=True,
             ),
             html.Div(
-                id='warning',
+                id="warning",
             ),
         ]
 
@@ -653,10 +730,15 @@ class DisplayPageTests(unittest.TestCase):
             profile_instances_all_groups=self.profile_instances_all_groups,
             layout=self.layout,
             max_solvers=self.max_solvers,
-            run_id="abc")
+            run_id="abc",
+        )
         output_ids = list(output_div)
-        expected_ids = ['Log axis toggle', 'dropdown', 'warning',
-                        'visual NIST_low_difficulty-Accuracy']
+        expected_ids = [
+            "Log axis toggle",
+            "dropdown",
+            "warning",
+            "visual NIST_low_difficulty-Accuracy",
+        ]
         self.assertEqual(output_ids, expected_ids)
 
     def test_layout_returned_when_two_plots(self):
@@ -673,16 +755,25 @@ class DisplayPageTests(unittest.TestCase):
             run_id="123",
         )
         output_ids = list(output_div)
-        expected_ids = ['Log axis toggle', 'dropdown', 'warning',
-                        'visual NIST_low_difficulty-Accuracy',
-                        'visual NIST_low_difficulty-Runtime']
+        expected_ids = [
+            "Log axis toggle",
+            "dropdown",
+            "warning",
+            "visual NIST_low_difficulty-Accuracy",
+            "visual NIST_low_difficulty-Runtime",
+        ]
         self.assertEqual(output_ids, expected_ids)
 
-    @parameterized.expand([
-        ("127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime", "new_id"),
-        ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
-        ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
-    ])
+    @parameterized.expand(
+        [
+            (
+                "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime",
+                "new_id",
+            ),
+            ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
+            ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+        ]
+    )
     def test_dash_url_404(self, pathname, run_id):
         """
         Tests that errors are reported when the dash url is not correct.
@@ -694,9 +785,7 @@ class DisplayPageTests(unittest.TestCase):
             max_solvers=self.max_solvers,
             run_id=run_id,
         )
-        assert (
-            isinstance(output_div, str) and output_div.startswith("404")
-        )
+        assert isinstance(output_div, str) and output_div.startswith("404")
 
     def test_styles_consistent_when_two_plts(self):
         """
@@ -713,17 +802,15 @@ class DisplayPageTests(unittest.TestCase):
             self.profile_instances_all_groups,
             self.layout,
             self.max_solvers,
-            run_id="abc"
+            run_id="abc",
         )
 
         self.assertDictEqual(
-            pps["acc"].current_styles,
-            pps["runtime"].current_styles
+            pps["acc"].current_styles, pps["runtime"].current_styles
         )
 
         self.assertListEqual(
-            pps["acc"].avail_styles,
-            pps["runtime"].avail_styles
+            pps["acc"].avail_styles, pps["runtime"].avail_styles
         )
 
 

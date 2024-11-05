@@ -1,6 +1,7 @@
 """
 Module which calculates SciPy finite difference approximations
 """
+
 from functools import lru_cache
 
 import numpy as np
@@ -36,14 +37,18 @@ class Scipy(Hessian):
             return self.jacobian.eval(params)
 
         for i, _ in enumerate(x):
-            # pylint: disable=cell-var-from-loop
+
             def grad_i(params):
                 return grad(tuple(params))[i, :]
-            hes[:, :, i] = approx_derivative(grad_i, params,
-                                             method=self.method,
-                                             rel_step=None,
-                                             bounds=(-np.inf, np.inf),
-                                             kwargs=kwargs)
+
+            hes[:, :, i] = approx_derivative(
+                grad_i,
+                params,
+                method=self.method,
+                rel_step=None,
+                bounds=(-np.inf, np.inf),
+                kwargs=kwargs,
+            )
 
         # ensure Hessian is symmetric
-        return 0.5*(hes+hes.transpose(1, 0, 2))
+        return 0.5 * (hes + hes.transpose(1, 0, 2))
