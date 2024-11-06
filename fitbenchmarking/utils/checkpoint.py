@@ -16,7 +16,10 @@ import numpy as np
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 class Checkpoint:
@@ -287,6 +290,19 @@ class Checkpoint:
                     "numpy_version": "info_unavaliable",
                 },
             )
+
+            if (
+                config["numpy_version"] != self.config["numpy_version"]
+                and config["numpy_version"] != "info_unavaliable"
+            ):
+                LOGGER.warning(
+                    "The numpy version used when generating this checkpoint "
+                    f"file was {config['numpy_version']}. However, the numpy"
+                    " version of the current environment is "
+                    f"{self.config['numpy_version']}. This might lead "
+                    "to issues while producing results. Try installing"
+                    f" {config['numpy_version']} to view these results."
+                )
 
             # Unpickle problems so that we use 1 shared object for all results
             # per array

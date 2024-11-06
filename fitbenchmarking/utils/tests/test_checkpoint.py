@@ -24,7 +24,10 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.checkpoint import Checkpoint, _compress, _decompress
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def generate_results():
@@ -245,24 +248,37 @@ class CheckpointTests(TestCase):
 
     @patch("sys.version_info")
     @patch("numpy.__version__", new="2.1.0")
-    def test_config_set_when_initializing_class(self, python_version_mock):
+    def test_numpy_incompatibilty_warning(self, python):
         """
-        Test config is set as a class variable.
+        Test the numpy incompatibity warning is logged.
         """
-        python_version_mock.major = 3
-        python_version_mock.minor = 12
-        python_version_mock.micro = 10
+        python.major, python.minor, python.micro = 3, 12, 10
+        cp_dir = pathlib.Path(inspect.getfile(test_files)).parent
+        cp_file = cp_dir / "checkpoint.json"
 
-        options = Options()
+        options = Options(
+            additional_options={"checkpoint_filename": str(cp_file)}
+        )
         cp = Checkpoint(options)
 
-        self.assertEqual(
-            cp.config,
-            {
-                "python_version": "3.12.10",
-                "numpy_version": "2.1.0",
-            },
-        )
+        with self.assertLogs(LOGGER, level="WARNING") as log:
+            _, _, _, config = cp.load()
+            self.assertEqual(
+                config,
+                {"python_version": "3.10.13", "numpy_version": "1.26.4"},
+            )
+            self.assertEqual(
+                cp.config,
+                {"python_version": "3.12.10", "numpy_version": "2.1.0"},
+            )
+            self.assertIn(
+                "WARNING:fitbenchmarking:The numpy version used "
+                "when generating this checkpoint file was 1.26.4. "
+                "However, the numpy version of the current environment"
+                " is 2.1.0. This might lead to issues while producing "
+                "results. Try installing 1.26.4 to view these results.",
+                log.output[0],
+            )
 
     def test_non_avaliability_of_config_is_handled(self):
         """
@@ -278,7 +294,6 @@ class CheckpointTests(TestCase):
         )
         cp = Checkpoint(options)
         _, _, _, config = cp.load()
-
         self.assertEqual(
             config,
             {
