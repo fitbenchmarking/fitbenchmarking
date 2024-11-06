@@ -112,7 +112,7 @@ of the Fitbenchmarking docs. """
         metavar="NUM_RUNS",
         type=int,
         default=0,
-        help="Set the number of runs to average " "each fit over.",
+        help="Set the number of runs to average each fit over.",
     )
     parser.add_argument(
         "-a",
@@ -149,7 +149,7 @@ of the Fitbenchmarking docs. """
         nargs="+",
         type=str,
         default=[],
-        help="Set the cost functions to be used " "for the given data.",
+        help="Set the cost functions to be used for the given data.",
     )
     parser.add_argument(
         "-rt",
