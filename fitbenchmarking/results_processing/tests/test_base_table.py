@@ -6,6 +6,8 @@ import inspect
 import os
 from unittest import TestCase, mock
 
+from parameterized import parameterized
+
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing.base_table import (
     Table,
@@ -205,95 +207,53 @@ class TestContrastRatio(TestCase):
     Tests the three functions used for calculating the contrast ratio
     """
 
-    def test_calculate_luminance(self):
+    @parameterized.expand(
+        [
+            ([0, 0, 0], 0),
+            ([1, 1, 1], 1),
+            ([1, 0, 0], 0.2126),
+            ([0, 1, 0], 0.7152),
+            ([0, 0, 1], 0.0722),
+            ([1, 0, 1], 0.2848),
+        ]
+    )
+    def test_calculate_luminance(self, rgb, expected):
         """
-        Tests the luminance calculation using 6 subtests
+        Tests the luminance calculation
         """
-        luminance_test = (
-            {"case": "black", "rgb": [0, 0, 0], "output": 0},
-            {"case": "white", "rgb": [1, 1, 1], "output": 1},
-            {"case": "red", "rgb": [1, 0, 0], "output": 0.2126},
-            {"case": "green", "rgb": [0, 1, 0], "output": 0.7152},
-            {"case": "blue", "rgb": [0, 0, 1], "output": 0.0722},
-            {"case": "purple", "rgb": [1, 0, 1], "output": 0.2848},
-        )
-        for test in luminance_test:
-            with self.subTest(test["case"]):
-                self.assertAlmostEqual(
-                    calculate_luminance(test["rgb"]), test["output"]
-                )
+        self.assertAlmostEqual(calculate_luminance(rgb), expected)
 
-    def test_calculate_contrast(self):
+    @parameterized.expand(
+        [
+            ([0, 0, 0], [1, 1, 1], 21.0),
+            ([1, 0, 0], [0, 0, 0], 5.25),
+            ([0, 1, 0], [0, 0, 0], 15.30),
+            ([0, 1, 0], [1, 1, 1], 1.37),
+            ([0, 0, 1], [1, 1, 1], 8.59),
+            ([0, 0, 1], [0, 0, 0], 2.44),
+        ]
+    )
+    def test_calculate_contrast(self, background, foreground, expected):
         """
-        Tests the contrast ratio calculation using 6 subtests
+        Tests the contrast ratio calculation
         """
-        contrast_test = (
-            {
-                "case": "1",
-                "background": [0, 0, 0],
-                "foreground": [1, 1, 1],
-                "output": 21.00,
-            },
-            {
-                "case": "2",
-                "background": [1, 0, 0],
-                "foreground": [0, 0, 0],
-                "output": 5.25,
-            },
-            {
-                "case": "3",
-                "background": [0, 1, 0],
-                "foreground": [0, 0, 0],
-                "output": 15.30,
-            },
-            {
-                "case": "4",
-                "background": [0, 1, 0],
-                "foreground": [1, 1, 1],
-                "output": 1.37,
-            },
-            {
-                "case": "5",
-                "background": [0, 0, 1],
-                "foreground": [1, 1, 1],
-                "output": 8.59,
-            },
-            {
-                "case": "6",
-                "background": [0, 0, 1],
-                "foreground": [0, 0, 0],
-                "output": 2.44,
-            },
+        self.assertAlmostEqual(
+            calculate_contrast(background, foreground),
+            expected,
+            places=2,
         )
-        for test in contrast_test:
-            with self.subTest(test["case"]):
-                self.assertAlmostEqual(
-                    calculate_contrast(test["background"], test["foreground"]),
-                    test["output"],
-                    places=2,
-                )
 
-    def test_background_to_text(self):
+    @parameterized.expand(
+        [
+            ([0, 0, 0], "rgb(255,255,255)"),
+            ([1, 1, 1], "rgb(0,0,0)"),
+            ([1, 0, 0], "rgb(0,0,0)"),
+            ([0, 1, 0], "rgb(0,0,0)"),
+            ([0, 0, 1], "rgb(255,255,255)"),
+        ]
+    )
+    def test_background_to_text(self, background, expected):
         """
         Tests the function that determines the text colour
         """
-        test_cases = (
-            {
-                "case": "1",
-                "background": [0, 0, 0],
-                "output": "rgb(255,255,255)",
-            },
-            {"case": "2", "background": [1, 1, 1], "output": "rgb(0,0,0)"},
-            {"case": "3", "background": [1, 0, 0], "output": "rgb(0,0,0)"},
-            {"case": "4", "background": [0, 1, 0], "output": "rgb(0,0,0)"},
-            {
-                "case": "5",
-                "background": [0, 0, 1],
-                "output": "rgb(255,255,255)",
-            },
-        )
-        for test in test_cases:
-            with self.subTest(test["case"]):
-                self.assertCountEqual(
-                    background_to_text(test["background"], 7), test["output"]
-                )
+        self.assertCountEqual(background_to_text(background, 7), expected)

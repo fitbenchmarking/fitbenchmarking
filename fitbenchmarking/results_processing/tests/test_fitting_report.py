@@ -55,7 +55,7 @@ class CreateTests(unittest.TestCase):
 
         file_names = sorted([r.fitting_report_link for r in self.results])
 
-        unique_names = sorted(list(set(file_names)))
+        unique_names = sorted(set(file_names))
 
         self.assertListEqual(unique_names, file_names)
 
