@@ -41,9 +41,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: Union[TemporaryDirectory, None] = None
-        self.problems_file: Union[str, None] = None
-        self.results_file: Union[str, None] = None
+        self.dir: Optional[TemporaryDirectory] = None
+        self.problems_file: Optional[str] = None
+        self.results_file: Optional[str] = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(

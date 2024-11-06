@@ -304,7 +304,7 @@ class FitbenchmarkParser(Parser):
 
         return function_def
 
-    def _dense_jacobian(self) -> Union[Callable, None]:
+    def _dense_jacobian(self) -> Optional[Callable]:
         """
         Function to help getting dense jac.
 
@@ -313,7 +313,7 @@ class FitbenchmarkParser(Parser):
         """
         return self._get_jacobian("dense_func")
 
-    def _sparse_jacobian(self) -> Union[Callable, None]:
+    def _sparse_jacobian(self) -> Optional[Callable]:
         """
         Function to help getting sparse jac.
 
@@ -322,7 +322,7 @@ class FitbenchmarkParser(Parser):
         """
         return self._get_jacobian("sparse_func")
 
-    def _get_jacobian(self, jac_type) -> Union[Callable, None]:
+    def _get_jacobian(self, jac_type) -> Optional[Callable]:
         """
         Process the dense/sparse jac function into a callable.
         Returns None if this is not possible.
