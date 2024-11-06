@@ -60,19 +60,15 @@
                             {{ table }}
                         </div>
                         </center>
-                        <p>
-                            Clicking a result in the tables will give more details,
-                            such as graphs of the fit against the data and the parameters that the minimizer found.
-                        </p>
-                        <p>
-                            Clicking the problem names will take you to details of the best minimizer.
-                        </p>
-                        <p>
-                            Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
-                        </p>
-                        <p>
-                            Hovering over each minimizer name will display its matching algorithm types out of those selected in options.
-                        </p>
+                    <div class="info-box">
+                        <p><b>Important Information:</b></p>
+                        <ul>
+                            <li>Clicking a result in the tables will provide more details, such as graphs of the fit against the data and the parameters found.</li>
+                            <li>Clicking the problem names will take you to details of the best minimizer.</li>
+                            <li>Clicking the software name will take you to the FitBenchmarking documentation for the selected software.</li>
+                            <li>Hovering over each minimizer name will display its matching algorithm types out of those selected in options.</li>
+                        </ul>
+                    </div>
                         {% if report_failed_min %}
                             <h3>Failed minimizers</h3>
                             <p>

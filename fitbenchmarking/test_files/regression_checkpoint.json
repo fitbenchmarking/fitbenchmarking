@@ -2023,6 +2023,10 @@
     "failed_problems": [],
     "unselected_minimizers": {
         "scipy_ls": []
-    }
+    },
+     "config": {
+         "python_version": "3.10.13",
+         "numpy_version": "1.26.4"
+     }
   }
 }

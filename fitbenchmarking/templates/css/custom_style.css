@@ -86,3 +86,13 @@ a {
   color: #333;
   font-size: 0.9em;
 }
+
+.info-box {
+  background-color: #e9f4f5;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid #c3caca;
+  color: #333;
+  max-width: 800px;
+  margin: 20px auto;
+}
