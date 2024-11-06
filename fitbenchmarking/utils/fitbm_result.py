@@ -13,6 +13,9 @@ from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.debug import get_printable_table
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 class FittingResult:
@@ -356,6 +359,13 @@ class FittingResult:
         if self._norm_acc is None:
             if self.min_accuracy in [np.nan, np.inf]:
                 self._norm_acc = np.inf
+            elif self.min_accuracy in [0.0, 0]:
+                LOGGER.warning(
+                    "The min accuracy of the dataset is 0. "
+                    "The relative performance will be "
+                    "approximated using a min of 1e-10."
+                )
+                self._norm_acc = self.accuracy / 1e-10
             else:
                 self._norm_acc = self.accuracy / self.min_accuracy
         return self._norm_acc
