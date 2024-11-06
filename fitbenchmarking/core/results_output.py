@@ -470,6 +470,8 @@ def create_problem_level_index(
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
+    :params config: Dictionary containing env config
+    :type config: dict
     """
     js = get_js(options, group_dir)
 

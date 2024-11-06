@@ -7,6 +7,7 @@ import pathlib
 import pprint
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import patch
 
 import numpy as np
 
@@ -241,6 +242,50 @@ class CheckpointTests(TestCase):
 
         with self.assertRaises(CheckpointError):
             cp.load()
+
+    @patch("sys.version_info")
+    @patch("numpy.__version__", new="2.1.0")
+    def test_config_set_when_initializing_class(self, python_version_mock):
+        """
+        Test config is set as a class variable.
+        """
+        python_version_mock.major = 3
+        python_version_mock.minor = 12
+        python_version_mock.micro = 10
+
+        options = Options()
+        cp = Checkpoint(options)
+
+        self.assertEqual(
+            cp.config,
+            {
+                "python_version": "3.12.10",
+                "numpy_version": "2.1.0",
+            },
+        )
+
+    def test_non_avaliability_of_config_is_handled(self):
+        """
+        Test load returns info_unavaliable for config
+        if it is not in checkpoint file.
+        """
+        cp_file = (
+            pathlib.Path(inspect.getfile(test_files)).parent
+            / "regression_checkpoint.json"
+        )
+        options = Options(
+            additional_options={"checkpoint_filename": str(cp_file)}
+        )
+        cp = Checkpoint(options)
+        _, _, _, config = cp.load()
+
+        self.assertEqual(
+            config,
+            {
+                "python_version": "info_unavaliable",
+                "numpy_version": "info_unavaliable",
+            },
+        )
 
 
 class CompressTests(TestCase):

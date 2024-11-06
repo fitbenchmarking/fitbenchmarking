@@ -160,15 +160,18 @@
                                     </div>
                                 </div>
                                 <p id="profiles_info" style={{"display:none" if n_solvers_large else "display:block"}}>
-                                    Fits are taken from all benchmarks, so if FitBenchmarking is run with
-                                    ``n`` problems and ``m`` cost functions, the resulting profile plots will have
-                                    ``n*m`` steps on the y-axis.
-                                    <br>
-                                    This is a Dolan-Moré performance profile.
-                                    The solvers appearing in the top left corner may be considered the best
-                                    performing on this test set.
-                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-                                    <br>
+                                    <div class="info-box">
+                                        <p><b>Important Information:</b></p>
+                                        <ul>
+                                            <li> Fits are taken from all benchmarks, so if FitBenchmarking is run with
+                                                <span class='pill'>n</span> <b>problems</b> and <span class='pill'>m</span> <b>cost functions</b>, the resulting profile plots will have
+                                                <span class='pill'>n * m</span> <b>steps</b> on the y-axis.</li>
+                                            <li>This is a Dolan-Moré performance profile.
+                                                The solvers appearing in the <b>top left corner</b> may be considered the <b>best</b>
+                                                performing on this test set.</li>
+                                            <li>See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.</li>
+                                        </ul>
+                                    </div>
                                     <br>
                                     The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
                                     or hidden by unselecting the minimizer in the legend. If a solver is removed through the dropdown,

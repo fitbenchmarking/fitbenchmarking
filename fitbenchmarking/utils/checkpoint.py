@@ -53,6 +53,16 @@ class Checkpoint:
             self.options.results_dir, self.options.checkpoint_filename
         )
 
+        # Saves the config
+        self.config = {
+            "python_version": (
+                f"{sys.version_info.major}."
+                f"{sys.version_info.minor}."
+                f"{sys.version_info.micro}"
+            ),
+            "numpy_version": np.__version__,
+        }
+
     def add_result(self, result: FittingResult):
         """
         Add the result to the checkpoint file.
@@ -201,14 +211,7 @@ class Checkpoint:
                     {
                         "failed_problems": failed_problems,
                         "unselected_minimizers": unselected_minimizers,
-                        "config": {
-                            "python_version": (
-                                f"{sys.version_info.major}."
-                                f"{sys.version_info.minor}."
-                                f"{sys.version_info.micro}"
-                            ),
-                            "numpy_version": np.__version__,
-                        },
+                        "config": self.config,
                     },
                     indent=4,
                 )[6:-1]
@@ -247,9 +250,9 @@ class Checkpoint:
 
         :return: Instantiated fitting results,
                  unselected minimisers, failed problems
-        :rtype: Tuple[ dict[str, list[FittingResult]],
-                       dict,
-                       dict[str, list[str]]]
+                 config
+        :rtype: Tuple[dict[str, list[FittingResult]],
+                      dict, dict[str, list[str]], dict]
         """
         output: Dict[str, list[FittingResult]] = {}
         unselected_minimizers: Dict[str, list[str]] = {}
@@ -280,8 +283,8 @@ class Checkpoint:
             config = group.get(
                 "config",
                 {
-                    "python_version": "not_avaliable",
-                    "numpy_version": "not_avaliable",
+                    "python_version": "info_unavaliable",
+                    "numpy_version": "info_unavaliable",
                 },
             )
 

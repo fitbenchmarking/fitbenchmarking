@@ -12,8 +12,6 @@ import os
 import sys
 from tempfile import NamedTemporaryFile
 
-import numpy as np
-
 import fitbenchmarking
 from fitbenchmarking.cli.checkpoint_handler import generate_report
 from fitbenchmarking.cli.exception_handler import exception_handler
@@ -384,14 +382,6 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     group_labels = []
     result_dir = []
     pp_dfs_all_prob_sets = {}
-    config = {
-        "python_version": (
-            f"{sys.version_info.major}."
-            f"{sys.version_info.minor}."
-            f"{sys.version_info.micro}"
-        ),
-        "numpy_version": np.__version__,
-    }
     cp = Checkpoint(options=options)
 
     for sub_dir in problem_sets:
@@ -451,7 +441,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
                 options=options,
                 failed_problems=failed_problems,
                 unselected_minimizers=unselected_minimizers,
-                config=config,
+                config=cp.config,
             )
 
             pp_dfs_all_prob_sets[label] = pp_dfs
