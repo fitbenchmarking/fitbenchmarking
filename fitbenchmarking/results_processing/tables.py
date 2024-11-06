@@ -43,7 +43,6 @@ def create_results_tables(
     pp_locations,
     failed_problems,
     unselected_minimzers,
-    config,
 ):
     """
     Saves the results of the fitting to html/csv tables.
@@ -67,8 +66,6 @@ def create_results_tables(
     :params unselected_minimzers: Dictionary containing unselected minimizers
                                   based on the algorithm_type option
     :type unselected_minimzers: dict
-    :params config: Dictionary containing env config.
-    :type config: dict
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -106,17 +103,13 @@ def create_results_tables(
                 table_format = description[options.comparison_mode]
 
             if suffix in ["runtime", "compare"]:
-                run_str = "The runtime metric displayed in the tables is {}."
+                run_str = (
+                    "The <b>runtime metric</b> displayed in "
+                    "the tables is <span class='pill'>{}</span>."
+                )
                 description[suffix] = description[suffix] + run_str.format(
                     options.runtime_metric
                 )
-
-            config_str = (
-                "\nThe results were generated using python"
-                f" {config['python_version']} and numpy "
-                f"{config['numpy_version']}."
-            )
-            description[suffix] = description[suffix] + config_str
 
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, "templates")
