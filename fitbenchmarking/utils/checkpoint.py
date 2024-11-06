@@ -7,9 +7,12 @@ This is also used to read in checkpointed data.
 import json
 import os
 import pickle
+import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
 from typing import Dict
+
+import numpy as np
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -198,6 +201,14 @@ class Checkpoint:
                     {
                         "failed_problems": failed_problems,
                         "unselected_minimizers": unselected_minimizers,
+                        "config": {
+                            "python_version": (
+                                f"{sys.version_info.major}."
+                                f"{sys.version_info.minor}."
+                                f"{sys.version_info.micro}"
+                            ),
+                            "numpy_version": np.__version__,
+                        },
                     },
                     indent=4,
                 )[6:-1]
@@ -266,6 +277,7 @@ class Checkpoint:
             results = group["results"]
             unselected_minimizers[label] = group["unselected_minimizers"]
             failed_problems[label] = group["failed_problems"]
+            config = group["config"]
 
             # Unpickle problems so that we use 1 shared object for all results
             # per array
@@ -323,7 +335,7 @@ class Checkpoint:
 
                 output[label].append(new_result)
 
-        return output, unselected_minimizers, failed_problems
+        return output, unselected_minimizers, failed_problems, config
 
 
 def _compress(value):

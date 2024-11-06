@@ -45,7 +45,12 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 @write_file
 def save_results(
-    options, results, group_name, failed_problems, unselected_minimizers
+    options,
+    results,
+    group_name,
+    failed_problems,
+    unselected_minimizers,
+    config,
 ):
     """
     Create all results files and store them.
@@ -61,8 +66,10 @@ def save_results(
                             html output
     :type failed_problems: list
     :params unselected_minimizers: Dictionary containing unselected minimizers
-                                  based on the algorithm_type option
+                                   based on the algorithm_type option
     :type unselected_minimizers: dict
+    :params config: Dictionary containing env config
+    :type config: dict
 
     :return: Path to directory of group results, data for building the
              performance profile plots
@@ -102,6 +109,7 @@ def save_results(
         pp_locations=pp_locations,
         failed_problems=failed_problems,
         unselected_minimzers=unselected_minimizers,
+        config=config,
     )
 
     create_problem_level_index(
