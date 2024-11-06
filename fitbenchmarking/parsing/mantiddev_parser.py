@@ -9,7 +9,7 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 
-from typing import Callable, Union
+from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -41,7 +41,7 @@ class MantidDevParser(FitbenchmarkParser):
                 self._parse_ties()
             )
 
-    def _dense_jacobian(self) -> Union[Callable, None]:
+    def _dense_jacobian(self) -> Optional[Callable]:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.

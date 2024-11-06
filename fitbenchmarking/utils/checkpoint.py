@@ -9,7 +9,7 @@ import os
 import pickle
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Union
+from typing import Optional
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
