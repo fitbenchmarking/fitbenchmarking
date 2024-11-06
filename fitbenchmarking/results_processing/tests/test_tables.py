@@ -32,7 +32,7 @@ def load_mock_results():
     options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
     results = results["Fake_Test_Data"]
     for i, r in enumerate(results):
         r.fitting_report_link = f"link{i}"

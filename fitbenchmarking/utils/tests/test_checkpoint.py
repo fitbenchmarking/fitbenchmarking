@@ -163,7 +163,7 @@ class CheckpointTests(TestCase):
                 )
             cp.finalise()
 
-            loaded, unselected, failed = cp.load()
+            loaded, unselected, failed, _ = cp.load()
 
         self.assertDictEqual(unselected, expected_uns)
         self.assertDictEqual(failed, expected_fail)
@@ -192,7 +192,7 @@ class CheckpointTests(TestCase):
         )
         cp = Checkpoint(options)
 
-        res, unselected, failed = cp.load()
+        res, unselected, failed, _ = cp.load()
 
         with TemporaryDirectory() as temp_dir:
             cp_file = pathlib.Path(temp_dir, "cp.json")
