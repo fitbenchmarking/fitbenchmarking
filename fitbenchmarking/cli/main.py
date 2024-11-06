@@ -490,6 +490,7 @@ def main():
                 "path to a different problem set with the "
                 "-p option."
             )
+            sys.exit(1)
         print(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
