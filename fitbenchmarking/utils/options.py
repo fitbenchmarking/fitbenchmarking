@@ -709,17 +709,16 @@ class Options:
             value = None
 
         if option in self.VALID[section]:
-            if isinstance(value, list):
-                set1 = set(value)
-                set2 = set(self.VALID[section][option])
-                value_check = set1.issubset(set2)
-            else:
-                value_check = value in self.VALID[section][option]
-            if not value_check:
+            value_list = [value] if not isinstance(value, list) else value
+            invalid_values = [
+                v for v in value_list if v not in self.VALID[section][option]
+            ]
+            if invalid_values:
                 self.error_message.append(
-                    f"The option '{option}: {value}' in the ini file is "
-                    f"invalid. {option} must be one or more of "
-                    f"{self.VALID[section][option]}"
+                    f"The option '{option}: {value}' in the ini "
+                    f"file is invalid. {invalid_values} is not a "
+                    f"valid option. {option} must be one or "
+                    f"more of {self.VALID[section][option]}"
                 )
         return value
 
