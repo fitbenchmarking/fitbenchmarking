@@ -56,9 +56,9 @@ def load_mock_results(additional_options=None, filename="checkpoint.json"):
     )
     options = Options(additional_options=additional_options)
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, config = cp.load()
 
-    return results["Fake_Test_Data"], options
+    return results["Fake_Test_Data"], options, config
 
 
 class SaveResultsTests(unittest.TestCase):
@@ -74,7 +74,7 @@ class SaveResultsTests(unittest.TestCase):
             os.path.dirname(os.path.realpath(__file__)),
             "fitbenchmarking_results",
         )
-        self.results, self.options = load_mock_results(
+        self.results, self.options, self.config = load_mock_results(
             {"results_dir": self.results_dir}
         )
         os.mkdir(self.results_dir)
@@ -110,6 +110,7 @@ class SaveResultsTests(unittest.TestCase):
             group_name,
             failed_problems,
             unselected_minimizers,
+            self.config,
         )
 
         self.assertEqual(group_dir, os.path.join(self.results_dir, group_name))
@@ -179,7 +180,7 @@ class PreprocessDataTests(unittest.TestCase):
             os.path.dirname(os.path.realpath(__file__)),
             "fitbenchmarking_results",
         )
-        self.results, self.options = load_mock_results(
+        self.results, self.options, _ = load_mock_results(
             {"results_dir": self.results_dir}
         )
         self.min_accuracy = 0.2
@@ -214,7 +215,7 @@ class CreatePlotsTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
 
-            results, self.options = load_mock_results(
+            results, self.options, _ = load_mock_results(
                 {"results_dir": self.results_dir}
             )
             self.best_results, self.results = preprocess_data(results)
@@ -393,6 +394,10 @@ class CreateProblemLevelIndex(unittest.TestCase):
             "runtime": "runtime table descriptions",
             "both": "both table descriptions",
         }
+        self.config = {
+            "python_version": "3.12.4",
+            "numpy_version": "1.26.4",
+        }
         self.group_name = "random_name"
 
     def tearDown(self):
@@ -411,6 +416,7 @@ class CreateProblemLevelIndex(unittest.TestCase):
             self.group_name,
             self.group_dir,
             self.table_descriptions,
+            self.config,
         )
         expected_file = os.path.join(
             self.group_dir, f"{self.group_name}_index.html"
@@ -429,7 +435,7 @@ class ExtractTagsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
-            results, self.options = load_mock_results(
+            results, self.options, _ = load_mock_results(
                 {"results_dir": self.results_dir}
             )
             self.result = results[0]
@@ -522,7 +528,7 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         with TemporaryDirectory() as directory:
             self.results_dir = os.path.join(directory, "figures_dir")
-            results, self.options = load_mock_results(
+            results, self.options, _ = load_mock_results(
                 {"results_dir": self.results_dir}
             )
             self.results = results[:5]
@@ -539,41 +545,30 @@ class ProcessBestResultsTests(unittest.TestCase):
         """
         self.assertIs(self.best, self.results[1])
 
-    def test_is_best_fit_True(self):
+    def test_is_best_fit(self):
         """
-        Test that the is_best_fit flag is set on the correct result.
+        Test that is_best_fit is set on the correct result
+        and is not set on other results.
         """
-        self.assertTrue(self.best.is_best_fit)
-
-    def test_is_best_fit_False(self):
-        """
-        Test that is_best_fit is not set on other results.
-        """
-        self.assertFalse(self.results[0].is_best_fit)
-        self.assertFalse(self.results[2].is_best_fit)
-        self.assertFalse(self.results[3].is_best_fit)
-        self.assertFalse(self.results[4].is_best_fit)
+        for ix, r in enumerate(self.results):
+            self.assertTrue(r.is_best_fit) if ix == 1 else self.assertFalse(
+                r.is_best_fit
+            )
 
     def test_minimum_accuracy_set(self):
         """
         Test that min_accuracy is set correctly.
         """
-        self.assertEqual(self.results[0].min_accuracy, self.best.accuracy)
-        self.assertEqual(self.results[1].min_accuracy, self.best.accuracy)
-        self.assertEqual(self.results[2].min_accuracy, self.best.accuracy)
-        self.assertEqual(self.results[3].min_accuracy, self.best.accuracy)
-        self.assertEqual(self.results[4].min_accuracy, self.best.accuracy)
+        for r in self.results:
+            self.assertEqual(r.min_accuracy, self.best.accuracy)
 
     def test_minimum_runtime_set(self):
         """
         Test that min_runtime is set correctly.
         """
         fastest = self.results[2]
-        self.assertEqual(self.results[0].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[1].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[2].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[3].min_runtime, fastest.runtime)
-        self.assertEqual(self.results[4].min_runtime, fastest.runtime)
+        for r in self.results:
+            self.assertEqual(r.min_runtime, fastest.runtime)
 
 
 class UpdateWarningTests(unittest.TestCase):

@@ -277,7 +277,13 @@ class Checkpoint:
             results = group["results"]
             unselected_minimizers[label] = group["unselected_minimizers"]
             failed_problems[label] = group["failed_problems"]
-            config = group["config"]
+            config = group.get(
+                "config",
+                {
+                    "python_version": "not_avaliable",
+                    "numpy_version": "not_avaliable",
+                },
+            )
 
             # Unpickle problems so that we use 1 shared object for all results
             # per array
