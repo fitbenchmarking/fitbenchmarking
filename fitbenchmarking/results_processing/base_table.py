@@ -15,9 +15,11 @@ from fitbenchmarking.utils.misc import get_js
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
-    "rel": "Relative values are displayed in the table.",
+    "rel": "Relative values are displayed in the table. Incase "
+    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
     "both": "Absolute and relative values are displayed in "
-    "the table in the format ``abs (rel)``",
+    "the table in the format ``abs (rel)``. Incase "
+    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
 }
 CONTRAST_RATIO_AAA = 7.0
 
@@ -846,12 +848,9 @@ def calculate_luminance(rgb):
     :return: the luminance [0, 1]
     :rtype: float
     """
-    a = list(
-        map(
-            lambda color: color / 12.92
-            if color <= 0.03928
-            else (((color + 0.055) / 1.055) ** 2.4),
-            rgb,
-        )
-    )
+
+    a = [
+        color / 12.92 if color <= 0.03928 else ((color + 0.055) / 1.055) ** 2.4
+        for color in rgb
+    ]
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722
