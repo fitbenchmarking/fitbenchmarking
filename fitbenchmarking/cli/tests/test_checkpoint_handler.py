@@ -279,9 +279,9 @@ class TestMergeProblems(TestCase):
         Test that each problem in the merged result is in at least one of the
         inputs.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, _ = merge_problems(self.A, self.B)
-        M_set_norename = set(m.rstrip("*") for m in M)
+        M_set_norename = {m.rstrip("*") for m in M}
         M_subset_norename = M_set_norename.issubset(inputs)
         assert (
             M_subset_norename
@@ -291,9 +291,9 @@ class TestMergeProblems(TestCase):
         """
         Test that each problem in the inputs is in the merged result.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, _ = merge_problems(self.A, self.B)
-        M_set = set(list(M))
+        M_set = set(M)
         assert inputs.issubset(M_set), "Merged result is missing some problems"
 
     def test_name_change_unique(self):
@@ -301,17 +301,17 @@ class TestMergeProblems(TestCase):
         Test that the names are unique after merging even when there is a clash
         """
         M, _ = merge_problems(self.A, self.C)
-        M_set = set(list(M))
-        check = len(M_set) == len(list(M))
+        M_set = set(M)
+        check = len(M_set) == len(M)
         assert check, "Merged result contains repeated problems"
 
     def test_all_renamed_problems_listed(self):
         """
         Test that the list of problems that has been renamed is correct.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, renamed = merge_problems(self.A, self.B)
-        M_set = set(list(M))
+        M_set = set(M)
         M_set_renamed = M_set - inputs
         check = sorted(M_set_renamed) == sorted(renamed)
         assert (

@@ -119,7 +119,7 @@ class LmfitController(Controller):
         lmfit resdiuals
         """
         return self.cost_func.eval_r(
-            list(map(lambda name: params[name].value, self._param_names))
+            [params[name].value for name in self._param_names]
         )
 
     def lmfit_loglike(self, params):
@@ -127,7 +127,7 @@ class LmfitController(Controller):
         lmfit resdiuals
         """
         return self.cost_func.eval_loglike(
-            list(map(lambda name: params[name].value, self._param_names))
+            [params[name].value for name in self._param_names]
         )
 
     def lmfit_jacobians(self, params):
@@ -135,7 +135,7 @@ class LmfitController(Controller):
         lmfit jacobians
         """
         return self.cost_func.jac_cost(
-            list(map(lambda name: params[name].value, self._param_names))
+            [params[name].value for name in self._param_names]
         )
 
     def setup(self):
@@ -198,6 +198,6 @@ class LmfitController(Controller):
                 zip(self.problem.param_names, list(params_pdf_dict.values()))
             )
 
-        self.final_params = list(
-            map(lambda params: params.value, self.lmfit_out.params.values())
-        )
+        self.final_params = [
+            params.value for params in self.lmfit_out.params.values()
+        ]
