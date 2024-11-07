@@ -128,6 +128,7 @@ select = [
     "LOG", # flake8-logging
     "ICN", # flake8-import-conventions
     "SIM", # flake8-simplify
+    "C4", # flake8-comprehensions
     ]
 ignore = ["PERF203"]
 
