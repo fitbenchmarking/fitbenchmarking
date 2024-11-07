@@ -711,7 +711,7 @@ def display_page(
                 group_profiles[metric].current_styles = current_styles
                 group_profiles[metric].avail_styles = avail_styles
 
-            new_layout = [*new_layout + group_profiles[metric].layout()]
+            new_layout = [*new_layout, group_profiles[metric].layout()]
     except KeyError:
         return (
             "404 Page Error! The path was not recognized. \n"
