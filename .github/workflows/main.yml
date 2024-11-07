@@ -12,7 +12,7 @@ on:
   release:
     types: [published]
   schedule:
-    - cron: '0 8 * * Mon'
+    - cron: '0 9 * * Mon'
   workflow_dispatch:
 
 jobs:
