@@ -185,7 +185,7 @@ class LocalMinTable(Table):
         if local_min is None:
             return "N/A"
         template = self.output_string_type["abs"]
-        return f"{str(local_min)} ({template.format(norm_rel)})"
+        return f"{local_min!s} ({template.format(norm_rel)})"
 
     def save_colourbar(self, fig_dir, n_divs=2, sz_in=None) -> str:
         """
