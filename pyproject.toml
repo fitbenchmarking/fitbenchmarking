@@ -136,7 +136,7 @@ select = [
     "FLY", # flynt
     "PIE", # flake8-pie
     ]
-ignore = ["PERF203", "RUF012", "RUF015"]
+ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -697,9 +697,10 @@ class Options:
         """
         section = str(func).split("Section: ")[1].split(">")[0]
         try:
-            value = additional_options.get(option) or func(
-                option, fallback=self.DEFAULTS[section][option]
-            )
+            if option in additional_options and additional_options[option]:
+                value = additional_options[option]
+            else:
+                value = func(option, fallback=self.DEFAULTS[section][option])
 
         except ValueError as e:
             self.error_message.append(
