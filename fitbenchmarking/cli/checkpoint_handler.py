@@ -180,6 +180,7 @@ def merge_data_sets(
     files: "list[str]",
     output: "str",
     strategy: "str" = "first",
+    debug: "bool" = False,
 ):
     """
     Combine multiple checkpoint files into one following these rules:

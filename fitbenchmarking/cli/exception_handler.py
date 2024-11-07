@@ -23,7 +23,7 @@ def exception_handler(f):
 
     @wraps(f)
     def wrapped(*args, **kwargs):
-        debug = kwargs.pop("debug", False)
+        debug = kwargs.get("debug", False)
 
         try:
             return f(*args, **kwargs)
