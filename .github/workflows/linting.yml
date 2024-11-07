@@ -11,7 +11,7 @@ jobs:
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.ref }}
+      group: ruff_linux-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: Checkout code
