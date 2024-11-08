@@ -243,7 +243,8 @@ def run_apidoc(_):
         "-o",
         os.path.join(file_dir, "contributors", "module_index"),
         code_path,
-    ] + ignore_paths
+        *ignore_paths,
+    ]
 
     try:
         # Sphinx 1.7+
