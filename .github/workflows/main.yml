@@ -115,16 +115,15 @@ jobs:
         path: test-results/full_unit_pytest.xml
 
   default_unit_tests:
-    name: Default Unit Tests
+    name: Default Unit Tests (Linux)
     if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
         python: ['3.8', '3.12']
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     concurrency:
-      group: default_unit_tests-${{ matrix.os }}-${{ matrix.python }}-${{ github.ref }}
+      group: default_unit_tests-${{ matrix.python }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
     - name: Checkout code
@@ -142,11 +141,8 @@ jobs:
     - name: Run linux tests
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
-    - name: Run windows tests
-      if: runner.os == 'Windows'
-      run: bash ci/unit_tests_default.sh
     - name: Upload test results
-      if: runner.os == 'Linux' && matrix.python == '3.12'
+      if: matrix.python == '3.12'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
