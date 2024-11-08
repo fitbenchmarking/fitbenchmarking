@@ -1,18 +1,14 @@
 name: 'Integration'
 
 on:
-  push:
-    branches:
-      - 'master'
-      - 'release-**'
-  release:
-    types: [published]
   workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   default_unit_tests:
     name: Default Unit Tests
-    if: github.event.repository.fork == false
+    if: github.event.review.state == 'approved' && github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
@@ -38,4 +34,3 @@ jobs:
     - name: Run windows tests
       if: runner.os == 'Windows'
       run: bash ci/unit_tests_default.sh
-

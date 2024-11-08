@@ -1,7 +1,6 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/release.yml?style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/release.yml)
 [![Tests Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/main.yml?label=tests&style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/main.yml)
 [![Install Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/install.yml?label=install&style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/install.yml)
-[![Integration Status](https://img.shields.io/github/actions/workflow/status/fitbenchmarking/fitbenchmarking/integration.yml?label=integration&style=flat-square)](https://github.com/fitbenchmarking/fitbenchmarking/actions/workflows/integration.yml)
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)

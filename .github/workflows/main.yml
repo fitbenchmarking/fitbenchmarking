@@ -105,7 +105,7 @@ jobs:
         name: full_unit_tests
         path: test-results/full_unit_pytest.xml
 
-  default_unit_tests:
+  default_unit_tests_linux:
     name: Default Unit Tests (Linux)
     if: github.event.repository.fork == false
     strategy:
@@ -130,7 +130,7 @@ jobs:
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
     - name: Upload test results
-      if: runner.os == 'Linux' && matrix.python == '3.12'
+      if: matrix.python == '3.12'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
