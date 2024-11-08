@@ -129,8 +129,14 @@ select = [
     "ICN", # flake8-import-conventions
     "SIM", # flake8-simplify
     "C4", # flake8-comprehensions
+    "TCH", # flake8-type-checking
+    "G", # flake8-logging-format
+    "RUF", # ruff-specific-rules
+    "FURB", # refurb
+    "FLY", # flynt
+    "PIE", # flake8-pie
     ]
-ignore = ["PERF203"]
+ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -3,17 +3,19 @@ FitBenchmarking results object
 """
 
 from statistics import fmean, harmonic_mean, median
-from typing import Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import numpy as np
 from scipy import stats
 
-from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
+
+if TYPE_CHECKING:
+    from fitbenchmarking.controllers.base_controller import Controller
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
+    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 LOGGER = get_logger()
 
