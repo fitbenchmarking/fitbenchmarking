@@ -297,11 +297,15 @@ class Checkpoint:
             ):
                 LOGGER.warning(
                     "The numpy version used when generating this checkpoint "
-                    f"file was {config['numpy_version']}. However, the numpy"
+                    "file was {cp_np_version}. However, the numpy"
                     " version of the current environment is "
-                    f"{self.config['numpy_version']}. This might lead "
+                    "{env_np_version}. This might lead "
                     "to issues while producing results. Try installing"
-                    f" {config['numpy_version']} to view these results."
+                    " {cp_np_version} to view these results.",
+                    extra={
+                        "cp_np_version": config["numpy_version"],
+                        "env_np_version": self.config["numpy_version"],
+                    },
                 )
 
             # Unpickle problems so that we use 1 shared object for all results
