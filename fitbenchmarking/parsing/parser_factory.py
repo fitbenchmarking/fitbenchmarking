@@ -65,7 +65,7 @@ class ParserFactory:
             if os.path.exists(full_path):
                 raise MissingSoftwareError(
                     "Requirements are missing for the "
-                    f"{parser_name} parser: {str(e)}"
+                    f"{parser_name} parser: {e!s}"
                 ) from e
 
             raise NoParserError(

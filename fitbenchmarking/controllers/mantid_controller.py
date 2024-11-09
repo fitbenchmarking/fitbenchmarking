@@ -170,7 +170,7 @@ class MantidController(Controller):
                     f"{self.value_ranges[i][0]} < f{j}.{p}"
                     f" < {self.value_ranges[i][1]}"
                     for i, p in enumerate(self._param_names)
-                    for j in range(0, self._multi_fit)
+                    for j in range(self._multi_fit)
                 )
                 function_def += f"; constraints=({constraints})"
             elif self.value_ranges is not None:
@@ -317,7 +317,7 @@ class MantidController(Controller):
             n_chains = (
                 self._mantid_results.ConvergedChain.getNumberHistograms()
             )
-            for i in range(0, n_chains - 1):
+            for i in range(n_chains - 1):
                 self.params_pdfs[self._param_names[i]] = (
                     self._mantid_results.ConvergedChain.readY(i).tolist()
                 )
