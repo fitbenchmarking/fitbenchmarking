@@ -1,6 +1,9 @@
 name: 'Integration'
 
 on:
+  pull_request:
+    branches:
+      - 'master'
   workflow_dispatch:
   pull_request_review:
     types: [submitted]
@@ -8,12 +11,12 @@ on:
 jobs:
   default_tests_win_mac:
     name: Default Unit Tests
-    if: github.event.review.state == 'approved' && github.event.repository.fork == false
+    if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
         os: [macos-13, windows-latest]
-        python: ['3.9', '3.12']
+        python: ['3.9', '3.13']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
@@ -27,7 +30,6 @@ jobs:
       run: |
         python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
-        python -m pip install "numpy<2.0"
     - name: Run macos tests
       if: runner.os == 'macOS'
       run: ci/unit_tests_default.sh
