@@ -1,9 +1,6 @@
 name: 'Integration'
 
 on:
-  pull_request:
-    branches:
-      - 'master'
   workflow_dispatch:
   pull_request_review:
     types: [submitted]
@@ -11,7 +8,7 @@ on:
 jobs:
   default_tests_win_mac:
     name: Default Unit Tests
-    if: github.event.repository.fork == false
+    if: github.event.review.state == 'approved' && github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +21,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Set up Miniconda
+    - name: Set up conda
       uses: conda-incubator/setup-miniconda@v2
       with:
           miniconda-version: "latest"
