@@ -4,6 +4,7 @@ This file contains unit tests for the main CLI script
 
 import inspect
 import os
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -85,3 +86,15 @@ class TestMain(TestCase):
                 os.path.dirname(__file__),
                 debug=True,
             )
+
+    @patch("pathlib.Path.joinpath")
+    @patch("sys.argv", new=["fitbenchmarking"])
+    def test_file_path_exception_raised(self, mock):
+        """
+        Checks that SystemExit exception is raised if default
+        problem set has been deleted or moved.
+        """
+        mock.return_value = Path("my/test/path")
+        with self.assertRaises(SystemExit) as exp:
+            main.main()
+        self.assertEqual(exp.exception.code, 1)

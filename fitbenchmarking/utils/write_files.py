@@ -4,7 +4,7 @@ Utility decorator function for saving and writing files.
 
 from functools import wraps
 
-from fitbenchmarking.utils.exceptions import FilepathTooLongError
+from fitbenchmarking.utils.exceptions import FilePathError
 
 # The character limit for a filepath on Windows is 260
 CHARACTER_LIMIT = 260
@@ -37,7 +37,7 @@ def write_file(function):
                 "No such file or directory",
             ]
             if any(message in str(ex) for message in messages):
-                raise FilepathTooLongError(FILEPATH_MESSAGE) from ex
+                raise FilePathError(FILEPATH_MESSAGE) from ex
             raise
 
     return wrapper
