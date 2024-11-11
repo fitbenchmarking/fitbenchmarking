@@ -97,6 +97,7 @@ jobs:
       run: |
         ci/unit_tests.sh
     - name: Submit coverage
+      if: always()
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
