@@ -4,7 +4,7 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-We recommend using |Python 3.8.1+| for running/installing Fitbenchmarking.
+We recommend using |Python 3.9.1+| for running/installing Fitbenchmarking.
 The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
@@ -93,7 +93,7 @@ where valid strings ``option-x`` are:
 * ``hogben`` -- installs the `HOGBEN <https://github.com/jfkcooper/HOGBEN>`__ package.
 
 
-.. |Python 3.8.1+| image:: https://img.shields.io/badge/python-3.8.1+-blue.svg
-   :alt: Python 3.8.1+
+.. |Python 3.9.1+| image:: https://img.shields.io/badge/python-3.9.1+-blue.svg
+   :alt: Python 3.9.1+
    :target: https://www.python.org/downloads/
 

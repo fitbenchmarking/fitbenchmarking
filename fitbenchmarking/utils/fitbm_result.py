@@ -3,17 +3,17 @@ FitBenchmarking results object
 """
 
 from statistics import fmean, harmonic_mean, median
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import numpy as np
 from scipy import stats
 
+from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
 
 if TYPE_CHECKING:
-    from fitbenchmarking.controllers.base_controller import Controller
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
     from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
@@ -28,14 +28,14 @@ class FittingResult:
 
     def __init__(
         self,
-        controller: "Controller",
-        accuracy: "float | list[float]" = np.inf,
-        runtimes: "float | list[float]" = np.inf,
-        emissions: "float" = np.inf,
+        controller: Controller,
+        accuracy: Union[float, list[float]] = np.inf,
+        runtimes: Union[float, list[float]] = np.inf,
+        emissions: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: "Optional[int]" = None,
+        dataset: Optional[int] = None,
     ) -> None:
         """
         Initialise the Fitting Result
@@ -43,11 +43,11 @@ class FittingResult:
         :param controller: Controller used to fit
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
-        :type accuracy: float | list[float], optional
+        :type accuracy: Union[float, list[float]], optional
         :param runtimes: All runtimes of the fit, defaults to np.inf
-        :type runtimes: float | list[float], optional
+        :type runtimes: Union[float, list[float]], optional
         :param emissions: The average emissions for the fit, defaults to np.inf
-        :type emissions: float | list[float], optional
+        :type emissions: float, optional
         :param dataset: The index of the dataset (Only used for MultiFit),
                         defaults to None
         :type dataset: int, optional
