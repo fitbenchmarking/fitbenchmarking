@@ -41,7 +41,12 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 @write_file
 def save_results(
-    options, results, group_name, failed_problems, unselected_minimizers
+    options,
+    results,
+    group_name,
+    failed_problems,
+    unselected_minimizers,
+    config,
 ):
     """
     Create all results files and store them.
@@ -57,8 +62,10 @@ def save_results(
                             html output
     :type failed_problems: list
     :params unselected_minimizers: Dictionary containing unselected minimizers
-                                  based on the algorithm_type option
+                                   based on the algorithm_type option
     :type unselected_minimizers: dict
+    :params config: Dictionary containing env config
+    :type config: dict
 
     :return: Path to directory of group results, data for building the
              performance profile plots
@@ -106,6 +113,7 @@ def save_results(
         group_name=group_name,
         group_dir=group_dir,
         table_descriptions=table_descriptions,
+        config=config,
     )
 
     return group_dir, pp_dfs
@@ -442,7 +450,7 @@ def create_plots(options, results, best_results, figures_dir):
 
 
 def create_problem_level_index(
-    options, table_names, group_name, group_dir, table_descriptions
+    options, table_names, group_name, group_dir, table_descriptions, config
 ):
     """
     Generates problem level index page.
@@ -458,6 +466,8 @@ def create_problem_level_index(
     :param table_descriptions: dictionary containing descriptions of the
                                tables and the comparison mode
     :type table_descriptions: dict
+    :params config: Dictionary containing env config
+    :type config: dict
     """
     js = get_js(options, group_dir)
 
@@ -485,6 +495,8 @@ def create_problem_level_index(
                 links=links,
                 description=description,
                 run_name=run_name,
+                python_version=config["python_version"],
+                numpy_version=config["numpy_version"],
                 zip=zip,
             )
         )
@@ -518,24 +530,14 @@ def create_index_page(
     ]
     output_file = os.path.join(options.results_dir, "results_index.html")
 
-    # Copying fonts directory into results directory
-    copytree(
-        os.path.join(root, "fonts"),
-        os.path.join(options.results_dir, "fonts"),
-        dirs_exist_ok=True,
-    )
-    # Copying js directory into results directory
-    copytree(
-        os.path.join(template_dir, "js"),
-        os.path.join(options.results_dir, "js"),
-        dirs_exist_ok=True,
-    )
-    # Copying css directory into results directory
-    copytree(
-        os.path.join(template_dir, "css"),
-        os.path.join(options.results_dir, "css"),
-        dirs_exist_ok=True,
-    )
+    # Copying directories into results directory
+    for dir in ["fonts", "js", "css", "images"]:
+        path = root if dir == "fonts" else template_dir
+        copytree(
+            os.path.join(path, dir),
+            os.path.join(options.results_dir, dir),
+            dirs_exist_ok=True,
+        )
 
     run_name = f"{options.run_name}: " if options.run_name else ""
 

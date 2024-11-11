@@ -7,6 +7,7 @@ import pathlib
 import pprint
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import patch
 
 import numpy as np
 
@@ -23,7 +24,10 @@ from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.checkpoint import Checkpoint, _compress, _decompress
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def generate_results():
@@ -163,7 +167,7 @@ class CheckpointTests(TestCase):
                 )
             cp.finalise()
 
-            loaded, unselected, failed = cp.load()
+            loaded, unselected, failed, _ = cp.load()
 
         self.assertDictEqual(unselected, expected_uns)
         self.assertDictEqual(failed, expected_fail)
@@ -192,7 +196,7 @@ class CheckpointTests(TestCase):
         )
         cp = Checkpoint(options)
 
-        res, unselected, failed = cp.load()
+        res, unselected, failed, _ = cp.load()
 
         with TemporaryDirectory() as temp_dir:
             cp_file = pathlib.Path(temp_dir, "cp.json")
@@ -241,6 +245,62 @@ class CheckpointTests(TestCase):
 
         with self.assertRaises(CheckpointError):
             cp.load()
+
+    @patch("sys.version_info")
+    @patch("numpy.__version__", new="2.1.0")
+    def test_numpy_incompatibilty_warning(self, python):
+        """
+        Test the numpy incompatibity warning is logged.
+        """
+        python.major, python.minor, python.micro = 3, 12, 10
+        cp_dir = pathlib.Path(inspect.getfile(test_files)).parent
+        cp_file = cp_dir / "checkpoint.json"
+
+        options = Options(
+            additional_options={"checkpoint_filename": str(cp_file)}
+        )
+        cp = Checkpoint(options)
+
+        with self.assertLogs(LOGGER, level="WARNING") as log:
+            _, _, _, config = cp.load()
+            self.assertEqual(
+                config,
+                {"python_version": "3.10.13", "numpy_version": "1.26.4"},
+            )
+            self.assertEqual(
+                cp.config,
+                {"python_version": "3.12.10", "numpy_version": "2.1.0"},
+            )
+            self.assertIn(
+                "WARNING:fitbenchmarking:The numpy version used "
+                "when generating this checkpoint file was 1.26.4. "
+                "However, the numpy version of the current environment"
+                " is 2.1.0. This might lead to issues while producing "
+                "results. Try installing 1.26.4 to view these results.",
+                log.output[0],
+            )
+
+    def test_non_avaliability_of_config_is_handled(self):
+        """
+        Test load returns info_unavaliable for config
+        if it is not in checkpoint file.
+        """
+        cp_file = (
+            pathlib.Path(inspect.getfile(test_files)).parent
+            / "regression_checkpoint.json"
+        )
+        options = Options(
+            additional_options={"checkpoint_filename": str(cp_file)}
+        )
+        cp = Checkpoint(options)
+        _, _, _, config = cp.load()
+        self.assertEqual(
+            config,
+            {
+                "python_version": "info_unavaliable",
+                "numpy_version": "info_unavaliable",
+            },
+        )
 
 
 class CompressTests(TestCase):
