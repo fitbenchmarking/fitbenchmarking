@@ -153,7 +153,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
     )
 
     checkpoint = Checkpoint(options=options)
-    results, unselected_minimizers, failed_problems = checkpoint.load()
+    results, unselected_minimizers, failed_problems, config = checkpoint.load()
 
     all_dirs = []
     pp_dfs_all_prob_sets = {}
@@ -164,6 +164,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
             options=options,
             failed_problems=failed_problems[label],
             unselected_minimizers=unselected_minimizers[label],
+            config=config,
         )
 
         pp_dfs_all_prob_sets[label] = pp_dfs

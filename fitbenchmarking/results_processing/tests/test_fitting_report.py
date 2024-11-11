@@ -26,7 +26,7 @@ def load_mock_results():
     options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
 
     return [r for r in results["Fake_Test_Data"] if r.problem_tag == "prob_0"]
 

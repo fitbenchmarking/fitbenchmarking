@@ -29,7 +29,7 @@ local_min: End
 
 runtime: Start
 
-The timing results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
+The runtime results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
 
 runtime: End
 

@@ -1,5 +1,5 @@
 body {
-    background-color:#4D90BA;
+    background-color:#2e2f31;
 }
 
 div.container {
@@ -10,6 +10,12 @@ div.container {
   padding: 70px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+div.container img {
+  width: auto;
+  height: 100px;
+  align-self: center;
 }
 
 div.row {
@@ -70,4 +76,23 @@ a {
   cursor: pointer;
   border: 1px solid #ccc;
   zoom: 0.99;
+}
+
+.pill {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 0.9em;
+}
+
+.info-box {
+  background-color: #e9f4f5;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px solid #c3caca;
+  color: #333;
+  max-width: 800px;
+  margin: 20px auto;
 }
