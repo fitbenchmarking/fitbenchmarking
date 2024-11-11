@@ -101,7 +101,7 @@ jobs:
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
-        compare-ref: master
+        compare-ref: origin/master
         git-commit: ${{ github.event.pull_request.head.sha }}
     - name: Upload test results
       if: always()
