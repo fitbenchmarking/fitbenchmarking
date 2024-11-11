@@ -26,7 +26,7 @@ jobs:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.x'
         check-latest: true
     - name: Install dependencies
       run: |
@@ -115,7 +115,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.8', '3.13']
+        python: ['3.8', '3.x']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -133,7 +133,7 @@ jobs:
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
     - name: Upload test results
-      if: matrix.python == '3.13'
+      if: matrix.python == '3.x'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests

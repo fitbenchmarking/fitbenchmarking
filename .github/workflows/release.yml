@@ -14,7 +14,7 @@ jobs:
     - name: 'Choose Python Version'
       uses: actions/setup-python@v5
       with:
-        python-version: '3.13'
+        python-version: '3.x'
         check-latest: true
 
     - name: 'Build'
