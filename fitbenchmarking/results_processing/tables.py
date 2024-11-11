@@ -103,7 +103,10 @@ def create_results_tables(
                 table_format = description[options.comparison_mode]
 
             if suffix in ["runtime", "compare"]:
-                run_str = "The runtime metric displayed in the tables is {}."
+                run_str = (
+                    "The <b>runtime metric</b> displayed in "
+                    "the tables is <span class='pill'>{}</span>."
+                )
                 description[suffix] = description[suffix] + run_str.format(
                     options.runtime_metric
                 )
