@@ -19,6 +19,7 @@ env:
 
 jobs:
   build:
+    if: github.event.repository.fork == false
     name: Build the container
     runs-on: ubuntu-24.04
     steps:

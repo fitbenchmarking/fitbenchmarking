@@ -10,7 +10,7 @@ import pickle
 import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Dict
+from typing import Optional
 
 import numpy as np
 
@@ -47,9 +47,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: TemporaryDirectory[str] | None = None
-        self.problems_file: str | None = None
-        self.results_file: str | None = None
+        self.dir: Optional[TemporaryDirectory] = None
+        self.problems_file: Optional[str] = None
+        self.results_file: Optional[str] = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(
@@ -257,9 +257,9 @@ class Checkpoint:
         :rtype: Tuple[dict[str, list[FittingResult]],
                       dict, dict[str, list[str]], dict]
         """
-        output: Dict[str, list[FittingResult]] = {}
-        unselected_minimizers: Dict[str, list[str]] = {}
-        failed_problems: Dict[str, list[str]] = {}
+        output: dict[str, list[FittingResult]] = {}
+        unselected_minimizers: dict[str, list[str]] = {}
+        failed_problems: dict[str, list[str]] = {}
 
         for f in [
             self.options.checkpoint_filename,
@@ -371,7 +371,7 @@ def _compress(value):
     Compress a python object into an ascii string
 
     :param value: The value to compress
-    :type value: List
+    :type value: list
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
@@ -385,6 +385,6 @@ def _decompress(value: str):
     :param value: The string to decompress
     :type value: str
     :return: The decompressed value
-    :rtype: List
+    :rtype: list
     """
     return pickle.loads(a85decode(value.encode("ascii")))
