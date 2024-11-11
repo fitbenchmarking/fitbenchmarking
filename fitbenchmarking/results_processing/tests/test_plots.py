@@ -34,7 +34,7 @@ def load_mock_result():
     options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
     best = {}
     for label, dataset in results.items():
         for i, r in enumerate(dataset):
