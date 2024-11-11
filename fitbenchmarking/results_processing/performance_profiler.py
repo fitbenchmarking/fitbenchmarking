@@ -252,8 +252,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 
 def adjust_values_to_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> "dict[str, list]":
+    step_values: list[np.ndarray], solvers: list[str]
+) -> dict[str, list]:
     """
     Prepares the values to plot and deals with failures.
 
@@ -328,7 +328,7 @@ def compute_linestyle_combinations() -> "list[tuple[str, str]]":
 
 
 def create_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
+    step_values: list[np.ndarray], solvers: list[str]
 ) -> go.Figure:
     """
     Function to draw plot in plotly.
@@ -372,10 +372,10 @@ def create_plot(
 
 
 def create_df(
-    solvers: "list[str]",
-    labels: "list[str]",
-    solver_values: "list[np.ndarray]",
-    plot_points: "list[np.ndarray]",
+    solvers: list[str],
+    labels: list[str],
+    solver_values: list[np.ndarray],
+    plot_points: list[np.ndarray],
 ) -> pd.DataFrame:
     """
     Creates a pandas dataframe with performance profile data,
