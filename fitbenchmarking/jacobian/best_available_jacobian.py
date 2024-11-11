@@ -61,8 +61,8 @@ class BestAvailable(Jacobian):
         if value != "default":
             LOGGER.warning(
                 "Method cannot be selected for best_available, "
-                "using default of {jac_method}.",
-                extra={"jac_method": self.sub_jac.method},
+                "using default of %s.",
+                self.sub_jac.method,
             )
 
     def name(self) -> str:

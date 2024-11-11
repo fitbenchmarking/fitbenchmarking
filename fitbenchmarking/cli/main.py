@@ -441,6 +441,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
                 options=options,
                 failed_problems=failed_problems,
                 unselected_minimizers=unselected_minimizers,
+                config=cp.config,
             )
 
             pp_dfs_all_prob_sets[label] = pp_dfs
