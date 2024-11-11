@@ -97,10 +97,11 @@ jobs:
       run: |
         ci/unit_tests.sh
     - name: Submit coverage
+      if: always()
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
-        compare-ref: master
+        compare-sha: ${{ github.event.pull_request.base.sha }}
         git-commit: ${{ github.event.pull_request.head.sha }}
     - name: Upload test results
       if: always()
