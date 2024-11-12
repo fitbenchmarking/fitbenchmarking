@@ -23,12 +23,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        check-latest: true
     - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install pybind11[global]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
+        python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
+        python -m pip install --upgrade .[dev]
+        python -m pip install "numpy<2.0"
     - name: Run tests
       run: ci/system_tests_default.sh
     - name: Upload test results
@@ -93,10 +97,11 @@ jobs:
       run: |
         ci/unit_tests.sh
     - name: Submit coverage
+      if: always()
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
-        compare-ref: master
+        compare-sha: ${{ github.event.pull_request.base.sha }}
         git-commit: ${{ github.event.pull_request.head.sha }}
     - name: Upload test results
       if: always()
@@ -111,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.8', '3.12']
+        python: ['3.9', '3.12']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code

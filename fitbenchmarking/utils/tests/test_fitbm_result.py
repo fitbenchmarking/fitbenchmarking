@@ -18,6 +18,7 @@ from fitbenchmarking.hessian.analytic_hessian import (
     Analytic as AnalyticHessian,
 )
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger

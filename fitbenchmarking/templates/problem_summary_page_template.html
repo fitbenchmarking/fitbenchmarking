@@ -25,9 +25,9 @@
                     <label for="start-accordion">Problem Outline</label>
                 </h2>
                 <div class="content">
-                    <p><em>Number of parameters</em>: {{ n_params }}</p>
-                    <p><em>Number of data points</em>: {{ n_data_points }}</p>
-                    <p><em>Functions</em>:</p>
+                    <p><b>Number of parameters</b>: <span class="pill">{{ n_params }}</span></p>
+                    <p><b>Number of data points</b>: <span class="pill">{{ n_data_points }}</span></p>
+                    <p><b>Functions</b>:</p>
                     <table>
                         <colgroup>
                             <col width="45%" />
@@ -36,7 +36,7 @@
                         <thead valign="bottom">
                             <tr>
                                 <th class="head">Form</th>
-                                <th class="head">Parameters</th>
+                                <th class="head">Initial Parameters</th>
                             </tr>
                         </thead>
                         <tbody valign="top">
@@ -101,8 +101,8 @@
                     <div class="content">
                         <p>This is the best fit of the minimizers used.</p>
 
-                        <p><em>Minimizer</em>: {{ best_results[0].modified_minimizer_name(True) }}</p>
-                        <p><em>Functions</em>:</p>
+                        <p><b>Minimizer</b>: <span class="pill">{{ best_results[0].modified_minimizer_name(True) }}</span></p>
+                        <p><b>Functions</b>:</p>
                         <table>
                             <colgroup>
                                 <col width="36%" />
@@ -145,8 +145,8 @@
                         <div class="content">
                             <p>{{ plot_descriptions[loop.index0] }}</p>
 
-                            <p><em>Minimizer</em>: {{ best_results[loop.index0].modified_minimizer_name(True) }}</p>
-                            <p><em>Functions</em>:</p>
+                            <p><b>Minimizer</b>: <span class="pill">{{ best_results[loop.index0].modified_minimizer_name(True) }}</span></p>
+                            <p><b>Functions</b>:</p>
                             <table>
                                 <colgroup>
                                     <col width="36%" />

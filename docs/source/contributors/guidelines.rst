@@ -51,7 +51,7 @@ Logging
 =======
 
 Code should use the logging in ``utils.log``. This uses Python's built in
-`logging module <https://docs.python.org/3.8/library/logging.html>`__,
+`logging module <https://docs.python.org/3.12/library/logging.html>`__,
 and should be used in place of any print statements to ensure that persistent
 logs are kept after runs.
 
