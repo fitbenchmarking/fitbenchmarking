@@ -94,10 +94,7 @@ def create_prob_group(result, support_pages_dir, options):
         str(result.func_evals) if result.func_evals else "not available"
     )
 
-    if np.isnan(result.emissions):
-        emission_disp = "N/A"
-    else:
-        emission_disp = f"{result.emissions:.4g} kg CO\u2082 eq"
+    energy_disp = "N/A" if np.isnan(result.energy) else f"{result.energy:.4g}"
 
     with open(file_path, "w", encoding="utf-8") as fh:
         fh.write(
@@ -113,7 +110,7 @@ def create_prob_group(result, support_pages_dir, options):
                 minimizer=result.modified_minimizer_name(),
                 accuracy=f"{result.accuracy:.4g}",
                 runtime=f"{result.runtime:.4g}",
-                emissions=emission_disp,
+                energy=energy_disp,
                 is_best_fit=result.is_best_fit,
                 initial_plot_available=init_success,
                 initial_plot=fig_start,

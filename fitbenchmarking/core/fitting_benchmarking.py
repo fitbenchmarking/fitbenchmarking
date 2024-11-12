@@ -69,7 +69,7 @@ class Fit:
         self.__grabbed_output = output_grabber.OutputGrabber(self._options)
         self.__emissions_tracker = None
         self.__logger_prefix = "    "
-        if "emissions" in options.table_type:
+        if "energy_usage" in options.table_type:
             self.__emissions_tracker = EmissionsTracker()
 
     def benchmark(self):
@@ -477,12 +477,12 @@ class Fit:
                     )
 
                 # Perform the fit a number of times specified by num_runs
-                accuracy, runtimes, emissions = self.__perform_fit(controller)
+                accuracy, runtimes, energy = self.__perform_fit(controller)
                 result_args = {
                     "controller": controller,
                     "accuracy": accuracy,
                     "runtimes": runtimes,
-                    "emissions": emissions,
+                    "energy": energy,
                     "runtime_metric": self._options.runtime_metric,
                 }
                 if problem.multifit:
@@ -514,11 +514,11 @@ class Fit:
         :param controller: The software controller for the fitting
         :type controller: Object derived from BaseSoftwareController
 
-        :return: The chi squared, runtimes and emissions of the fit.
+        :return: The chi squared, runtimes and energy usage of the fit.
         :rtype: tuple(float, list[float], float)
         """
         num_runs = self._options.num_runs
-        emissions = np.nan
+        energy = np.nan
         tracker = self.__emissions_tracker
 
         try:
@@ -530,7 +530,7 @@ class Fit:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
-                    emissions = tracker.stop_task().emissions / num_runs
+                    energy = tracker.stop_task().energy_consumed / num_runs
                 else:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
@@ -601,14 +601,14 @@ class Fit:
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
 
-        # ensure emissions tracker has been stopped if emissions not set
-        if emissions == np.nan and self.__emissions_tracker:
+        # ensure emissions tracker has been stopped if energy not set
+        if energy == np.nan and self.__emissions_tracker:
             _ = self.__emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
-            emissions = np.inf
+            energy = np.inf
             multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
@@ -624,4 +624,4 @@ class Fit:
             # flag if not
             controller.check_bounds_respected()
 
-        return accuracy, runtimes, emissions
+        return accuracy, runtimes, energy

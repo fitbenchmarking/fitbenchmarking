@@ -1,9 +1,9 @@
-.. _emissions:
+.. _energy_usage:
 
-###############
-Emissions Table
-###############
+##################
+Energy Usage Table
+##################
 
-.. currentmodule:: fitbenchmarking.results_processing.emissions_table
-.. autoclass:: fitbenchmarking.results_processing.emissions_table.EmissionsTable
+.. currentmodule:: fitbenchmarking.results_processing.energy_usage_table
+.. autoclass:: fitbenchmarking.results_processing.energy_usage_table.EnergyUsageTable
 	       :noindex:

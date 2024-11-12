@@ -15,3 +15,5 @@ docs/source/contributors/module_index
 .eggs/
 *.out
 powermetrics_log.txt
+venv/
+bayes_results*
