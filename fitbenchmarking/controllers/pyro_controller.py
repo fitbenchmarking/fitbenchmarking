@@ -16,19 +16,20 @@ class PyroController(Controller):
     """
 
     algorithm_check = {
-        'all': ['NUTS'],
-        'ls': [],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': [],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': ['NUTS']}
+        "all": ["NUTS"],
+        "ls": [],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": ["NUTS"],
+    }
 
     def __init__(self, cost_func):
         """
@@ -42,7 +43,7 @@ class PyroController(Controller):
         self.result = None
 
     def loglike_eval(self, inputs):
-        params = inputs['params'].tolist()
+        params = inputs["params"].tolist()
         return self.eval_loglike(params)
 
     def eval_r(self, params):
@@ -59,10 +60,13 @@ class PyroController(Controller):
         """
         Setup problem ready to be run with Pyro
         """
-        self.param_dict = {'params': torch.tensor(self.initial_params)}
-        self.mcmc = MCMC(NUTS(potential_fn=self.loglike_eval),
-                         num_samples=10000, warmup_steps=300,
-                         initial_params=self.param_dict)
+        self.param_dict = {"params": torch.tensor(self.initial_params)}
+        self.mcmc = MCMC(
+            NUTS(potential_fn=self.loglike_eval),
+            num_samples=10000,
+            warmup_steps=300,
+            initial_params=self.param_dict,
+        )
 
     def fit(self):
         """
