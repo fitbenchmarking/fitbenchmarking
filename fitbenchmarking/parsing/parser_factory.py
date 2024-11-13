@@ -8,8 +8,10 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.utils.exceptions import (MissingSoftwareError,
-                                              NoParserError)
+from fitbenchmarking.utils.exceptions import (
+    MissingSoftwareError,
+    NoParserError,
+)
 
 
 class ParserFactory:
@@ -32,49 +34,58 @@ class ParserFactory:
         :rtype: fitbenchmarking.parsing.base_parser.Parser subclass
         """
 
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(filename, encoding="utf-8") as f:
             lines = f.readlines()
 
         # if there's a SIF file ending, use cutest
         extension = os.path.splitext(filename)[1]
         if "SIF" in extension.upper():
-            parser_name = 'cutest'
+            parser_name = "cutest"
 
         else:
-            parser_name = ''
+            parser_name = ""
             for line in lines:
-                if 'software =' in line:
-                    parser_name = line.split('=')[1].strip().strip("'")
+                if "software =" in line:
+                    parser_name = line.split("=")[1].strip().strip("'")
                     break
             else:
-                for char in lines[0].strip('#').strip():
+                for char in lines[0].strip("#").strip():
                     if not char.isalpha():
                         break
                     parser_name += char
 
-        module_name = f'{parser_name.lower()}_parser'
+        module_name = f"{parser_name.lower()}_parser"
 
         try:
-            module = import_module('.' + module_name, __package__)
+            module = import_module("." + module_name, __package__)
         except ImportError as e:
-            full_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                     module_name + '.py'))
+            full_path = os.path.abspath(
+                os.path.join(os.path.dirname(__file__), module_name + ".py")
+            )
             if os.path.exists(full_path):
-                raise MissingSoftwareError('Requirements are missing for the '
-                                           f'{parser_name} parser: {str(e)}') \
-                                            from e
+                raise MissingSoftwareError(
+                    "Requirements are missing for the "
+                    f"{parser_name} parser: {e!s}"
+                ) from e
 
-            raise NoParserError(f'Could not find parser for {filename}. '
-                                'Check the input is correct and try '
-                                'again.') from e
+            raise NoParserError(
+                f"Could not find parser for {filename}. "
+                "Check the input is correct and try again."
+            ) from e
 
         def check_name(m):
-            return f'{parser_name.lower()}parser' == str(m.__name__.lower())
-        classes = getmembers(module, lambda m: (isclass(m)
-                                                and not isabstract(m)
-                                                and issubclass(m, Parser)
-                                                and m is not Parser
-                                                and check_name(m)))
+            return f"{parser_name.lower()}parser" == str(m.__name__.lower())
+
+        classes = getmembers(
+            module,
+            lambda m: (
+                isclass(m)
+                and not isabstract(m)
+                and issubclass(m, Parser)
+                and m is not Parser
+                and check_name(m)
+            ),
+        )
 
         return classes[0][1]
 

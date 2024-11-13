@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "FitBenchmarkign Team" }]
 description = "FitBenchmarking: A tool for comparing fitting software"
 readme = "README.md"
-requires-python = ">=3.8.1"
+requires-python = ">=3.9.1"
 keywords = [
     "benchmark",
     "fitting",
@@ -57,9 +57,7 @@ dev = [
     'pytest-cov>=4.0.0',
     'coveralls',
     'coverage[toml]>=6.3',
-    'pylint==3.2.6',
-    'flake8==7.1.1',
-    'pylint-exit',
+    'ruff',
     'pandas',
     'iminuit>=2.25.2',
     'pre-commit',
@@ -110,43 +108,39 @@ exclude = ['*mock*', '*test*']
 [tool.hatch.version]
 source = "versioningit"
 
-[tool.pylint.main]
-ignore = ["benchmark_problems", "fonts", "test_files", "templates"]
-ignored-modules = [
-    "levmar",
-    "lmfit",
-    "mantid",
-    "matlab",
-    "nlopt",
-    "PyCeres",
-    "pycutest",
-    "pygsl",
-    "ral_nlls",
-    "theseus",
-    "gofit",
-    "paramonte"
+[tool.ruff]
+output-format = "grouped"
+exclude = [
+    "benchmark_problems",
+    "fonts",
+    "test_files",
+    "templates"
 ]
+line-length = 79
 
-[tool.pylint.design]
-max-args = 10
-max-branches = 15
-max-locals = 35
-max-public-methods = 25
-max-statements = 60
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "UP", # pyupgrade
+    "I", # isort
+    "NPY", # numpy
+    "PERF", # perflint
+    "LOG", # flake8-logging
+    "ICN", # flake8-import-conventions
+    "SIM", # flake8-simplify
+    "C4", # flake8-comprehensions
+    "TCH", # flake8-type-checking
+    "G", # flake8-logging-format
+    "RUF", # ruff-specific-rules
+    "FURB", # refurb
+    "FLY", # flynt
+    "PIE", # flake8-pie
+    ]
+ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 
-[tool.pylint."messages control"]
-disable = [
-    "too-many-instance-attributes",
-    "invalid-name",
-    "too-few-public-methods",
-    "duplicate-code",
-]
-
-[tool.pylint.reports]
-output-format = 'colorized'
-
-[tool.pylint.variables]
-ignored-argument-names = "arg|args|kwargs"
+[tool.ruff.format]
+quote-style = "double"
 
 [tool.versioningit]
 default-version = '0.0.0dev1'

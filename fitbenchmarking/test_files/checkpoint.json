@@ -47,6 +47,8 @@
                 16.0
         ],
         "emissions": 0.001,
+        "iteration_count": 10,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -75,6 +77,8 @@
                 15.0
         ],
         "emissions": 0.0001,
+        "iteration_count": 5,
+        "func_evals": 15,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -103,6 +107,8 @@
                 14.0
         ],
         "emissions": 0.001,
+        "iteration_count": 10,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -129,6 +135,8 @@
                 Infinity
         ],
         "emissions": Infinity,
+        "iteration_count": null,
+        "func_evals": null,
         "flag": 4,
         "params_pdfs": null,
         "software": "s0",
@@ -157,6 +165,8 @@
                 12.0
         ],
         "emissions": 1e-05,
+        "iteration_count": 4,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -185,6 +195,8 @@
                 11.0
         ],
         "emissions": 1e-05,
+        "iteration_count": 5,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -211,6 +223,8 @@
                 1.0
         ],
         "emissions": 1e-07,
+        "iteration_count": 3,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -237,6 +251,8 @@
                 1.0
         ],
         "emissions": 1e-07,
+        "iteration_count": 10,
+        "func_evals": 15,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -263,6 +279,8 @@
                 1.0
         ],
         "emissions": 1e-07,
+        "iteration_count": 7,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -290,6 +308,8 @@
                 3.0
         ],
         "emissions": 1e-06,
+        "iteration_count": 5,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -316,6 +336,8 @@
                 Infinity
         ],
         "emissions": Infinity,
+        "iteration_count": null,
+        "func_evals": null,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -344,6 +366,8 @@
                 1.5
         ],
         "emissions": 1e-05,
+        "iteration_count": 7,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -372,6 +396,8 @@
                 1.0
         ],
         "emissions": 1e-05,
+        "iteration_count": 10,
+        "func_evals": 20,
         "flag": 0,
         "params_pdfs": null,
         "software": "s1",
@@ -400,6 +426,8 @@
                 20.0
         ],
         "emissions": 0.001,
+        "iteration_count": 10,
+        "func_evals": 15,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -426,6 +454,8 @@
                 Infinity
         ],
         "emissions": Infinity,
+        "iteration_count": null,
+        "func_evals": null,
         "flag": 0,
         "params_pdfs": null,
         "software": "s0",
@@ -446,6 +476,10 @@
     "failed_problems": [],
     "unselected_minimizers": {
         "scipy_ls": []
+    },
+    "config": {
+        "python_version": "3.10.13",
+        "numpy_version": "1.26.4"
     }
   }
 }

@@ -1,6 +1,7 @@
 """
 Tests for checkpoint_handler.py
 """
+
 import inspect
 import json
 from copy import deepcopy
@@ -9,10 +10,13 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from fitbenchmarking import test_files
-from fitbenchmarking.cli.checkpoint_handler import (generate_report, merge,
-                                                    merge_data_sets,
-                                                    merge_problems,
-                                                    merge_results)
+from fitbenchmarking.cli.checkpoint_handler import (
+    generate_report,
+    merge,
+    merge_data_sets,
+    merge_problems,
+    merge_results,
+)
 
 
 class TestGenerateReport(TestCase):
@@ -24,9 +28,11 @@ class TestGenerateReport(TestCase):
         """
         Test functionality when the provided checkpoint doesn't exist
         """
-        options = {'checkpoint_filename': 'not_a_real_file',
-                   'results_browser': False,
-                   'external_output': 'debug'}
+        options = {
+            "checkpoint_filename": "not_a_real_file",
+            "results_browser": False,
+            "external_output": "debug",
+        }
 
         with self.assertRaises(SystemExit):
             generate_report(additional_options=options)
@@ -36,35 +42,37 @@ class TestGenerateReport(TestCase):
         Tests expected files are created from the checkpoint.
         """
         cp_dir = Path(inspect.getfile(test_files)).parent
-        cp_file = cp_dir / 'checkpoint.json'
-        options = {'checkpoint_filename': str(cp_file),
-                   'results_browser': False,
-                   'external_output': 'debug',
-                   'run_dash': False}
+        cp_file = cp_dir / "checkpoint.json"
+        options = {
+            "checkpoint_filename": str(cp_file),
+            "results_browser": False,
+            "external_output": "debug",
+            "run_dash": False,
+        }
 
         # Random files from each directory that should be created
         expected = [
-            'css/table_style.css',
-            'fonts/FiraSans/woff2/FiraSans-Bold.woff2',
-            'js/dropdown.js',
-            'results_index.html',
-            'Fake_Test_Data/compare_table.csv',
-            'Fake_Test_Data/runtime_table.html',
-            'Fake_Test_Data/support_pages/prob_0_summary.html',
-            'Fake_Test_Data/support_pages/prob_0_cf1_m01_[s0]_jj0.html',
-            'Fake_Test_Data/support_pages/figures/acc_cbar.png',
-            'Fake_Test_Data/support_pages/figures/start_for_prob_0.html',
+            "css/table_style.css",
+            "fonts/FiraSans/woff2/FiraSans-Bold.woff2",
+            "js/dropdown.js",
+            "results_index.html",
+            "Fake_Test_Data/compare_table.csv",
+            "Fake_Test_Data/runtime_table.html",
+            "Fake_Test_Data/support_pages/prob_0_summary.html",
+            "Fake_Test_Data/support_pages/prob_0_cf1_m01_[s0]_jj0.html",
+            "Fake_Test_Data/support_pages/figures/acc_cbar.png",
+            "Fake_Test_Data/support_pages/figures/start_for_prob_0.html",
         ]
 
         with TemporaryDirectory() as results_dir:
             results = Path(results_dir)
-            options['results_dir'] = results_dir
+            options["results_dir"] = results_dir
             generate_report(additional_options=options)
 
-            print(f'Files in {results_dir} ({results})')
+            print(f"Files in {results_dir} ({results})")
             for filename in results.iterdir():
                 print(filename)
-            print('Done')
+            print("Done")
 
             for e in expected:
                 with self.subTest(f'Testing existance of "{e}"'):
@@ -84,98 +92,114 @@ class TestMergeDataSets(TestCase):
         """
         Generate 3 files to merge
         """
-        ch_test_files = Path(__file__).parent / 'test_files'
-        self.A = str(ch_test_files/'A.json')
-        self.B = str(ch_test_files/'B.json')
-        self.C = str(ch_test_files/'C.json')
-        self.expected = ch_test_files / 'AB.json'
-        self._dir = TemporaryDirectory()  # pylint:disable=consider-using-with
+        ch_test_files = Path(__file__).parent / "test_files"
+        self.A = str(ch_test_files / "A.json")
+        self.B = str(ch_test_files / "B.json")
+        self.C = str(ch_test_files / "C.json")
+        self.expected = ch_test_files / "AB.json"
+        self._dir = TemporaryDirectory()
         self.dir = Path(self._dir.name)
 
     def test_create_new_file(self):
         """
         Test that a new checkpoint file is generated.
         """
-        output = self.dir / 'out.json'
+        output = self.dir / "out.json"
         merge_data_sets([self.A, self.B, self.C], str(output))
-        assert output.exists(), f'No new checkpoint file {output}'
+        assert output.exists(), f"No new checkpoint file {output}"
 
     def test_three_files(self):
         """
         Test that merging A, B, and C is the same as merging A and B, then
         merging the result with C.
         """
-        intermediate = self.dir / 'intermediate.json'
+        intermediate = self.dir / "intermediate.json"
         merge_data_sets([self.A, self.B], str(intermediate.absolute()))
-        twomerge = self.dir / 'two-merges.json'
+        twomerge = self.dir / "two-merges.json"
         merge_data_sets([str(intermediate), self.C], str(twomerge))
-        onemerge = self.dir / 'one-merge.json'
+        onemerge = self.dir / "one-merge.json"
         merge_data_sets([self.A, self.B, self.C], str(onemerge))
 
         errors = []
-        for i, (l1, l2) in enumerate(zip(onemerge.read_text().splitlines(),
-                                         twomerge.read_text().splitlines())):
+        for i, (l1, l2) in enumerate(
+            zip(
+                onemerge.read_text().splitlines(),
+                twomerge.read_text().splitlines(),
+            )
+        ):
             if l1 != l2:
                 errors.append((i, l1, l2))
 
-        assert not errors, 'Files do not match. ' \
-            f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
+        assert not errors, (
+            "Files do not match. "
+            f"Lines {', '.join([str(e[0]) for e in errors])} disagree."
+        )
 
     def test_regression_two_files(self):
         """
         Test that merging 2 files gives the expected output file.
         """
-        output = self.dir / 'AB.json'
+        output = self.dir / "AB.json"
         merge_data_sets([self.A, self.B], str(output))
 
         errors = []
         for i, (l1, l2) in enumerate(
-            zip(self.expected.read_text().splitlines(),
-                output.read_text().splitlines())):
+            zip(
+                self.expected.read_text().splitlines(),
+                output.read_text().splitlines(),
+            )
+        ):
             if l1 != l2:
                 errors.append((i, l1, l2))
 
-        assert not errors, 'Files do not match. ' \
-            f'Lines {", ".join([str(e[0]) for e in errors])} disagree.'
+        assert not errors, (
+            "Files do not match. "
+            f"Lines {', '.join([str(e[0]) for e in errors])} disagree."
+        )
 
     def test_strategy(self):
         """
         Test that merging 2 files with different strategies
         """
-        testcases = [{
-                        'strategy': 'first',
-                        'result':  0.1,
-                     },
-                     {
-                        'strategy': 'last',
-                        'result':  12.0,
-                     },
-                     {
-                        'strategy': 'accuracy',
-                        'result':  0.1,
-                     },
-                     {
-                        'strategy': 'runtime',
-                        'result':  0.1,
-                     },
-                     {
-                        'strategy': 'emissions',
-                        'result':  12.0,
-                     }]
+        testcases = [
+            {
+                "strategy": "first",
+                "result": 0.1,
+            },
+            {
+                "strategy": "last",
+                "result": 12.0,
+            },
+            {
+                "strategy": "accuracy",
+                "result": 0.1,
+            },
+            {
+                "strategy": "runtime",
+                "result": 0.1,
+            },
+            {
+                "strategy": "emissions",
+                "result": 12.0,
+            },
+        ]
         for case in testcases:
-            with self.subTest(case['strategy']):
-                output = self.dir / 'AB.json'
-                merge_data_sets([self.A, self.B],
-                                output=str(output),
-                                strategy=case['strategy'])
+            with self.subTest(case["strategy"]):
+                output = self.dir / "AB.json"
+                merge_data_sets(
+                    [self.A, self.B],
+                    output=str(output),
+                    strategy=case["strategy"],
+                )
 
                 output_json = json.loads(output.read_text())
-                merged_result = [r['accuracy']
-                                 for r in output_json['DataSet1']['results']
-                                 if r['name'] == 'prob_0'
-                                 and r['software_tag'] == 'common1']
+                merged_result = [
+                    r["accuracy"]
+                    for r in output_json["DataSet1"]["results"]
+                    if r["name"] == "prob_0" and r["software_tag"] == "common1"
+                ]
 
-                assert merged_result[0] == case['result']
+                assert merged_result[0] == case["result"]
 
 
 class TestMerge(TestCase):
@@ -193,34 +217,36 @@ class TestMerge(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        ch_test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((ch_test_files/'A.json').open())
-        self.B = json.load((ch_test_files/'B.json').open())
-        self.C = json.load((ch_test_files/'C.json').open())
-        self.D = json.load((ch_test_files/'D.json').open())
+        ch_test_files = Path(__file__).parent / "test_files"
+        self.A = json.load((ch_test_files / "A.json").open())
+        self.B = json.load((ch_test_files / "B.json").open())
+        self.C = json.load((ch_test_files / "C.json").open())
+        self.D = json.load((ch_test_files / "D.json").open())
 
     def test_merge_distinct_datasets(self):
         """
         Test that merging two datasets results in the catenation of them.
         """
         in_keys = list(self.A.keys()) + list(self.D.keys())
-        M = merge(deepcopy(self.A), deepcopy(self.D), strategy='first')
+        M = merge(deepcopy(self.A), deepcopy(self.D), strategy="first")
 
-        assert sorted(M.keys()) == sorted(in_keys), 'Datasets do not match'
+        assert sorted(M.keys()) == sorted(in_keys), "Datasets do not match"
 
     def test_problem_names_match(self):
         """
         Test that results are correctly labelled when problem renaming occurs.
         """
-        M = merge(deepcopy(self.A), deepcopy(self.C), strategy='first')
-        with self.subTest('number of problems'):
-            assert len(M['DataSet1']['problems']) == 6, \
-                'Merge resulted in wrong number of problems:' \
+        M = merge(deepcopy(self.A), deepcopy(self.C), strategy="first")
+        with self.subTest("number of problems"):
+            assert len(M["DataSet1"]["problems"]) == 6, (
+                'Merge resulted in wrong number of problems:'
                 f'{", ".join(M["DataSet1"]["problems"])}'
-        with self.subTest('result name update'):
-            assert M['DataSet1']['results'][6]['name'] == "prob_0*", \
-                'Expected result name to be updated: '\
+            )
+        with self.subTest("result name update"):
+            assert M["DataSet1"]["results"][6]["name"] == "prob_0*", (
+                'Expected result name to be updated: '
                 f'{M["DataSet1"]["results"][6]}'
+            )
 
 
 class TestMergeProblems(TestCase):
@@ -237,54 +263,60 @@ class TestMergeProblems(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        ch_test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((ch_test_files/'A.json').open()
-                           )['DataSet1']['problems']
-        self.B = json.load((ch_test_files/'B.json').open()
-                           )['DataSet1']['problems']
-        self.C = json.load((ch_test_files/'C.json').open()
-                           )['DataSet1']['problems']
+        ch_test_files = Path(__file__).parent / "test_files"
+        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"][
+            "problems"
+        ]
+        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"][
+            "problems"
+        ]
+        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"][
+            "problems"
+        ]
 
     def test_merged_problems_subset_of_input(self):
         """
         Test that each problem in the merged result is in at least one of the
         inputs.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, _ = merge_problems(self.A, self.B)
-        M_set_norename = set(m.rstrip('*') for m in M.keys())
-        assert M_set_norename.issubset(inputs), \
-            'Merged result contains unexpected problem name'
+        M_set_norename = {m.rstrip("*") for m in M}
+        M_subset_norename = M_set_norename.issubset(inputs)
+        assert (
+            M_subset_norename
+        ), "Merged result contains unexpected problem name"
 
     def test_merged_problems_superset_of_input(self):
         """
         Test that each problem in the inputs is in the merged result.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, _ = merge_problems(self.A, self.B)
-        M_set = set(list(M))
-        assert inputs.issubset(M_set), \
-            'Merged result is missing some problems'
+        M_set = set(M)
+        assert inputs.issubset(M_set), "Merged result is missing some problems"
 
     def test_name_change_unique(self):
         """
         Test that the names are unique after merging even when there is a clash
         """
         M, _ = merge_problems(self.A, self.C)
-        M_set = set(list(M))
-        assert len(M_set) == len(list(M)), \
-            'Merged result contains repeated problems'
+        M_set = set(M)
+        check = len(M_set) == len(M)
+        assert check, "Merged result contains repeated problems"
 
     def test_all_renamed_problems_listed(self):
         """
         Test that the list of problems that has been renamed is correct.
         """
-        inputs = set(list(self.A)).union(set(list(self.B)))
+        inputs = set(self.A).union(set(self.B))
         M, renamed = merge_problems(self.A, self.B)
-        M_set = set(list(M))
+        M_set = set(M)
         M_set_renamed = M_set - inputs
-        assert sorted(M_set_renamed) == sorted(renamed), \
-            'Listed renamed problems not the same as actual renamed problems'
+        check = sorted(M_set_renamed) == sorted(renamed)
+        assert (
+            check
+        ), "Listed renamed problems not the same as actual renamed problems"
 
 
 class TestMergeResults(TestCase):
@@ -302,19 +334,24 @@ class TestMergeResults(TestCase):
           between them
         - Problems in A and C have matching names but not matching data
         """
-        ch_test_files = Path(__file__).parent / 'test_files'
-        self.A = json.load((ch_test_files/'A.json').open()
-                           )['DataSet1']['results']
-        self.B = json.load((ch_test_files/'B.json').open()
-                           )['DataSet1']['results']
-        self.C = json.load((ch_test_files/'C.json').open()
-                           )['DataSet1']['results']
-        self.uid = lambda r: (r['name'],
-                              r['software_tag'],
-                              r['minimizer_tag'],
-                              r['jacobian_tag'],
-                              r['hessian_tag'],
-                              r['costfun_tag'])
+        ch_test_files = Path(__file__).parent / "test_files"
+        self.A = json.load((ch_test_files / "A.json").open())["DataSet1"][
+            "results"
+        ]
+        self.B = json.load((ch_test_files / "B.json").open())["DataSet1"][
+            "results"
+        ]
+        self.C = json.load((ch_test_files / "C.json").open())["DataSet1"][
+            "results"
+        ]
+        self.uid = lambda r: (
+            r["name"],
+            r["software_tag"],
+            r["minimizer_tag"],
+            r["jacobian_tag"],
+            r["hessian_tag"],
+            r["costfun_tag"],
+        )
 
     def test_merged_results_subset_of_input(self):
         """
@@ -324,10 +361,9 @@ class TestMergeResults(TestCase):
         A_ids = {self.uid(r) for r in self.A}
         B_ids = {self.uid(r) for r in self.B}
         inputs = A_ids.union(B_ids)
-        M = merge_results(self.A, self.B, strategy='first')
+        M = merge_results(self.A, self.B, strategy="first")
         M_ids = {self.uid(r) for r in M}
-        assert M_ids.issubset(inputs), \
-            'Merged result contains extra results'
+        assert M_ids.issubset(inputs), "Merged result contains extra results"
 
     def test_merged_results_superset_of_input(self):
         """
@@ -336,31 +372,31 @@ class TestMergeResults(TestCase):
         A_ids = {self.uid(r) for r in self.A}
         B_ids = {self.uid(r) for r in self.B}
         inputs = A_ids.union(B_ids)
-        M = merge_results(self.A, self.B, strategy='first')
+        M = merge_results(self.A, self.B, strategy="first")
         M_ids = {self.uid(r) for r in M}
-        assert M_ids.issuperset(inputs), \
-            'Merged results missing results'
+        assert M_ids.issuperset(inputs), "Merged results missing results"
 
     def test_no_duplicate_results(self):
         """
         Test that all of the results are unique runs.
         """
-        M = merge_results(self.A, self.B, strategy='first')
+        M = merge_results(self.A, self.B, strategy="first")
         M_ids = {self.uid(r) for r in M}
-        assert len(M) == len(M_ids), 'Merged results contain duplicates'
+        assert len(M) == len(M_ids), "Merged results contain duplicates"
 
     def test_correct_result_taken(self):
         """
         Test that when results are identical, the correct one is taken.
         """
-        M = merge_results(self.A, self.B, strategy='first')
+        M = merge_results(self.A, self.B, strategy="first")
         expected_r = None
         actual_r = None
         for r in self.A:
-            if r['name'] == 'prob_0' and r['software'] == 'common1':
+            if r["name"] == "prob_0" and r["software"] == "common1":
                 expected_r = r
         for r in M:
-            if r['name'] == 'prob_0' and r['software'] == 'common1':
+            if r["name"] == "prob_0" and r["software"] == "common1":
                 actual_r = r
-        assert json.dumps(expected_r) == json.dumps(actual_r), \
-            'Conflicting results merged incorrectly'
+        assert json.dumps(expected_r) == json.dumps(
+            actual_r
+        ), "Conflicting results merged incorrectly"

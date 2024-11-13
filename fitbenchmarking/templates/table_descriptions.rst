@@ -29,7 +29,7 @@ local_min: End
 
 runtime: Start
 
-The timing results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
+The runtime results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
 
 runtime: End
 
@@ -58,6 +58,6 @@ rel: End
 
 both: Start
 
-Absolute and relative values are displayed in the table in the format: ``abs (rel)``, for example ``5.1 (1)`` where 5.1 is abs and 1 is rel values respectively
+Absolute and relative values are displayed in the table in the format: ``abs (rel)``, for example ``5.1 (1)`` where 5.1 is abs and 1 is rel values respectively. Incase of a perfect fit on a problem ``rel = abs / 1e-10``.
 
 both: End

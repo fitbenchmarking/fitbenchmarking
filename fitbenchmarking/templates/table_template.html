@@ -60,19 +60,15 @@
                             {{ table }}
                         </div>
                         </center>
-                        <p>
-                            Clicking a result in the tables will give more details,
-                            such as graphs of the fit against the data and the parameters that the minimizer found.
-                        </p>
-                        <p>
-                            Clicking the problem names will take you to details of the best minimizer.
-                        </p>
-                        <p>
-                            Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
-                        </p>
-                        <p>
-                            Hovering over each minimizer name will display its matching algorithm types out of those selected in options.
-                        </p>
+                    <div class="info-box">
+                        <p><b>Important Information:</b></p>
+                        <ul>
+                            <li>Clicking a result in the tables will provide more details, such as graphs of the fit against the data and the parameters found.</li>
+                            <li>Clicking the problem names will take you to details of the best minimizer.</li>
+                            <li>Clicking the software name will take you to the FitBenchmarking documentation for the selected software.</li>
+                            <li>Hovering over each minimizer name will display its matching algorithm types out of those selected in options.</li>
+                        </ul>
+                    </div>
                         {% if report_failed_min %}
                             <h3>Failed minimizers</h3>
                             <p>
@@ -164,21 +160,23 @@
                                     </div>
                                 </div>
                                 <p id="profiles_info" style={{"display:none" if n_solvers_large else "display:block"}}>
-                                    Fits are taken from all benchmarks, so if FitBenchmarking is run with
-                                    ``n`` problems and ``m`` cost functions, the resulting profile plots will have
-                                    ``n*m`` steps on the y-axis.
-                                    <br>
-                                    This is a Dolan-Moré performance profile.
-                                    The solvers appearing in the top left corner may be considered the best
-                                    performing on this test set.
-                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-                                    <br>
-                                    <br>
-                                    The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
-                                    or hidden by unselecting the minimizer in the legend. If a solver is removed through the dropdown,
-                                    the graph gets recalculated based on the best minimizer among the ones shown. On the other hand, if a solver
-                                    is unselected in the legend, the line gets temporarily hidden and the plot is not recalculated.
-                                    We recommend only analysing graphs where lines are removed via the dropdown.
+                                    <div class="info-box">
+                                        <p><b>Important Information:</b></p>
+                                        <ul>
+                                            <li> Fits are taken from all benchmarks, so if FitBenchmarking is run with
+                                                <span class='pill'>n</span> <b>problems</b> and <span class='pill'>m</span> <b>cost functions</b>, the resulting profile plots will have
+                                                <span class='pill'>n * m</span> <b>steps</b> on the y-axis.</li>
+                                            <li>This is a Dolan-Moré performance profile.
+                                                The solvers appearing in the <b>top left corner</b> may be considered the <b>best</b> performing on this test set.
+                                                See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.</li>
+                                        </ul>
+                                        <br>
+                                        <p>The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
+                                            or hidden by unselecting the minimizer in the legend. If a solver is removed through the dropdown,
+                                            the graph gets recalculated based on the best minimizer among the ones shown. On the other hand, if a solver
+                                            is unselected in the legend, the line gets temporarily hidden and the plot is not recalculated.
+                                            <b>We recommend only analysing graphs where lines are removed via the dropdown.</b></p>
+                                    </div>
                                 </p>
                             </div>
                         </section>

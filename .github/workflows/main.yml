@@ -23,10 +23,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        check-latest: true
     - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
+        python -m pip install --upgrade .[dev]
+        python -m pip install "numpy<2.0"
     - name: Run tests
       run: ci/system_tests_default.sh
     - name: Upload test results
@@ -50,8 +56,10 @@ jobs:
       uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install pybind11[global]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: Run tests
@@ -77,8 +85,10 @@ jobs:
       uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install pybind11[global]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
         sudo apt update
@@ -87,10 +97,11 @@ jobs:
       run: |
         ci/unit_tests.sh
     - name: Submit coverage
+      if: always()
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
-        compare-ref: master
+        compare-sha: ${{ github.event.pull_request.base.sha }}
         git-commit: ${{ github.event.pull_request.head.sha }}
     - name: Upload test results
       if: always()
@@ -100,14 +111,13 @@ jobs:
         path: test-results/full_unit_pytest.xml
 
   default_unit_tests:
-    name: Default Unit Tests
+    name: Default Unit Tests (Linux)
     if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python: ['3.8', '3.12']
-    runs-on: ${{ matrix.os }}
+        python: ['3.9', '3.12']
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -120,37 +130,16 @@ jobs:
       run: |
         python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
+        python -m pip install "numpy<2.0"
     - name: Run linux tests
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
-    - name: Run windows tests
-      if: runner.os == 'Windows'
-      run: bash ci/unit_tests_default.sh
     - name: Upload test results
-      if: runner.os == 'Linux' && matrix.python == '3.12'
+      if: matrix.python == '3.12'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
         path: test-results/default_unit_pytest.xml
-
-  linting_test:
-    name: Linting Tests (Linux)
-    if: github.event.repository.fork == false
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Install python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-        check-latest: true
-    - name: Install default dependencies for fitbenchmarking
-      run: |
-        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
-        pip install --upgrade .[dev]
-    - name: Run linting
-      run: ci/linting_tests.sh
 
   publish-test-results:
     name: Publish Test Results

@@ -1,21 +1,23 @@
 """
 This file contains unit tests for the main CLI script
 """
+
+import inspect
+import os
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
-import os
-import inspect
 
-from fitbenchmarking.cli import main
 from fitbenchmarking import test_files
-from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cli import main
 from fitbenchmarking.controllers.scipy_controller import ScipyController
-from fitbenchmarking.utils import fitbm_result, exceptions
-from fitbenchmarking.utils.options import Options
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions, fitbm_result
+from fitbenchmarking.utils.options import Options
 
 
-def make_controller(file_name='cubic.dat', minimizers=None):
+def make_controller(file_name="cubic.dat", minimizers=None):
     """
     Helper function that returns a simple fitting problem
     in a scipy controller.
@@ -41,13 +43,13 @@ def mock_func_call(*args, **kwargs):
     """
     controller = make_controller()
 
-    results: 'list[fitbm_result.FittingResult]' = []
+    results: list[fitbm_result.FittingResult] = []
     controller.flag = 4
     controller.parameter_set = 0
     result = fitbm_result.FittingResult(controller=controller)
     results.append(result)
 
-    failed_problems: 'list[str]' = []
+    failed_problems: list[str] = []
     unselected_minimizers = {}
     return results, failed_problems, unselected_minimizers
 
@@ -57,7 +59,7 @@ class TestMain(TestCase):
     Tests for main.py
     """
 
-    @patch('fitbenchmarking.cli.main.Fit.benchmark')
+    @patch("fitbenchmarking.cli.main.Fit.benchmark")
     def test_check_no_results_produced(self, benchmark):
         """
         Checks that exception is raised if no results are produced
@@ -65,10 +67,13 @@ class TestMain(TestCase):
         benchmark.return_value = ([], [], {})
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'],
-                     os.path.dirname(__file__), debug=True)
+            main.run(
+                ["examples/benchmark_problems/simple_tests"],
+                os.path.dirname(__file__),
+                debug=True,
+            )
 
-    @patch('fitbenchmarking.cli.main.Fit.benchmark')
+    @patch("fitbenchmarking.cli.main.Fit.benchmark")
     def test_all_dummy_results_produced(self, benchmark):
         """
         Checks that exception is raised if all dummy results
@@ -76,5 +81,20 @@ class TestMain(TestCase):
         benchmark.side_effect = mock_func_call
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'],
-                     os.path.dirname(__file__), debug=True)
+            main.run(
+                ["examples/benchmark_problems/simple_tests"],
+                os.path.dirname(__file__),
+                debug=True,
+            )
+
+    @patch("pathlib.Path.joinpath")
+    @patch("sys.argv", new=["fitbenchmarking"])
+    def test_file_path_exception_raised(self, mock):
+        """
+        Checks that SystemExit exception is raised if default
+        problem set has been deleted or moved.
+        """
+        mock.return_value = Path("my/test/path")
+        with self.assertRaises(SystemExit) as exp:
+            main.main()
+        self.assertEqual(exp.exception.code, 1)
