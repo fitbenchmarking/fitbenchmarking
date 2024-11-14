@@ -94,7 +94,9 @@ def create_prob_group(result, support_pages_dir, options):
         str(result.func_evals) if result.func_evals else "not available"
     )
 
-    energy_disp = "N/A" if np.isnan(result.energy) else f"{result.energy:.4g} kWh"
+    energy_disp = (
+        "N/A" if np.isnan(result.energy) else f"{result.energy:.4g} kWh"
+    )
 
     with open(file_path, "w", encoding="utf-8") as fh:
         fh.write(
