@@ -70,7 +70,7 @@ class Fit:
         self.__emissions_tracker = None
         self.__logger_prefix = "    "
         if "energy_usage" in options.table_type:
-            self.__emissions_tracker = EmissionsTracker(measure_power_secs = 1)
+            self.__emissions_tracker = EmissionsTracker(measure_power_secs=1)
 
     def benchmark(self):
         """
