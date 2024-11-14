@@ -47,7 +47,7 @@ class FittingResult:
         :param runtimes: All runtimes of the fit, defaults to np.inf
         :type runtimes: Union[float, list[float]], optional
         :param energy: The average energy usage for the fit, defaults to np.inf
-        :type emissions: float, optional
+        :type energy: float, optional
         :param dataset: The index of the dataset (Only used for MultiFit),
                         defaults to None
         :type dataset: int, optional
