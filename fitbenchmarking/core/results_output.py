@@ -792,7 +792,7 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
             ),
             "energy": DashPerfProfile(
                 profile_name="Energy Usage",
-                pp_df=pp_dfs["energy"],
+                pp_df=pp_dfs["energy_usage"],
                 group_label=group,
             ),
         }
