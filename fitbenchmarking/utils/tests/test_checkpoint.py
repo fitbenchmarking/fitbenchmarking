@@ -10,7 +10,6 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import numpy as np
-from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
@@ -309,19 +308,20 @@ class CompressTests(TestCase):
     Tests for the _compress and _decompress methods.
     """
 
-    @parameterized.expand([2.0, [1.0, 2.0], np.array([1.0, 2.0, 3.0])])
-    def test_compress_decompress(self, exp):
+    def test_compress_decompress(self):
         """
         Test that compress/decompress works as expected.
         """
-        try:
-            self.assertEqual(
-                exp,
-                _decompress(_compress(exp)),
-                f"Failed to compress/decompress {exp}",
-            )
-        except ValueError:
-            self.assertTrue(
-                (exp == _decompress(_compress(exp))).all(),
-                f"Failed to compress/decompress {exp}",
-            )
+        expected = [2.0, [1.0, 2.0], np.array([1.0, 2.0, 3.0])]
+        for exp in expected:
+            try:
+                self.assertEqual(
+                    exp,
+                    _decompress(_compress(exp)),
+                    f"Failed to compress/decompress {exp}",
+                )
+            except ValueError:
+                self.assertTrue(
+                    (exp == _decompress(_compress(exp))).all(),
+                    f"Failed to compress/decompress {exp}",
+                )
