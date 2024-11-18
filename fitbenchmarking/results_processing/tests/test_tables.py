@@ -88,7 +88,7 @@ class GenerateTableTests(unittest.TestCase):
                 fig_dir=self.fig_dir,
                 pp_locations={
                     "acc": "pp_1",
-                    "emissions": "pp_3",
+                    "energy_usage": "pp_3",
                     "runtime": "pp_2",
                 },
                 table_name="table_name",
@@ -119,7 +119,7 @@ class GenerateTableTests(unittest.TestCase):
             fig_dir=self.fig_dir,
             pp_locations={
                 "acc": "pp_1",
-                "emissions": "pp_3",
+                "energy_usage": "pp_3",
                 "runtime": "pp_2",
             },
             table_name="table_name",
@@ -236,7 +236,7 @@ class CreateResultsTableTests(unittest.TestCase):
             fig_dir=self.fig_dir,
             pp_locations={
                 "acc": "pp_1",
-                "emissions": "pp_3",
+                "energy_usage": "pp_3",
                 "runtime": "pp_2",
             },
             failed_problems=[],

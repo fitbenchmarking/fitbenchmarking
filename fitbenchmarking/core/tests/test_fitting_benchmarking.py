@@ -56,7 +56,7 @@ def mock_loop_over_hessians_func_call(controller):
         "controller": controller,
         "accuracy": 1,
         "runtimes": [2],
-        "emissions": 3,
+        "energy": 3,
         "runtime_metric": "mean",
     }
     result = FittingResult(**result_args)
@@ -110,7 +110,7 @@ def mock_loop_over_cost_func_call_all_fail(problem):
     """
     Mock function for the __loop_over_cost_func method
     when an exception is raised and accuracy, runtime and
-    emissions are all np.inf.
+    energy are all np.inf.
     """
     cost_func = WeightedNLLSCostFunc(problem)
     controller = ScipyController(cost_func)
@@ -120,7 +120,7 @@ def mock_loop_over_cost_func_call_all_fail(problem):
         controller=controller,
         accuracy=np.inf,
         runtimes=[np.inf],
-        emissions=np.inf,
+        energy=np.inf,
         runtime_metric="mean",
     )
     return [result]
@@ -187,11 +187,11 @@ class PerformFitTests(unittest.TestCase):
 
         for minimizer, acc in zip(["Nelder-Mead", "Powell"], expected):
             controller.minimizer = minimizer
-            accuracy, runtimes, emissions = fit._Fit__perform_fit(controller)
+            accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
 
             self.assertAlmostEqual(accuracy, acc, 6)
             assert len(runtimes) == self.options.num_runs
-            assert emissions != np.inf
+            assert energy != np.inf
 
     @patch(
         "fitbenchmarking.controllers.base_controller.Controller.eval_confidence"
@@ -229,9 +229,9 @@ class PerformFitTests(unittest.TestCase):
 
         for exp in [ValidationException, FitBenchmarkException]:
             mock.side_effect = exp
-            accuracy, runtimes, emissions = fit._Fit__perform_fit(controller)
+            accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
             assert accuracy == np.inf
-            assert emissions == np.inf
+            assert energy == np.inf
             assert runtimes == [np.inf] * 5
 
     @patch("timeit.Timer.repeat")
@@ -282,10 +282,10 @@ class PerformFitTests(unittest.TestCase):
         fit = Fit(options=self.options, data_dir="test5", checkpointer=self.cp)
 
         mock.side_effect = MaxRuntimeError
-        accuracy, runtimes, emissions = fit._Fit__perform_fit(controller)
+        accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
         assert controller.flag == 6
         assert accuracy == np.inf
-        assert emissions == np.inf
+        assert energy == np.inf
         assert runtimes == [np.inf] * 5
 
     @patch(
@@ -386,7 +386,7 @@ class HessianTests(unittest.TestCase):
             controller=self.controller,
             accuracy=1,
             runtimes=[2],
-            emissions=3,
+            energy=3,
             runtime_metric="mean",
         )
         self.controller.problem.multifit = True
@@ -852,7 +852,7 @@ class BenchmarkTests(unittest.TestCase):
                     "runtime",
                     "compare",
                     "local_min",
-                    "emissions",
+                    "energy_usage",
                 ],
             }
         )

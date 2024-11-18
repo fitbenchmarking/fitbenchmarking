@@ -132,6 +132,7 @@ def _create_summary_page(
                 equation=results[0].equation,
                 initial_guess=results[0].ini_function_params,
                 initial_plot_available=init_success,
+                min_params=results[0].fin_function_params,
                 initial_plot=fig_start,
                 categories=categories,
                 best_results=results,

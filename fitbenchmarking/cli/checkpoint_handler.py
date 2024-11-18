@@ -123,10 +123,10 @@ new_results/checkpoint.json
         "--strategy",
         metavar="STRATEGY",
         default="first",
-        choices=["first", "last", "accuracy", "runtime", "emissions"],
+        choices=["first", "last", "accuracy", "runtime", "energy"],
         help=(
             "The merge strategy to use when dealing with conflicts. "
-            "Selecting accuracy, emissions, or runtime will select for the "
+            "Selecting accuracy, energy, or runtime will select for the "
             "lowest from conflicting runs."
         ),
     )
@@ -381,7 +381,7 @@ def merge_results(A: list[dict], B: list[dict], strategy: str):
         key = key_gen(res)
         if key in A_key:
             if (
-                strategy in ["accuracy", "emissions", "runtime"]
+                strategy in ["accuracy", "energy", "runtime"]
                 and A[A_key[key]][strategy] > res[strategy]
             ):
                 A[A_key[key]] = res

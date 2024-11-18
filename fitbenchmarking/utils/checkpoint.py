@@ -104,7 +104,7 @@ class Checkpoint:
             "accuracy": result.accuracy,
             "runtime": result.runtime,
             "runtimes": result.runtimes,
-            "emissions": result.emissions,
+            "energy": result.energy,
             "iteration_count": result.iteration_count,
             "func_evals": result.func_evals,
             "flag": result.error_flag,
@@ -326,7 +326,7 @@ class Checkpoint:
                 new_result.accuracy = r["accuracy"]
                 new_result.runtime = r["runtime"]
                 new_result.runtimes = r["runtimes"]
-                new_result.emissions = r["emissions"]
+                new_result.energy = r["energy"]
                 new_result.iteration_count = r["iteration_count"]
                 new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]

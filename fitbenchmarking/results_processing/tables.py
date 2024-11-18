@@ -31,7 +31,7 @@ ERROR_OPTIONS = {
     8: "Confidence in fit could not be calculated",
 }
 
-SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "emissions"]
+SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "energy_usage"]
 
 
 def create_results_tables(

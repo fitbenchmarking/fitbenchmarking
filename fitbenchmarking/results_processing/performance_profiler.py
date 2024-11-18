@@ -51,7 +51,7 @@ def prepare_profile_data(results):
     :return: dictionary containing number of occurrences
     :rtype: dict[str, dict[str, list[float]]]
     """
-    pp_data = {"acc": {}, "runtime": {}, "emissions": {}}
+    pp_data = {"acc": {}, "runtime": {}, "energy_usage": {}}
     minimizers = []
     to_remove = set()
 
@@ -70,8 +70,8 @@ def prepare_profile_data(results):
                     minimizers[i] = key
                 pp_data["acc"][minimizers[i]].append(result.norm_acc)
                 pp_data["runtime"][minimizers[i]].append(result.norm_runtime)
-                pp_data["emissions"][minimizers[i]].append(
-                    result.norm_emissions
+                pp_data["energy_usage"][minimizers[i]].append(
+                    result.norm_energy
                 )
 
     for key in to_remove:
@@ -88,7 +88,7 @@ def compute_step_values(profile_plot):
     :param profile_plot: data related to the metric being profiled
     :type profile_plot: dict[str, list[float]]
 
-    :return: acc or runtime or emissions values to plot,
+    :return: acc or runtime or energy usage values to plot,
              maximum x value
     :rtype: list[np.arrays(float)], float
     """
