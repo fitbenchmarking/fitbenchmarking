@@ -1,6 +1,7 @@
 """
 Implements a controller for MATLAB
 """
+
 import matlab
 import numpy as np
 
@@ -14,22 +15,22 @@ class MatlabController(MatlabMixin, Controller):
     """
 
     algorithm_check = {
-        'all': ['Nelder-Mead Simplex'],
-        'ls': [],
-        'deriv_free': ['Nelder-Mead Simplex'],
-        'general': ['Nelder-Mead Simplex'],
-        'simplex': ['Nelder-Mead Simplex'],
-        'trust_region': [],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []
+        "all": ["Nelder-Mead Simplex"],
+        "ls": [],
+        "deriv_free": ["Nelder-Mead Simplex"],
+        "general": ["Nelder-Mead Simplex"],
+        "simplex": ["Nelder-Mead Simplex"],
+        "trust_region": [],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
     }
 
-    incompatible_problems = ['mantid']
+    incompatible_problems = ["mantid"]
 
     def __init__(self, cost_func):
         """
@@ -42,6 +43,7 @@ class MatlabController(MatlabMixin, Controller):
         super().__init__(cost_func)
         self._status = None
         self.result = None
+        self._nits = None
 
     def setup(self):
         """
@@ -52,16 +54,19 @@ class MatlabController(MatlabMixin, Controller):
 
         # serialize cost_func.eval_cost and open within matlab engine
         # so that matlab fitting function can be called
-        self.eng.workspace['eval_cost_mat'] = self.py_to_mat('eval_cost')
+        self.eng.workspace["eval_cost_mat"] = self.py_to_mat("eval_cost")
 
     def fit(self):
         """
         Run problem with Matlab
         """
-        [self.result, _, exitflag] = self.eng.fminsearch(
-            self.eng.workspace['eval_cost_mat'],
-            self.initial_params_mat, nargout=3)
+        [self.result, _, exitflag, output] = self.eng.fminsearch(
+            self.eng.workspace["eval_cost_mat"],
+            self.initial_params_mat,
+            nargout=4,
+        )
         self._status = int(exitflag)
+        self._nits = int(output["iterations"])
 
     def cleanup(self):
         """
@@ -74,6 +79,7 @@ class MatlabController(MatlabMixin, Controller):
             self.flag = 1
         else:
             self.flag = 2
-
-        self.final_params = np.array(self.result[0],
-                                     dtype=np.float64).flatten()
+        self.final_params = np.array(
+            self.result[0], dtype=np.float64
+        ).flatten()
+        self.iteration_count = self._nits

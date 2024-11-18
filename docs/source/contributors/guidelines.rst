@@ -19,9 +19,8 @@ The workflow to be used for submitting new code/issues is described in
 Linting
 =======
 
-All pull requests should be `PEP 8 compliant <https://www.python.org/dev/peps/pep-0008/>`_.
-We suggest running code through `flake8 <https://flake8.pycqa.org/en/latest/>`_ and
-`pylint <https://www.pylint.org/>`_ before submitting to check for this.
+All pull requests should be compliant with selected `Ruff<https://docs.astral.sh/ruff/>`_ rules.
+We suggest running code through ruff using the precommit hook before pushing code to github.
 
 
 =============
@@ -52,7 +51,7 @@ Logging
 =======
 
 Code should use the logging in ``utils.log``. This uses Python's built in
-`logging module <https://docs.python.org/3.8/library/logging.html>`__,
+`logging module <https://docs.python.org/3.12/library/logging.html>`__,
 and should be used in place of any print statements to ensure that persistent
 logs are kept after runs.
 

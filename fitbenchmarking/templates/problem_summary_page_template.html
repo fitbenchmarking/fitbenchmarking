@@ -25,10 +25,10 @@
                     <label for="start-accordion">Problem Outline</label>
                 </h2>
                 <div class="content">
-                    <p><em>Number of parameters</em>: {{ n_params }}</p>
-                    <p><em>Number of data points</em>: {{ n_data_points }}</p>
-                    <p><em>Functions</em>:</p>
-                    <table>
+                    <p>Number of parameters: <b>{{ n_params }}</b></p>
+                    <p>Number of data points: <b>{{ n_data_points }}</b></p>
+                    <p>Functions:</p>
+                    <table class="simple-table">
                         <colgroup>
                             <col width="45%" />
                             <col width="55%" />
@@ -36,7 +36,7 @@
                         <thead valign="bottom">
                             <tr>
                                 <th class="head">Form</th>
-                                <th class="head">Parameters</th>
+                                <th class="head">Initial Parameters</th>
                             </tr>
                         </thead>
                         <tbody valign="top">
@@ -99,11 +99,11 @@
                         <label for="best-accordion">{{ categories[0] }}: {{ best_results[0].modified_minimizer_name(True) }}</label>
                     </h2>
                     <div class="content">
-                        <p>This is the best fit of the minimizers used.</p>
+                        <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
 
-                        <p><em>Minimizer</em>: {{ best_results[0].modified_minimizer_name(True) }}</p>
-                        <p><em>Functions</em>:</p>
-                        <table>
+                        <p>Minimizer: <b>{{ best_results[0].modified_minimizer_name(True) }}</b></p>
+                        <p>Functions:</p>
+                        <table class="simple-table">
                             <colgroup>
                                 <col width="36%" />
                                 <col width="64%" />
@@ -111,7 +111,7 @@
                             <thead valign="bottom">
                                 <tr>
                                     <th class="head">Form</th>
-                                    <th class="head">Parameters</th>
+                                    <th class="head">Best Parameters</th>
                                 </tr>
                             </thead>
                             <tbody valign="top">
@@ -145,9 +145,9 @@
                         <div class="content">
                             <p>{{ plot_descriptions[loop.index0] }}</p>
 
-                            <p><em>Minimizer</em>: {{ best_results[loop.index0].modified_minimizer_name(True) }}</p>
-                            <p><em>Functions</em>:</p>
-                            <table>
+                            <p>Minimizer: <b>{{ best_results[loop.index0].modified_minimizer_name(True) }}</b></p>
+                            <p>Functions:</p>
+                            <table class="simple-table">
                                 <colgroup>
                                     <col width="36%" />
                                     <col width="64%" />
@@ -155,7 +155,7 @@
                                 <thead valign="bottom">
                                     <tr>
                                         <th class="head">Form</th>
-                                        <th class="head">Parameters</th>
+                                        <th class="head">Best Parameters</th>
                                     </tr>
                                 </thead>
                                 <tbody valign="top">

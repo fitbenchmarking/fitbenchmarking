@@ -5,7 +5,6 @@ examples.
 import numpy as np
 
 
-# pylint: disable=unused-argument
 def simplified_anac(t, x, gamma, mu):
     """
     Calculates the rhs of the system defined by:

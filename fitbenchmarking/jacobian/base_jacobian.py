@@ -1,6 +1,7 @@
 """
 Implements the base class for the Jacobian.
 """
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -8,6 +9,7 @@ class Jacobian:
     """
     Base class for Jacobian.
     """
+
     __metaclass__ = ABCMeta
 
     # Problem formats that are incompatible with certain Jacobians
@@ -67,4 +69,4 @@ class Jacobian:
         :return: A unique name for this jacobian/method combination
         :rtype: str
         """
-        return f'{self.__class__.__name__.lower()} {self.method}'
+        return f"{self.__class__.__name__.lower()} {self.method}"

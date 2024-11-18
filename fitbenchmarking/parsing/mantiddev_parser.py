@@ -8,7 +8,8 @@ evaluations - using the same problem in both mantid and
 nist formats gives mantiddev different rankings in terms of
 speed.
 """
-import typing
+
+from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -36,10 +37,11 @@ class MantidDevParser(FitbenchmarkParser):
         Sets any additional info for a fitting problem.
         """
         if self.fitting_problem.multifit:
-            self.fitting_problem.additional_info['mantid_ties'] \
-                = self._parse_ties()
+            self.fitting_problem.additional_info["mantid_ties"] = (
+                self._parse_ties()
+            )
 
-    def _dense_jacobian(self) -> 'typing.Callable | None':
+    def _dense_jacobian(self) -> Optional[Callable]:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.
@@ -71,7 +73,7 @@ class MantidDevParser(FitbenchmarkParser):
                 iN = iN[0][-1]
 
         x_data = fp.data_x
-        x_data = x_data[i0:iN + 1]
+        x_data = x_data[i0 : iN + 1]
 
         # cache the x values for later
         self._cache_x = FDV(x_data)
@@ -86,7 +88,6 @@ class MantidDevParser(FitbenchmarkParser):
         return self._jacobian
 
     def _jacobian(self, _x, params):
-        # pylint: disable=unused-argument
         """
         Extracts the Jacobian from Mantid
         WARNING: Gaussians are known to be incorrect
@@ -112,7 +113,7 @@ class MantidDevParser(FitbenchmarkParser):
                 jac[i, j] = J.get(i, j)
         return jac
 
-    def _create_function(self) -> typing.Callable:
+    def _create_function(self) -> Callable:
         """
         Processing the function in the Mantid problem definition into a
         python callable.
@@ -122,27 +123,25 @@ class MantidDevParser(FitbenchmarkParser):
         """
         # Get mantid to build the function
         ifun = msapi.FunctionFactory.createInitialized(
-            self._entries['function'])
+            self._entries["function"]
+        )
 
         # Extract the parameter info
-        all_params = [(ifun.getParamName(i),
-                       ifun.getParamValue(i),
-                       ifun.isFixed(i))
-                      for i in range(ifun.nParams())]
+        all_params = [
+            (ifun.getParamName(i), ifun.getParamValue(i), ifun.isFixed(i))
+            for i in range(ifun.nParams())
+        ]
 
         # This list will be used to input fixed values alongside unfixed ones
-        all_params_dict = {name: value
-                           for name, value, _ in all_params}
+        all_params_dict = {name: value for name, value, _ in all_params}
 
         # Extract starting parameters
-        params = {name: value
-                  for name, value, fixed in all_params
-                  if not fixed}
+        params = {
+            name: value for name, value, fixed in all_params if not fixed
+        }
 
-        # pylint: disable=attribute-defined-outside-init
         self._equation = ifun.name()
         self._starting_values = [params]
-        # pylint: enable=attribute-defined-outside-init
 
         # Convert to callable
         fit_function = msapi.FunctionWrapper(ifun)
@@ -171,7 +170,7 @@ class MantidDevParser(FitbenchmarkParser):
         :return: True if the problem is a multi fit problem.
         :rtype: bool
         """
-        return self._entries['input_file'][0] == '['
+        return self._entries["input_file"][0] == "["
 
     def _get_starting_values(self) -> list:
         """
@@ -193,18 +192,21 @@ class MantidDevParser(FitbenchmarkParser):
         """
         if self.fitting_problem.multifit:
             num_files = len(data_points)
-            self.fitting_problem.data_x = [d['x'] for d in data_points]
-            self.fitting_problem.data_y = [d['y'] for d in data_points]
-            self.fitting_problem.data_e = [d['e'] if 'e' in d else None
-                                           for d in data_points]
+            self.fitting_problem.data_x = [d["x"] for d in data_points]
+            self.fitting_problem.data_y = [d["y"] for d in data_points]
+            self.fitting_problem.data_e = [
+                d.get("e", None) for d in data_points
+            ]
 
             if not fit_ranges:
                 fit_ranges = [{} for _ in range(num_files)]
 
-            self.fitting_problem.start_x = [f['x'][0] if 'x' in f else None
-                                            for f in fit_ranges]
-            self.fitting_problem.end_x = [f['x'][1] if 'x' in f else None
-                                          for f in fit_ranges]
+            self.fitting_problem.start_x = [
+                f["x"][0] if "x" in f else None for f in fit_ranges
+            ]
+            self.fitting_problem.end_x = [
+                f["x"][1] if "x" in f else None for f in fit_ranges
+            ]
 
         else:
             super()._set_data_points(data_points, fit_ranges)
@@ -218,10 +220,10 @@ class MantidDevParser(FitbenchmarkParser):
         """
         try:
             ties = []
-            for t in self._entries['ties'].split(','):
+            for t in self._entries["ties"].split(","):
                 # Strip out these chars
-                for s in '[] "\'':
-                    t = t.replace(s, '')
+                for s in "[] \"'":
+                    t = t.replace(s, "")
                 ties.append(t)
 
         except KeyError:

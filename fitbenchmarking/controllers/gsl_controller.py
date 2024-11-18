@@ -4,10 +4,10 @@ https://www.gnu.org/software/gsl/
 using the pyGSL python interface
 https://sourceforge.net/projects/pygsl/
 """
-import numpy as np
 
-from pygsl import multifit_nlin, multiminimize, errno
+import numpy as np
 from pygsl import _numobj as numx
+from pygsl import errno, multifit_nlin, multiminimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -19,27 +19,48 @@ class GSLController(Controller):
     """
 
     algorithm_check = {
-            'all': ['lmsder', 'lmder', 'nmsimplex', 'nmsimplex2',
-                    'conjugate_pr', 'conjugate_fr', 'vector_bfgs',
-                    'vector_bfgs2', 'steepest_descent'],
-            'ls': ['lmsder', 'lmder'],
-            'deriv_free': ['nmsimplex', 'nmsimplex2'],
-            'general': ['nmsimplex', 'nmsimplex2', 'conjugate_pr',
-                        'conjugate_fr', 'vector_bfgs', 'vector_bfgs2',
-                        'steepest_descent'],
-            'simplex': ['nmsimplex', 'nmsimplex2'],
-            'trust_region': ['lmder', 'lmsder'],
-            'levenberg-marquardt': ['lmder', 'lmsder'],
-            'gauss_newton': [],
-            'bfgs': ['vector_bfgs', 'vector_bfgs2'],
-            'conjugate_gradient': ['conjugate_fr', 'conjugate_pr'],
-            'steepest_descent': ['steepest_descent'],
-            'global_optimization': [],
-            'MCMC': []}
+        "all": [
+            "lmsder",
+            "lmder",
+            "nmsimplex",
+            "nmsimplex2",
+            "conjugate_pr",
+            "conjugate_fr",
+            "vector_bfgs",
+            "vector_bfgs2",
+            "steepest_descent",
+        ],
+        "ls": ["lmsder", "lmder"],
+        "deriv_free": ["nmsimplex", "nmsimplex2"],
+        "general": [
+            "nmsimplex",
+            "nmsimplex2",
+            "conjugate_pr",
+            "conjugate_fr",
+            "vector_bfgs",
+            "vector_bfgs2",
+            "steepest_descent",
+        ],
+        "simplex": ["nmsimplex", "nmsimplex2"],
+        "trust_region": ["lmder", "lmsder"],
+        "levenberg-marquardt": ["lmder", "lmsder"],
+        "gauss_newton": [],
+        "bfgs": ["vector_bfgs", "vector_bfgs2"],
+        "conjugate_gradient": ["conjugate_fr", "conjugate_pr"],
+        "steepest_descent": ["steepest_descent"],
+        "global_optimization": [],
+        "MCMC": [],
+    }
 
-    jacobian_enabled_solvers = ['lmsder', 'lmder', 'conjugate_pr',
-                                'conjugate_fr', 'vector_bfgs',
-                                'vector_bfgs2', 'steepest_descent']
+    jacobian_enabled_solvers = [
+        "lmsder",
+        "lmder",
+        "conjugate_pr",
+        "conjugate_fr",
+        "vector_bfgs",
+        "vector_bfgs2",
+        "steepest_descent",
+    ]
 
     def __init__(self, cost_func):
         """
@@ -59,8 +80,8 @@ class GSLController(Controller):
         self._abserror = None
         self._relerror = None
         self._maxits = None
+        self._nits = None
 
-    # pylint: disable=unused-argument
     def _prediction_error(self, p, data=None):
         """
         Utility function to call cost_func.eval_r with correct args
@@ -143,39 +164,30 @@ class GSLController(Controller):
         f = self.cost_func.eval_cost(p)
         df = self._jac_chi_squared(p)
         return f, df
-    # pylint: enable=unused-argument
 
     def setup(self):
         """
         Setup for GSL
         """
-        data = numx.array([self.data_x,
-                           self.data_y,
-                           self.data_e])
+        data = numx.array([self.data_x, self.data_y, self.data_e])
         n = len(self.data_x)
         p = len(self.initial_params)
         pinit = numx.array(self.initial_params)
 
-        self._residual_methods = ['lmsder',
-                                  'lmder']
-        self._function_methods_no_jac = ['nmsimplex',
-                                         'nmsimplex2']
+        self._residual_methods = ["lmsder", "lmder"]
+        self._function_methods_no_jac = ["nmsimplex", "nmsimplex2"]
         self._function_methods_with_jac = self.jacobian_enabled_solvers
 
         # set up the system
         if self.minimizer in self._residual_methods:
             mysys = multifit_nlin.gsl_multifit_function_fdf(
-                self._prediction_error,
-                self._jac,
-                self._fdf,
-                data,
-                n,
-                p)
+                self._prediction_error, self._jac, self._fdf, data, n, p
+            )
             self._solver = getattr(multifit_nlin, self.minimizer)(mysys, n, p)
         elif self.minimizer in self._function_methods_no_jac:
-            mysys = multiminimize.gsl_multimin_function(self._chi_squared,
-                                                        data,
-                                                        p)
+            mysys = multiminimize.gsl_multimin_function(
+                self._chi_squared, data, p
+            )
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         elif self.minimizer in self._function_methods_with_jac:
             mysys = multiminimize.gsl_multimin_function_fdf(
@@ -183,11 +195,13 @@ class GSLController(Controller):
                 self._jac_chi_squared,
                 self._chi_squared_fdf,
                 data,
-                p)
+                p,
+            )
             self._solver = getattr(multiminimize, self.minimizer)(mysys, p)
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for GSL")
+                f"No {self.minimizer} minimizer for GSL"
+            )
 
         # Set up initialization parameters
         #
@@ -212,25 +226,26 @@ class GSLController(Controller):
         """
         Run problem with GSL
         """
-        for _ in range(self._maxits):
+        for n in range(self._maxits):
             status = self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
                 x = self._solver.getx()
                 dx = self._solver.getdx()
-                status = multifit_nlin.test_delta(dx, x,
-                                                  self._abserror,
-                                                  self._relerror)
+                status = multifit_nlin.test_delta(
+                    dx, x, self._abserror, self._relerror
+                )
             elif self.minimizer in self._function_methods_no_jac:
                 simplex_size = self._solver.size()
-                status = multiminimize.test_size(simplex_size,
-                                                 self._abserror)
+                status = multiminimize.test_size(simplex_size, self._abserror)
             else:  # must be in function_methods_with_jac
                 gradient = self._solver.gradient()
-                status = multiminimize.test_gradient(gradient,
-                                                     self._gradient_tol)
+                status = multiminimize.test_gradient(
+                    gradient, self._gradient_tol
+                )
             if status == errno.GSL_SUCCESS:
                 self.flag = 0
+                self._nits = n + 1
                 break
             if status != errno.GSL_CONTINUE:
                 self.flag = 2
@@ -243,3 +258,6 @@ class GSLController(Controller):
         will be read from
         """
         self.final_params = self._solver.getx()
+        self.iteration_count = (
+            self._maxits if self._nits is None else self._nits
+        )

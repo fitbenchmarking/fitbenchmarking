@@ -2,12 +2,12 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from typing import List, Optional, Tuple, Sequence
-import theseus as th
-# pylint: disable=import-error
-import torch
-# pylint: enable=import-error
+from collections.abc import Sequence
+from typing import Optional
+
 import numpy as np
+import theseus as th
+import torch
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
@@ -17,16 +17,16 @@ class TheseusCostFunction(th.CostFunction):
     """
     Cost function for Theseus ai
     """
+
     def __init__(
         self,
         fb_cf,
-        var: List[th.Vector],
+        var: list[th.Vector],
         auxvar: Sequence[th.Variable],
         dim: int,
         cost_weight: Optional[th.CostWeight] = None,
         name: Optional[str] = None,
     ):
-
         if cost_weight is None:
             cost_weight = th.ScaleCostWeight(1.0)
 
@@ -38,35 +38,39 @@ class TheseusCostFunction(th.CostFunction):
 
         if len(var) < 1:
             raise ValueError(
-                "TheseusCostFunction must receive at least one optimization"
-                " variable."
+                "TheseusCostFunction must receive at "
+                "least one optimization variable."
             )
 
         self.register_vars(var, is_optim_vars=True)
         self.register_vars(auxvar, is_optim_vars=False)
 
-    def error(self) -> Tuple[List[torch.Tensor], List[float]]:
+    def error(self) -> tuple[list[torch.Tensor], list[float]]:
         """
         Resdiuals in pytorch tensor form for Theseus ai
         """
 
-        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in
-                           self.optim_vars]
+        optim_vars_list = [
+            float(optim_vars1[0]) for optim_vars1 in self.optim_vars
+        ]
         res = self.fb_cf.eval_r(optim_vars_list)
         th_res = torch.Tensor(np.array([res]))
         return th_res
 
-    def jacobians(self) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    def jacobians(self) -> tuple[list[torch.Tensor], torch.Tensor]:
         """
         Jacobians in pytorch tensor form for Theseus ai
         """
 
         err = self.error()
-        optim_vars_list = [float(optim_vars1[0]) for optim_vars1 in
-                           self.optim_vars]
+        optim_vars_list = [
+            float(optim_vars1[0]) for optim_vars1 in self.optim_vars
+        ]
         jacs = self.fb_cf.jac_res(optim_vars_list)
-        th_jac = [torch.Tensor([[[item] for item in jacs[:, index]]])
-                  for index in range(len(optim_vars_list))]
+        th_jac = [
+            torch.Tensor([[[item] for item in jacs[:, index]]])
+            for index in range(len(optim_vars_list))
+        ]
         return th_jac, err
 
     def dim(self) -> int:
@@ -75,15 +79,14 @@ class TheseusCostFunction(th.CostFunction):
         """
         return self._dim
 
-    def _copy_impl(self, new_name: Optional[str] = None
-                   ) -> "TheseusCostFunction":
+    def _copy_impl(self, new_name: Optional[str] = None):
         return TheseusCostFunction(  # type: ignore
             var=[v.copy() for v in self.var],
             auxvar=[v.copy() for v in self.auxvar],
             cost_weight=self.weight.copy(),
             name=new_name,
             fb_cf=self.fb_cf,
-            dim=self._dim
+            dim=self._dim,
         )
 
 
@@ -93,22 +96,22 @@ class TheseusController(Controller):
     """
 
     algorithm_check = {
-        'all': ['Levenberg_Marquardt', 'Gauss-Newton'],
-        'ls': ['Levenberg_Marquardt', 'Gauss-Newton'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': [],
-        'levenberg-marquardt': ['Levenberg_Marquardt'],
-        'gauss_newton': ['Gauss-Newton'],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': [],
-        'MCMC': []
+        "all": ["Levenberg_Marquardt", "Gauss-Newton"],
+        "ls": ["Levenberg_Marquardt", "Gauss-Newton"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": ["Levenberg_Marquardt"],
+        "gauss_newton": ["Gauss-Newton"],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['Levenberg_Marquardt', 'Gauss-Newton']
+    jacobian_enabled_solvers = ["Levenberg_Marquardt", "Gauss-Newton"]
 
     def __init__(self, cost_func):
         """
@@ -138,37 +141,42 @@ class TheseusController(Controller):
         th_y = th.Variable(y_tensor.float(), name="y_data")
 
         th_aux_vars = th_x, th_y
-        th_optim_vars = [th.Vector(1, name=f"{name}")
-                         for name in self._param_names]
+        th_optim_vars = [
+            th.Vector(1, name=f"{name}") for name in self._param_names
+        ]
 
-        params = [params*torch.ones((1, 1)) for params in self.initial_params]
+        params = [
+            params * torch.ones((1, 1)) for params in self.initial_params
+        ]
         param_dict = dict(zip(self.problem.param_names, params))
 
-        self.th_inputs = {
-                            "x_data": th_x,
-                            "y_data": th_y,
-                            **param_dict}
+        self.th_inputs = {"x_data": th_x, "y_data": th_y, **param_dict}
 
         self.th_objective = th.Objective()
 
-        self.th_cost_func = TheseusCostFunction(self.cost_func,
-                                                th_optim_vars,
-                                                th_aux_vars,
-                                                name="theseus",
-                                                dim=len(self.data_x))
+        self.th_cost_func = TheseusCostFunction(
+            self.cost_func,
+            th_optim_vars,
+            th_aux_vars,
+            name="theseus",
+            dim=len(self.data_x),
+        )
 
         self.th_objective.add(self.th_cost_func)
 
-        if self.minimizer == 'Levenberg_Marquardt':
-            optimizer = th.LevenbergMarquardt(self.th_objective,
-                                              max_iterations=100000)
+        if self.minimizer == "Levenberg_Marquardt":
+            optimizer = th.LevenbergMarquardt(
+                self.th_objective, max_iterations=100000
+            )
 
-        elif self.minimizer == 'Gauss-Newton':
-            optimizer = th.GaussNewton(self.th_objective,
-                                       max_iterations=100000)
+        elif self.minimizer == "Gauss-Newton":
+            optimizer = th.GaussNewton(
+                self.th_objective, max_iterations=100000
+            )
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for Theseus-ai ")
+                f"No {self.minimizer} minimizer for Theseus-ai "
+            )
 
         self.th_optim = th.TheseusLayer(optimizer)
 
@@ -179,8 +187,12 @@ class TheseusController(Controller):
 
         with torch.no_grad():
             _, self.th_info = self.th_optim.forward(
-                self.th_inputs, optimizer_kwargs={"track_best_solution": True,
-                                                  "verbose": False})
+                self.th_inputs,
+                optimizer_kwargs={
+                    "track_best_solution": True,
+                    "verbose": False,
+                },
+            )
         self._status = str(self.th_info.status[0])
         self.result = list(map(float, self.th_info.best_solution.values()))
 

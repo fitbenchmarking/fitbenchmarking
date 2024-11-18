@@ -26,12 +26,12 @@ def load_mock_results(additional_options=None):
     """
     options = Options(additional_options=additional_options)
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+    options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
 
-    return results['Fake_Test_Data'], options
+    return results["Fake_Test_Data"], options
 
 
 class CreateTests(TestCase):
@@ -45,11 +45,12 @@ class CreateTests(TestCase):
         """
         with TemporaryDirectory() as directory:
             self.temp_dir = directory
-            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
-            self.fig_dir = os.path.join(self.supp_dir, 'figures')
+            self.supp_dir = os.path.join(self.temp_dir, "support_pages")
+            self.fig_dir = os.path.join(self.supp_dir, "figures")
         os.makedirs(self.fig_dir)
         results, self.options = load_mock_results(
-            {'results_dir': self.temp_dir})
+            {"results_dir": self.temp_dir}
+        )
         self.best_results, self.results = preprocess_data(results)
 
     def tearDown(self) -> None:
@@ -63,14 +64,17 @@ class CreateTests(TestCase):
         Check that a plot is created for each result set.
         """
         self.options.make_plots = True
-        problem_summary_page.create(results=self.results,
-                                    best_results=self.best_results,
-                                    support_pages_dir=self.supp_dir,
-                                    figures_dir=self.fig_dir,
-                                    options=self.options)
+        problem_summary_page.create(
+            results=self.results,
+            best_results=self.best_results,
+            support_pages_dir=self.supp_dir,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
         for k in self.results:
-            expected_path = os.path.join(self.fig_dir,
-                                         f'summary_plot_for_{k}.html')
+            expected_path = os.path.join(
+                self.fig_dir, f"summary_plot_for_{k}.html"
+            )
             self.assertTrue(os.path.exists(expected_path))
 
     def test_create_no_plots(self):
@@ -78,14 +82,17 @@ class CreateTests(TestCase):
         Check that no plots are created if the option is off.
         """
         self.options.make_plots = False
-        problem_summary_page.create(results=self.results,
-                                    best_results=self.best_results,
-                                    support_pages_dir=self.supp_dir,
-                                    figures_dir=self.fig_dir,
-                                    options=self.options)
-        for k in self.results.keys():
-            expected_path = os.path.join(self.fig_dir,
-                                         f'summary_plot_for_{k}.png')
+        problem_summary_page.create(
+            results=self.results,
+            best_results=self.best_results,
+            support_pages_dir=self.supp_dir,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
+        for k in self.results:
+            expected_path = os.path.join(
+                self.fig_dir, f"summary_plot_for_{k}.png"
+            )
             self.assertFalse(os.path.exists(expected_path))
 
     def test_create_all_summary_pages(self):
@@ -93,15 +100,18 @@ class CreateTests(TestCase):
         Check that a summary page is created for each result set.
         """
         self.options.make_plots = False
-        problem_summary_page.create(results=self.results,
-                                    best_results=self.best_results,
-                                    support_pages_dir=self.supp_dir,
-                                    figures_dir=self.fig_dir,
-                                    options=self.options)
+        problem_summary_page.create(
+            results=self.results,
+            best_results=self.best_results,
+            support_pages_dir=self.supp_dir,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
         for v in self.best_results.values():
             example_result = list(v.values())[0]
-            self.assertTrue(os.path.exists(
-                example_result.problem_summary_page_link))
+            self.assertTrue(
+                os.path.exists(example_result.problem_summary_page_link)
+            )
 
 
 class CreateSummaryPageTests(TestCase):
@@ -115,24 +125,26 @@ class CreateSummaryPageTests(TestCase):
         """
         with TemporaryDirectory() as directory:
             self.temp_dir = directory
-            self.supp_dir = os.path.join(self.temp_dir, 'support_pages')
+            self.supp_dir = os.path.join(self.temp_dir, "support_pages")
 
         os.makedirs(self.supp_dir)
         results, self.options = load_mock_results(
-            {'results_dir': self.temp_dir})
+            {"results_dir": self.temp_dir}
+        )
 
         best_results, results = preprocess_data(results)
         self.prob_name = list(results.keys())[0]
         self.results = results[self.prob_name]
         self.best_results = best_results[self.prob_name]
-        cat_results = [(cf, r, 'Some text')
-                       for cf, r in self.best_results.items()]
-        # pylint: disable=protected-access
+        cat_results = [
+            (cf, r, "Some text") for cf, r in self.best_results.items()
+        ]
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
-            summary_plot_path='plot_path',
+            summary_plot_path="plot_path",
             support_pages_dir=self.supp_dir,
-            options=self.options)
+            options=self.options,
+        )
 
     def tearDown(self) -> None:
         """
@@ -144,8 +156,9 @@ class CreateSummaryPageTests(TestCase):
         """
         Check that a summary page is created for a problem set.
         """
-        expected_path = os.path.join(self.supp_dir,
-                                     f'{self.prob_name}_summary.html')
+        expected_path = os.path.join(
+            self.supp_dir, f"{self.prob_name}_summary.html"
+        )
         self.assertTrue(os.path.exists(expected_path))
 
     def test_set_link_attribute(self):
@@ -154,7 +167,7 @@ class CreateSummaryPageTests(TestCase):
         'problem_summary_page_link' attribute.
         """
         for result in self.best_results.values():
-            self.assertNotEqual(result.problem_summary_page_link, '')
+            self.assertNotEqual(result.problem_summary_page_link, "")
 
 
 class GetFigurePathsTests(TestCase):
@@ -170,25 +183,25 @@ class GetFigurePathsTests(TestCase):
         """
         Tests that the returned links are correct when links are passed in.
         """
-        self.result.figure_link = 'some_link'
-        self.result.start_figure_link = 'other_link'
-        # pylint: disable=protected-access
+        self.result.figure_link = "some_link"
+        self.result.start_figure_link = "other_link"
         figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result)
-        self.assertEqual(figure_link, os.path.join('figures', 'some_link'))
-        self.assertEqual(start_link, os.path.join('figures', 'other_link'))
+            self.result
+        )
+        self.assertEqual(figure_link, os.path.join("figures", "some_link"))
+        self.assertEqual(start_link, os.path.join("figures", "other_link"))
 
     def test_no_links(self):
         """
         Tests that links are not changed if an empty string is given.
         """
-        self.result.figure_link = ''
-        self.result.start_figure_link = ''
-        # pylint: disable=protected-access
+        self.result.figure_link = ""
+        self.result.start_figure_link = ""
         figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result)
-        self.assertEqual(figure_link, '')
-        self.assertEqual(start_link, '')
+            self.result
+        )
+        self.assertEqual(figure_link, "")
+        self.assertEqual(start_link, "")
 
 
 if __name__ == "__main__":

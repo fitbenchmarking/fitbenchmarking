@@ -2,11 +2,14 @@
 Implements a Poisson deviance cost function based on Mantid's:
 https://docs.mantidproject.org/nightly/fitting/fitcostfunctions/Poisson.html
 """
+
 import numpy as np
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
-from fitbenchmarking.utils.exceptions import (CostFuncError,
-                                              IncompatibleCostFunctionError)
+from fitbenchmarking.utils.exceptions import (
+    CostFuncError,
+    IncompatibleCostFunctionError,
+)
 
 
 class PoissonCostFunc(CostFunc):
@@ -48,12 +51,16 @@ class PoissonCostFunc(CostFunc):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
-            raise CostFuncError('The length of the x and y are not the same, '
-                                f'len(x)={len(x)} and len(y)= {len(y)}.')
+            raise CostFuncError(
+                "The length of the x and y are not the same, "
+                f"len(x)={len(x)} and len(y)= {len(y)}."
+            )
         if (y < 0.0).any():
-            raise CostFuncError('This cost function is designed for use with '
-                                'positive experimental values, try again with '
-                                'a different cost function.')
+            raise CostFuncError(
+                "This cost function is designed for use with "
+                "positive experimental values, try again with "
+                "a different cost function."
+            )
         f_xp = self.problem.eval_model(x=x, params=params)
 
         # Penalise nagative f(x, p)
@@ -117,8 +124,9 @@ class PoissonCostFunc(CostFunc):
 
         for i in range(len(x)):
             jac_i = np.array([jac[i]])
-            hes[:, :, i] = hes[:, :, i] - y[i] / f[i] * \
-                (hes[:, :, i] - jac_i.T.dot(jac_i) / f[i])
+            hes[:, :, i] = hes[:, :, i] - y[i] / f[i] * (
+                hes[:, :, i] - jac_i.T.dot(jac_i) / f[i]
+            )
         return hes, self.jac_res(params, **kwargs)
 
     def hes_cost(self, params, **kwargs):
@@ -147,7 +155,8 @@ class PoissonCostFunc(CostFunc):
         """
         if (self.problem.data_y < 0).any():
             raise IncompatibleCostFunctionError(
-                "Problem has a negative y value.")
+                "Problem has a negative y value."
+            )
 
 
 def _safe_a_log_b(a, b):

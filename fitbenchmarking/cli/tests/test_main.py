@@ -1,9 +1,11 @@
 """
 This file contains unit tests for the main CLI script
 """
+
 import inspect
 import os
 from json import load
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
@@ -18,7 +20,7 @@ from fitbenchmarking.utils.misc import get_problem_files
 from fitbenchmarking.utils.options import Options
 
 
-def make_controller(file_name='cubic.dat', minimizers=None):
+def make_controller(file_name="cubic.dat", minimizers=None):
     """
     Helper function that returns a simple fitting problem
     in a scipy controller.
@@ -44,13 +46,13 @@ def mock_func_call(*args, **kwargs):
     """
     controller = make_controller()
 
-    results: 'list[fitbm_result.FittingResult]' = []
+    results: list[fitbm_result.FittingResult] = []
     controller.flag = 4
     controller.parameter_set = 0
     result = fitbm_result.FittingResult(controller=controller)
     results.append(result)
 
-    failed_problems: 'list[str]' = []
+    failed_problems: list[str] = []
     unselected_minimizers = {}
     return results, failed_problems, unselected_minimizers
 
@@ -60,7 +62,7 @@ class TestMain(TestCase):
     Tests for main.py
     """
 
-    @patch('fitbenchmarking.cli.main.Fit.benchmark')
+    @patch("fitbenchmarking.cli.main.Fit.benchmark")
     def test_check_no_results_produced(self, benchmark):
         """
         Checks that exception is raised if no results are produced
@@ -71,7 +73,7 @@ class TestMain(TestCase):
             main.run(['examples/benchmark_problems/simple_tests'],
                      debug=True)
 
-    @patch('fitbenchmarking.cli.main.Fit.benchmark')
+    @patch("fitbenchmarking.cli.main.Fit.benchmark")
     def test_all_dummy_results_produced(self, benchmark):
         """
         Checks that exception is raised if all dummy results
@@ -79,9 +81,25 @@ class TestMain(TestCase):
         benchmark.side_effect = mock_func_call
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'],
-                     debug=True)
+            main.run(
+                ["examples/benchmark_problems/simple_tests"],
+                os.path.dirname(__file__),
+                debug=True,
+            )
 
+    @patch("pathlib.Path.joinpath")
+    @patch("sys.argv", new=["fitbenchmarking"])
+    def test_file_path_exception_raised(self, mock):
+        """
+        Checks that SystemExit exception is raised if default
+        problem set has been deleted or moved.
+        """
+        mock.return_value = Path("my/test/path")
+        with self.assertRaises(SystemExit) as exp:
+            main.main()
+        self.assertEqual(exp.exception.code, 1)
+
+ 
     @patch('fitbenchmarking.cli.main.save_results')
     @patch('fitbenchmarking.utils.misc.get_problem_files')
     def test_checkpoint_file_on_fail(self, get_problems, save_results):
@@ -94,12 +112,16 @@ class TestMain(TestCase):
 
         with TemporaryDirectory() as results_dir:
             with self.assertRaises(RuntimeError):
-                main.run(['examples/benchmark_problems/NIST/low_difficulty'],
-                         additional_options={'scipy_ls': ['lm-scipy'],
-                                             'software': ['scipy_ls'],
-                                             'num_runs': 1,
-                                             'results_dir': results_dir},
-                         debug=True)
+                main.run(
+                    ['examples/benchmark_problems/NIST/low_difficulty'],
+                    additional_options={
+                        'scipy_ls': ['lm-scipy'],
+                        'software': ['scipy_ls'],
+                        'num_runs': 1,
+                        'results_dir': results_dir
+                    },
+                    debug=True,
+                )
 
             with open(f'{results_dir}/checkpoint.json', encoding='utf8') as f:
                 # This will fail if the json is invalid

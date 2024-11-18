@@ -1,11 +1,11 @@
-'''
+"""
 Test fitting_report
-'''
+"""
 
 import inspect
 import os
-from tempfile import TemporaryDirectory
 import unittest
+from tempfile import TemporaryDirectory
 
 import fitbenchmarking
 from fitbenchmarking import test_files
@@ -23,40 +23,39 @@ def load_mock_results():
     """
     options = Options()
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+    options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
 
-    return [r for r in results['Fake_Test_Data'] if r.problem_tag == 'prob_0']
+    return [r for r in results["Fake_Test_Data"] if r.problem_tag == "prob_0"]
 
 
 class CreateTests(unittest.TestCase):
-    '''
+    """
     Create tests for fitting_report
-    '''
+    """
 
     def setUp(self):
         self.results = load_mock_results()
         self.options = Options()
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
-        # pylint: enable=consider-using-with
 
     def test_create_unique_files(self):
         """
         Tests that the create function creates a set of unique files.
         """
-        fitting_report.create(results=self.results,
-                              support_pages_dir=self.dir.name,
-                              options=self.options)
+        fitting_report.create(
+            results=self.results,
+            support_pages_dir=self.dir.name,
+            options=self.options,
+        )
 
-        file_names = sorted([r.fitting_report_link
-                             for r in self.results])
+        file_names = sorted([r.fitting_report_link for r in self.results])
 
-        unique_names = sorted(list(set(file_names)))
+        unique_names = sorted(set(file_names))
 
         self.assertListEqual(unique_names, file_names)
 
@@ -72,29 +71,32 @@ class CreateProbGroupTests(unittest.TestCase):
         self.result = load_mock_results()[0]
 
         root = os.path.dirname(inspect.getfile(fitbenchmarking))
-        # pylint: disable=consider-using-with
         self.dir = TemporaryDirectory(dir=root)
-        # pylint: enable=consider-using-with
 
     def test_create_files(self):
         """
         Tests that files are created for each result.
         """
-        fitting_report.create_prob_group(result=self.result,
-                                         support_pages_dir=self.dir.name,
-                                         options=self.options)
+        fitting_report.create_prob_group(
+            result=self.result,
+            support_pages_dir=self.dir.name,
+            options=self.options,
+        )
         self.assertTrue(os.path.exists(self.result.fitting_report_link))
 
     def test_file_name(self):
         """
         Tests that the filenames are in the expected form.
         """
-        fitting_report.create_prob_group(result=self.result,
-                                         support_pages_dir=self.dir.name,
-                                         options=self.options)
+        fitting_report.create_prob_group(
+            result=self.result,
+            support_pages_dir=self.dir.name,
+            options=self.options,
+        )
         file_name = self.result.fitting_report_link
         expected = os.path.abspath(
-            os.path.join(self.dir.name, 'prob_0_cf1_m10_[s1]_jj0.html'))
+            os.path.join(self.dir.name, "prob_0_cf1_m10_[s1]_jj0.html")
+        )
 
         self.assertEqual(file_name, expected)
 
@@ -112,28 +114,31 @@ class GetFigurePathsTests(unittest.TestCase):
         """
         Tests that the returned links are correct when links are passed in.
         """
-        self.result.figure_link = 'some_link'
-        self.result.start_figure_link = 'other_link'
-        self.result.posterior_plots = 'another_link'
-        figure_link, start_link, posterior_link = \
+        self.result.figure_link = "some_link"
+        self.result.start_figure_link = "other_link"
+        self.result.posterior_plots = "another_link"
+        figure_link, start_link, posterior_link = (
             fitting_report.get_figure_paths(self.result)
-        self.assertEqual(figure_link, os.path.join('figures', 'some_link'))
-        self.assertEqual(start_link, os.path.join('figures', 'other_link'))
-        self.assertEqual(posterior_link,
-                         os.path.join('figures', 'another_link'))
+        )
+        self.assertEqual(figure_link, os.path.join("figures", "some_link"))
+        self.assertEqual(start_link, os.path.join("figures", "other_link"))
+        self.assertEqual(
+            posterior_link, os.path.join("figures", "another_link")
+        )
 
     def test_no_links(self):
         """
         Tests that links are not changed if an empty string is given.
         """
-        self.result.figure_link = ''
-        self.result.start_figure_link = ''
-        self.result.posterior_plots = ''
-        figure_link, start_link, posterior_link = \
+        self.result.figure_link = ""
+        self.result.start_figure_link = ""
+        self.result.posterior_plots = ""
+        figure_link, start_link, posterior_link = (
             fitting_report.get_figure_paths(self.result)
-        self.assertEqual(figure_link, '')
-        self.assertEqual(start_link, '')
-        self.assertEqual(posterior_link, '')
+        )
+        self.assertEqual(figure_link, "")
+        self.assertEqual(start_link, "")
+        self.assertEqual(posterior_link, "")
 
 
 if __name__ == "__main__":
