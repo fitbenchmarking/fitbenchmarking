@@ -124,3 +124,26 @@ a {
   background-color:#66686b;
   color: white;
 }
+
+.table-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.left-column {
+  flex: 0 0 85%;
+  padding-right: 10px;
+}
+
+.right-column {
+  flex: 0 0 15%;
+  display: flex;
+  justify-content: center;
+}
+
+.right-column form button img {
+  width: auto;
+  height: 110px;
+}
