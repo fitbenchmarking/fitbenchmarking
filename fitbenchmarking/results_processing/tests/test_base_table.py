@@ -82,7 +82,7 @@ class CreateResultsDictTests(TestCase):
             pp_locations={
                 "acc": "no",
                 "runtime": "pp",
-                "emissions": "available",
+                "energy_usage": "available",
             },
             table_name="A table!",
         )
@@ -128,7 +128,7 @@ class DisplayStrTests(TestCase):
             pp_locations={
                 "acc": "no",
                 "runtime": "pp",
-                "emissions": "available",
+                "energy_usage": "available",
             },
             table_name="A table!",
         )
@@ -176,7 +176,7 @@ class SaveColourbarTests(TestCase):
             pp_locations={
                 "acc": "no",
                 "runtime": "pp",
-                "emissions": "available",
+                "energy_usage": "available",
             },
             table_name="A table!",
         )

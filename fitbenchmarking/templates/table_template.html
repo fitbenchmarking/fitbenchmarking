@@ -110,16 +110,16 @@
                             {% endif %}
                             <h3>Errors</h3>
                             <p>
-                                The superscripts in the tables denote current error handling within FitBenchmarking.
-                                Currently the errors correspond to:
+                                The <b>superscripts</b> in the tables denote current error handling within FitBenchmarking.
+                                Currently the <span class='pill'>errors</span> correspond to:
                             </p>
-                            <table style="width:60%">
+                            <table class="error-table">
                                 <tr>
                                     <th>Error flag</th>
                                     <th>Error message</th>
                                 </tr>
                                 {% for flag, message in error_message.items() %}
-                                    <tr>
+                                    <tr class="{% if loop.index is even %}even-row{% else %}odd-row{% endif %}">
                                         <td>{{ flag }}</td>
                                         <td>{{ message }}</td>
                                     </tr>
@@ -164,8 +164,8 @@
                                         <p><b>Important Information:</b></p>
                                         <ul>
                                             <li> Fits are taken from all benchmarks, so if FitBenchmarking is run with
-                                                <span class='pill'>n</span> <b>problems</b> and <span class='pill'>m</span> <b>cost functions</b>, the resulting profile plots will have
-                                                <span class='pill'>n * m</span> <b>steps</b> on the y-axis.</li>
+                                                <em>n</em> <b>problems</b> and <em>m</em> <b>cost functions</b>, the resulting profile plots will have
+                                                <em>n * m</em> <b>steps</b> on the y-axis.</li>
                                             <li>This is a Dolan-Moré performance profile.
                                                 The solvers appearing in the <b>top left corner</b> may be considered the <b>best</b> performing on this test set.
                                                 See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.</li>
