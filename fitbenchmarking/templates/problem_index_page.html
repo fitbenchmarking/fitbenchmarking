@@ -25,20 +25,32 @@
                 <h4>Table formats</h4>
                 {{ index }}
                 <hr>
-                <div class="row">
+                <div class="table-row">
                     {% for type, link, description in zip(table_type, links, description) %}
-                        <h3>
-                        <a href="{{ link }}"><code>{{ type }}</code> table</a>
-                        </h3>
-                        <p>{{ description }}</p>
-                        <h3>
-                        <form>
-                            <button class="btn default" type="submit" formaction="{{ link }}">
-                            <i class="fa fa-table"></i>
-                            </button>
-                        </form>
-                        </h3>
-                        <hr>
+                        <div class="left-column">
+                            <h3>
+                                <a href="{{ link }}"><code>{{ type }}</code> table</a>
+                            </h3>
+                            <p>{{ description }}</p>
+                        </div>
+                        <div class="right-column">
+                            <form>
+                                <button class="btn default" type="submit" formaction="{{ link }}">
+                                    {% if type == "compare" %}
+                                        <img src="../images/compare.png" alt="compare icon">
+                                    {% elif type == "acc" %}
+                                        <img src="../images/accuracy.png" alt="accuracy icon">
+                                    {% elif type == "runtime" %}
+                                        <img src="../images/runtime.png" alt="runtime icon">
+                                    {% elif type == "local_min" %}
+                                        <img src="../images/local_min.png" alt="local min icon">
+                                    {% else %}
+                                        <img src="../images/energy.png" alt="energy icon">
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                        <hr style="width: 100%;">
                     {% endfor %}
                 </div>
                 <center>

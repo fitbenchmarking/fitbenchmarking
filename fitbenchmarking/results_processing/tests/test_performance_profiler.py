@@ -151,8 +151,8 @@ class PerformanceProfilerTests(unittest.TestCase):
                 v / min_runtime for v in self.runtime_expected[k]
             ]
 
-        min_emissions = 1.0
-        self.emissions_expected = {
+        min_energy = 1.0
+        self.energy_expected = {
             "m00 [s0]: j:j0": [np.inf, np.inf],
             "m00 [s0]: j:j1": [np.inf, np.inf],
             "m01 [s0]: j:j0": [1e4, 10.0],
@@ -162,9 +162,9 @@ class PerformanceProfilerTests(unittest.TestCase):
             "m11 [s1]: j:j0": [1e3, 1.0],
             "m11 [s1]: j:j1": [1e2, 1e2],
         }
-        for k in self.emissions_expected:
-            self.emissions_expected[k] = [
-                v / min_emissions for v in self.emissions_expected[k]
+        for k in self.energy_expected:
+            self.energy_expected[k] = [
+                v / min_energy for v in self.energy_expected[k]
             ]
 
         self.fig_dir = ""
@@ -240,7 +240,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Removes expected plots
         """
-        for metric in ["acc", "runtime", "emissions"]:
+        for metric in ["acc", "runtime", "energy_usage"]:
             if os.path.isfile(f"{metric}_profile.html"):
                 os.remove(f"{metric}_profile.html")
 
@@ -254,8 +254,8 @@ class PerformanceProfilerTests(unittest.TestCase):
             assert np.allclose(v, bounds["acc"][k])
         for k, v in self.runtime_expected.items():
             assert np.allclose(v, bounds["runtime"][k])
-        for k, v in self.emissions_expected.items():
-            assert np.allclose(v, bounds["emissions"][k])
+        for k, v in self.energy_expected.items():
+            assert np.allclose(v, bounds["energy_usage"][k])
 
     def test_correct_profile_output_paths(self):
         """
@@ -266,7 +266,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         )
         assert pp_locations["acc"] == "acc_profile.html"
         assert pp_locations["runtime"] == "runtime_profile.html"
-        assert pp_locations["emissions"] == "emissions_profile.html"
+        assert pp_locations["energy_usage"] == "energy_usage_profile.html"
 
     def test_profile_returns_dict(self):
         """
@@ -333,7 +333,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that create_plots_and_get_paths returns the correct paths.
         """
-        bounds = {"acc": {}, "runtime": {}, "emissions": {}}
+        bounds = {"acc": {}, "runtime": {}, "energy_usage": {}}
         paths = performance_profiler.create_plots_and_get_paths(
             bounds, self.fig_dir, self.options
         )
@@ -341,7 +341,7 @@ class PerformanceProfilerTests(unittest.TestCase):
         expec_paths = {
             "acc": "acc_profile.html",
             "runtime": "runtime_profile.html",
-            "emissions": "emissions_profile.html",
+            "energy_usage": "energy_usage_profile.html",
         }
 
         assert paths == expec_paths
