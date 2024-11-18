@@ -51,7 +51,7 @@ The following list details all cases where we are aware of a possible bias:
 - **Running Mantid problems with LMFit fitting software.**
 
   Our regression tests highlighted a reduced accuracy in solution of our test Mantid
-  problem when using NLOpt. We are still investigating the cause of this.
+  problem when using LMFit. We are still investigating the cause of this.
   Details can be found in the associated
   `issue <https://github.com/fitbenchmarking/fitbenchmarking/issues/1366>`__.
 
