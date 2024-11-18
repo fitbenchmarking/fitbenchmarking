@@ -23,10 +23,10 @@
                         <label for="start-accordion">Problem Outline</label>
                     </h2>
                     <div class="content">
-                        <p><b>Number of parameters</b>: <span class="pill">{{ n_params }}</span></p>
-                        <p><b>Number of data points</b>: <span class="pill">{{ n_data_points }}</span></p>
-                        <p><b>Functions</b>:</p>
-                        <table>
+                        <p>Number of parameters: <b>{{ n_params }}</b></p>
+                        <p>Number of data points: <b>{{ n_data_points }}</b></p>
+                        <p>Functions:</p>
+                        <table class="simple-table">
                             <colgroup>
                                 <col width="45%" />
                                 <col width="55%" />
@@ -64,16 +64,16 @@
                 </h2>
                 <div class="content">
                     {% if is_best_fit %}
-                        <p>This is the best fit of the minimizers used.</p>
+                        <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
                     {% endif %}
-                    <p><b>Minimizer</b>: <span class="pill">{{ minimizer }}</span></p>
-                    <p><b>Accuracy</b>: <span class="pill">{{ accuracy }}</span></p>
-                    <p><b>Runtime</b>: <span class="pill">{{ runtime }} seconds</span></p>
-                    <p><b>Energy Usage</b>: <span class="pill">{{ energy }}</span></p>
-                    <p><b>Number of iterations</b>: <span class="pill">{{ iteration_count }}</span></p>
-                    <p><b>Number of function evaluations</b>: <span class="pill">{{ func_evals }}</span></p>
-                    <p><b>Functions</b>:</p>
-                    <table>
+                    <p>Minimizer: <b>{{ minimizer }}</b></p>
+                    <p>Accuracy: <b>{{ accuracy }}</b></p>
+                    <p>Runtime: <b>{{ runtime }} seconds</b></p>
+                    <p>Energy Usage: <b>{{ energy }}</b></p>
+                    <p>Number of iterations: <b>{{ iteration_count }}</b></p>
+                    <p>Number of function evaluations: <b>{{ func_evals }}</b></p>
+                    <p>Functions:</p>
+                    <table class="simple-table">
                         <colgroup>
                             <col width="36%" />
                             <col width="64%" />
