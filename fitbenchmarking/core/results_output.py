@@ -286,7 +286,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
      - Setting the `is_best_fit` flag,
      - Setting the `min_accuracy` value,
      - Setting the `min_runtime` value, and
-     - Setting the `min_emissions` value
+     - Setting the `min_energy` value
 
     :param results: The results to compare and update
     :type results: list[FittingResult]
@@ -302,7 +302,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
             best = result
         if fastest.runtime > result.runtime:
             fastest = result
-        if lowest.emissions > result.emissions:
+        if lowest.energy > result.energy:
             lowest = result
 
     best.is_best_fit = True
@@ -310,7 +310,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     for result in results:
         result.min_accuracy = best.accuracy
         result.min_runtime = fastest.runtime
-        result.min_emissions = lowest.emissions
+        result.min_energy = lowest.energy
 
     return best
 
@@ -790,9 +790,9 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                 pp_df=pp_dfs["runtime"],
                 group_label=group,
             ),
-            "emissions": DashPerfProfile(
-                profile_name="Emissions",
-                pp_df=pp_dfs["emissions"],
+            "energy": DashPerfProfile(
+                profile_name="Energy Usage",
+                pp_df=pp_dfs["energy_usage"],
                 group_label=group,
             ),
         }

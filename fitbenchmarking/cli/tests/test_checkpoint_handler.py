@@ -179,7 +179,7 @@ class TestMergeDataSets(TestCase):
                 "result": 0.1,
             },
             {
-                "strategy": "emissions",
+                "strategy": "energy",
                 "result": 12.0,
             },
         ]
