@@ -41,6 +41,20 @@ The following list details all cases where we are aware of a possible bias:
   Mantid problems, this function is not picklable resulting in the problem
   being skipped over.
 
+- **Running Mantid problems with NLOpt fitting software.**
+
+  Our regression tests highlighted that the fit fails for all Mantid problems when
+  using NLOpt. We are still investigating the cause of this.
+  Details can be found in the associated
+  `issue <https://github.com/fitbenchmarking/fitbenchmarking/issues/1366>`__.
+
+- **Running Mantid problems with LMFit fitting software.**
+
+  Our regression tests highlighted a reduced accuracy in solution of our test Mantid
+  problem when using LMFit. We are still investigating the cause of this.
+  Details can be found in the associated
+  `issue <https://github.com/fitbenchmarking/fitbenchmarking/issues/1366>`__.
+
 In all cases, the stopping criterion of each minimizer is set to the default
 value.
 An experienced user can change this.
