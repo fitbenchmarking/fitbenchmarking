@@ -77,9 +77,9 @@ function toggle_prob_size_header() {
 
     // If the checkbox is checked, display the problem size header column, otherwise hide it.
     if (checkBox.checked == true) {
-        $('th:nth-child(2)').show();
+        $('#T_table th:nth-child(2)').show();
     } else {
-        $('th:nth-child(2)').hide();
+        $('#T_table th:nth-child(2)').hide();
     }
 }
 
