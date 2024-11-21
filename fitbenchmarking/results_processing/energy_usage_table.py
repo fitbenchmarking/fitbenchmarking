@@ -15,8 +15,7 @@ class EnergyUsageTable(Table):
 
     Configuration for codecarbon is set in ``.codecarbon.config``.
 
-    Please note that for tracking CPU power usage on Windows or Mac,
-    ``Intel Power Gadget`` shoud also be installed. For more information,
+    For more information on how energy usage is measured,
     see the Methodology section of the `codecarbon docs
     <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
 
