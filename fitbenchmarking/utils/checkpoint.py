@@ -7,13 +7,19 @@ This is also used to read in checkpointed data.
 import json
 import os
 import pickle
+import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Dict
+from typing import Optional
+
+import numpy as np
 
 from fitbenchmarking.utils.exceptions import CheckpointError
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 class Checkpoint:
@@ -41,14 +47,24 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: TemporaryDirectory[str] | None = None
-        self.problems_file: str | None = None
-        self.results_file: str | None = None
+        self.dir: Optional[TemporaryDirectory] = None
+        self.problems_file: Optional[str] = None
+        self.results_file: Optional[str] = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(
             self.options.results_dir, self.options.checkpoint_filename
         )
+
+        # Saves the config
+        self.config = {
+            "python_version": (
+                f"{sys.version_info.major}."
+                f"{sys.version_info.minor}."
+                f"{sys.version_info.micro}"
+            ),
+            "numpy_version": np.__version__,
+        }
 
     def add_result(self, result: FittingResult):
         """
@@ -88,7 +104,7 @@ class Checkpoint:
             "accuracy": result.accuracy,
             "runtime": result.runtime,
             "runtimes": result.runtimes,
-            "emissions": result.emissions,
+            "energy": result.energy,
             "iteration_count": result.iteration_count,
             "func_evals": result.func_evals,
             "flag": result.error_flag,
@@ -198,6 +214,7 @@ class Checkpoint:
                     {
                         "failed_problems": failed_problems,
                         "unselected_minimizers": unselected_minimizers,
+                        "config": self.config,
                     },
                     indent=4,
                 )[6:-1]
@@ -236,13 +253,13 @@ class Checkpoint:
 
         :return: Instantiated fitting results,
                  unselected minimisers, failed problems
-        :rtype: Tuple[ dict[str, list[FittingResult]],
-                       dict,
-                       dict[str, list[str]]]
+                 config
+        :rtype: Tuple[dict[str, list[FittingResult]],
+                      dict, dict[str, list[str]], dict]
         """
-        output: Dict[str, list[FittingResult]] = {}
-        unselected_minimizers: Dict[str, list[str]] = {}
-        failed_problems: Dict[str, list[str]] = {}
+        output: dict[str, list[FittingResult]] = {}
+        unselected_minimizers: dict[str, list[str]] = {}
+        failed_problems: dict[str, list[str]] = {}
 
         for f in [
             self.options.checkpoint_filename,
@@ -266,6 +283,29 @@ class Checkpoint:
             results = group["results"]
             unselected_minimizers[label] = group["unselected_minimizers"]
             failed_problems[label] = group["failed_problems"]
+            config = group.get(
+                "config",
+                {
+                    "python_version": "info_unavaliable",
+                    "numpy_version": "info_unavaliable",
+                },
+            )
+
+            if (
+                config["numpy_version"] != self.config["numpy_version"]
+                and config["numpy_version"] != "info_unavaliable"
+            ):
+                LOGGER.warning(
+                    "The numpy version used when generating this checkpoint "
+                    "file was %s. However, the numpy"
+                    " version of the current environment is "
+                    "%s. This might lead "
+                    "to issues while producing results. Try installing"
+                    " %s to view these results.",
+                    config["numpy_version"],
+                    self.config["numpy_version"],
+                    config["numpy_version"],
+                )
 
             # Unpickle problems so that we use 1 shared object for all results
             # per array
@@ -286,7 +326,7 @@ class Checkpoint:
                 new_result.accuracy = r["accuracy"]
                 new_result.runtime = r["runtime"]
                 new_result.runtimes = r["runtimes"]
-                new_result.emissions = r["emissions"]
+                new_result.energy = r["energy"]
                 new_result.iteration_count = r["iteration_count"]
                 new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]
@@ -323,7 +363,7 @@ class Checkpoint:
 
                 output[label].append(new_result)
 
-        return output, unselected_minimizers, failed_problems
+        return output, unselected_minimizers, failed_problems, config
 
 
 def _compress(value):
@@ -331,7 +371,7 @@ def _compress(value):
     Compress a python object into an ascii string
 
     :param value: The value to compress
-    :type value: List
+    :type value: list
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
@@ -345,6 +385,6 @@ def _decompress(value: str):
     :param value: The string to decompress
     :type value: str
     :return: The decompressed value
-    :rtype: List
+    :rtype: list
     """
     return pickle.loads(a85decode(value.encode("ascii")))

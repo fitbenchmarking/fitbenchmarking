@@ -10,6 +10,7 @@ import glob
 import inspect
 import os
 import sys
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import fitbenchmarking
@@ -73,7 +74,7 @@ of the Fitbenchmarking docs. """
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
+    root = Path(inspect.getfile(fitbenchmarking)).parent
 
     parser.add_argument(
         "-o",
@@ -86,11 +87,9 @@ of the Fitbenchmarking docs. """
         "-p",
         "--problem_sets",
         nargs="+",
-        default=glob.glob(
-            os.path.join(
-                root, "benchmark_problems", "NIST", "average_difficulty"
-            )
-        ),
+        default=[
+            root.joinpath("benchmark_problems", "NIST", "average_difficulty")
+        ],
         help="Paths to directories containing problem sets.",
     )
     parser.add_argument(
@@ -441,6 +440,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
                 options=options,
                 failed_problems=failed_problems,
                 unselected_minimizers=unselected_minimizers,
+                config=cp.config,
             )
 
             pp_dfs_all_prob_sets[label] = pp_dfs
@@ -483,14 +483,21 @@ def main():
     Entry point to be exposed as the `fitbenchmarking` command.
     """
     parser = get_parser()
+    args = parser.parse_args(sys.argv[1:])
 
     if len(sys.argv) == 1:
+        if not args.problem_sets[0].exists():
+            print(
+                "The default problem set has either been "
+                "deleted or moved. Please specify a file "
+                "path to a different problem set with the "
+                "-p option."
+            )
+            sys.exit(1)
         print(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
         )
-
-    args = parser.parse_args(sys.argv[1:])
 
     # Dictionary of options which can be set via argparse
     # rather than from an ini file or from the default options

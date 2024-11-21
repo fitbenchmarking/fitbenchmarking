@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "FitBenchmarkign Team" }]
 description = "FitBenchmarking: A tool for comparing fitting software"
 readme = "README.md"
-requires-python = ">=3.8.1"
+requires-python = ">=3.9.1"
 keywords = [
     "benchmark",
     "fitting",
@@ -129,8 +129,14 @@ select = [
     "ICN", # flake8-import-conventions
     "SIM", # flake8-simplify
     "C4", # flake8-comprehensions
+    "TCH", # flake8-type-checking
+    "G", # flake8-logging-format
+    "RUF", # ruff-specific-rules
+    "FURB", # refurb
+    "FLY", # flynt
+    "PIE", # flake8-pie
     ]
-ignore = ["PERF203"]
+ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 
 [tool.ruff.format]
 quote-style = "double"

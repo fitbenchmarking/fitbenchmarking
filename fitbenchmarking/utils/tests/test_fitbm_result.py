@@ -18,6 +18,7 @@ from fitbenchmarking.hessian.analytic_hessian import (
     Analytic as AnalyticHessian,
 )
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
@@ -65,12 +66,12 @@ class FitbmResultTests(unittest.TestCase):
         self.accuracy = 10
         self.runtime = 0.01
         self.runtimes = [0.005, 0.015, 0.01]
-        self.emissions = 0.001
+        self.energy = 0.001
         self.result = FittingResult(
             controller=controller,
             accuracy=self.accuracy,
             runtimes=self.runtimes,
-            emissions=self.emissions,
+            energy=self.energy,
         )
 
         self.min_accuracy = 0.1
@@ -106,7 +107,7 @@ class FitbmResultTests(unittest.TestCase):
             +---------------------------------------+
             | Runtimes       | [0.005, 0.015, 0.01] |
             +---------------------------------------+
-            | Emissions      | 0.001                |
+            | Energy usage   | 0.001                |
             +---------------------------------------+""")
 
         for i, (r, e) in enumerate(

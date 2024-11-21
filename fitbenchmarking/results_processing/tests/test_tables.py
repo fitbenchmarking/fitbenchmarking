@@ -32,7 +32,7 @@ def load_mock_results():
     options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
+    results, _, _, _ = cp.load()
     results = results["Fake_Test_Data"]
     for i, r in enumerate(results):
         r.fitting_report_link = f"link{i}"
@@ -88,7 +88,7 @@ class GenerateTableTests(unittest.TestCase):
                 fig_dir=self.fig_dir,
                 pp_locations={
                     "acc": "pp_1",
-                    "emissions": "pp_3",
+                    "energy_usage": "pp_3",
                     "runtime": "pp_2",
                 },
                 table_name="table_name",
@@ -119,7 +119,7 @@ class GenerateTableTests(unittest.TestCase):
             fig_dir=self.fig_dir,
             pp_locations={
                 "acc": "pp_1",
-                "emissions": "pp_3",
+                "energy_usage": "pp_3",
                 "runtime": "pp_2",
             },
             table_name="table_name",
@@ -236,7 +236,7 @@ class CreateResultsTableTests(unittest.TestCase):
             fig_dir=self.fig_dir,
             pp_locations={
                 "acc": "pp_1",
-                "emissions": "pp_3",
+                "energy_usage": "pp_3",
                 "runtime": "pp_2",
             },
             failed_problems=[],

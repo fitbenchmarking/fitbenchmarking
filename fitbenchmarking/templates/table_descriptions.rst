@@ -29,20 +29,20 @@ local_min: End
 
 runtime: Start
 
-The timing results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
+The runtime results are calculated from an average using the `timeit <https://docs.python.org/2/library/timeit.html>`_  module in python. The number of runs can be set in :ref:`options`.
 
 runtime: End
 
-emissions: Start
+energy_usage: Start
 
-The emissions (kg CO\ :sub:`2`\ eq) results are calculated from an average using the `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module. The number of runs can be set in :ref:`options`.
+The energy usage (kWh) results are calculated from an average using the `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module. The number of runs can be set in :ref:`options`.
 
 Configuration for codecarbon is set in ``.codecarbon.config``.
 
-Please note that for tracking CPU power usage on Windows or Mac, ``Intel Power Gadget`` shoud also be installed. For more information, 
+For more information on how energy usage is measured, 
 see the Methodology section of the `codecarbon docs <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
 
-emissions: End
+energy_usage: End
 
 abs: Start
 

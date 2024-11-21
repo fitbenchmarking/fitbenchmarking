@@ -51,7 +51,7 @@ def prepare_profile_data(results):
     :return: dictionary containing number of occurrences
     :rtype: dict[str, dict[str, list[float]]]
     """
-    pp_data = {"acc": {}, "runtime": {}, "emissions": {}}
+    pp_data = {"acc": {}, "runtime": {}, "energy_usage": {}}
     minimizers = []
     to_remove = set()
 
@@ -70,8 +70,8 @@ def prepare_profile_data(results):
                     minimizers[i] = key
                 pp_data["acc"][minimizers[i]].append(result.norm_acc)
                 pp_data["runtime"][minimizers[i]].append(result.norm_runtime)
-                pp_data["emissions"][minimizers[i]].append(
-                    result.norm_emissions
+                pp_data["energy_usage"][minimizers[i]].append(
+                    result.norm_energy
                 )
 
     for key in to_remove:
@@ -88,7 +88,7 @@ def compute_step_values(profile_plot):
     :param profile_plot: data related to the metric being profiled
     :type profile_plot: dict[str, list[float]]
 
-    :return: acc or runtime or emissions values to plot,
+    :return: acc or runtime or energy usage values to plot,
              maximum x value
     :rtype: list[np.arrays(float)], float
     """
@@ -252,8 +252,8 @@ def _remove_nans(values: np.ndarray) -> np.ndarray:
 
 
 def adjust_values_to_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
-) -> "dict[str, list]":
+    step_values: list[np.ndarray], solvers: list[str]
+) -> dict[str, list]:
     """
     Prepares the values to plot and deals with failures.
 
@@ -328,7 +328,7 @@ def compute_linestyle_combinations() -> "list[tuple[str, str]]":
 
 
 def create_plot(
-    step_values: "list[np.ndarray]", solvers: "list[str]"
+    step_values: list[np.ndarray], solvers: list[str]
 ) -> go.Figure:
     """
     Function to draw plot in plotly.
@@ -372,10 +372,10 @@ def create_plot(
 
 
 def create_df(
-    solvers: "list[str]",
-    labels: "list[str]",
-    solver_values: "list[np.ndarray]",
-    plot_points: "list[np.ndarray]",
+    solvers: list[str],
+    labels: list[str],
+    solver_values: list[np.ndarray],
+    plot_points: list[np.ndarray],
 ) -> pd.DataFrame:
     """
     Creates a pandas dataframe with performance profile data,

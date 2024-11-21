@@ -3,17 +3,19 @@ FitBenchmarking results object
 """
 
 from statistics import fmean, harmonic_mean, median
-from typing import Literal, Optional
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import numpy as np
 from scipy import stats
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
+
+if TYPE_CHECKING:
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
+    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 LOGGER = get_logger()
 
@@ -26,14 +28,14 @@ class FittingResult:
 
     def __init__(
         self,
-        controller: "Controller",
-        accuracy: "float | list[float]" = np.inf,
-        runtimes: "float | list[float]" = np.inf,
-        emissions: "float" = np.inf,
+        controller: Controller,
+        accuracy: Union[float, list[float]] = np.inf,
+        runtimes: Union[float, list[float]] = np.inf,
+        energy: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: "Optional[int]" = None,
+        dataset: Optional[int] = None,
     ) -> None:
         """
         Initialise the Fitting Result
@@ -41,11 +43,11 @@ class FittingResult:
         :param controller: Controller used to fit
         :type controller: controller.base_controller.Controller
         :param accuracy: The score for the fitting, defaults to np.inf
-        :type accuracy: float | list[float], optional
+        :type accuracy: Union[float, list[float]], optional
         :param runtimes: All runtimes of the fit, defaults to np.inf
-        :type runtimes: float | list[float], optional
-        :param emissions: The average emissions for the fit, defaults to np.inf
-        :type emissions: float | list[float], optional
+        :type runtimes: Union[float, list[float]], optional
+        :param energy: The average energy usage for the fit, defaults to np.inf
+        :type energy: float, optional
         :param dataset: The index of the dataset (Only used for MultiFit),
                         defaults to None
         :type dataset: int, optional
@@ -83,7 +85,7 @@ class FittingResult:
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
-        self.emissions = emissions
+        self.energy = energy
         self.iteration_count = controller.iteration_count
         self.func_evals = controller.func_evals
 
@@ -158,10 +160,10 @@ class FittingResult:
         # Variable for calculating best result
         self._norm_acc = None
         self._norm_runtime = None
-        self._norm_emissions = None
+        self._norm_energy = None
         self.min_accuracy = np.inf
         self.min_runtime = np.inf
-        self.min_emissions = np.inf
+        self.min_energy = np.inf
         self.is_best_fit = False
 
         # Paths to various output files
@@ -184,7 +186,7 @@ class FittingResult:
             "Runtime": self.runtime,
             "Runtime metric": self.runtime_metric,
             "Runtimes": self.runtimes,
-            "Emissions": self.emissions,
+            "Energy usage": self.energy,
         }
 
         return get_printable_table("FittingResult", info)
@@ -406,29 +408,29 @@ class FittingResult:
         self._norm_runtime = value
 
     @property
-    def norm_emissions(self):
+    def norm_energy(self):
         """
-        Getting function for norm_emissions attribute
+        Getting function for norm_energy attribute
 
-        :return: normalised emissions value
+        :return: normalised energy value
         :rtype: float
         """
-        if self._norm_emissions is None:
-            if self.min_emissions in [np.nan, np.inf]:
-                self._norm_emissions = np.inf
+        if self._norm_energy is None:
+            if self.min_energy in [np.nan, np.inf]:
+                self._norm_energy = np.inf
             else:
-                self._norm_emissions = self.emissions / self.min_emissions
-        return self._norm_emissions
+                self._norm_energy = self.energy / self.min_energy
+        return self._norm_energy
 
-    @norm_emissions.setter
-    def norm_emissions(self, value):
+    @norm_energy.setter
+    def norm_energy(self, value):
         """
-        Stores the normalised emissions and updates the value
+        Stores the normalised energy and updates the value
 
-        :param value: New value for norm_emissions
+        :param value: New value for norm_energy
         :type value: float
         """
-        self._norm_emissions = value
+        self._norm_energy = value
 
     @property
     def sanitised_name(self):
