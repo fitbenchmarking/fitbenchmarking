@@ -1,0 +1,4 @@
+Low_Stats_Gaussian
+
+This folder contains synthetic data created by Richard
+Waite to test the performance of Mantid minimzers.

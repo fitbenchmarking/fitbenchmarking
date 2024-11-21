@@ -9,6 +9,7 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 
+import re
 from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
@@ -218,16 +219,12 @@ class MantidDevParser(FitbenchmarkParser):
         :return: A list of ties used for a mantid fit function.
         :rtype: list
         """
-        try:
-            ties = []
+        ties = []
+        if "ties" in self._entries:
             for t in self._entries["ties"].split(","):
                 # Strip out these chars
-                for s in "[] \"'":
-                    t = t.replace(s, "")
+                t = re.sub(r"[\[\]\"\' ]", "", t)
                 ties.append(t)
-
-        except KeyError:
-            ties = []
         return ties
 
     def _parse_function(self, *args, **kwargs):
