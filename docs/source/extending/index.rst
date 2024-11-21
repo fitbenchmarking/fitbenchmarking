@@ -16,5 +16,5 @@ to the software.  Below we outline instructions for doing this.
     jacobian_extend
     controllers
     options_extend
-    fitting_result_extend
     outputs/index
+    fitting_results

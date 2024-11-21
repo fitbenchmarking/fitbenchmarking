@@ -142,7 +142,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
     :type options_file: str, optional
     :param additional_options: Extra options for the reporting.
                                Available keys are:
-                                   filename (str): The checkpoint file to use.
+                               filename (str): The checkpoint file to use.
     :type additional_options: dict, optional
     """
     if additional_options is None:
@@ -185,46 +185,54 @@ def merge_data_sets(
 ):
     """
     Combine multiple checkpoint files into one following these rules:
-     1) The output will be the same as combining them one at a time in
-        sequence. i.e. A + B + C = (A + B) + C
-        The rules from here on will only reference A and B as the relation is
-        recursive.
-     2) Datasets
-         2a) Datasets in A and B are identical if they agree on the label
-         2b) If A and B contain identical datasets, the problems and results
-             are combined as below.
-             The remainder of these rules assume that A and B are identical
-             datasets as the alternative is trivial.
-     3) Problems
-         3a) If problems in A and B agree on name, ini_params, ini_y, x, y,
-             and e then these problems are considered identical.
-         3b) If A and B share identical problems, the details not specified in
-             3a are taken from A.
-         3c) If problems in A and B are not identical but share a name, the
-             name of the project in B should be updated to "<problem_name>*".
-     4) Results
-         4a) If results in A and B have identical problems and agree on name,
-             software_tag, minimizer_tag, jacobian_tag, hessian_tag, and
-             costfun_tag they are considered identical.
-         4b) If A an B share identical results, the details not specified in 4a
-             are taken from A if strategy is 'first', or B if strategy is
-             'last'.
-     5) As tables are grids of results, combining arbitrary results can lead to
-        un-table-able checkpoint files.
-        This occurs when the problems in A and B are not all identical and the
-        set of combinations of software_tag, minimizer_tag, jacobian_tag,
-        hessian_tag, and costfun_tag for which there are results in each of A
-        and B are not identical.
-        E.g. B has a problem not in A and uses a minimizer for which there are
-             no results in A.
-         5a) If the resulting checkpoint file would have the above issue, the
-             checkpoints are incompatible.
-         5b) Incompatible checkpoint files can be combined but should raise
-             warnings and mark the dataset in the checkpoint file.
-             Note: Some datasets may be incompatible where others can be
-                   successfully combined.
-     6) Unselected minimizers and failed problems will be discarded when
-        combining.
+    1) The output will be the same as combining them one at a time in
+    sequence. i.e. A + B + C = (A + B) + C
+    The rules from here on will only reference A and B as the relation is
+    recursive.
+
+    2) Datasets
+    2a) Datasets in A and B are identical if they agree on the label
+    2b) If A and B contain identical datasets, the problems and results
+    are combined as below.
+    The remainder of these rules assume that A and B are identical
+    datasets as the alternative is trivial.
+
+    3) Problems
+    3a) If problems in A and B agree on name, ini_params, ini_y, x, y,
+    and e then these problems are considered identical.
+    3b) If A and B share identical problems, the details not specified in
+    3a are taken from A.
+    3c) If problems in A and B are not identical but share a name, the
+    name of the project in B should be updated to "<problem_name>*".
+
+    4) Results
+    4a) If results in A and B have identical problems and agree on name,
+    software_tag, minimizer_tag, jacobian_tag, hessian_tag, and
+    costfun_tag they are considered identical.
+    4b) If A an B share identical results, the details not specified in 4a
+    are taken from A if strategy is 'first', or B if strategy is 'last'.
+
+    5) As tables are grids of results, combining arbitrary results can lead to
+    un-table-able checkpoint files.
+
+    This occurs when the problems in A and B are not all identical and the
+    set of combinations of software_tag, minimizer_tag, jacobian_tag,
+    hessian_tag, and costfun_tag for which there are results in each of A
+    and B are not identical.
+
+    E.g. B has a problem not in A and uses a minimizer for which there are
+    no results in A.
+
+    5a) If the resulting checkpoint file would have the above issue, the
+    checkpoints are incompatible.
+
+    5b) Incompatible checkpoint files can be combined but should raise
+    warnings and mark the dataset in the checkpoint file.
+    Note: Some datasets may be incompatible where others can be
+    successfully combined.
+
+    6) Unselected minimizers and failed problems will be discarded when
+    combining.
 
     :param files: The files to combine.
     :type files: list[str]

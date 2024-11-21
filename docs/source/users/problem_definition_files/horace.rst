@@ -1,8 +1,8 @@
 .. _horace_format:
 
-*****************
+******************
 Horace File Format
-*****************
+******************
 
 The Horace file format is based on :ref:`native`, this page is intended to
 demonstrate where the format differs.
@@ -16,13 +16,13 @@ Examples of horace problems are:
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/PCSMO_at_001_data.txt
 
 .. note::
-The Horace file format requires you to have run the benchmark problem in Horace 
-using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
-how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html>`__ ,
-`Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
-/Advanced_Multifit.html>`__ 
-and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html>`__ problems as well as 
-`Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html>`__.
+  The Horace file format requires you to have run the benchmark problem in Horace 
+  using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
+  how to run this are: `Multifit <https://pace-neutrons.github.io/Horace/unstable/manual/Multifit.html>`__ ,
+  `Advanced Multifit <https://pace-neutrons.github.io/Horace/unstable/manual
+  /Advanced_Multifit.html>`__ 
+  and `Tobyfit <https://pace-neutrons.github.io/Horace/unstable/manual/Tobyfit.html>`__ problems as well as 
+  `Running Horace in Parallel <https://pace-neutrons.github.io/Horace/unstable/manual/Parallel.html>`__.
 
 As in the native format, an input file must start with a comment indicating
 that it is a FitBenchmarking problem followed by a number of key value pairs.

@@ -80,9 +80,10 @@ class Controller:
     #: for the specific software are able to use jacobian
     #: information.
     #:
-    #: - ``jacobian_enabled_solvers``: a list of minimizers in a specific
-    #: software that allow Jacobian information to be passed
-    #: into the fitting algorithm
+    #: - ``jacobian_enabled_solvers``: a list of minimizers in a
+    #:     specific software that allow Jacobian information to
+    #:     be passed into the fitting algorithm
+    #:
     jacobian_enabled_solvers = []
 
     #: Within the controller class, you must define the list
@@ -90,9 +91,10 @@ class Controller:
     #: for the specific software are able to use hessian
     #: information.
     #:
-    #: - ``hessian_enabled_solvers``: a list of minimizers in a specific
-    #: software that allow Hessian information to be passed
-    #: into the fitting algorithm
+    #: - ``hessian_enabled_solvers``: a list of minimizers in a
+    #:     specific software that allow Hessian information to
+    #:     be passed into the fitting algorithm
+    #:
     hessian_enabled_solvers = []
 
     #: Within the controller class, you must define the list
@@ -100,9 +102,10 @@ class Controller:
     #: for the specific software offer support for sparse
     #: jacobians.
     #:
-    #: - ``sparsity_enabled_solvers``: a list of minimizers in a specific
-    #: software that allow sparsity structure to be passed
-    #: into the fitting algorithm
+    #: - ``sparsity_enabled_solvers``: a list of minimizers in a
+    #:     specific software that allow sparsity structure to be
+    #:     passed into the fitting algorithm
+    #:
     sparsity_enabled_solvers = []
 
     #: A name to be used in tables. If this is set to None it will be inferred
