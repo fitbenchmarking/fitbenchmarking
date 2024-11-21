@@ -19,7 +19,7 @@ The workflow to be used for submitting new code/issues is described in
 Linting
 =======
 
-All pull requests should be compliant with selected `Ruff<https://docs.astral.sh/ruff/>`_ rules.
+All pull requests should be compliant with selected `ruff <https://docs.astral.sh/ruff/>`_ rules.
 We suggest running code through ruff using the precommit hook before pushing code to github.
 
 
