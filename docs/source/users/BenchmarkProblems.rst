@@ -339,3 +339,19 @@ These problems have 3 or 4 unknown parameters, and around 100 data points.
 .. |MantidWarning| replace::
     The external package Mantid must be installed to run
     this data set.  See :ref:`external-instructions` for details.
+
+Synthetic Datasets
+==================
+
+This folder (found in `examples/benchmark_problems/synthetic_data`) contains
+synthetic data to test the minimizers of Mantid. The data was generated to
+particularly test the **BackToBackExponential** and the **Gaussian** fitting
+functions.
+
+The data for testing the `BackToBackExponential` fitting can be found within
+the `backtobackexp` subfolder. It contains a dataset with 15 different starting 
+conditions for the parameters. 
+
+The data for testing the `Gaussian` fitting can be found within
+the `gaussian` subfolder. It contains a dataset with 16 different starting 
+conditions for the parameters. 
