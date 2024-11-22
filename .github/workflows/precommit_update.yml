@@ -1,0 +1,40 @@
+name: Pre-commit autoupdate
+
+on:
+  schedule:
+    - cron: '0 9 * * Mon'
+  workflow_dispatch:
+
+jobs:
+  autoupdate:
+    if: github.ref == 'refs/heads/master' && github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    concurrency:
+       group: autoupdate-${{ github.ref }}
+       cancel-in-progress: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Run pre-commit autoupdate
+        run: |
+            pip install pre-commit
+            pre-commit autoupdate
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: updated pre-commit hook
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          signoff: false
+          branch: pre-commit-autoupdate
+          delete-branch: true
+          title: "Updated pre-commit hooks"
+          body: This PR updates the pre-commit hooks to their latest versions using `pre-commit autoupdate` workflow.
+          labels: "automation"
