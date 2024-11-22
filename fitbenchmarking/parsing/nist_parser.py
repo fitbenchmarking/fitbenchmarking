@@ -165,9 +165,7 @@ class NISTParser(Parser):
                 if " x" in line and " y " in line:
                     data_pattern_text, idx = self._get_data_txt(lines, idx)
             elif line.startswith("Dataset Name:"):
-                name = line.split(":", 1)[1]
-                name = name.split("(", 1)[0]
-                name = name.strip()
+                name = re.search(r":(.*?)(?=\()", line).group(1).strip()
             elif line.startswith("Description:"):
                 description, idx = self._get_description(lines, idx)
             else:
