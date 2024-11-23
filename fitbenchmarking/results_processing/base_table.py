@@ -17,11 +17,9 @@ from fitbenchmarking.utils.misc import get_js
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
-    "rel": "Relative values are displayed in the table. Incase "
-    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
+    "rel": "Relative values are displayed in the table.",
     "both": "Absolute and relative values are displayed in "
-    "the table in the format ``abs (rel)``. Incase "
-    "of a perfect fit on a problem ``rel = abs / 1e-10``.",
+    "the table in the format ``abs (rel)``.",
 }
 CONTRAST_RATIO_AAA = 7.0
 
@@ -526,6 +524,11 @@ class Table:
         html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
+            if self.name in ["compare", "acc"] and name in ["rel", "both"]:
+                descrip += (
+                    " Incase of a perfect fit on"
+                    " a problem ``rel = abs / 1e-10``."
+                )
             descrip = descrip.replace(":ref:", "")
             js = get_js(self.options, self.group_dir)
             docsettings = {"math_output": "MathJax " + js["mathjax"]}
