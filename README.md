@@ -8,7 +8,7 @@
 [![JOSS](https://img.shields.io/badge/JOSS-10.21105/joss.03127-brightgreen.svg?style=flat-square)](https://doi.org/10.21105/joss.03127)
 # FitBenchmarking
 
-FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks. FitBenchmarking is cross platform and we support Windows, Linux and Mac OS. For questions, feature requests or any other inquiries, please open an issue on GitHub, or send us an e-mail at support@fitbenchmarking.com.
+FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks. FitBenchmarking is cross platform and we support Windows, Linux and Mac OS. For questions, feature requests or any other inquiries, please open an issue on GitHub.
 
 - **Installation Instructions:** https://fitbenchmarking.readthedocs.io/en/latest/users/install_instructions/index.html
 - **User Documentation & Example Usage:** https://fitbenchmarking.readthedocs.io/en/latest/users/index.html
