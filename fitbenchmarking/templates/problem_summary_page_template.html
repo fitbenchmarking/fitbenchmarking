@@ -25,28 +25,40 @@
                     <label for="start-accordion">Problem Outline</label>
                 </h2>
                 <div class="content">
-                    <p>Number of parameters: <b>{{ n_params }}</b></p>
-                    <p>Number of data points: <b>{{ n_data_points }}</b></p>
-                    <p>Functions:</p>
+                    <br>
                     <table class="simple-table">
                         <colgroup>
-                            <col width="45%" />
-                            <col width="55%" />
+                            <col width="30%" />
+                            <col width="70%" />
                         </colgroup>
-                        <thead valign="bottom">
-                            <tr>
-                                <th class="head">Form</th>
-                                <th class="head">Initial Parameters</th>
-                            </tr>
-                        </thead>
                         <tbody valign="top">
+                            <!-- Summary Section -->
                             <tr>
+                                <td class="heading" colspan="2">Summary</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of parameters</td>
+                                <td>{{ n_params }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of data points</td>
+                                <td>{{ n_data_points }}</td>
+                            </tr>
+                            <!-- Functions Section -->
+                            <tr>
+                                <td class="heading" colspan="2">Functions</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Form</td>
                                 <td>{{ equation }}</td>
-                                    {% if list_params %}
-                                        <td>{{ initial_guess }}</td>
-                                    {% else %}
-                                        <td>Too many parameters to display</td>
-                                    {% endif %}
+                            </tr>
+                            <tr>
+                                <td class="label">Initial Parameters</td>
+                                {% if list_params %}
+                                    <td>{{ initial_guess }}</td>
+                                {% else %}
+                                    <td>Too many parameters to display</td>
+                                {% endif %}
                             </tr>
                         </tbody>
                     </table>
@@ -100,23 +112,31 @@
                     </h2>
                     <div class="content">
                         <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
-
-                        <p>Minimizer: <b>{{ best_results[0].modified_minimizer_name(True) }}</b></p>
-                        <p>Functions:</p>
+                        <br>
                         <table class="simple-table">
                             <colgroup>
-                                <col width="36%" />
-                                <col width="64%" />
+                                <col width="30%" />
+                                <col width="70%" />
                             </colgroup>
-                            <thead valign="bottom">
-                                <tr>
-                                    <th class="head">Form</th>
-                                    <th class="head">Best Parameters</th>
-                                </tr>
-                            </thead>
                             <tbody valign="top">
+                                <!-- Summary Section -->
                                 <tr>
+                                    <td class="heading" colspan="2">Summary</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Minimizer</td>
+                                    <td>{{ best_results[0].modified_minimizer_name(True) }}</td>
+                                </tr>
+                                <!-- Functions Section -->
+                                <tr>
+                                    <td class="heading" colspan="2">Functions</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Form</td>
                                     <td>{{ equation }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Best Parameters</td>
                                     {% if list_params %}
                                         <td>{{ min_params }}</td>
                                     {% else %}
@@ -144,23 +164,31 @@
                         </h2>
                         <div class="content">
                             <p>{{ plot_descriptions[loop.index0] }}</p>
-
-                            <p>Minimizer: <b>{{ best_results[loop.index0].modified_minimizer_name(True) }}</b></p>
-                            <p>Functions:</p>
+                            <br>
                             <table class="simple-table">
                                 <colgroup>
-                                    <col width="36%" />
-                                    <col width="64%" />
+                                    <col width="30%" />
+                                    <col width="70%" />
                                 </colgroup>
-                                <thead valign="bottom">
-                                    <tr>
-                                        <th class="head">Form</th>
-                                        <th class="head">Best Parameters</th>
-                                    </tr>
-                                </thead>
                                 <tbody valign="top">
+                                    <!-- Summary Section -->
                                     <tr>
+                                        <td class="heading" colspan="2">Summary</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Minimizer</td>
+                                        <td>{{ best_results[loop.index0].modified_minimizer_name(True)}}</td>
+                                    </tr>
+                                    <!-- Functions Section -->
+                                    <tr>
+                                        <td class="heading" colspan="2">Functions</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Form</td>
                                         <td>{{ equation }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Best Parameters</td>
                                         {% if list_params %}
                                             <td>{{ min_params }}</td>
                                         {% else %}
