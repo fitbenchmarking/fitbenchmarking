@@ -480,7 +480,6 @@ def create_problem_level_index(
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]
-    index = table_descriptions[options.comparison_mode]
     run_name = f"{options.run_name}: " if options.run_name else ""
 
     with open(output_file, "w", encoding="utf-8") as fh:
@@ -490,7 +489,6 @@ def create_problem_level_index(
                 custom_style=css["custom"],
                 mathjax=js["mathjax"],
                 group_name=group_name,
-                index=index,
                 table_type=names,
                 links=links,
                 description=description,
