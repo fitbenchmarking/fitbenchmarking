@@ -22,8 +22,6 @@
                     </p>
                     <p>The results were generated using <b>python</b> <span class="pill">{{ python_version }}</span> and <b>numpy</b> <span class="pill">{{ numpy_version }}</span>.</p>
                 </div>
-                <h4>Table formats</h4>
-                {{ index }}
                 <hr>
                 <div class="table-row">
                     {% for type, link, description in zip(table_type, links, description) %}
