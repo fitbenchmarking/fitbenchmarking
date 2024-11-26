@@ -1,6 +1,9 @@
 name: 'PyPI'
 
 on:
+  pull_request:
+    branches:
+      - 'master'
   schedule:
     - cron: '0 9 * * 1'
 
@@ -12,12 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
+        python: ['3.9', '3.13']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python }}
         check-latest: true
     - name: Pip install fitbenchmarking
       run: |
