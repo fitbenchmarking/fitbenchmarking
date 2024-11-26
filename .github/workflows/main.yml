@@ -20,6 +20,9 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: default_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -46,6 +49,9 @@ jobs:
     name: Full System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: full_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
@@ -75,6 +81,9 @@ jobs:
     name: Full Unit Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: full_unit_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
@@ -118,6 +127,9 @@ jobs:
       matrix:
         python: ['3.9', '3.13']
     runs-on: ubuntu-latest
+    concurrency:
+      group: default_unit_tests-${{ matrix.python }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -145,6 +157,9 @@ jobs:
     if: github.event.repository.fork == false && always()
     needs: [default_system_linux, full_system_linux, default_unit_tests, full_unit_linux]
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish_test_results-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
