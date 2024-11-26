@@ -384,74 +384,81 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     cp = Checkpoint(options=options)
 
     try:
-      for sub_dir in problem_sets:
-          # Create full path for the directory that holds a group of
-          # problem definition files
-          data_dir = os.path.join(current_path, sub_dir)
+        for sub_dir in problem_sets:
+            # Create full path for the directory that holds a group of
+            # problem definition files
+            data_dir = os.path.join(current_path, sub_dir)
 
-          test_data = glob.glob(data_dir + "/*.*")
+            test_data = glob.glob(data_dir + "/*.*")
 
-          if not test_data:
-              LOGGER.warning("Problem set %s not found", data_dir)
-              continue
+            if not test_data:
+                LOGGER.warning("Problem set %s not found", data_dir)
+                continue
 
-          # generate group label/name used for problem set
-          try:
-              with open(
-                  os.path.join(data_dir, "META.txt"), encoding="utf-8"
-              ) as f:
-                  label = f.readline().strip("\n")
-          except OSError:
-              label = sub_dir.replace("/", "_")
+            # generate group label/name used for problem set
+            try:
+                with open(
+                    os.path.join(data_dir, "META.txt"), encoding="utf-8"
+                ) as f:
+                    label = f.readline().strip("\n")
+            except OSError:
+                label = sub_dir.replace("/", "_")
 
-          LOGGER.info("Running the benchmarking on the %s problem set", label)
-          fit = Fit(
-              options=options, data_dir=data_dir, label=label, checkpointer=cp
-          )
-          results, failed_problems, unselected_minimizers = fit.benchmark()
+            LOGGER.info(
+                "Running the benchmarking on the %s problem set", label
+            )
+            fit = Fit(
+                options=options,
+                data_dir=data_dir,
+                label=label,
+                checkpointer=cp,
+            )
+            results, failed_problems, unselected_minimizers = fit.benchmark()
 
-          # If a result has error flag 4 then the result contains dummy values,
-          # if this is the case for all results then output should not be
-          # produced as results tables won't show meaningful values.
-          all_dummy_results_flag = True
-          for result in results:
-              if result.error_flag != 4:
-                  all_dummy_results_flag = False
-                  break
+            # If a result has error flag 4 then the result contains dummy values,
+            # if this is the case for all results then output should not be
+            # produced as results tables won't show meaningful values.
+            all_dummy_results_flag = True
+            for result in results:
+                if result.error_flag != 4:
+                    all_dummy_results_flag = False
+                    break
 
-          # If the results are an empty list then this means that all minimizers
-          # raise an exception and the tables will produce errors if they run
-          # for that problem set.
-          if not results or all_dummy_results_flag:
-              message = (
-                  "\nWARNING: \nThe user chosen options and/or problem "
-                  " setup resulted in all minimizers and/or parsers "
-                  "raising an exception. Because of this, results for "
-                  f"the {label} problem set will not be displayed. "
-                  "Please see the logs for more detail on why this is "
-                  "the case."
-              )
-              LOGGER.warning(message)
-          else:
-              LOGGER.info("Producing output for the %s problem set", label)
-              # Display the runtime and accuracy results in a table
-              group_results_dir, pp_dfs = save_results(
-                  group_name=label,
-                  results=results,
-                  options=options,
-                  failed_problems=failed_problems,
-                  unselected_minimizers=unselected_minimizers,
-                  config=cp.config,
-              )
+            # If the results are an empty list then this means that all minimizers
+            # raise an exception and the tables will produce errors if they run
+            # for that problem set.
+            if not results or all_dummy_results_flag:
+                message = (
+                    "\nWARNING: \nThe user chosen options and/or problem "
+                    " setup resulted in all minimizers and/or parsers "
+                    "raising an exception. Because of this, results for "
+                    f"the {label} problem set will not be displayed. "
+                    "Please see the logs for more detail on why this is "
+                    "the case."
+                )
+                LOGGER.warning(message)
+            else:
+                LOGGER.info("Producing output for the %s problem set", label)
+                # Display the runtime and accuracy results in a table
+                group_results_dir, pp_dfs = save_results(
+                    group_name=label,
+                    results=results,
+                    options=options,
+                    failed_problems=failed_problems,
+                    unselected_minimizers=unselected_minimizers,
+                    config=cp.config,
+                )
 
-              pp_dfs_all_prob_sets[label] = pp_dfs
+                pp_dfs_all_prob_sets[label] = pp_dfs
 
-              LOGGER.info("Completed benchmarking for %s problem set", sub_dir)
-              group_results_dir = os.path.relpath(
-                  path=group_results_dir, start=options.results_dir
-              )
-              result_dir.append(group_results_dir)
-              group_labels.append(label)
+                LOGGER.info(
+                    "Completed benchmarking for %s problem set", sub_dir
+                )
+                group_results_dir = os.path.relpath(
+                    path=group_results_dir, start=options.results_dir
+                )
+                result_dir.append(group_results_dir)
+                group_labels.append(label)
 
     finally:
         cp.finalise()

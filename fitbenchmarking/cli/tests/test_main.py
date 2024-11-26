@@ -70,8 +70,7 @@ class TestMain(TestCase):
         benchmark.return_value = ([], [], {})
 
         with self.assertRaises(exceptions.NoResultsError):
-            main.run(['examples/benchmark_problems/simple_tests'],
-                     debug=True)
+            main.run(["examples/benchmark_problems/simple_tests"], debug=True)
 
     @patch("fitbenchmarking.cli.main.Fit.benchmark")
     def test_all_dummy_results_produced(self, benchmark):
@@ -99,31 +98,31 @@ class TestMain(TestCase):
             main.main()
         self.assertEqual(exp.exception.code, 1)
 
- 
-    @patch('fitbenchmarking.cli.main.save_results')
-    @patch('fitbenchmarking.utils.misc.get_problem_files')
+    @patch("fitbenchmarking.cli.main.save_results")
+    @patch("fitbenchmarking.utils.misc.get_problem_files")
     def test_checkpoint_file_on_fail(self, get_problems, save_results):
         """
         Checks that the checkpoint file is valid json if there's a crash.
         """
         get_problems.side_effect = lambda path: [get_problem_files(path)[0]]
         save_results.side_effect = RuntimeError(
-            "Exception raised during save...")
+            "Exception raised during save..."
+        )
 
         with TemporaryDirectory() as results_dir:
             with self.assertRaises(RuntimeError):
                 main.run(
-                    ['examples/benchmark_problems/NIST/low_difficulty'],
+                    ["examples/benchmark_problems/NIST/low_difficulty"],
                     additional_options={
-                        'scipy_ls': ['lm-scipy'],
-                        'software': ['scipy_ls'],
-                        'num_runs': 1,
-                        'results_dir': results_dir
+                        "scipy_ls": ["lm-scipy"],
+                        "software": ["scipy_ls"],
+                        "num_runs": 1,
+                        "results_dir": results_dir,
                     },
                     debug=True,
                 )
 
-            with open(f'{results_dir}/checkpoint.json', encoding='utf8') as f:
+            with open(f"{results_dir}/checkpoint.json", encoding="utf8") as f:
                 # This will fail if the json is invalid
                 contents = load(f)
 
