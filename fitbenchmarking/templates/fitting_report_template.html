@@ -22,24 +22,36 @@
                     <h2 class="handle">
                         <label for="start-accordion">Problem Outline</label>
                     </h2>
+                    <br>
                     <div class="content">
-                        <p>Number of parameters: <b>{{ n_params }}</b></p>
-                        <p>Number of data points: <b>{{ n_data_points }}</b></p>
-                        <p>Functions:</p>
                         <table class="simple-table">
                             <colgroup>
-                                <col width="45%" />
-                                <col width="55%" />
+                                <col width="30%" />
+                                <col width="70%" />
                             </colgroup>
-                            <thead valign="bottom">
-                                <tr>
-                                    <th class="head">Form</th>
-                                    <th class="head">Initial Parameters</th>
-                                </tr>
-                            </thead>
                             <tbody valign="top">
+                                <!-- Summary Section -->
                                 <tr>
+                                    <td class="heading" colspan="2">Summary</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Number of parameters</td>
+                                    <td>{{ n_params }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Number of data points</td>
+                                    <td>{{ n_data_points }}</td>
+                                </tr>
+                                <!-- Functions Section -->
+                                <tr>
+                                    <td class="heading" colspan="2">Functions</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Form</td>
                                     <td>{{ equation }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Initial Parameters</td>
                                     {% if list_params %}
                                         <td>{{ initial_guess }}</td>
                                     {% else %}
@@ -66,25 +78,51 @@
                     {% if is_best_fit %}
                         <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
                     {% endif %}
-                    <p>Minimizer: <b>{{ minimizer }}</b></p>
-                    <p>Accuracy: <b>{{ accuracy }}</b></p>
-                    <p>Runtime: <b>{{ runtime }} seconds</b></p>
-                    <p>Energy Usage: <b>{{ energy }}</b></p>
-                    <p>Number of iterations: <b>{{ iteration_count }}</b></p>
-                    <p>Number of function evaluations: <b>{{ func_evals }}</b></p>
-                    <p>Functions:</p>
+                    <br>
                     <table class="simple-table">
                         <colgroup>
-                            <col width="36%" />
-                            <col width="64%" />
+                            <col width="30%" />
+                            <col width="70%" />
                         </colgroup>
-                        <thead valign="bottom">
-                            <tr><th class="head">Form</th>
-                            <th class="head">Fitted Parameters</th>
-                        </thead>
                         <tbody valign="top">
+                            <!-- Summary Section -->
                             <tr>
+                                <td class="heading" colspan="2">Summary</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Minimizer</td>
+                                <td>{{ minimizer }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Accuracy</td>
+                                <td>{{ accuracy }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Runtime</td>
+                                <td>{{ runtime }} seconds</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Energy Usage</td>
+                                <td>{{ energy }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of iterations</td>
+                                <td>{{ iteration_count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of function evaluations</td>
+                                <td>{{ func_evals }}</td>
+                            </tr>
+                            <!-- Functions Section -->
+                            <tr>
+                                <td class="heading" colspan="2">Functions</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Form</td>
                                 <td>{{ equation }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Fitted Parameters</td>
                                 {% if list_params %}
                                     <td>{{ min_params }}</td>
                                 {% else %}

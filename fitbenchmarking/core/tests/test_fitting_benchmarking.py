@@ -10,6 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
@@ -168,47 +169,29 @@ class PerformFitTests(unittest.TestCase):
         self.options = Options(additional_options={"software": ["scipy"]})
         self.cp = Checkpoint(self.options)
 
-    def test_perform_fit_method(self):
+    @parameterized.expand(
+        [
+            ("ENSO.dat", [111.70773805099354, 107.53453144913736]),
+            ("Gauss3.dat", [76.64279628070524, 76.65043476327958]),
+            ("Lanczos1.dat", [0.0009937705466940194, 0.06269418241377904]),
+        ]
+    )
+    def test_perform_fit_method(self, file, expected):
         """
         The test checks __perform_fit method.
         Three /NIST/average_difficulty problem sets
         are run with 2 scipy software minimizers.
         """
+        controller = set_up_controller(file, self.options)
+        fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
 
-        testcases = [
-            {
-                "file": "ENSO.dat",
-                "results": [111.70773805099354, 107.53453144913736],
-            },
-            {
-                "file": "Gauss3.dat",
-                "results": [76.64279628070524, 76.65043476327958],
-            },
-            {
-                "file": "Lanczos1.dat",
-                "results": [0.0009937705466940194, 0.06269418241377904],
-            },
-        ]
+        for minimizer, acc in zip(["Nelder-Mead", "Powell"], expected):
+            controller.minimizer = minimizer
+            accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
 
-        for case in testcases:
-            with self.subTest(case["file"]):
-                controller = set_up_controller(case["file"], self.options)
-
-                fit = Fit(
-                    options=self.options, data_dir="test", checkpointer=self.cp
-                )
-
-                for minimizer, acc in zip(
-                    ["Nelder-Mead", "Powell"], case["results"]
-                ):
-                    controller.minimizer = minimizer
-                    accuracy, runtimes, energy = fit._Fit__perform_fit(
-                        controller
-                    )
-
-                    self.assertAlmostEqual(accuracy, acc, 6)
-                    assert len(runtimes) == self.options.num_runs
-                    assert energy != np.inf
+            self.assertAlmostEqual(accuracy, acc, 6)
+            assert len(runtimes) == self.options.num_runs
+            assert energy != np.inf
 
     @patch(
         "fitbenchmarking.controllers.base_controller.Controller.eval_confidence"

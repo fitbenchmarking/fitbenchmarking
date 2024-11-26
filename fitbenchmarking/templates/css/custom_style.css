@@ -100,6 +100,7 @@ a {
 .error-table {
   width: 60%;
   text-align: center;
+  border-collapse: collapse;
 }
 
 .error-table th {
@@ -118,9 +119,18 @@ a {
 .simple-table {
   width: 100%;
   text-align: center;
+  border-collapse: collapse;
+  vertical-align: middle;
 }
 
-.simple-table th {
+.simple-table .label {
+  font-weight: bold;
+  background-color:#ffffff;
+  color: rgb(0, 0, 0);
+}
+
+.simple-table .heading {
+  font-weight: bold;
   background-color:#66686b;
   color: white;
 }

@@ -29,7 +29,7 @@ jobs:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.13'
         check-latest: true
     - name: Install dependencies
       run: |
@@ -125,7 +125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.12']
+        python: ['3.9', '3.13']
     runs-on: ubuntu-latest
     concurrency:
       group: default_unit_tests-${{ matrix.python }}-${{ github.ref }}
@@ -142,12 +142,11 @@ jobs:
       run: |
         python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
-        python -m pip install "numpy<2.0"
     - name: Run linux tests
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
     - name: Upload test results
-      if: matrix.python == '3.12'
+      if: matrix.python == '3.13'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
