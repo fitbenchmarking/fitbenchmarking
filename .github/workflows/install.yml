@@ -25,4 +25,4 @@ jobs:
         check-latest: true
     - name: Pip install fitbenchmarking
       run: |
-        pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit]
