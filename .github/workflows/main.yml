@@ -20,13 +20,16 @@ jobs:
     name: Default System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: default_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.13'
         check-latest: true
     - name: Install dependencies
       run: |
@@ -46,6 +49,9 @@ jobs:
     name: Full System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: full_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
@@ -75,6 +81,9 @@ jobs:
     name: Full Unit Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
+    concurrency:
+      group: full_unit_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
       credentials:
@@ -116,8 +125,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.12']
+        python: ['3.9', '3.13']
     runs-on: ubuntu-latest
+    concurrency:
+      group: default_unit_tests-${{ matrix.python }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -130,12 +142,11 @@ jobs:
       run: |
         python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
-        python -m pip install "numpy<2.0"
     - name: Run linux tests
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh
     - name: Upload test results
-      if: matrix.python == '3.12'
+      if: matrix.python == '3.13'
       uses: actions/upload-artifact@v4
       with:
         name: default_unit_tests
@@ -146,6 +157,9 @@ jobs:
     if: github.event.repository.fork == false && always()
     needs: [default_system_linux, full_system_linux, default_unit_tests, full_unit_linux]
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish_test_results-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
