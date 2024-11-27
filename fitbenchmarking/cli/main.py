@@ -415,18 +415,18 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
             )
             results, failed_problems, unselected_minimizers = fit.benchmark()
 
-            # If a result has error flag 4 then the result contains dummy values,
-            # if this is the case for all results then output should not be
-            # produced as results tables won't show meaningful values.
+            # If a result has error flag 4 then the result contains dummy
+            # values, if this is the case for all results then output should
+            # not be produced as results tables won't show meaningful values.
             all_dummy_results_flag = True
             for result in results:
                 if result.error_flag != 4:
                     all_dummy_results_flag = False
                     break
 
-            # If the results are an empty list then this means that all minimizers
-            # raise an exception and the tables will produce errors if they run
-            # for that problem set.
+            # If the results are an empty list then this means that all
+            # minimizers raise an exception and the tables will produce
+            # errors if they run for that problem set.
             if not results or all_dummy_results_flag:
                 message = (
                     "\nWARNING: \nThe user chosen options and/or problem "
