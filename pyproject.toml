@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "FitBenchmarking"
 dynamic = ["version"]
-authors = [{ name = "FitBenchmarkign Team" }]
+authors = [{ name = "FitBenchmarking Team" }]
 description = "FitBenchmarking: A tool for comparing fitting software"
 readme = "README.md"
 requires-python = ">=3.9.1"
