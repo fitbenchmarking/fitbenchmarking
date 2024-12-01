@@ -4,6 +4,7 @@ https://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/
 using the iminuit python interface
 http://iminuit.readthedocs.org
 """
+
 import numpy as np
 from iminuit import Minuit
 from iminuit import __version__ as iminuit_version

@@ -1,6 +1,7 @@
 """
 Implements a controller for global optimization algorithms.
 """
+
 import numpy as np
 from gofit import alternating, multistart, regularisation
 

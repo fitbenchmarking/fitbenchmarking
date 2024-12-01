@@ -29,7 +29,7 @@ class DFOController(Controller):
         "global_optimization": [],
         "MCMC": [],
     }
-    
+
     support_for_bounds = True
 
     def __init__(self, cost_func):

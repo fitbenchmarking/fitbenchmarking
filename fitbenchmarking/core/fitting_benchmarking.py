@@ -350,7 +350,8 @@ class Fit:
                     # Calling prepare to fill in the initial parameters
                     controller.prepare(skip_setup=True)
                     dummy_result = fitbm_result.FittingResult(
-                        controller=controller)
+                        controller=controller
+                    )
                     self._checkpointer.add_result(dummy_result)
                     results.append(dummy_result)
                     LOGGER.warning(str(excp))
