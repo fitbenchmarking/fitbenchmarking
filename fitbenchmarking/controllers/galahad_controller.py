@@ -201,6 +201,8 @@ class GalahadController(Controller):
                       -11: 3,  # Solve failed         (linear solve)
                       -15: 3,  # Preconditioner not pos def
                       -16: 2,  # Ill-conditioned
+                      -17: 0,  # Computed step too small to make further
+                               # progress
                       -18: 1,  # Too many iterations
                       -19: 3,  # Max runtime
                       -82: 3,  # Killed by user
