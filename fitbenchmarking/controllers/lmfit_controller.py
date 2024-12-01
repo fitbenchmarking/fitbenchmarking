@@ -1,6 +1,7 @@
 """
 Implements a controller for the lmfit fitting software.
 """
+
 from lmfit import Minimizer, Parameters
 
 from fitbenchmarking.controllers.base_controller import Controller

@@ -105,9 +105,9 @@ class NLoptController(Controller):
     ]
 
     support_for_bounds = True
-    bounds_required_minimizers = (
-        algorithm_check["global_optimization"] + ["LN_NEWUOA_BOUND"]
-    )
+    bounds_required_minimizers = algorithm_check["global_optimization"] + [
+        "LN_NEWUOA_BOUND"
+    ]
 
     def __init__(self, cost_func):
         """

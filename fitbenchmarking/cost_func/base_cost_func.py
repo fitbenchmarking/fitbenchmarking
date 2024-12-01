@@ -29,10 +29,10 @@ class CostFunc:
                 :class:`~fitbenchmarking.parsing.fitting_problem.FittingProblem`
         """
         # Problem: The problem object from parsing
-        self.problem: 'FittingProblem' = problem
+        self.problem: "FittingProblem" = problem
 
         # The Jacobian object to evaluate
-        self.jacobian: 'Optional[Jacobian]' = None
+        self.jacobian: "Optional[Jacobian]" = None
 
         # The Hessian object to evaluate
         self.hessian = None

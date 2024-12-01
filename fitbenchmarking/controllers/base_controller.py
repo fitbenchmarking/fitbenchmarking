@@ -143,7 +143,7 @@ class Controller:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        self.cost_func: 'CostFunc' = cost_func
+        self.cost_func: "CostFunc" = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -453,11 +453,14 @@ class Controller:
         :type minimizer: str
         """
         if self.value_ranges is not None:
-            if self.support_for_bounds is False or \
-                    minimizer in self.no_bounds_minimizers:
+            if (
+                self.support_for_bounds is False
+                or minimizer in self.no_bounds_minimizers
+            ):
                 raise IncompatibleMinimizerError(
-                    'The selected minimizer does not currently support '
-                    'problems with parameter bounds')
+                    "The selected minimizer does not currently support "
+                    "problems with parameter bounds"
+                )
 
         if (
             self.support_for_bounds is False
@@ -470,9 +473,8 @@ class Controller:
             raise IncompatibleMinimizerError(message)
 
         if (
-            (self.value_ranges is None or np.any(np.isinf(self.value_ranges)))
-            and minimizer in self.bounds_required_minimizers
-        ):
+            self.value_ranges is None or np.any(np.isinf(self.value_ranges))
+        ) and minimizer in self.bounds_required_minimizers:
             raise MissingBoundsError(
                 f"{minimizer} requires finite bounds on all parameters"
             )

@@ -1,6 +1,7 @@
 """
 Implements a controller for the GALAHAD fitting software.
 """
+
 from typing import Any, Callable, Dict
 
 import numpy as np
@@ -28,7 +29,8 @@ class GalahadController(Controller):
         "conjugate_gradient": [],
         "steepest_descent": [],
         "global_optimization": ["bgo", "dgo"],
-        "MCMC": []}
+        "MCMC": [],
+    }
 
     jacobian_enabled_solvers = ["arc", "bgo", "dgo", "nls", "trb", "tru"]
     hessian_enabled_solvers = ["arc", "bgo", "dgo", "nls", "trb", "tru"]
@@ -93,54 +95,61 @@ class GalahadController(Controller):
 
         opts = self._module.initialize()
         kwargs: "Dict[str, Any]" = {
-                "options": opts,
+            "options": opts,
         }
 
         if minimizer in ["arc", "tru"]:
-            kwargs.update({
-                "n": self._num_vars,
-                "H_type": "dense" if has_hessian else "absent",
-                "H_ne": 10,
-                "H_row": None,
-                "H_col": None,
-                "H_ptr": None,
-            })
+            kwargs.update(
+                {
+                    "n": self._num_vars,
+                    "H_type": "dense" if has_hessian else "absent",
+                    "H_ne": 10,
+                    "H_row": None,
+                    "H_col": None,
+                    "H_ptr": None,
+                }
+            )
         elif minimizer in ["bgo", "dgo", "trb"]:
-            kwargs.update({
-                "n": self._num_vars,
-                "x_l": x_l,
-                "x_u": x_u,
-                "H_type": "dense" if has_hessian else "absent",
-                "H_ne": 10,
-                "H_row": None,
-                "H_col": None,
-                "H_ptr": None,
-            })
+            kwargs.update(
+                {
+                    "n": self._num_vars,
+                    "x_l": x_l,
+                    "x_u": x_u,
+                    "H_type": "dense" if has_hessian else "absent",
+                    "H_ne": 10,
+                    "H_row": None,
+                    "H_col": None,
+                    "H_ptr": None,
+                }
+            )
 
         elif minimizer in ["nls"]:
             if not has_hessian:
                 raise IncompatibleMinimizerError(
-                    "Requires hessian information (for now)")
-            kwargs.update({
-                "n": self._num_vars,
-                "m": self.data_x.shape[0],
-                "J_type": "dense",
-                "J_ne": 10,
-                "J_row": None,
-                "J_col": None,
-                "J_ptr": None,
-                "H_type": "dense",
-                "H_ne": 10,
-                "H_row": None,
-                "H_col": None,
-                "H_ptr": None,
-                "w": np.ones(self.data_x.shape[0]),
-                "P_type": "dense_by_columns",
-                "P_ne": 10,
-                "P_row": None,
-                "P_col": None,
-                "P_ptr": None,
-            })
+                    "Requires hessian information (for now)"
+                )
+            kwargs.update(
+                {
+                    "n": self._num_vars,
+                    "m": self.data_x.shape[0],
+                    "J_type": "dense",
+                    "J_ne": 10,
+                    "J_row": None,
+                    "J_col": None,
+                    "J_ptr": None,
+                    "H_type": "dense",
+                    "H_ne": 10,
+                    "H_row": None,
+                    "H_col": None,
+                    "H_ptr": None,
+                    "w": np.ones(self.data_x.shape[0]),
+                    "P_type": "dense_by_columns",
+                    "P_ne": 10,
+                    "P_row": None,
+                    "P_col": None,
+                    "P_ptr": None,
+                }
+            )
             self._jacobian = self._jac
 
         if has_hessian:
@@ -163,7 +172,7 @@ class GalahadController(Controller):
         if self._minimizer in ["arc", "bgo", "dgo", "trb", "tru"]:
             kwargs = {
                 "n": self._num_vars,
-                "H_ne": int(self._num_vars*(self._num_vars+1)/2),
+                "H_ne": int(self._num_vars * (self._num_vars + 1) / 2),
                 "x": self._initial_params_array,
                 "eval_f": self.cost_func.eval_cost,
                 "eval_g": self._jacobian,
@@ -176,11 +185,11 @@ class GalahadController(Controller):
                 "m": m,
                 "x": self._initial_params_array,
                 "eval_c": self.cost_func.eval_r,
-                "J_ne": self._num_vars*m,
+                "J_ne": self._num_vars * m,
                 "eval_j": self._jacobian,
-                "H_ne": int(self._num_vars*(self._num_vars+1)/2),
+                "H_ne": int(self._num_vars * (self._num_vars + 1) / 2),
                 "eval_h": self._hessian,
-                "P_ne": self._num_vars*m,
+                "P_ne": self._num_vars * m,
                 "eval_hprod": self._P,
             }
 
@@ -191,22 +200,23 @@ class GalahadController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        status_map = {0: 0,  # Success
-                      -1: 3,  # Alloc error
-                      -2: 3,  # Dealloc error
-                      -3: 3,  # Bad hessian format
-                      -7: 3,  # Unbounded objective
-                      -9: 3,  # Analysis failed       (linear solve)
-                      -10: 3,  # Factorisation failed (linear solve)
-                      -11: 3,  # Solve failed         (linear solve)
-                      -15: 3,  # Preconditioner not pos def
-                      -16: 2,  # Ill-conditioned
-                      -17: 0,  # Computed step too small to make further
-                               # progress
-                      -18: 1,  # Too many iterations
-                      -19: 3,  # Max runtime
-                      -82: 3,  # Killed by user
-                      }
+        status_map = {
+            0: 0,  # Success
+            -1: 3,  # Alloc error
+            -2: 3,  # Dealloc error
+            -3: 3,  # Bad hessian format
+            -7: 3,  # Unbounded objective
+            -9: 3,  # Analysis failed       (linear solve)
+            -10: 3,  # Factorisation failed (linear solve)
+            -11: 3,  # Solve failed         (linear solve)
+            -15: 3,  # Preconditioner not pos def
+            -16: 2,  # Ill-conditioned
+            -17: 0,  # Computed step too small to make further
+            # progress
+            -18: 1,  # Too many iterations
+            -19: 3,  # Max runtime
+            -82: 3,  # Killed by user
+        }
         info = self._module.information()
         self._module.terminate()
         self.final_params = self._result[0]
@@ -223,9 +233,9 @@ class GalahadController(Controller):
     def _eval_hes_res_product(self, p, v):
         H, _ = self.cost_func.hes_res(p)
         n = len(v)
-        P = np.zeros(n*H.shape[-1])
+        P = np.zeros(n * H.shape[-1])
         for i in range(H.shape[-1]):
-            P[i*n:(i+1)*n] = np.dot(H[..., i], v)
+            P[i * n : (i + 1) * n] = np.dot(H[..., i], v)
 
         return P
 
