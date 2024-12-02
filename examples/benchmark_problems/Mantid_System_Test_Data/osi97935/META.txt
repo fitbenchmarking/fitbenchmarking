@@ -1,0 +1,7 @@
+Mantid_Test_Data_(osi97935)
+
+This folder contains data used in the mantid system tests.
+The data comes from the ISISIndirectInelastic.py file.
+The nexus file is called osi97935_graphite002_red.nxs.
+It contains 42 spectrums. They are unaltered and are fitted
+individually.
