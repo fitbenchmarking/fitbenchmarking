@@ -1,0 +1,7 @@
+# FitBenchmark Problem 
+software = 'Mantiddev' 
+name = 'osi97935_graphite002_red.nxs(Spectrum 22)' 
+description = 'This data comes from osi97935_graphite002_red.nxs and it is used in the ISISIndirectInelastic.py system test' 
+input_file = 'spectrum_22.dat'
+function = "name=LinearBackground, A0=0, A1=0; name=GausDecay, A=0.90, Sigma=50"
+fit_ranges = {'x': [-0.20, 0.20]}
