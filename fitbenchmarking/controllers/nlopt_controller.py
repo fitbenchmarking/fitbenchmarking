@@ -6,7 +6,6 @@ import nlopt
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
 class NLoptController(Controller):
@@ -105,6 +104,11 @@ class NLoptController(Controller):
         "GD_STOGO_RAND",
     ]
 
+    support_for_bounds = True
+    bounds_required_minimizers = algorithm_check["global_optimization"] + [
+        "LN_NEWUOA_BOUND"
+    ]
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -113,14 +117,10 @@ class NLoptController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.result = None
         self.opt = None
         self.value_ranges_ub = None
         self.value_ranges_lb = None
-        self.bound_minimizers = self.algorithm_check["global_optimization"] + [
-            "LN_NEWUOA_BOUND"
-        ]
         self.local_optimizer_minimizers = [
             "G_MLSL",
             "G_MLSL_LDS",
@@ -156,13 +156,6 @@ class NLoptController(Controller):
             )
             self.opt.set_lower_bounds(self.value_ranges_lb)
             self.opt.set_upper_bounds(self.value_ranges_ub)
-
-        if (
-            self.value_ranges is None or np.any(np.isinf(self.value_ranges))
-        ) and self.minimizer in self.bound_minimizers:
-            raise MissingBoundsError(
-                f"{self.minimizer} requires finite bounds on all parameters"
-            )
 
         if self.minimizer in self.local_optimizer_minimizers:
             local_opt = nlopt.opt(nlopt.LD_LBFGS, len(self.initial_params))
