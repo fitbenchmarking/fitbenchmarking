@@ -1,4 +1,4 @@
-.. _install_instructions:
+.. _install_instructions_for_contributors:
 
 #####################################
 Install Instructions for Contributors

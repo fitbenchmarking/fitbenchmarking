@@ -20,18 +20,18 @@ data available to others.
    - a file `META.txt` containing metadata about the dataset.
      
    - a subfolder `data_files` which contains any supplemental data
-   needed by the data parser.  We particularly encourage analytic
-   derivative information, if available.
-     
+     needed by the data parser.  We particularly encourage analytic
+     derivative information, if available.
+
 2. Update the :ref:`BenchmarkProblems` page to include a description of
    the dataset.  As well as information about the source of the data, this
    should include:
 
    - information about how many parameters and how many data points
-   are to be fitted in the dataset
+     are to be fitted in the dataset
    
    - details of any external software that needs to be installed to load these
-   datasets.
+     datasets.
    
 3. Create `zip` and `tar.gz` archives of these directories, and pass along
    to one of the core developers to put on the webspace.  They will pass you a

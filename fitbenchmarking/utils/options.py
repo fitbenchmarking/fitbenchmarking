@@ -701,7 +701,8 @@ class Options:
         :param option: option to be read for file
         :type option: str
         :param additional_options: A dictionary of options
-        input by the user into the command line.
+                                   input by the user into
+                                   the command line.
         :type additional_options: dict
 
         :return: value of the option

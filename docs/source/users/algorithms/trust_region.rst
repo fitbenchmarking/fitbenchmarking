@@ -40,6 +40,7 @@ Levenberg-Marquardt uses a combination of gradient descent and Gauss-Newton meth
 **Disadvantages**:
     - Similarly to Gauss-Newton, not good for large residual problems.
     - Can be slow to converge if a problem has many parameters
+
 [Nocedal]_ [Ranganathan]_
 
 .. [Nocedal] Jorge Nocedal, Stephen J. Wright (2006), Numerical Optimization

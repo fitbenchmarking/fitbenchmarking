@@ -512,7 +512,7 @@ def create_index_page(
     :param groups: Names for each of the problem set groups.
     :type groups: A list of strings.
     :param result_directories: Result directory paths for each
-    problem set group.
+                               problem set group.
     :type result_directories: A list of strings.
     :return: The filepath of the `results_index.html` file.
     :rtype: str
