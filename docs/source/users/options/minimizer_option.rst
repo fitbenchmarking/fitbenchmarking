@@ -68,7 +68,7 @@ The Bumps minimizers are set as follows:
 .. _ceres:
 
 Ceres Solver (``ceres``)
-=============
+========================
 
 
 `Ceres Solver <http://ceres-solver.org/>`__ is an open source C++ library for modeling and solving large, complicated optimization problems. 
@@ -295,7 +295,7 @@ The GSL minimizers are set as follows:
 .. warning::
    The external packages GSL and pygsl must be installed to use these minimizers.
 
-.. _horace:
+.. _horace_minimizer:
 
 Horace (``horace``)
 ===================
@@ -847,7 +847,7 @@ The SciPy least squares minimizers are set as follows:
 .. _scipy-leastsq:
 
 SciPy LeastSq (``scipy_leastsq``)
-=======================
+=================================
 
 `SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
 software.  In particular, we use the `leastsq <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.leastsq.html>`__

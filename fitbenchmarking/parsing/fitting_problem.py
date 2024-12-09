@@ -263,7 +263,7 @@ class FittingProblem:
 
         :param value_ranges: dictionary of bounded parameter names with
                              lower and upper bound values e.g.
-                            :code:`{p1_name: [p1_min, p1_max], ...}`
+                             :code:`{p1_name: [p1_min, p1_max], ...}`
         :type value_ranges: dict
         """
         lower_param_names = [name.lower() for name in self.starting_values[0]]

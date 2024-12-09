@@ -347,7 +347,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     :param problem_sets: The paths to directories containing problem_sets.
     :type problem_sets: list of str
     :param additional_options: A dictionary of options input by the
-    user into the command line.
+                               user into the command line.
     :type additional_options: dict
     :param options_file: The path to an options file, defaults to ''.
     :type options_file: str, optional
