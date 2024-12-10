@@ -118,6 +118,7 @@ class Options:
         "matlab_stats": ["Levenberg-Marquardt"],
         "minuit": ["migrad", "simplex"],
         "paramonte": ["paraDram_sampler"],
+        "pyro": ["NUTS"],
         "nlopt": [
             "LN_BOBYQA",
             "LN_NEWUOA",
@@ -219,6 +220,7 @@ class Options:
             "minuit",
             "nlopt",
             "paramonte",
+            "pyro",
             "ralfit",
             "scipy",
             "scipy_ls",
@@ -388,6 +390,7 @@ class Options:
         "matlab_stats": ["Levenberg-Marquardt"],
         "minuit": ["migrad", "simplex"],
         "paramonte": ["paraDram_sampler"],
+        "pyro": ["NUTS"],
         "nlopt": [
             "LN_BOBYQA",
             "LN_NEWUOA",
