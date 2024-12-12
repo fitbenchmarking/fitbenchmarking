@@ -3,6 +3,7 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.optimize import curve_fit
@@ -17,7 +18,8 @@ from fitbenchmarking.utils.exceptions import (
     UnknownMinimizerError,
 )
 
-from fitbenchmarking.cost_func.base_cost_func import CostFunc
+if TYPE_CHECKING:
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
 
 class Controller:
@@ -143,7 +145,7 @@ class Controller:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        self.cost_func: "CostFunc" = cost_func
+        self.cost_func: CostFunc = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -452,29 +454,18 @@ class Controller:
                           options
         :type minimizer: str
         """
-        if self.value_ranges is not None:
-            if (
-                self.support_for_bounds is False
-                or minimizer in self.no_bounds_minimizers
-            ):
-                raise IncompatibleMinimizerError(
-                    "The selected minimizer does not currently support "
-                    "problems with parameter bounds"
-                )
-
-        if (
+        if self.value_ranges is not None and (
             self.support_for_bounds is False
             or minimizer in self.no_bounds_minimizers
         ):
-            message = (
+            raise IncompatibleMinimizerError(
                 "The selected minimizer does not currently support "
                 "problems with parameter bounds"
             )
-            raise IncompatibleMinimizerError(message)
 
-        if (
+        if minimizer in self.bounds_required_minimizers and (
             self.value_ranges is None or np.any(np.isinf(self.value_ranges))
-        ) and minimizer in self.bounds_required_minimizers:
+        ):
             raise MissingBoundsError(
                 f"{minimizer} requires finite bounds on all parameters"
             )
