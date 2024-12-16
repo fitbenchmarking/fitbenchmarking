@@ -340,6 +340,17 @@ These problems have 3 or 4 unknown parameters, and around 100 data points.
     The external package Mantid must be installed to run
     this data set.  See :ref:`external-instructions` for details.
 
+Mantid System Test Data
+=======================
+
+This folder (found in `examples/benchmark_problems/Mantid_System_Test_Data`)
+contains data from the Mantid System Tests. The data was taken from the 
+`OSIRISIqtAndIqtFit <https://github.com/mantidproject/mantid/blob/48e9b01fb09802db0d4cfaff94dc265a875a1846/Testing/SystemTests/tests/framework/ISISIndirectInelastic.py#L871>`_ test.
+The spectrums come from `osi97935_graphite002_red.nxs` and is used in ISIS indirect inelastic calibration tests.
+
+.. figure:: ../../images/osi97935_graphite002_red_plots.png
+   :alt: The plots of the 42 spectrums from osi97935_graphite002_red.nxs
+
 Synthetic Datasets
 ==================
 
