@@ -13,8 +13,8 @@ supported file format.
 .. topic:: Downloads
 
     **You can download a folder containing all examples here:**
-    :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/examples.zip>`
-    or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/examples.tar.gz>`
+    :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/examples.zip>`
+    or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/examples.tar.gz>`
 
     Individual problem sets are also available to download below.
 
@@ -53,8 +53,8 @@ Currently FitBenchmarking ships with data from the following sources:
 CrystalField Data (Mantid)
 ==========================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/CrystalField.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/CrystalField.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/CrystalField.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/CrystalField.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/CrystalField`) contains
 a test set for inelastic neutron scattering measurements of transitions between
@@ -68,8 +68,8 @@ This problem has 8 parameters, and fits around 200 data points.
 CUTEst (NIST files)
 ===================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/CUTEst.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/CUTEst.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/CUTEst.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/CUTEst.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/CUTEst`) contains
 several problems from the `CUTEst <https://github.com/ralna/CUTEst>`_
@@ -82,8 +82,8 @@ with the exception of ``VESUVIOLS`` which fits around 1000.
 Data Assimilation
 =================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Data_Assimilation.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Data_Assimilation.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Data_Assimilation.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/Data_Assimilation`) contains
 two examples using the data assimilation problem definition in fitbenchmarking.
@@ -101,8 +101,8 @@ These problems have either 2 or 3 unknown parameters, and fit either 100 or
 Powder Diffraction Data (SIF files)
 ===================================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/DIAMOND_SIF.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/DIAMOND_SIF.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/DIAMOND_SIF.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/DIAMOND_SIF`)
 contain data from powder diffraction experiments.  The data supplied comes
@@ -120,8 +120,8 @@ These problems have either 66 or 99 unknown parameters, and fit around 5,000 dat
 MultiFit Data (Mantid)
 ======================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/MultiFit.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/MultiFit.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/MultiFit.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/MultiFit.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/MultiFit`)
 contain data
@@ -142,8 +142,8 @@ MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
 Muon Data (Mantid)
 ==================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Muon.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Muon.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Muon.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Muon.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/Muon`)
@@ -163,8 +163,8 @@ These problems have between 5 and 13 unknown parameters, and fit around 1,000 da
 Neutron Data (Mantid)
 =====================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Neutron.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Neutron.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Neutron.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Neutron.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Neutron`)
 contain
@@ -193,8 +193,8 @@ The WISH problems find 5 unknown parameters, and fit to 512 data points.
 NIST
 ====
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/NIST.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/NIST.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/NIST.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/NIST.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/NIST`) contain
 data from the `NIST Nonlinear Regression <https://www.itl.nist.gov/div898/strd/nls/nls_main.shtml>`_ test set.
@@ -207,8 +207,8 @@ fit between 6 and 250 data points.
 Poisson Data
 ============
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Poisson.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Poisson.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Poisson.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Poisson.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Poisson`) contain
 both simulated and real data measuring particle counts. The real data is ISIS
@@ -225,8 +225,8 @@ respectively.
 Small Angle Scattering (SASView)
 ================================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/SAS_modelling.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SAS_modelling.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SAS_modelling.tar.gz>`
 
 
 These problems (also found in the folder `examples/benchmark_problems/SAS_modelling/1D`) are
@@ -246,8 +246,8 @@ These have 6 unknown parameters, and fit to either 20 or 54 data points.
 CUTEst (SIF files)
 ==================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/SIF.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/SIF.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SIF.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SIF.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF`) contain
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -268,8 +268,8 @@ instrument at ISIS) have 1,025 data points (with 8 unknown parameters).
 SIF_GO
 ======
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/SIF_GO.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SIF_GO.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/SIF_GO.tar.gz>`
 
 This directory (also found in the folder `examples/benchmark_problems/SIF_GO`) contains
 `SIF files <https://github.com/ralna/SIFDecode>`_
@@ -291,8 +291,8 @@ These problems have between 3 and 7 unknown parameters, and fit between 9 and 37
 HOGBEN Samples
 ==============
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/HOGBEN_samples.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/HOGBEN_samples.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/HOGBEN_samples.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/HOGBEN_samples.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/HOGBEN_samples`)
 contain simulated reflectometry data. The data supplied has been generated using the
@@ -303,8 +303,8 @@ These problems have between 4 and 10 unknown parameters, and fit around 180 data
 Bundle Adjustment in the Large (BAL)
 ====================================
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/Bundle_Adjustment.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Bundle_Adjustment.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Bundle_Adjustment.tar.gz>`
 
 These problems (also found in the folder `examples/benchmark_problems/Bundle_Adjustment`)
 contain image data, either captured at a regular rate using a Ladybug camera, or downloaded
@@ -321,8 +321,8 @@ These problems have between ~20,000 and ~190,000 unknown parameters, and fit bet
 Simple tests
 ============
 
-**Download** :download:`.zip <https://numerical.rl.ac.uk/fitbenchmarking/simple_tests.zip>`
-or :download:`.tar.gz <https://numerical.rl.ac.uk/fitbenchmarking/simple_tests.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/simple_tests.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/simple_tests.tar.gz>`
 
 This folder (also found in `examples/benchmark_problems/simple_tests`) contains
 a number of simple tests with known, and easy to obtain,
@@ -343,6 +343,9 @@ These problems have 3 or 4 unknown parameters, and around 100 data points.
 Mantid System Test Data
 =======================
 
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Mantid_System_Test_Data.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/Mantid_System_Test_Data.tar.gz>`
+
 This folder (found in `examples/benchmark_problems/Mantid_System_Test_Data`)
 contains data from the Mantid System Tests. The data was taken from the 
 `OSIRISIqtAndIqtFit <https://github.com/mantidproject/mantid/blob/48e9b01fb09802db0d4cfaff94dc265a875a1846/Testing/SystemTests/tests/framework/ISISIndirectInelastic.py#L871>`_ test.
@@ -353,6 +356,9 @@ The spectrums come from `osi97935_graphite002_red.nxs` and is used in ISIS indir
 
 Synthetic Datasets
 ==================
+
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/synthetic_data.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/fitbenchmarking/synthetic_data.tar.gz>`
 
 This folder (found in `examples/benchmark_problems/synthetic_data`) contains
 synthetic data to test the minimizers of Mantid. The data was generated to
