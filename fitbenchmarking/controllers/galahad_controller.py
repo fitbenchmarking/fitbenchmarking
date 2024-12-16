@@ -2,7 +2,8 @@
 Implements a controller for the GALAHAD fitting software.
 """
 
-from typing import Any, Callable, Dict
+from contextlib import suppress
+from typing import Any, Callable
 
 import numpy as np
 from galahad import arc, bgo, dgo, nls, trb, tru
@@ -22,7 +23,7 @@ class GalahadController(Controller):
         "deriv_free": [],
         "general": [],
         "simplex": [],
-        "trust_region": ["trb", "tru"],
+        "trust_region": ["arc", "trb", "tru"],
         "levenberg-marquardt": [],
         "gauss_newton": [],
         "bfgs": [],
@@ -51,7 +52,7 @@ class GalahadController(Controller):
         super().__init__(cost_func)
 
         self._num_vars = len(self.cost_func.problem.param_names)
-        self._hessian: "Callable" = self._noop
+        self._hessian: Callable = self._noop
         self._initial_params_array = np.zeros(self._num_vars)
         self._module = arc
         self._jacobian = self.cost_func.jac_cost
@@ -64,12 +65,12 @@ class GalahadController(Controller):
         """
         Setup problem ready to be run with GALAHAD
         """
-        minimizer: "str" = self.minimizer
-        variant: "str" = ""
-        try:
+        minimizer: str = self.minimizer
+
+        # Ground work for supporting variants with tuned parameters
+        variant: str = ""
+        with suppress(ValueError):
             minimizer, variant = minimizer.split("_", 1)
-        except ValueError:
-            pass
 
         self._module = {
             "arc": arc,
@@ -94,7 +95,7 @@ class GalahadController(Controller):
         x_u = np.array(x_u)
 
         opts = self._module.initialize()
-        kwargs: "Dict[str, Any]" = {
+        kwargs: dict[str, Any] = {
             "options": opts,
         }
 
@@ -223,11 +224,11 @@ class GalahadController(Controller):
         self.flag = status_map[info["status"]]
 
     def _jac(self, p):
-        tmp: "np.ndarray" = self.cost_func.jac_res(p)
+        tmp: np.ndarray = self.cost_func.jac_res(p)
         return np.ravel(tmp)
 
     def _hes(self, p):
-        tmp: "np.ndarray" = self.cost_func.hes_cost(p)
+        tmp: np.ndarray = self.cost_func.hes_cost(p)
         return tmp[np.tril_indices(tmp.shape[0])]
 
     def _eval_hes_res_product(self, p, v):
