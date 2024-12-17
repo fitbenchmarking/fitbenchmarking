@@ -124,9 +124,7 @@ todo_include_todos = True
 
 # Surpresses the warning of the duplicate labels
 suppress_warnings = [
-    "autosectionlabel.*",
     "ref.citation",
-    "ref.duplicate",
     "autodoc",
 ]
 
