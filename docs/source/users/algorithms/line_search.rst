@@ -99,7 +99,9 @@ Gauss Newton (``gauss_newton``)
 Modified Newton's method with line search. Instead of solving standard Newton equations
 
 .. math::
-    \nabla^2 f(x_k)p = -\nabla f(x_k), solve the system
+    \nabla^2 f(x_k)p = -\nabla f(x_k),
+
+solve the system
 
 .. math::
     J_k^T J_k p_k^{GN} = - J_k^T r_k

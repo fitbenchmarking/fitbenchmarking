@@ -81,8 +81,8 @@ class Controller:
     #: information.
     #:
     #: - ``jacobian_enabled_solvers``: a list of minimizers in a
-    #:     specific software that allow Jacobian information to
-    #:     be passed into the fitting algorithm
+    #:   specific software that allow Jacobian information to
+    #:   be passed into the fitting algorithm
     #:
     jacobian_enabled_solvers = []
 
@@ -92,8 +92,8 @@ class Controller:
     #: information.
     #:
     #: - ``hessian_enabled_solvers``: a list of minimizers in a
-    #:     specific software that allow Hessian information to
-    #:     be passed into the fitting algorithm
+    #:   specific software that allow Hessian information to
+    #:   be passed into the fitting algorithm
     #:
     hessian_enabled_solvers = []
 
@@ -103,8 +103,8 @@ class Controller:
     #: jacobians.
     #:
     #: - ``sparsity_enabled_solvers``: a list of minimizers in a
-    #:     specific software that allow sparsity structure to be
-    #:     passed into the fitting algorithm
+    #:   specific software that allow sparsity structure to be
+    #:   passed into the fitting algorithm
     #:
     sparsity_enabled_solvers = []
 
