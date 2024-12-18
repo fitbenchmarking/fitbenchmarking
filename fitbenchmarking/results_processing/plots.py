@@ -42,10 +42,13 @@ class Plot:
             raise PlottingError(
                 "Plots cannot be generated for multivariate problems"
             )
-        if self.result.problem_format == "horace":
+        if (
+            self.result.problem_format == "horace"
+            and self.result.spinw_plot_info is None
+        ):
             self.plots_failed = True
             raise PlottingError(
-                "Plots cannot be generated for Horace problems"
+                "Plots cannot be generated for this Horace problem"
             )
         if self.result.problem_format == "bal":
             self.plots_failed = True
@@ -75,6 +78,45 @@ class Plot:
         html_file_name = os.path.join(figures_dir, htmlfile)
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
+    def plot_spinw_initial_guess(self, df):
+        n_cuts = self.result.spinw_plot_info["n_cuts"]
+        fig = make_subplots(
+            rows=1,
+            cols=n_cuts,
+            subplot_titles=self.result.spinw_plot_info["q_cens"],
+        )
+        data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
+        for i in range(n_cuts):
+            fig.update_xaxes(title_text="Energy (meV)", row=1, col=i + 1)
+            fig.update_yaxes(title_text="Intensity", row=1, col=i + 1)
+            fig.add_trace(
+                go.Scatter(
+                    x=self.result.spinw_plot_info["ebin_cens"],
+                    y=df["y"][df["minimizer"] == "Starting Guess"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    name="Starting Guess",
+                    line=self._summary_plot_line,
+                ),
+                row=1,
+                col=i + 1,
+            )
+            fig.add_trace(
+                go.Scatter(
+                    x=self.result.spinw_plot_info["ebin_cens"],
+                    y=df["y"][df["minimizer"] == "Data"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    mode="markers",
+                    name="Data",
+                    marker=self._data_marker,
+                ),
+                row=1,
+                col=i + 1,
+            )
+
+        return fig
+
     def plot_initial_guess(self, df):
         """
         Plots the initial guess along with the data and stores in a file
@@ -86,27 +128,30 @@ class Plot:
         :rtype: str
         """
 
-        # Plotly implementation below
-        fig = px.line(
-            df[df["minimizer"] == "Starting Guess"],
-            x="x",
-            y="y",
-            color="minimizer",
-            title=self.result.name,
-            markers=True,
-        )
-        self._error_dict["array"] = df["e"][df["minimizer"] == "Data"]
-        # add the raw data as a scatter plot
-        fig.add_trace(
-            go.Scatter(
-                x=df["x"][df["minimizer"] == "Data"],
-                y=df["y"][df["minimizer"] == "Data"],
-                error_y=self._error_dict,
-                mode="markers",
-                name="Data",
-                marker=self._data_marker,
+        if self.result.spinw_plot_info is not None:
+            fig = self.plot_spinw_initial_guess(df)
+        else:
+            # Plotly implementation below
+            fig = px.line(
+                df[df["minimizer"] == "Starting Guess"],
+                x="x",
+                y="y",
+                color="minimizer",
+                title=self.result.name,
+                markers=True,
             )
-        )
+            self._error_dict["array"] = df["e"][df["minimizer"] == "Data"]
+            # add the raw data as a scatter plot
+            fig.add_trace(
+                go.Scatter(
+                    x=df["x"][df["minimizer"] == "Data"],
+                    y=df["y"][df["minimizer"] == "Data"],
+                    error_y=self._error_dict,
+                    mode="markers",
+                    name="Data",
+                    marker=self._data_marker,
+                )
+            )
         fig.update_layout(legend=self._legend_options)
 
         if self.result.plot_scale in ["loglog", "logx"]:
@@ -138,6 +183,58 @@ class Plot:
         )
         return htmlfile
 
+    def plotly_spinw_fit(self, minimizer, df, y_best):
+        n_cuts = self.result.spinw_plot_info["n_cuts"]
+        fig = make_subplots(
+            rows=1,
+            cols=n_cuts,
+            subplot_titles=self.result.spinw_plot_info["q_cens"],
+        )
+        data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
+
+        for i in range(n_cuts):
+            fig.update_xaxes(title_text="Energy (meV)", row=1, col=i + 1)
+            fig.update_yaxes(title_text="Intensity", row=1, col=i + 1)
+            if minimizer not in ["Data", "Starting Guess"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=self.result.spinw_plot_info["ebin_cens"],
+                        y=df["y"][df["minimizer"] == minimizer][
+                            (data_len * i) : (data_len * (i + 1))
+                        ],
+                        name=self.result.name,
+                        line=self._summary_plot_line,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+            if not df["best"][df["minimizer"] == minimizer].iloc[0]:
+                name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
+                fig.add_trace(
+                    go.Scatter(
+                        x=self.result.spinw_plot_info["ebin_cens"],
+                        y=y_best[(data_len * i) : (data_len * (i + 1))],
+                        name=name,
+                        line=self._best_fit_line,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+            fig.add_trace(
+                go.Scatter(
+                    x=self.result.spinw_plot_info["ebin_cens"],
+                    y=df["y"][df["minimizer"] == "Data"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    mode="markers",
+                    name="Data",
+                    marker=self._data_marker,
+                ),
+                row=1,
+                col=i + 1,
+            )
+        return fig
+
     def plotly_fit(self, df):
         """
         Uses plotly to plot the calculated fit, along with the best fit.
@@ -159,39 +256,43 @@ class Plot:
 
         for minimizer in df["minimizer"].unique():
             if minimizer not in ["Data", "Starting Guess"]:
-                fig = px.line(
-                    df[df["minimizer"] == minimizer],
-                    x="x",
-                    y="y",
-                    color="minimizer",
-                    title=self.result.name,
-                    markers=True,
-                )
-                if not df["best"][df["minimizer"] == minimizer].iloc[0]:
-                    # add the best plot
-                    name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
+                if self.result.spinw_plot_info is None:
+                    fig = px.line(
+                        df[df["minimizer"] == minimizer],
+                        x="x",
+                        y="y",
+                        color="minimizer",
+                        title=self.result.name,
+                        markers=True,
+                    )
+                    if not df["best"][df["minimizer"] == minimizer].iloc[0]:
+                        # add the best plot
+                        name = (
+                            f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
+                        )
+                        fig.add_trace(
+                            go.Scatter(
+                                x=x_best,
+                                y=y_best,
+                                mode="lines",
+                                name=name,
+                                line=self._best_fit_line,
+                            )
+                        )
+                    # add the raw data as a scatter plot
                     fig.add_trace(
                         go.Scatter(
-                            x=x_best,
-                            y=y_best,
-                            mode="lines",
-                            name=name,
-                            line=self._best_fit_line,
+                            x=x_data,
+                            y=y_data,
+                            error_y=self._error_dict,
+                            mode="markers",
+                            name="Data",
+                            marker=self._data_marker,
                         )
                     )
-                # add the raw data as a scatter plot
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_data,
-                        y=y_data,
-                        error_y=self._error_dict,
-                        mode="markers",
-                        name="Data",
-                        marker=self._data_marker,
-                    )
-                )
+                else:
+                    fig = self.plotly_spinw_fit(minimizer, df, y_best)
                 fig.update_layout(legend=self._legend_options)
-
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
                 if self.result.plot_scale in ["loglog", "logy"]:
