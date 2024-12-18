@@ -137,7 +137,7 @@ MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
 .. warning::
     |MantidWarning|
    
-    This will also only work using the :ref:`Mantid Minimizers<MantidMinimizers>`.
+    This will also only work using the :ref:`mantid` minimizers.
 
 Muon Data (Mantid)
 ==================
