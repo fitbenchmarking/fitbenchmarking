@@ -140,6 +140,32 @@ The DFO minimizer is set as follows:
    these to be available;
    See :ref:`extra_dependencies`.
 
+.. _galahad:
+
+GALAHAD (``galahad``)
+=====================
+
+`GALAHAD <https://github.com/ralna/GALAHAD>`__ is a library of modern Fortran
+packages for nonlinear optimization with C, Python, Julia and MATLAB interfaces.
+It contains packages for general constrained and unconstrained optimization,
+linear and quadratic programming, nonlinear least-squares fitting and global
+optimization, as well as those for solving a large variety of basic
+optimization subproblems.
+
+GALAHAD is highly tunable though FitBenchmarking currently only supports its
+use with default arguments.
+
+FitBenchmarking currently supports the following GALAHAD minimizers:
+
+* ARC - An adaptive cubic regularization method (:code:`arc`)
+* TRU - An unconstrained trust region method (:code:`tru`)
+* TRB - A constrained trust region method (:code:`trb`)
+* BGO - Stochastic global optimisation (:code:`bgo`)
+* DGO - Deterministic global optimisation (:code:`dgo`)
+
+.. note::
+   Due to dependency issues, we are unable to install this on our testing machine.
+
 .. _gofit:
 
 GOFit (``gofit``)

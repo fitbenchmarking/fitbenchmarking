@@ -3,6 +3,7 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.optimize import curve_fit
@@ -13,8 +14,12 @@ from fitbenchmarking.utils.exceptions import (
     IncompatibleJacobianError,
     IncompatibleMinimizerError,
     IncompatibleProblemError,
+    MissingBoundsError,
     UnknownMinimizerError,
 )
+
+if TYPE_CHECKING:
+    from fitbenchmarking.cost_func.base_cost_func import CostFunc
 
 
 class Controller:
@@ -112,6 +117,19 @@ class Controller:
     #: from the class name.
     controller_name = None
 
+    #: Used to check whether the fitting software has support for
+    #: bounded problems, set as True if at least some minimizers
+    #: in the fitting software have support for bounds
+    support_for_bounds = False
+
+    #: Used to check whether the selected minimizers is compatible with
+    #: problems that have parameter bounds
+    no_bounds_minimizers = []
+
+    #: Used to check whether the selected minimizer is compatible with
+    #: problems that don't have parameter bounds
+    bounds_required_minimizers = []
+
     #: A list of incompatible problem formats for this controller.
     incompatible_problems = []
 
@@ -127,7 +145,7 @@ class Controller:
         :type cost_func: subclass of
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
-        self.cost_func = cost_func
+        self.cost_func: CostFunc = cost_func
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -157,15 +175,6 @@ class Controller:
 
         # Flag: error handling flag
         self._flag = None
-
-        # Used to check whether the selected minimizers is compatible with
-        # problems that have parameter bounds
-        self.no_bounds_minimizers = []
-
-        # Used to check whether the fitting software has support for
-        # bounded problems, set as True if at least some minimizers
-        # in the fitting software have support for bounds
-        self.support_for_bounds = False
 
         # The timer used to check if the 'max_runtime' is exceeded.
         self.timer = cost_func.problem.timer
@@ -445,16 +454,21 @@ class Controller:
                           options
         :type minimizer: str
         """
-
-        if (
+        if self.value_ranges is not None and (
             self.support_for_bounds is False
             or minimizer in self.no_bounds_minimizers
         ):
-            message = (
+            raise IncompatibleMinimizerError(
                 "The selected minimizer does not currently support "
                 "problems with parameter bounds"
             )
-            raise IncompatibleMinimizerError(message)
+
+        if minimizer in self.bounds_required_minimizers and (
+            self.value_ranges is None or np.any(np.isinf(self.value_ranges))
+        ):
+            raise MissingBoundsError(
+                f"{minimizer} requires finite bounds on all parameters"
+            )
 
     def check_bounds_respected(self):
         """
