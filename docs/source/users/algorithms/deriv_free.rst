@@ -33,6 +33,7 @@ In an iteration of the algorithm, the idea is to remove the vertex with the wors
 **Disadvantages**:
     - Stagnation can occur at non-optimal points, with large numbers of iterations leading to negligible improvement even when nowhere near a minimum.
     - If numerical computation of function derivative can be trusted, then other algorithms are more robust.
+
 [Singer]_
 
 .. [Nocedal] Jorge Nocedal, Stephen J. Wright (2006), Numerical Optimization

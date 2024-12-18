@@ -241,7 +241,7 @@ def generate_table(
     :type suffix: str
 
     :return: (Table object, Dict of HTML strings for table and dropdowns,
-    text string of table, path to colourbar)
+             text string of table, path to colourbar)
     :rtype: tuple(Table object, dict{str: str}, str, str)
     """
     table_module = load_table(suffix)
