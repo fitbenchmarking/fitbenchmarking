@@ -32,7 +32,7 @@ def make_controller(file_name="cubic.dat", minimizers=None):
     bench_prob_dir = os.path.dirname(inspect.getfile(test_files))
     fname = os.path.join(bench_prob_dir, file_name)
 
-    fitting_problem = parse_problem_file(fname, options)
+    fitting_problem = parse_problem_file(fname, options)[0]
     fitting_problem.correct_data()
     cost_func = NLLSCostFunc(fitting_problem)
 

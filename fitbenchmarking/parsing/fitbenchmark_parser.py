@@ -23,6 +23,7 @@ class FitbenchmarkParser(Parser):
     Parser for the native FitBenchmarking problem definition (FitBenchmark)
     file.
     """
+    _PARAM_IGNORE_LIST = []
 
     def __init__(self, filename, options):
         super().__init__(filename, options)
@@ -35,7 +36,7 @@ class FitbenchmarkParser(Parser):
         Parse the Fitbenchmark problem file into a Fitting Problem.
 
         :return: The fully parsed fitting problem
-        :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
+        :rtype: Union[FittingProblem, List[FittingProblem]]
         """
         self._entries = self._get_data_problem_entries()
 
@@ -157,14 +158,11 @@ class FitbenchmarkParser(Parser):
         :return: The starting values for the problem.
         :rtype: list
         """
-        # SasView functions can have reserved keywords so ignore these
-        ignore = ["name"]
-
         starting_values = [
             {
                 name: val
                 for name, val in self._parsed_func[0].items()
-                if name not in ignore
+                if name not in self._PARAM_IGNORE_LIST
             }
         ]
 
