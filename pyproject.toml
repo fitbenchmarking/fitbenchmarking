@@ -155,9 +155,3 @@ quote-style = "double"
 
 [tool.versioningit]
 default-version = '0.0.0dev1'
-
-[tool.isort]
-skip = "benchmark_problems"
-
-[tool.autopep8]
-ignore = ['E401', 'E402'] # handled by isort
