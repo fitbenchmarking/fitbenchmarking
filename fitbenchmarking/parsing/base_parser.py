@@ -1,6 +1,7 @@
 """
 Implements the base Parser as a Context Manager.
 """
+
 import contextlib
 from abc import ABCMeta, abstractmethod
 from typing import Union

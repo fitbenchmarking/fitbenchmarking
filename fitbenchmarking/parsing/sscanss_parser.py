@@ -1,6 +1,7 @@
 """
 This file implements a parser for SScanSS problem sets.
 """
+
 import math
 import os
 import sys
@@ -19,26 +20,29 @@ class SScanSSParser(FitbenchmarkParser):
 
     Function calculates the error from a current pose to the target pose.
     """
-    _PARAM_IGNORE_LIST = ['robot', 'module', 'targets']
 
-    def parse(self) -> 'list[FittingProblem]':
+    _PARAM_IGNORE_LIST = ["robot", "module", "targets"]
+
+    def parse(self) -> "list[FittingProblem]":
         template = super().parse()
 
         out = []
 
         pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        path = os.path.join(os.path.dirname(self._filename), pf["module"])
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
-        robot = getattr(module, pf['robot'])
-        targets = getattr(module, pf['targets'])
+        robot = getattr(module, pf["robot"])
+        targets = getattr(module, pf["targets"])
 
         for i, t in enumerate(targets):
             fp = FittingProblem(self.options)
             fp.multifit = template.multifit
-            fp.name = f'{template.name} - target {i+1}'
-            fp.description = (f'{template.description.rstrip().rstrip(".")}. '
-                              f'This problem is associated with target {i+1}.')
+            fp.name = f"{template.name} - target {i+1}"
+            fp.description = (
+                f'{template.description.rstrip().rstrip(".")}. '
+                f'This problem is associated with target {i+1}.'
+            )
             fp.function = self.inverse_kinematics_error(robot, t)
             fp.format = template.format
             fp.plot_scale = template.plot_scale
@@ -67,6 +71,7 @@ class SScanSSParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+
         # pylint: disable=unused-argument
         def dummy(x, *params):
             pass
@@ -79,12 +84,14 @@ class SScanSSParser(FitbenchmarkParser):
         Create a function for calculation the error in a forward kinematics
         transform.
         """
+
         def error_func(x, *params):
             # pylint: disable=unused-argument
             cur_pose = robot.fkine(params)
             pos_diff = cur_pose[:3, 3] - target[:3, 3]
             angle_diff = SScanSSParser.emap(
-                target[:3, :3] @ cur_pose[:3, :3].transpose())
+                target[:3, :3] @ cur_pose[:3, :3].transpose()
+            )
             return np.array(list(pos_diff) + list(angle_diff))
 
         return error_func
@@ -102,8 +109,11 @@ class SScanSSParser(FitbenchmarkParser):
         axis = v[-1, :]
 
         twocostheta = np.trace(r) - 1
-        twosinthetav = [r[2, 1] - r[1, 2],
-                        r[0, 2] - r[2, 0], r[1, 0] - r[0, 1]]
+        twosinthetav = [
+            r[2, 1] - r[1, 2],
+            r[0, 2] - r[2, 0],
+            r[1, 0] - r[0, 1],
+        ]
         twosintheta = np.dot(axis, twosinthetav)
         angle = math.degrees(math.atan2(twosintheta, twocostheta))
         return angle * axis
@@ -126,5 +136,7 @@ class SScanSSParser(FitbenchmarkParser):
         # x data is the spatial and agular coordinates for the pose
         # y data is the error in each coord at the fit (as defined in
         #     inverse_kinematics_error)
-        return {'x': np.array(["x", "y", "z", "ex", "ey", "ez"]),
-                'y': np.array([0, 0, 0, 0, 0, 0])}
+        return {
+            "x": np.array(["x", "y", "z", "ex", "ey", "ez"]),
+            "y": np.array([0, 0, 0, 0, 0, 0]),
+        }

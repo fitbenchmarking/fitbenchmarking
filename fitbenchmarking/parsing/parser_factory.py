@@ -94,7 +94,7 @@ class ParserFactory:
         return classes[0][1]
 
 
-def parse_problem_file(prob_file, options) -> 'list[FittingProblem]':
+def parse_problem_file(prob_file, options) -> "list[FittingProblem]":
     """
     Loads the problem file into a fitting problem using the correct parser.
 
