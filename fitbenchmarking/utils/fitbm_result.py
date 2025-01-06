@@ -98,7 +98,7 @@ class FittingResult:
                 "plot_type": problem.additional_info["plot_type"],
                 "n_cuts": problem.additional_info["n_cuts"],
                 "q_cens": problem.additional_info["q_cens"],
-                "ebin_cens": problem.additional_info["ebin_cens"],
+                "ebin_cens": problem.additional_info["ebin_cens"].tolist(),
             }
         else:
             self.spinw_plot_info = None
