@@ -250,17 +250,22 @@ class HoraceParser(FitbenchmarkParser):
             self.fitting_problem.additional_info["ebin_cens"] = np.array(
                 eng.workspace["ebin_cens"], dtype=np.float64
             )[0]
-            if "n_cuts" in self._entries:
-                self.fitting_problem.additional_info["n_cuts"] = int(
-                    self._entries["n_cuts"]
-                )
-            else:
-                raise ParsingError("n_cuts is required for plotting 1D cuts")
             if "q_cens" in self._entries:
                 self.fitting_problem.additional_info["q_cens"] = self._entries[
                     "q_cens"
                 ].split(",")
+                self.fitting_problem.additional_info["n_cuts"] = len(
+                    self.fitting_problem.additional_info["q_cens"]
+                )
             else:
                 raise ParsingError("q_cens are required for plotting 1D cuts")
+            if not float(
+                len(self.fitting_problem.data_y)
+                / self.fitting_problem.additional_info["n_cuts"]
+            ).is_integer():
+                raise ParsingError(
+                    "Number of data points must be divisible "
+                    "by number of q_cens"
+                )
 
         return super()._set_additional_info()

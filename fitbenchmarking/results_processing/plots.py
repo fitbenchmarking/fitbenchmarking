@@ -397,7 +397,17 @@ class Plot:
 
         first_result = next(iter(categories.values()))[0]
 
-        plotlyfig = go.Figure()
+        if first_result.spinw_plot_info is not None:
+            n_plots = first_result.spinw_plot_info["n_cuts"]
+            plotlyfig = make_subplots(
+                rows=1,
+                cols=n_plots,
+                subplot_titles=first_result.spinw_plot_info["q_cens"],
+            )
+            data_len = int(len(first_result.data_y) / n_plots)
+        else:
+            n_plots = 1
+            plotlyfig = go.Figure()
 
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
@@ -410,16 +420,33 @@ class Plot:
             }
         else:
             error_y = None
-        plotlyfig.add_trace(
-            go.Scatter(
-                x=first_result.data_x,
-                y=first_result.data_y,
-                error_y=error_y,
-                mode="markers",
-                name="Data",
-                marker=cls._data_marker,
+        if n_plots > 1:
+            for i in range(n_plots):
+                plotlyfig.add_trace(
+                    go.Scatter(
+                        x=first_result.spinw_plot_info["ebin_cens"],
+                        y=first_result.data_y[
+                            (data_len * i) : (data_len * (i + 1))
+                        ],
+                        error_y=error_y,
+                        mode="markers",
+                        name="Data",
+                        marker=cls._data_marker,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+        else:
+            plotlyfig.add_trace(
+                go.Scatter(
+                    x=first_result.data_x,
+                    y=first_result.data_y,
+                    error_y=error_y,
+                    mode="markers",
+                    name="Data",
+                    marker=cls._data_marker,
+                )
             )
-        )
 
         for (key, results), colour in zip(categories.items(), plotly_colours):
             # Plot category
@@ -447,16 +474,33 @@ class Plot:
                             + ")"
                         )
 
-                    plotlyfig.add_trace(
-                        go.Scatter(
-                            x=result.data_x[result.sorted_index],
-                            y=result.fin_y[result.sorted_index],
-                            mode="lines",
-                            name=label,
-                            line=line,
-                            showlegend=result.is_best_fit,
+                    if n_plots > 1:
+                        for i in range(n_plots):
+                            plotlyfig.add_trace(
+                                go.Scatter(
+                                    x=result.spinw_plot_info["ebin_cens"],
+                                    y=result.fin_y[result.sorted_index][
+                                        (data_len * i) : (data_len * (i + 1))
+                                    ],
+                                    mode="lines",
+                                    name=label,
+                                    line=line,
+                                    showlegend=result.is_best_fit,
+                                ),
+                                row=1,
+                                col=i + 1,
+                            )
+                    else:
+                        plotlyfig.add_trace(
+                            go.Scatter(
+                                x=result.data_x[result.sorted_index],
+                                y=result.fin_y[result.sorted_index],
+                                mode="lines",
+                                name=label,
+                                line=line,
+                                showlegend=result.is_best_fit,
+                            )
                         )
-                    )
 
                     plotlyfig.update_layout(title=title)
 
