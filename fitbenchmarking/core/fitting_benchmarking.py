@@ -31,6 +31,7 @@ from fitbenchmarking.utils.exceptions import (
     ValidationException,
 )
 from fitbenchmarking.utils.log import get_logger
+from scipy.optimize import check_grad
 
 LOGGER = get_logger()
 
@@ -382,6 +383,10 @@ class Fit:
         minimizer_check = minimizer in controller.jacobian_enabled_solvers
         sparsity_check = minimizer in controller.sparsity_enabled_solvers
         results = []
+
+        func = cost_func.eval_cost
+        init_params = list(controller.starting_values[controller.parameter_set].values())
+
         try:
             for jac_method in jacobian_list:
                 # Creates Jacobian class
@@ -409,6 +414,19 @@ class Fit:
                             self.__logger_prefix * 5,
                             jacobian.name() if jacobian.name() else "default",
                         )
+
+                    # Check jacobian
+                    jac = cost_func.jac_cost
+
+                    if init_params:
+                        error = check_grad(func, jac, init_params)
+                        with open("output_errors.txt", "a+") as text_file:
+                            text_file.write(str(cost_func.problem.name)+"       ")
+                            text_file.write(str(error)+" \n")
+                    else:
+                        with open("no_init_params.txt", "a+") as text_file:
+                            text_file.write(str(cost_func.problem.name)+ "         ")
+                            text_file.write(str(init_params)+" \n")
 
                     #######################
                     # Loops over Hessians #
