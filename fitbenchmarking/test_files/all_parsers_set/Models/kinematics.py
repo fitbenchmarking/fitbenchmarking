@@ -1,9 +1,14 @@
 """
 Definitions for the inverse kinematics problem files
 """
+import sys
+from pathlib import Path
 
 import numpy as np
-from sscanss.core.instrument.robotics import Link, SerialManipulator, Vector3
+from sscanss.core.instrument.robotics import Link, Vector3, SerialManipulator
+
+# pylint: disable=wrong-import-position,import-error
+sys.path.append(str(Path(__file__).parent.parent / 'utils'))
 
 
 def goniometer():

@@ -38,7 +38,11 @@ class SScanSSParser(FitbenchmarkParser):
         for i, t in enumerate(targets):
             fp = FittingProblem(self.options)
             fp.multifit = template.multifit
-            fp.name = f"{template.name} - target {i+1}"
+            fp.name = (
+                f"{template.name} - target {i+1}"
+                if len(targets) > 1
+                else template.name
+            )
             fp.description = (
                 f'{template.description.rstrip().rstrip(".")}. '
                 f'This problem is associated with target {i+1}.'
