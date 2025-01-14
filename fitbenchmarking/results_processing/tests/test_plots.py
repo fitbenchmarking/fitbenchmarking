@@ -177,6 +177,61 @@ class PlotTests(unittest.TestCase):
             self.assertTrue(os.path.exists(path))
             self.assertEqual(find_error_bar_count(path), 2)
 
+    @mock.patch("fitbenchmarking.results_processing.plots.Plot.plotly_spinw")
+    def test_plotly_spinw_called(self, spinw_plot):
+        """
+        Test that plotly_fit calls plotly_spinw
+        when spinw_plot_info is set.
+        """
+        self.plot.result.spinw_plot_info = {
+            "plot_type": "1d_cuts",
+            "n_cuts": 2,
+            "q_cens": [0.5, 1],
+            "ebin_cens": [0.9, 1.6, 1.1],
+        }
+
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        spinw_plot.assert_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        spinw_plot.assert_called()
+
+    @mock.patch("fitbenchmarking.results_processing.plots.Plot.plotly_spinw")
+    def test_plotly_spinw_fit_not_called(self, spinw_plot):
+        """
+        Test that plotly_fit doesn't call plotly_spinw
+        when spinw_plot_info is not set.
+        """
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        spinw_plot.assert_not_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        spinw_plot.assert_not_called()
+
+    def test_plotly_spinw(self):
+        """
+        Test that plotly_spinw creates correct number of subplots
+        and raises error if data lengths are unexpected
+        """
+        self.plot.result.spinw_plot_info = {
+            "plot_type": "1d_cuts",
+            "n_cuts": 3,
+            "q_cens": [0.5, 1, 1.5],
+            "ebin_cens": [0.9],
+        }
+        df = self.df[("Fake_Test_Data", "prob_1")]
+        y_best = df["y"][df["best"]]
+
+        fig = self.plot.plotly_spinw(df, "m10_[s1]_jj0", y_best)
+        _, cols = fig._get_subplot_rows_columns()
+
+        assert len(cols) == self.plot.result.spinw_plot_info["n_cuts"]
+
+        self.plot.result.spinw_plot_info["ebin_cens"] = [2, 4]
+
+        with self.assertRaises(PlottingError):
+            self.plot.plotly_spinw(df, "m10_[s1]_jj0", y_best)
+
     def test_plot_posteriors_create_files(self):
         """
         Test that plot_posteriors creates a file

@@ -78,7 +78,7 @@ class Plot:
         html_file_name = os.path.join(figures_dir, htmlfile)
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
-    def plot_spinw_initial_guess(self, df):
+    def plotly_spinw(self, df, minimizer=None, y_best=None):
         n_cuts = self.result.spinw_plot_info["n_cuts"]
         fig = make_subplots(
             rows=1,
@@ -86,21 +86,52 @@ class Plot:
             subplot_titles=self.result.spinw_plot_info["q_cens"],
         )
         data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
+        if data_len != len(self.result.spinw_plot_info["ebin_cens"]):
+            raise PlottingError("x and y data lengths are not the same")
+
         for i in range(n_cuts):
             fig.update_xaxes(title_text="Energy (meV)", row=1, col=i + 1)
             fig.update_yaxes(title_text="Intensity", row=1, col=i + 1)
-            fig.add_trace(
-                go.Scatter(
-                    x=self.result.spinw_plot_info["ebin_cens"],
-                    y=df["y"][df["minimizer"] == "Starting Guess"][
-                        (data_len * i) : (data_len * (i + 1))
-                    ],
-                    name="Starting Guess",
-                    line=self._summary_plot_line,
-                ),
-                row=1,
-                col=i + 1,
-            )
+
+            if minimizer and minimizer not in ["Data", "Starting Guess"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=self.result.spinw_plot_info["ebin_cens"],
+                        y=df["y"][df["minimizer"] == minimizer][
+                            (data_len * i) : (data_len * (i + 1))
+                        ],
+                        name=self.result.name,
+                        line=self._summary_plot_line,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+                if not df["best"][df["minimizer"] == minimizer].iloc[0]:
+                    name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
+                    fig.add_trace(
+                        go.Scatter(
+                            x=self.result.spinw_plot_info["ebin_cens"],
+                            y=y_best[(data_len * i) : (data_len * (i + 1))],
+                            name=name,
+                            line=self._best_fit_line,
+                        ),
+                        row=1,
+                        col=i + 1,
+                    )
+            else:  # plot starting guess if minimizer not provided
+                fig.add_trace(
+                    go.Scatter(
+                        x=self.result.spinw_plot_info["ebin_cens"],
+                        y=df["y"][df["minimizer"] == "Starting Guess"][
+                            (data_len * i) : (data_len * (i + 1))
+                        ],
+                        name="Starting Guess",
+                        line=self._summary_plot_line,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+            # plot data in both cases
             fig.add_trace(
                 go.Scatter(
                     x=self.result.spinw_plot_info["ebin_cens"],
@@ -114,7 +145,6 @@ class Plot:
                 row=1,
                 col=i + 1,
             )
-
         return fig
 
     def plot_initial_guess(self, df):
@@ -129,7 +159,7 @@ class Plot:
         """
 
         if self.result.spinw_plot_info is not None:
-            fig = self.plot_spinw_initial_guess(df)
+            fig = self.plotly_spinw(df)
         else:
             # Plotly implementation below
             fig = px.line(
@@ -182,58 +212,6 @@ class Plot:
             f"{result.costfun_tag}_{result.sanitised_name}.html"
         )
         return htmlfile
-
-    def plotly_spinw_fit(self, minimizer, df, y_best):
-        n_cuts = self.result.spinw_plot_info["n_cuts"]
-        fig = make_subplots(
-            rows=1,
-            cols=n_cuts,
-            subplot_titles=self.result.spinw_plot_info["q_cens"],
-        )
-        data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
-
-        for i in range(n_cuts):
-            fig.update_xaxes(title_text="Energy (meV)", row=1, col=i + 1)
-            fig.update_yaxes(title_text="Intensity", row=1, col=i + 1)
-            if minimizer not in ["Data", "Starting Guess"]:
-                fig.add_trace(
-                    go.Scatter(
-                        x=self.result.spinw_plot_info["ebin_cens"],
-                        y=df["y"][df["minimizer"] == minimizer][
-                            (data_len * i) : (data_len * (i + 1))
-                        ],
-                        name=self.result.name,
-                        line=self._summary_plot_line,
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
-            if not df["best"][df["minimizer"] == minimizer].iloc[0]:
-                name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
-                fig.add_trace(
-                    go.Scatter(
-                        x=self.result.spinw_plot_info["ebin_cens"],
-                        y=y_best[(data_len * i) : (data_len * (i + 1))],
-                        name=name,
-                        line=self._best_fit_line,
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
-            fig.add_trace(
-                go.Scatter(
-                    x=self.result.spinw_plot_info["ebin_cens"],
-                    y=df["y"][df["minimizer"] == "Data"][
-                        (data_len * i) : (data_len * (i + 1))
-                    ],
-                    mode="markers",
-                    name="Data",
-                    marker=self._data_marker,
-                ),
-                row=1,
-                col=i + 1,
-            )
-        return fig
 
     def plotly_fit(self, df):
         """
@@ -291,7 +269,7 @@ class Plot:
                         )
                     )
                 else:
-                    fig = self.plotly_spinw_fit(minimizer, df, y_best)
+                    fig = self.plotly_spinw(df, minimizer, y_best)
                 fig.update_layout(legend=self._legend_options)
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
@@ -479,7 +457,7 @@ class Plot:
                             plotlyfig.add_trace(
                                 go.Scatter(
                                     x=result.spinw_plot_info["ebin_cens"],
-                                    y=result.fin_y[result.sorted_index][
+                                    y=result.fin_y[
                                         (data_len * i) : (data_len * (i + 1))
                                     ],
                                     mode="lines",
