@@ -51,6 +51,7 @@ WORKDIR /
 
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
+RUN python -m pip install --no-binary=h5py h5py
 RUN pip install .
 
 WORKDIR /
