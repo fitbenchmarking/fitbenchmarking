@@ -273,7 +273,7 @@ def _extract_tags(
             if sort_pos in ["jacobian", "hessian"] and result.error_flag == 4:
                 result_tags[tag] += ":[^:]*"
             else:
-                result_tags[tag] += f':{getattr(result, sort_pos + "_tag")}'
+                result_tags[tag] += f":{getattr(result, sort_pos + '_tag')}"
         result_tags[tag] = result_tags[tag].lstrip(":")
 
     return result_tags
