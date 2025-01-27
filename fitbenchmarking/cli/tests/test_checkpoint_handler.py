@@ -239,13 +239,13 @@ class TestMerge(TestCase):
         M = merge(deepcopy(self.A), deepcopy(self.C), strategy="first")
         with self.subTest("number of problems"):
             assert len(M["DataSet1"]["problems"]) == 6, (
-                'Merge resulted in wrong number of problems:'
-                f'{", ".join(M["DataSet1"]["problems"])}'
+                "Merge resulted in wrong number of problems:"
+                f"{', '.join(M['DataSet1']['problems'])}"
             )
         with self.subTest("result name update"):
             assert M["DataSet1"]["results"][6]["name"] == "prob_0*", (
-                'Expected result name to be updated: '
-                f'{M["DataSet1"]["results"][6]}'
+                "Expected result name to be updated: "
+                f"{M['DataSet1']['results'][6]}"
             )
 
 
@@ -283,9 +283,9 @@ class TestMergeProblems(TestCase):
         M, _ = merge_problems(self.A, self.B)
         M_set_norename = {m.rstrip("*") for m in M}
         M_subset_norename = M_set_norename.issubset(inputs)
-        assert (
-            M_subset_norename
-        ), "Merged result contains unexpected problem name"
+        assert M_subset_norename, (
+            "Merged result contains unexpected problem name"
+        )
 
     def test_merged_problems_superset_of_input(self):
         """
@@ -314,9 +314,9 @@ class TestMergeProblems(TestCase):
         M_set = set(M)
         M_set_renamed = M_set - inputs
         check = sorted(M_set_renamed) == sorted(renamed)
-        assert (
-            check
-        ), "Listed renamed problems not the same as actual renamed problems"
+        assert check, (
+            "Listed renamed problems not the same as actual renamed problems"
+        )
 
 
 class TestMergeResults(TestCase):
@@ -397,6 +397,6 @@ class TestMergeResults(TestCase):
         for r in M:
             if r["name"] == "prob_0" and r["software"] == "common1":
                 actual_r = r
-        assert json.dumps(expected_r) == json.dumps(
-            actual_r
-        ), "Conflicting results merged incorrectly"
+        assert json.dumps(expected_r) == json.dumps(actual_r), (
+            "Conflicting results merged incorrectly"
+        )

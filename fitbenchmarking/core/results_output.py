@@ -273,7 +273,7 @@ def _extract_tags(
             if sort_pos in ["jacobian", "hessian"] and result.error_flag == 4:
                 result_tags[tag] += ":[^:]*"
             else:
-                result_tags[tag] += f':{getattr(result, sort_pos + "_tag")}'
+                result_tags[tag] += f":{getattr(result, sort_pos + '_tag')}"
         result_tags[tag] = result_tags[tag].lstrip(":")
 
     return result_tags
@@ -480,7 +480,6 @@ def create_problem_level_index(
     links = [v + "html" for v in table_names.values()]
     names = table_names.keys()
     description = [table_descriptions[n] for n in names]
-    index = table_descriptions[options.comparison_mode]
     run_name = f"{options.run_name}: " if options.run_name else ""
 
     with open(output_file, "w", encoding="utf-8") as fh:
@@ -490,7 +489,6 @@ def create_problem_level_index(
                 custom_style=css["custom"],
                 mathjax=js["mathjax"],
                 group_name=group_name,
-                index=index,
                 table_type=names,
                 links=links,
                 description=description,
@@ -514,7 +512,7 @@ def create_index_page(
     :param groups: Names for each of the problem set groups.
     :type groups: A list of strings.
     :param result_directories: Result directory paths for each
-    problem set group.
+                               problem set group.
     :type result_directories: A list of strings.
     :return: The filepath of the `results_index.html` file.
     :rtype: str

@@ -32,7 +32,7 @@ def nist_func_definition(function, param_names):
     # Param_names is sanitized in get_nist_param_names_and_values
 
     local_dict = {}
-    global_dict = {"__builtins__": {}, "np": np}
+    global_dict = {"__builtins__": {"__import__": __import__}, "np": np}
     exec(
         "def fitting_function(x, "
         + ",".join(param_names)
@@ -72,7 +72,7 @@ def nist_jacobian_definition(jacobian, param_names):
         if is_int(jacobian_scipy_format):
             jacobian_scipy_format += "*(np.ones(x.shape[0]))"
         scipy_jacobian.append(jacobian_scipy_format)
-    jacobian_format = f'np.array([{",".join(scipy_jacobian)}]).T'
+    jacobian_format = f"np.array([{','.join(scipy_jacobian)}]).T"
 
     new_param_name = "params"
     for i, name in enumerate(param_names):
@@ -83,7 +83,7 @@ def nist_jacobian_definition(jacobian, param_names):
     # Sanitizing of jacobian_scipy_format is done so exec use is valid
     # Param_names is sanitized in get_nist_param_names_and_values
     local_dict = {}
-    global_dict = {"__builtins__": {}, "np": np}
+    global_dict = {"__builtins__": {"__import__": __import__}, "np": np}
     exec(
         "def jacobian_function(x, "
         + new_param_name
@@ -142,7 +142,7 @@ def nist_hessian_definition(hessian, param_names):
     # Sanitizing of hessian_scipy_format is done so exec use is valid
     # param_names is sanitized in get_nist_param_names_and_values
     local_dict = {}
-    global_dict = {"__builtins__": {}, "np": np}
+    global_dict = {"__builtins__": {"__import__": __import__}, "np": np}
     exec(
         "def hessian_function(x, "
         + new_param_name

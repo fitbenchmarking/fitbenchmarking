@@ -12,13 +12,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
+        python: ['3.9', '3.13']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python }}
         check-latest: true
     - name: Pip install fitbenchmarking
       run: |
-        pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit]

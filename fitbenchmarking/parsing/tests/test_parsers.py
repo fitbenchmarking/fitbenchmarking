@@ -261,9 +261,9 @@ class TestParsers:
         ):
             loaded_as_set = set(a.values())
             expected_as_set = set(e.values())
-            assert (
-                loaded_as_set == expected_as_set
-            ), "starting_values were parsed incorrectly."
+            assert loaded_as_set == expected_as_set, (
+                "starting_values were parsed incorrectly."
+            )
 
         # check value ranges
         if file_format in BOUNDS_ENABLED_PARSERS:
@@ -271,9 +271,9 @@ class TestParsers:
                 act_val = str(fitting_problem.value_ranges)
             else:
                 act_val = fitting_problem.value_ranges
-            assert (
-                act_val == expected.value_ranges
-            ), "value_ranges were parsed incorrectly."
+            assert act_val == expected.value_ranges, (
+                "value_ranges were parsed incorrectly."
+            )
 
         # Check that the function is callable
         assert callable(fitting_problem.function)
@@ -337,7 +337,7 @@ class TestParsers:
                     x = np.array(r[0])
                     actual = fitting_problem.eval_model(x=x, params=r[1])
 
-                assert np.isclose(actual, r[2]).all(), print(
+                assert np.isclose(actual, r[2]).all(), (
                     f"Expected: {r[2]}\nReceived: {actual}"
                 )
 

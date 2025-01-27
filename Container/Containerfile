@@ -15,11 +15,11 @@ RUN apt-get update && apt-get install -y \
 
 # use uv to manage python version
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN $HOME/.cargo/bin/uv python install 3.12
+RUN $HOME/.local/bin/uv python install 3.12
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN $HOME/.cargo/bin/uv venv --seed $VIRTUAL_ENV
+RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install wheel
@@ -41,6 +41,22 @@ WORKDIR /
 RUN curl https://apt.kitware.com/kitware-archive.sh | sh -s -- noble
 
 RUN sudo apt-get install -y cmake
+
+
+###########
+# Sscanss #
+###########
+
+WORKDIR /
+
+RUN apt-get install -y pkg-config libhdf5-dev
+
+RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
+WORKDIR /SScanSS-2
+RUN python -m pip install --no-binary=h5py h5py
+RUN pip install .
+
+WORKDIR /
 
 #################
 # Install pygsl #
@@ -223,6 +239,7 @@ RUN pip install torch torchvision torchaudio --extra-index-url https://download.
 RUN pip install theseus-ai
 
 WORKDIR /
+
 
 ###########
 # Tidy up #

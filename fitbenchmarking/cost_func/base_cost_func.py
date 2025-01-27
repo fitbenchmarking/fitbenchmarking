@@ -117,7 +117,7 @@ class CostFunc:
         is incompatible with the selected cost function
 
         :param algorithm_check: dictionary object containing algorithm
-        types and minimizers for selected software
+                                types and minimizers for selected software
         :type algorithm_check: dict
         :param minimizer: string of minimizers selected from the options
         :type minimizer: str

@@ -51,7 +51,7 @@ Details about how the options file must be formatted are given in :ref:`options`
 
 
 Changing options via the command line
-------------------------------
+-------------------------------------
 
 It is possible to change the following options via the command line rather than from an ``.ini`` file or from the default options.
 They can be changed using the arguments in the table below.

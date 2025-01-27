@@ -227,7 +227,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        new_line = f'\n{" " * (len(software) + 2)}'
+        new_line = f"\n{' ' * (len(software) + 2)}"
         config_str = f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
         opts_file = os.path.join(
             self.test_files_dir, f"test_{software}_valid.ini"

@@ -112,9 +112,9 @@ If you encounter problems with cherry picking into release branch please
 don't hesitate to speak to an experienced member of the FitBenchmarking team.
 
 
-================
+==================
 Creating a release
-================
+==================
 In order to create a new release for FitBenchmarking, there are a few manual steps.
 These have been streamlined as much as possible.
 

@@ -1,0 +1,5 @@
+BackToBackExponential
+
+This folder contains synthetic data created by Richard
+Waite to test the performance of Mantid minimzers using
+the BackToBackExponential function.
