@@ -381,6 +381,6 @@ or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_p
 
 This problem (also found in the folder `examples/benchmark_problems/SpinW_powder_data`)
 contains 1D cuts of 2D powder data simulated using SpinW, using the approach outlined
-in `this tutorial <https://spinw.org/tutorials/39tutorial>`_
+in `this tutorial <https://spinw.org/tutorials/39tutorial>`_ .
 
 This problem has 8 unknown parameters and 186 data points.
