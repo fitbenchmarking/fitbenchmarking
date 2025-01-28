@@ -81,7 +81,10 @@ class Plot:
 
     def plotly_spinw(self, df, minimizer=None, y_best=None):
         n_cuts = self.result.spinw_plot_info["n_cuts"]
-        titles_with_unit = [f'{i} Å<sup>-1</sup>' for i in self.result.spinw_plot_info["q_cens"]]
+        titles_with_unit = [
+            f"{i} Å<sup>-1</sup>"
+            for i in self.result.spinw_plot_info["q_cens"]
+        ]
         fig = make_subplots(
             rows=1,
             cols=n_cuts,
@@ -104,7 +107,7 @@ class Plot:
                         ],
                         name=minimizer,
                         line=self._subplots_line,
-                        showlegend=True if i==0 else False,
+                        showlegend=i == 0,
                     ),
                     row=1,
                     col=i + 1,
@@ -117,7 +120,7 @@ class Plot:
                             y=y_best[(data_len * i) : (data_len * (i + 1))],
                             name=name,
                             line=self._best_fit_line,
-                            showlegend=True if i==0 else False,
+                            showlegend=i == 0,
                         ),
                         row=1,
                         col=i + 1,
@@ -131,7 +134,7 @@ class Plot:
                         ],
                         name="Starting Guess",
                         line=self._subplots_line,
-                        showlegend=True if i==0 else False,
+                        showlegend=i == 0,
                     ),
                     row=1,
                     col=i + 1,
@@ -146,13 +149,15 @@ class Plot:
                     mode="markers",
                     name="Data",
                     marker=self._data_marker,
-                    showlegend=True if i==0 else False,
+                    showlegend=i == 0,
                 ),
                 row=1,
                 col=i + 1,
             )
-        
-        fig.update_layout(legend=dict(yanchor="auto", y=0.5, xanchor="right", x=-0.1))
+
+        fig.update_layout(
+            legend={"yanchor": "auto", "y": 0.5, "xanchor": "right", "x": -0.1}
+        )
         return fig
 
     def plot_initial_guess(self, df):
@@ -279,7 +284,7 @@ class Plot:
                     fig.update_layout(legend=self._legend_options)
                 else:
                     fig = self.plotly_spinw(df, minimizer, y_best)
-                
+
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
                 if self.result.plot_scale in ["loglog", "logy"]:
@@ -386,7 +391,10 @@ class Plot:
 
         if first_result.spinw_plot_info is not None:
             n_plots = first_result.spinw_plot_info["n_cuts"]
-            titles_with_unit = [f'{i} Å<sup>-1</sup>' for i in first_result.spinw_plot_info["q_cens"]]
+            titles_with_unit = [
+                f"{i} Å<sup>-1</sup>"
+                for i in first_result.spinw_plot_info["q_cens"]
+            ]
             plotlyfig = make_subplots(
                 rows=1,
                 cols=n_plots,
@@ -420,7 +428,7 @@ class Plot:
                         mode="markers",
                         name="Data",
                         marker=cls._data_marker,
-                        showlegend=True if i==0 else False,
+                        showlegend=i == 0,
                     ),
                     row=1,
                     col=i + 1,
@@ -465,7 +473,6 @@ class Plot:
 
                     if n_plots > 1:
                         for i in range(n_plots):
-                            is_first_subplot = True if i==0 else False
                             plotlyfig.add_trace(
                                 go.Scatter(
                                     x=result.spinw_plot_info["ebin_cens"],
@@ -475,7 +482,7 @@ class Plot:
                                     mode="lines",
                                     name=label,
                                     line=line,
-                                    showlegend=result.is_best_fit and is_first_subplot,
+                                    showlegend=result.is_best_fit and i == 0,
                                 ),
                                 row=1,
                                 col=i + 1,
