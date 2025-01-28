@@ -31,6 +31,7 @@ class Plot:
     }
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1}
+    _subplots_line = {"width": 1, "color": "red"}
     _error_dict = {"type": "data", "array": None, "thickness": 1, "width": 4}
 
     def __init__(self, best_result, options, figures_dir):
@@ -80,10 +81,11 @@ class Plot:
 
     def plotly_spinw(self, df, minimizer=None, y_best=None):
         n_cuts = self.result.spinw_plot_info["n_cuts"]
+        titles_with_unit = [f'{i} Å<sup>-1</sup>' for i in self.result.spinw_plot_info["q_cens"]]
         fig = make_subplots(
             rows=1,
             cols=n_cuts,
-            subplot_titles=self.result.spinw_plot_info["q_cens"],
+            subplot_titles=titles_with_unit,
         )
         data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
         if data_len != len(self.result.spinw_plot_info["ebin_cens"]):
@@ -100,8 +102,9 @@ class Plot:
                         y=df["y"][df["minimizer"] == minimizer][
                             (data_len * i) : (data_len * (i + 1))
                         ],
-                        name=self.result.name,
-                        line=self._summary_plot_line,
+                        name=minimizer,
+                        line=self._subplots_line,
+                        showlegend=True if i==0 else False,
                     ),
                     row=1,
                     col=i + 1,
@@ -114,6 +117,7 @@ class Plot:
                             y=y_best[(data_len * i) : (data_len * (i + 1))],
                             name=name,
                             line=self._best_fit_line,
+                            showlegend=True if i==0 else False,
                         ),
                         row=1,
                         col=i + 1,
@@ -126,7 +130,8 @@ class Plot:
                             (data_len * i) : (data_len * (i + 1))
                         ],
                         name="Starting Guess",
-                        line=self._summary_plot_line,
+                        line=self._subplots_line,
+                        showlegend=True if i==0 else False,
                     ),
                     row=1,
                     col=i + 1,
@@ -141,10 +146,13 @@ class Plot:
                     mode="markers",
                     name="Data",
                     marker=self._data_marker,
+                    showlegend=True if i==0 else False,
                 ),
                 row=1,
                 col=i + 1,
             )
+        
+        fig.update_layout(legend=dict(yanchor="auto", y=0.5, xanchor="right", x=-0.1))
         return fig
 
     def plot_initial_guess(self, df):
@@ -182,7 +190,7 @@ class Plot:
                     marker=self._data_marker,
                 )
             )
-        fig.update_layout(legend=self._legend_options)
+            fig.update_layout(legend=self._legend_options)
 
         if self.result.plot_scale in ["loglog", "logx"]:
             fig.update_xaxes(type="log")
@@ -268,9 +276,10 @@ class Plot:
                             marker=self._data_marker,
                         )
                     )
+                    fig.update_layout(legend=self._legend_options)
                 else:
                     fig = self.plotly_spinw(df, minimizer, y_best)
-                fig.update_layout(legend=self._legend_options)
+                
                 if self.result.plot_scale in ["loglog", "logx"]:
                     fig.update_xaxes(type="log")
                 if self.result.plot_scale in ["loglog", "logy"]:
@@ -377,10 +386,11 @@ class Plot:
 
         if first_result.spinw_plot_info is not None:
             n_plots = first_result.spinw_plot_info["n_cuts"]
+            titles_with_unit = [f'{i} Å<sup>-1</sup>' for i in first_result.spinw_plot_info["q_cens"]]
             plotlyfig = make_subplots(
                 rows=1,
                 cols=n_plots,
-                subplot_titles=first_result.spinw_plot_info["q_cens"],
+                subplot_titles=titles_with_unit,
             )
             data_len = int(len(first_result.data_y) / n_plots)
         else:
@@ -410,6 +420,7 @@ class Plot:
                         mode="markers",
                         name="Data",
                         marker=cls._data_marker,
+                        showlegend=True if i==0 else False,
                     ),
                     row=1,
                     col=i + 1,
@@ -454,6 +465,7 @@ class Plot:
 
                     if n_plots > 1:
                         for i in range(n_plots):
+                            is_first_subplot = True if i==0 else False
                             plotlyfig.add_trace(
                                 go.Scatter(
                                     x=result.spinw_plot_info["ebin_cens"],
@@ -463,7 +475,7 @@ class Plot:
                                     mode="lines",
                                     name=label,
                                     line=line,
-                                    showlegend=result.is_best_fit,
+                                    showlegend=result.is_best_fit and is_first_subplot,
                                 ),
                                 row=1,
                                 col=i + 1,
