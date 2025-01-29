@@ -49,7 +49,7 @@ Horace
 ------
 
 Horace can be installed by following the instructions `on the Horace
-website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`__.
+website <https://pace-neutrons.github.io/Horace/v4.0.0/introduction/Download_and_setup.html>`__.
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
 
