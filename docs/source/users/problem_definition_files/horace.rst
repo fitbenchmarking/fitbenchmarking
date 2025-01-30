@@ -173,7 +173,7 @@ plot_type
   1D cuts and so plot_type should be set to '1D_cuts'.
 
 q_cens
-  For Spinw 2D powder fitting problems, the values of Q at which the 1D cuts have been taken.
+  For SpinW 2D powder fitting problems, the values of Q at which the 1D cuts have been taken.
   These values should be provided as a comma-separated string.
 
 .. note::
