@@ -9,6 +9,7 @@ import timeit
 
 import numpy as np
 from codecarbon import EmissionsTracker
+from scipy.optimize import approx_fprime, check_grad
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -31,7 +32,6 @@ from fitbenchmarking.utils.exceptions import (
     ValidationException,
 )
 from fitbenchmarking.utils.log import get_logger
-from scipy.optimize import check_grad
 
 LOGGER = get_logger()
 
@@ -385,7 +385,9 @@ class Fit:
         results = []
 
         func = cost_func.eval_cost
-        init_params = list(controller.starting_values[controller.parameter_set].values())
+        init_params = list(
+            controller.starting_values[controller.parameter_set].values()
+        )
 
         try:
             for jac_method in jacobian_list:
@@ -418,15 +420,63 @@ class Fit:
                     # Check jacobian
                     jac = cost_func.jac_cost
 
-                    if init_params:
-                        error = check_grad(func, jac, init_params)
-                        with open("output_errors.txt", "a+") as text_file:
-                            text_file.write(str(cost_func.problem.name)+"       ")
-                            text_file.write(str(error)+" \n")
-                    else:
-                        with open("no_init_params.txt", "a+") as text_file:
-                            text_file.write(str(cost_func.problem.name)+ "         ")
-                            text_file.write(str(init_params)+" \n")
+                    analytical_grad = jac(init_params)
+                    finite_diff_grad = approx_fprime(
+                        init_params, func, 1.4901161193847656e-08
+                    )
+
+                    max_range_analytical = abs(
+                        max(analytical_grad) - min(analytical_grad)
+                    )
+                    max_range_finite_diff = abs(
+                        max(finite_diff_grad) - min(finite_diff_grad)
+                    )
+                    max_range = (
+                        max_range_analytical + max_range_finite_diff / 2
+                    )
+
+                    # np.sqrt(np.sum(
+                    #     np.abs((analytical_grad - finite_diff_grad)**2)
+                    # ))
+                    error_from_check_grad = check_grad(func, jac, init_params)
+                    normalized_error = error_from_check_grad / max_range
+
+                    # with open("correcting_error.txt", "a+") as text_file:
+                    #     text_file.write(
+                    #         str(cost_func.problem.name)+"       "
+                    #     )
+                    #     text_file.write(
+                    #         "error:"+str(error_from_check_grad)+"   "
+                    #     )
+                    #     text_file.write(
+                    #         "analyt_grad:"+str(analytical_grad)+"   "
+                    #     )
+                    #     text_file.write(
+                    #         "approx_fprime_grad:"+str(finite_diff_grad)+"   "
+                    #     )
+                    #     text_file.write(
+                    #         "normalized_error:"+str(normalized_error)+" \n"
+                    #     )
+
+                    with open("new_errors.txt", "a+") as text_file:
+                        text_file.write(
+                            str(cost_func.problem.name) + "       "
+                        )
+                        text_file.write(
+                            "max:   "
+                            + str(np.max(analytical_grad))
+                            + "       "
+                        )
+                        text_file.write(
+                            "old err:   "
+                            + str(error_from_check_grad)
+                            + "       "
+                        )
+                        text_file.write(
+                            "normalised err:   "
+                            + str(normalized_error)
+                            + " \n"
+                        )
 
                     #######################
                     # Loops over Hessians #
