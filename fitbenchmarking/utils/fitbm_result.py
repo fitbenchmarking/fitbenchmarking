@@ -92,6 +92,17 @@ class FittingResult:
         # Posterior pdfs for Bayesian fitting
         self.params_pdfs = controller.params_pdfs
 
+        # Additional plotting info for SpinW powder plots
+        if "plot_type" in problem.additional_info:
+            self.spinw_plot_info = {
+                "plot_type": problem.additional_info["plot_type"],
+                "n_cuts": problem.additional_info["n_cuts"],
+                "q_cens": problem.additional_info["q_cens"],
+                "ebin_cens": problem.additional_info["ebin_cens"].tolist(),
+            }
+        else:
+            self.spinw_plot_info = None
+
         # Details of options used for this run
         self.software = controller.software
         self.minimizer = controller.minimizer
