@@ -93,36 +93,35 @@ installed. Installation instructions for MATLAB are available at
 and instructions for installing and setting up the MATLAB engine are
 here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
 
-There are a couple of different ways to install Matlab through WSL in a Linux environment. One of these
-involves relying on X11 Forwarding, through a server like VcXsrv. This is an X server for Windows, 
-which enables users to run graphical apps from a Linux environment on a Windows  machine. Once installed, 
-one needs to start XLaunch, click Next till the window "Extra settings", where the last box
-also needs to be clicked for VcXsrv to function correctly. X11Forwarding can be tested by running "xeyes" 
-from the WSL Linux environment, which should cause a pop-up with a pair of eyes to appear if the forwarding
-is working correctly. If the forwarding does not work at this point, one might also need to navigate to 
+There are a couple of different ways to install Matlab through WSL in a Linux environment. One of these involves using 
+X11 Forwarding, through a server like VcXsrv. This is an X server for Windows, which enables users to run graphical apps 
+from a Linux environment on a Windows  machine. Once installed, one needs to start XLaunch, click "Next" till the window 
+"Extra settings", where the last box needs to be ticked for VcXsrv to function correctly. X11Forwarding can be tested by 
+running "xeyes" from the WSL Linux environment, which should cause a pop-up with a pair of eyes to appear. For "xeyes" to 
+work, the environment variable called "DISPLAY" must have a value, which can be set by running, e.g., "export DISPLAY=:0". 
+This could be added to ~./bashrc to avoid repeating every time a terminal is started. It might also be necessary to set 
+the environment variable LIBGL_ALWAYS_INDIRECT to 1. If "xeyes" does not work at this point, one should check the inbound 
+rules for VcXsrv, by navigating to 
 Control Panel > System and Security > Defender Firewall > Advanced settings > Inbound rules. Here, there should be 
 two rules with the name "VcXsrv windows server" marked as Public. If these have red stop signs next to them, one should
 double click on them and "allow" the connection. This operation requires admin rights on the machine. 
-For "xeyes" to work, an environment variable called "DISPLAY" must be given a value. If "echo $DISPLAY" returns nothing,
-one should run "export DISPLAY=:0", to set the variable. This could be added to ~./bashrc to avoid repeating every time
-a terminal is started. It might also be necessary to set the environment variable LIBGL_ALWAYS_INDIRECT to 1 . 
 Once all this has been done, running "xeyes" should work and open the pop-up. 
 
-Having correctly configured the X11Forwarding, this can be used for installing Matlab. For this, it should be possible to just 
-follow the instructions in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_, 
-paying attention that the version of Matlab being downloaded is compatible with the Python version being used. This page might 
-be of help for that `<https://uk.mathworks.com/support/requirements/python-compatibility.html>`_. 
+Having configured the X 11Forwarding, this can be used for installing Matlab. For this, one should follow the instructions 
+in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_, making sure that the 
+version of Matlab being downloaded is compatible with the Python version being used. The following page might help with 
+that: `<https://uk.mathworks.com/support/requirements/python-compatibility.html>`_. 
 
-After running "sudo ./install" from the Matlab folder (as suggested in the Mathworks instructions), the graphical interface will 
-open. Make sure you select a suitable folder for the MATLAB installation and note it down. Let's call this path "matlabroot". 
-In the last window before the installation starts, there should be a question on whether to create symbolic link and where. That box 
-should be ticked, and the path provided there should correspond to the previously used "matlabroot".
+After running "sudo ./install" from the Matlab folder (as suggested in the Mathworks instructions), the graphical interface 
+will open. Here, the user is asked to select suitable folder for the MATLAB installation. Let's call this path "matlabroot". 
+In the last window, before the installation starts, there should be a question on whether to create symbolic links and where. 
+That box should be ticked, and the path provided there should correspond to the previously selected "matlabroot".
+Finally, the path "<matlabroot>/bin/glnxa64" should be added to LD_LIBRARY_PATH, and the path "<matlabroot>/bin" should be 
+added to both PATH and PYTHONPATH.
 
-Finally, the path "<matlabroot>/bin/glnxa64" should be added to LD_LIBRARY_PATH, and the path "<matlabroot>/bin" should be added to
-both PATH and PYTHONPATH.
-
-Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how to install 
-these packages by following the link provided: :ref:`here <extra_dependencies>`.
+Having installed matlab, to use it within Fitbenchmarking, it is necessary to install the MATLAB engine, as previously 
+mentioned. Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how 
+to install these packages by following the link provided: :ref:`here <extra_dependencies>`.
 
 RALFit
 ------
