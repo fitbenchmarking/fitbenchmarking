@@ -158,10 +158,11 @@ use with default arguments.
 FitBenchmarking currently supports the following GALAHAD minimizers:
 
 * ARC - An adaptive cubic regularization method (:code:`arc`)
+* NLS - A regularisation method for nonlinear least squars problems (:code:`nls`)
 * TRU - An unconstrained trust region method (:code:`tru`)
-* TRB - A constrained trust region method (:code:`trb`)
-* BGO - Stochastic global optimisation (:code:`bgo`)
-* DGO - Deterministic global optimisation (:code:`dgo`)
+.. * TRB - A constrained trust region method (:code:`trb`)
+.. * BGO - Stochastic global optimisation (:code:`bgo`)
+.. * DGO - Deterministic global optimisation (:code:`dgo`)
 
 .. note::
    Due to dependency issues, we are unable to install this on our testing machine.

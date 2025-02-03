@@ -47,7 +47,7 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
-        "galahad": ["arc", "bgo", "dgo", "nls", "trb", "tru"],
+        "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["alternating", "multistart", "regularisation"],
         "gradient_free": [
             "HillClimbingOptimizer",
@@ -334,7 +334,7 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
-        "galahad": ["arc", "bgo", "dgo", "nls", "trb", "tru"],
+        "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["multistart"],
         "gradient_free": [
             "HillClimbingOptimizer",

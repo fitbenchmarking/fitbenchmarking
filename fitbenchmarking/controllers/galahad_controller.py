@@ -38,7 +38,7 @@ class GalahadController(Controller):
 
     support_for_bounds = True
     no_bounds_minimizers = ["arc", "tru", "nls"]
-    bounds_required_minimizers = ["bgo", "dgo"]
+    bounds_required_minimizers = ["trb", "bgo", "dgo"]
 
     def __init__(self, cost_func):
         """
@@ -82,7 +82,6 @@ class GalahadController(Controller):
         }[minimizer]
 
         has_hessian = self.cost_func.hessian is not None
-        self._jacobian = self.cost_func.jac_cost
 
         x_l, x_u = ([], [])
         if self.value_ranges is None:
