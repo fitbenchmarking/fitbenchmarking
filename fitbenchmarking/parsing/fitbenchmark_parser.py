@@ -515,46 +515,40 @@ def _parse_range(range_str):
              e.g. {'x': [0, 10]}
     :rtype: dict
     """
-    if not range_str:
-        return {}
-
     output_ranges = {}
-    range_str = range_str.strip("{").strip("}")
-    tmp_ranges = range_str.split(",")
-    ranges = []
-    cur_str = ""
-    for r in tmp_ranges:
-        cur_str += r
-        balanced = True
-        for lb, rb in ["[]", "{}", "()"]:
-            if cur_str.count(lb) > cur_str.count(rb):
-                balanced = False
-            elif cur_str.count(lb) < cur_str.count(rb):
-                raise ParsingError(f"Unbalanced brackets in range: {r}")
-        if balanced:
-            ranges.append(cur_str)
-            cur_str = ""
-        else:
-            cur_str += ","
 
-    for r in ranges:
-        name, val = r.split(":")
-        name = name.strip().strip('"').strip("'").lower()
+    if range_str:
+        range_str = range_str.removeprefix("{").removesuffix("}")
+        bracket_pairs = {"(": ")", "[": "]", "{": "}"}
 
-        # Strip off brackets and split on comma
-        val = val.strip(" ")[1:-1].split(",")
-        val = [v.strip() for v in val]
-        try:
-            pair = [float(val[0]), float(val[1])]
-        except ValueError as e:
-            raise ParsingError(f"Expected floats in range: {r}") from e
+        if any(
+            range_str.count(open_bracket) != range_str.count(close_bracket)
+            for open_bracket, close_bracket in bracket_pairs.items()
+        ):
+            raise ParsingError(f"Mismatched parentheses in {range_str}")
 
-        if pair[0] >= pair[1]:
-            raise ParsingError(
-                "Min value must be smaller than max value in range: {r}"
-            )
+        pattern = (
+            r'["\']([\w\.]+)["\']\s*:\s*'
+            r"([\(\[\{])([\d\.]+),\s*([\d\.]+)([\)\]\}])"
+        )
+        matches = re.findall(pattern, range_str)
 
-        output_ranges[name] = pair
+        for var, open_bracket, low, high, close_bracket in matches:
+            expected_closing = bracket_pairs.get(open_bracket, "")
+            if close_bracket != expected_closing:
+                raise ParsingError(f"Unbalanced brackets in range for '{var}'")
+
+            try:
+                low, high = float(low), float(high)
+            except ValueError:
+                raise ParsingError(f"Expected floats in range for '{var}'")
+
+            if low >= high:
+                raise ParsingError(
+                    f"MIN value must be smaller than MAX value for '{var}'"
+                )
+
+            output_ranges[var.lower()] = [low, high]
 
     return output_ranges
 
