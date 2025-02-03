@@ -17,7 +17,7 @@ a newline-separated list. Available options are:
 * ``ceres`` (external software -- see :ref:`external-instructions`)
 * ``CUTEst`` (external software -- see :ref:`external-instructions`)
 * ``dfo`` (external software -- see :ref:`extra_dependencies`)
-* ``galahad`` (external software -- see ::ref:`external-instructions`)
+* ``galahad`` (external software -- see :ref:`external-instructions`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
 * ``gradient_free`` (external software -- see :ref:`extra_dependencies`)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
