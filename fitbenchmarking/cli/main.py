@@ -122,8 +122,7 @@ of the Fitbenchmarking docs. """
         type=str,
         default=[],
         help=(
-            "Select what type of algorithm is used within a specific "
-            "software."
+            "Select what type of algorithm is used within a specific software."
         ),
     )
     parser.add_argument(

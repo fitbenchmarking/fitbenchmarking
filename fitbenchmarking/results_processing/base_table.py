@@ -463,8 +463,7 @@ class Table:
 
             double_index.append(
                 (
-                    f'<a class="problem_header" '
-                    f'href="{rel_path}">{i1}</a>',
+                    f'<a class="problem_header" href="{rel_path}">{i1}</a>',
                     f'<a class="problem_header_lev1" '
                     f'href="{rel_path}">{i2}</a>',
                 )

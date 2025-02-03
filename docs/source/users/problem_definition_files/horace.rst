@@ -15,6 +15,8 @@ Examples of horace problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/PCSMO_at_001_data.txt
 
+.. literalinclude:: ..../../../examples/benchmark_problems/SpinW_powder_data/tri_AFM_powder.txt
+
 .. note::
   The Horace file format requires you to have run the benchmark problem in Horace 
   using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
@@ -165,6 +167,14 @@ Examples of the simulate_function:
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_pcsmo_test.m
+
+plot_type
+  For SpinW 2D powder fitting problems, the plot type must be specified. Currently, support is only available for plotting
+  1D cuts and so plot_type should be set to '1D_cuts'.
+
+q_cens
+  For SpinW 2D powder fitting problems, the values of Q at which the 1D cuts have been taken.
+  These values should be provided as a comma-separated string.
 
 .. note::
    All the functions needed in the fitting must be in the subdirectory of the benchmark problem.

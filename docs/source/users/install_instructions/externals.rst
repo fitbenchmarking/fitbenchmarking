@@ -53,6 +53,13 @@ website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`_
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
 
+SpinW
+-----
+
+SpinW can be installed by following the instructions `on the SpinW website
+<https://spinw.org/IntroToSpinW/#/install1>`__. In addition, MATLAB and the MATLAB
+engine must be installed following the :ref:`instructions given below<matlab-install>`.
+
 .. _levmar-install:
 
 Levmar
