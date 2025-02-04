@@ -83,6 +83,9 @@ class ScipyController(Controller):
         "dogleg",
     ]
 
+    support_for_bounds = True
+    no_bounds_minimizers = ["Nelder-Mead", "CG", "BFGS", "Newton-CG"]
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -94,8 +97,6 @@ class ScipyController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ["Nelder-Mead", "CG", "BFGS", "Newton-CG"]
         self.options = None
         self.result = None
         self._popt = None
