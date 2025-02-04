@@ -54,6 +54,7 @@ autodoc_mock_imports = [
     "nlopt",
     "codecarbon",
     "paramonte",
+    "pyro",
     "numdifftools",
     "sasmodels",
 ]
