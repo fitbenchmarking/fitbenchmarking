@@ -77,7 +77,7 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        # TODO: I wonder whether these (dq, Ei, eres) should be supplied from
+        # TODO: I wonder whether dq, Ei, eres should be supplied from
         # some file, to reduce the amount of stuff we do in here
         dq = 0.05
         Ei = 20
@@ -105,19 +105,16 @@ class HoraceParser(FitbenchmarkParser):
             f"fitpow.replace_2D_data_with_1D_cuts({qcens}-{dq}, {qcens}+{dq},"
             "'independent')"
         )
-        eng.evalc("x_vals = fitpow.ebin_cens")
-        eng.evalc("y_vals = fitpow.y")
-        eng.evalc("e_vals = fitpow.e")
 
         # Remove nans if there are
-        eng.evalc("NaN_rows_y = find(any(isnan(y_vals),2))")
-        eng.evalc("NaN_rows_e = find(any(isnan(e_vals),2))")
-        eng.evalc("all_NaN_indices = [NaN_rows_y, NaN_rows_e]")
-        eng.evalc("x_vals(all_NaN_indices) = []")
-
-        eng.evalc("y_final = y_vals(sum(isnan(y_vals),2)==0,:)")
-        eng.evalc("e_final = e_vals(sum(isnan(e_vals),2)==0,:)")
-        eng.evalc("x_final = repelem(x_vals,3,1)'")
+        for var in ['y', 'e']:
+            eng.evalc(f"{var} = fitpow.{var}")
+            eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
+            eng.evalc(f"{var}_final = {var}(sum(isnan({var}),2)==0,:)")
+    
+        eng.evalc("x = fitpow.ebin_cens")        
+        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")        
+        eng.evalc("x_final = repelem(x,3,1)'")
 
         eng.workspace["qmax_final"] = matlab.double([i + dq for i in qcens])
         eng.workspace["qmin_final"] = matlab.double([i - dq for i in qcens])
@@ -127,8 +124,8 @@ class HoraceParser(FitbenchmarkParser):
             "w = struct('x', {}, 'y', {}, 'e', {}," " 'qmax', {}, 'qmin', {})"
         )
         for i in [1, 2, 3]:
-            for letter in ["x", "y", "e", "qmax", "qmin"]:
-                eng.evalc(f"w({i}).{letter}={letter}_final(:, {i})'")
+            for var in ["x", "y", "e", "qmax", "qmin"]:
+                eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
 
         # Save sliced data
         new_path = data_file_path.split(".mat")[0] + "_cuts.mat"
@@ -147,7 +144,7 @@ class HoraceParser(FitbenchmarkParser):
         """
         new_data_path = data_file_path
 
-        # Check if SpinW problem --- TODO: this should be better
+        # Check if SpinW problem --- TODO: improve ?
         if self._entries["plot_type"].lower() == "1d_cuts":
             new_data_path = self._process_spinw_data(data_file_path)
 
