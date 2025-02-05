@@ -67,6 +67,74 @@ class HoraceParser(FitbenchmarkParser):
         self._horace_msk: typing.Optional[str] = None
         self._horace_path: typing.Optional[str] = None
 
+    def _process_spinw_data(self, data_file_path):
+        """
+        Cut SpinW data based on qcens.
+
+        :param data_file_path: The path to the file to load the points from
+        :type data_file_path: str
+
+        :return: data
+        :rtype: dict<str, np.ndarray>
+        """
+        # TODO: I wonder whether these (dq, Ei, eres) should be supplied from
+        # some file, to reduce the amount of stuff we do in here
+        dq = 0.05
+        Ei = 20
+        qcens = [float(i) for i in self._entries["q_cens"].split(",")]
+        function_params = self._entries["function"].split("J1")[1]
+        J1 = float(function_params.split(",")[0].replace("=", "").strip())
+
+        eng.evalc("tri = sw_model('triAF', 1)")
+        eng.evalc(f"data = load('{data_file_path}').data")
+        eng.evalc(
+            "fit_func =  @(obj, p) matparser(obj, 'param', p, 'mat', {'J_1'}, "
+            "'init', true)"
+        )
+        eng.evalc(f"fitpow = sw_fitpowder(tri, data, fit_func, [{J1}])")
+        eng.evalc(
+            f"eres = @(en) 2.1750e-04*sqrt(({Ei}-en).^3 .* "
+            f"( (32.27217*(0.168+0.400*({Ei}./({Ei}-en)).^1.5)).^2 + "
+            f"(14.53577*(1.168+0.400*({Ei}./({Ei}-en)).^1.5)).^2) )"
+        )
+        eng.evalc("fitpow.crop_energy_range(1.5*eres(0), inf)")
+        eng.evalc("fitpow.crop_q_range(0.25, 3)")
+
+        eng.evalc("fitpow.nQ = 5")
+        eng.evalc(
+            f"fitpow.replace_2D_data_with_1D_cuts({qcens}-{dq}, {qcens}+{dq},"
+            "'independent')"
+        )
+        eng.evalc("x_vals = fitpow.ebin_cens")
+        eng.evalc("y_vals = fitpow.y")
+        eng.evalc("e_vals = fitpow.e")
+
+        # Remove nans if there are
+        eng.evalc("NaN_rows_y = find(any(isnan(y_vals),2))")
+        eng.evalc("NaN_rows_e = find(any(isnan(e_vals),2))")
+        eng.evalc("all_NaN_indices = [NaN_rows_y, NaN_rows_e]")
+        eng.evalc("x_vals(all_NaN_indices) = []")
+
+        eng.evalc("y_final = y_vals(sum(isnan(y_vals),2)==0,:)")
+        eng.evalc("e_final = e_vals(sum(isnan(e_vals),2)==0,:)")
+        eng.evalc("x_final = repelem(x_vals,3,1)'")
+
+        eng.workspace["qmax_final"] = matlab.double([i + dq for i in qcens])
+        eng.workspace["qmin_final"] = matlab.double([i - dq for i in qcens])
+
+        # Create and fill struct
+        eng.evalc(
+            "w = struct('x', {}, 'y', {}, 'e', {}," " 'qmax', {}, 'qmin', {})"
+        )
+        for i in [1, 2, 3]:
+            for letter in ["x", "y", "e", "qmax", "qmin"]:
+                eng.evalc(f"w({i}).{letter}={letter}_final(:, {i})'")
+
+        # Save sliced data
+        new_path = data_file_path.split(".mat")[0] + "_cuts.mat"
+        eng.evalc(f"save('{new_path}', 'w')")
+        return new_path
+
     def _get_data_points(self, data_file_path):
         """
         Get the data points of the problem from the data file.
@@ -77,6 +145,12 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
+        new_data_path = data_file_path
+
+        # Check if SpinW problem --- TODO: this should be better
+        if self._entries["plot_type"].lower() == "1d_cuts":
+            new_data_path = self._process_spinw_data(data_file_path)
+
         wye_data_f = self._parse_function(self._entries["wye_function"])
         script = pathlib.Path(wye_data_f[0]["matlab_script"])
         func_name = script.stem
@@ -93,7 +167,7 @@ class HoraceParser(FitbenchmarkParser):
         try:
             eng.evalc(
                 f"[{self._horace_w}, y, e, {self._horace_msk}] ="
-                f"{func_name}('{data_file_path}','{self._horace_path}')"
+                f"{func_name}('{new_data_path}','{self._horace_path}')"
             )
         except Exception as e:
             raise ParsingError(
