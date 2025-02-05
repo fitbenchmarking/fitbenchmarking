@@ -239,17 +239,15 @@ class FitbenchmarkParser(Parser):
 
         entries = {}
         for line in self.file.readlines():
-            # Discard comments
-            line = line.split("#", 1)[0]
-            if line.strip() == "":
-                continue
-
-            lhs, rhs = line.split("=", 1)
-            key = lhs.strip()
-            value = rhs.strip().strip('"').strip("'")
-            if key == "name":
-                value = re.sub(r"[\\/]", "", value)
-            entries[key] = value
+            # Discard comment after #
+            text = re.search(r"^(.*?)\s*#", line)
+            line = text.group(1) if text else line
+            if line:
+                pattern = r"(\w+)\s*=\s*['\"]([^'\"]+)['\"]"
+                key, value = re.search(pattern, line).groups()
+                if key == "name":
+                    value = re.sub(r"[\\/]", "", value)
+                entries[key] = value
 
         return entries
 
@@ -525,10 +523,10 @@ def _parse_range(range_str):
             range_str.count(open_bracket) != range_str.count(close_bracket)
             for open_bracket, close_bracket in bracket_pairs.items()
         ):
-            raise ParsingError(f"Mismatched parentheses in {range_str}")
+            raise ParsingError(f"Unbalanced parentheses in {range_str}")
 
         pattern = (
-            r'["\']([\w\.]+)["\']\s*:\s*'
+            r'\'?"?([\w\.\s]+)"?\'?\s*:\s*'
             r"([\(\[\{])([\d\.]+),\s*([\d\.]+)([\)\]\}])"
         )
         matches = re.findall(pattern, range_str)
@@ -536,19 +534,19 @@ def _parse_range(range_str):
         for var, open_bracket, low, high, close_bracket in matches:
             expected_closing = bracket_pairs.get(open_bracket, "")
             if close_bracket != expected_closing:
-                raise ParsingError(f"Unbalanced brackets in range for '{var}'")
+                raise ParsingError(f"Mismatched parentheses for '{var}'")
 
             try:
                 low, high = float(low), float(high)
             except ValueError:
-                raise ParsingError(f"Expected floats in range for '{var}'")
+                raise ParsingError(f"Expected floats for '{var}'")
 
             if low >= high:
                 raise ParsingError(
                     f"MIN value must be smaller than MAX value for '{var}'"
                 )
 
-            output_ranges[var.lower()] = [low, high]
+            output_ranges[var.lower().strip()] = [low, high]
 
     return output_ranges
 
