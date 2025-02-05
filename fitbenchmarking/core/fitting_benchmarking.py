@@ -382,7 +382,6 @@ class Fit:
         minimizer_check = minimizer in controller.jacobian_enabled_solvers
         sparsity_check = minimizer in controller.sparsity_enabled_solvers
         results = []
-
         try:
             for jac_method in jacobian_list:
                 # Creates Jacobian class

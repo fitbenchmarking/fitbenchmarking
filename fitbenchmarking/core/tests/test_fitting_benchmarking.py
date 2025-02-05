@@ -523,7 +523,9 @@ class JacobianTests(unittest.TestCase):
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
     @patch(f"{FITTING_DIR}.Fit._Fit__check_jacobian")
-    def test_loop_over_jacobians_sparsity_check_true(self, check_jacobian, loop_over_hessians):
+    def test_loop_over_jacobians_sparsity_check_true(
+        self, check_jacobian, loop_over_hessians
+    ):
         """
         The test checks __loop_over_jacobians method
         handles the check for sparsity correctly
