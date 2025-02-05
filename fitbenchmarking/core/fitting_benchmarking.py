@@ -383,11 +383,6 @@ class Fit:
         sparsity_check = minimizer in controller.sparsity_enabled_solvers
         results = []
 
-        func = cost_func.eval_cost
-        init_params = list(
-            controller.starting_values[controller.parameter_set].values()
-        )
-
         try:
             for jac_method in jacobian_list:
                 # Creates Jacobian class
@@ -417,8 +412,16 @@ class Fit:
                         )
 
                     # Check jacobian
-                    jac = cost_func.jac_cost
-                    self.__check_jacobian(func, jac, init_params)
+                    params = list(
+                        controller.starting_values[
+                            controller.parameter_set
+                        ].values()
+                    )
+                    self.__check_jacobian(
+                        func=cost_func.eval_cost,
+                        jac=cost_func.jac_cost,
+                        init_params=params,
+                    )
 
                     #######################
                     # Loops over Hessians #
@@ -635,44 +638,39 @@ class Fit:
             controller.check_bounds_respected()
 
         return accuracy, runtimes, energy
-    
 
     def __check_jacobian(self, func, jac, init_params):
-
         """
         Check how similar the jacobian is to a finite difference
         approximation of the function
-        
+
         :param func: The function for which to compute the jacobian
         :type func: function
 
         :param jac: The jacobian of the function being used in Fitb.
-        :type jac: function        
+        :type jac: function
 
         :param init_params: The values at which to evaluate the
                             jacobian matrix
-        :type init_params: list  
+        :type init_params: list
 
         """
         analytical_grad = jac(init_params)
         finite_diff_grad = approx_fprime(init_params, func)
 
-        max_range_analytical = abs(
-            max(analytical_grad) - min(analytical_grad)
-        )
+        max_range_analytical = abs(max(analytical_grad) - min(analytical_grad))
         max_range_finite_diff = abs(
             max(finite_diff_grad) - min(finite_diff_grad)
         )
-        max_range = (
-            max_range_analytical + max_range_finite_diff / 2
-        )
+        max_range = max_range_analytical + max_range_finite_diff / 2
 
         error_from_check_grad = check_grad(func, jac, init_params)
         normalized_error = error_from_check_grad / max_range
 
-        if ((normalized_error > 10**(-4) and max_range < 10**5) or
-            (normalized_error > 0.6)):
-            LOGGER.warning( 
+        if (normalized_error > 10 ** (-4) and max_range < 10**5) or (
+            normalized_error > 0.6
+        ):
+            LOGGER.warning(
                 "The jacobian computed by Fitbenchmarking was "
                 "detected to be different from the one computed "
                 "through a finite difference approximation."
