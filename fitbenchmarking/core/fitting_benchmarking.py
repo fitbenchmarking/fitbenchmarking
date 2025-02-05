@@ -418,64 +418,7 @@ class Fit:
 
                     # Check jacobian
                     jac = cost_func.jac_cost
-
-                    analytical_grad = jac(init_params)
-                    finite_diff_grad = approx_fprime(
-                        init_params, func, 1.4901161193847656e-08
-                    )
-
-                    max_range_analytical = abs(
-                        max(analytical_grad) - min(analytical_grad)
-                    )
-                    max_range_finite_diff = abs(
-                        max(finite_diff_grad) - min(finite_diff_grad)
-                    )
-                    max_range = (
-                        max_range_analytical + max_range_finite_diff / 2
-                    )
-
-                    # np.sqrt(np.sum(
-                    #     np.abs((analytical_grad - finite_diff_grad)**2)
-                    # ))
-                    error_from_check_grad = check_grad(func, jac, init_params)
-                    normalized_error = error_from_check_grad / max_range
-
-                    # with open("correcting_error.txt", "a+") as text_file:
-                    #     text_file.write(
-                    #         str(cost_func.problem.name)+"       "
-                    #     )
-                    #     text_file.write(
-                    #         "error:"+str(error_from_check_grad)+"   "
-                    #     )
-                    #     text_file.write(
-                    #         "analyt_grad:"+str(analytical_grad)+"   "
-                    #     )
-                    #     text_file.write(
-                    #         "approx_fprime_grad:"+str(finite_diff_grad)+"   "
-                    #     )
-                    #     text_file.write(
-                    #         "normalized_error:"+str(normalized_error)+" \n"
-                    #     )
-
-                    with open("new_errors.txt", "a+") as text_file:
-                        text_file.write(
-                            str(cost_func.problem.name) + "       "
-                        )
-                        text_file.write(
-                            "max:   "
-                            + str(np.max(analytical_grad))
-                            + "       "
-                        )
-                        text_file.write(
-                            "old err:   "
-                            + str(error_from_check_grad)
-                            + "       "
-                        )
-                        text_file.write(
-                            "normalised err:   "
-                            + str(normalized_error)
-                            + " \n"
-                        )
+                    self.__check_jacobian(func, jac, init_params)
 
                     #######################
                     # Loops over Hessians #
@@ -692,3 +635,48 @@ class Fit:
             controller.check_bounds_respected()
 
         return accuracy, runtimes, energy
+    
+
+    def __check_jacobian(self, func, jac, init_params):
+
+        """
+        Check how similar the jacobian is to a finite difference
+        approximation of the function
+        
+        :param func: The function for which to compute the jacobian
+        :type func: function
+
+        :param jac: The jacobian of the function being used in Fitb.
+        :type jac: function        
+
+        :param init_params: The values at which to evaluate the
+                            jacobian matrix
+        :type init_params: list  
+
+        """
+        analytical_grad = jac(init_params)
+        finite_diff_grad = approx_fprime(init_params, func)
+
+        max_range_analytical = abs(
+            max(analytical_grad) - min(analytical_grad)
+        )
+        max_range_finite_diff = abs(
+            max(finite_diff_grad) - min(finite_diff_grad)
+        )
+        max_range = (
+            max_range_analytical + max_range_finite_diff / 2
+        )
+
+        error_from_check_grad = check_grad(func, jac, init_params)
+        normalized_error = error_from_check_grad / max_range
+
+        if ((normalized_error > 10**(-4) and max_range < 10**5) or
+            (normalized_error > 0.6)):
+            LOGGER.warning( 
+                "The jacobian computed by Fitbenchmarking was "
+                "detected to be different from the one computed "
+                "through a finite difference approximation."
+                "If you have provided a jacobian function, this"
+                "might indicate it is not correct."
+            )
+        return
