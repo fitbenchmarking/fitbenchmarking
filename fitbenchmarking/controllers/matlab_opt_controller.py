@@ -39,6 +39,8 @@ class MatlabOptController(MatlabMixin, Controller):
 
     incompatible_problems = ["mantid"]
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -47,7 +49,6 @@ class MatlabOptController(MatlabMixin, Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.param_ranges = None
         self.x_data_mat = None
         self.y_data_mat = None

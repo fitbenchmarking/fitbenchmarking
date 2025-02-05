@@ -341,22 +341,21 @@ class Fit:
                 minimizer_check = False
                 LOGGER.warning(str(excp))
 
-            if controller.problem.value_ranges is not None:
-                try:
-                    controller.check_minimizer_bounds(minimizer)
-                except IncompatibleMinimizerError as excp:
-                    if minimizer_check:
-                        minimizer_check = False
-                        controller.flag = 4
+            try:
+                controller.check_minimizer_bounds(minimizer)
+            except IncompatibleMinimizerError as excp:
+                if minimizer_check:
+                    minimizer_check = False
+                    controller.flag = 4
 
-                        # Calling prepare to fill in the initial parameters
-                        controller.prepare(skip_setup=True)
-                        dummy_result = fitbm_result.FittingResult(
-                            controller=controller
-                        )
-                        self._checkpointer.add_result(dummy_result)
-                        results.append(dummy_result)
-                        LOGGER.warning(str(excp))
+                    # Calling prepare to fill in the initial parameters
+                    controller.prepare(skip_setup=True)
+                    dummy_result = fitbm_result.FittingResult(
+                        controller=controller
+                    )
+                    self._checkpointer.add_result(dummy_result)
+                    results.append(dummy_result)
+                    LOGGER.warning(str(excp))
 
             if minimizer_check:
                 ########################

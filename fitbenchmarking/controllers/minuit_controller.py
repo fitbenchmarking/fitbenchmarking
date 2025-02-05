@@ -37,6 +37,8 @@ class MinuitController(Controller):
         "MCMC": [],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initializes variable used for temporary storage.
@@ -56,7 +58,6 @@ class MinuitController(Controller):
 
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self._status = None
         self._popt = None
