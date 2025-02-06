@@ -242,12 +242,11 @@ class FitbenchmarkParser(Parser):
             # Discard comment after #
             text = re.search(r"^(.*?)\s*#", line)
             line = text.group(1) if text else line
-            if line:
-                pattern = r"(\w+)\s*=\s*['\"]([^'\"]+)['\"]"
-                key, value = re.search(pattern, line).groups()
+            if line and (match := re.search(r"(\w+)\s*=\s*(.+)", line)):
+                key, value = match.groups()
                 if key == "name":
                     value = re.sub(r"[\\/]", "", value)
-                entries[key] = value
+                entries[key] = re.sub(r"^\s*['\"]?|['\"]?\s*$", "", value)
 
         return entries
 
@@ -263,15 +262,10 @@ class FitbenchmarkParser(Parser):
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
-        function_def = []
-
-        if func is None:
-            func = self._entries["function"]
-
-        for f in func.split(";"):
-            func_dict = self._parse_single_function(f)
-            function_def.append(func_dict)
-
+        func = func if func else self._entries["function"]
+        function_def = [
+            self._parse_single_function(f) for f in func.split(";")
+        ]
         return function_def
 
     def _parse_jac_function(self, func: Optional[str] = None):
