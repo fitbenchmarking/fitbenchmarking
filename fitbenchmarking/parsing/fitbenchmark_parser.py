@@ -7,6 +7,7 @@ import os
 import re
 import sys
 from contextlib import suppress
+from functools import partialmethod
 from typing import Callable, Optional, Union
 
 import numpy as np
@@ -43,7 +44,6 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem = FittingProblem(self.options)
 
         self._parsed_func = self._parse_function()
-        self._parsed_jac_func = self._parse_jac_function()
 
         self.fitting_problem.multifit = self._is_multifit()
 
@@ -237,7 +237,6 @@ class FitbenchmarkParser(Parser):
         :return: The entries from the file with string values
         :rtype: dict
         """
-
         entries = {}
         for line in self.file.readlines():
             # Discard comment after #
@@ -251,51 +250,31 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_function(self, func: Optional[str] = None):
+    def _parse_string(self, key: str, func: Optional[str] = None):
         """
-        Get the params from the function as a list of dicts from the data
-        file.
+        if key == "function"
+            Get the params from the function as a list of dicts
+            from the data file.
+        if key == "jac"
+            Get the (relative) path and the name of the jacobian
+            function from the data file. Returns a list of dicts
+            if these have been defined.
 
         :param func: The function to parse. Optional, defaults to
-                     self._entries['function']
+                     self._entries[key]
         :type func: str
         :return: Function definition in format:
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
-        func = func if func else self._entries["function"]
+        func = func if func else self._entries[key]
         function_def = [
             self._parse_single_function(f) for f in func.split(";")
         ]
         return function_def
 
-    def _parse_jac_function(self, func: Optional[str] = None):
-        """
-        Get the (relative) path and the name of the jacobian function
-        from the data file. Returns a list of dicts if these have been
-        defined. Returns None otherwise.
-
-        :param func: The function to parse. Optional, defaults to
-                     self._entries['jac']
-        :type func: str
-        :return: Function definition in format:
-                 [{name1: value1, name2: value2, ...}, ...]
-        :rtype: list of dict
-        """
-
-        function_def = []
-
-        if "jac" not in self._entries:
-            return None
-
-        if func is None:
-            func = self._entries["jac"]
-
-        for f in func.split(";"):
-            func_dict = self._parse_single_function(f)
-            function_def.append(func_dict)
-
-        return function_def
+    _parse_function = partialmethod(_parse_string, "function")
+    _parse_jac_function = partialmethod(_parse_string, "jac")
 
     def _dense_jacobian(self) -> Optional[Callable]:
         """
@@ -325,19 +304,18 @@ class FitbenchmarkParser(Parser):
         :return: A callable function or None
         :rtype: callable or None
         """
-
-        if self._parsed_jac_func is None:
+        if "jac" in self._entries:
+            parsed_jac_func = self._parse_jac_function()
+            if jac_type not in parsed_jac_func[0]:
+                return None
+            pf = parsed_jac_func[0]
+            path = os.path.join(os.path.dirname(self._filename), pf["module"])
+            sys.path.append(os.path.dirname(path))
+            module = importlib.import_module(os.path.basename(path))
+            func = getattr(module, pf[jac_type])
+            return func
+        else:
             return None
-
-        if jac_type not in self._parsed_jac_func[0]:
-            return None
-
-        pf = self._parsed_jac_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf["module"])
-        sys.path.append(os.path.dirname(path))
-        module = importlib.import_module(os.path.basename(path))
-        func = getattr(module, pf[jac_type])
-        return func
 
     @classmethod
     def _parse_single_function(cls, func: str) -> dict:
@@ -366,7 +344,7 @@ class FitbenchmarkParser(Parser):
         func_dict = {}
         pattern = (
             r"(\w+)\s*=\s*(\([^)]*\)|\[[^\]]*\]"
-            r"|'[^']*'|\"[^\"]*\"|[\w\.\-+e]+)"
+            r"|'[^']*'|\"[^\"]*\"|[\w\.\-+e/]+)"
         )
         matches = re.findall(pattern, func)
 
