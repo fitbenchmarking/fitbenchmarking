@@ -6,6 +6,7 @@ import importlib
 import os
 import re
 import sys
+from contextlib import suppress
 from typing import Callable, Optional, Union
 
 import numpy as np
@@ -353,7 +354,7 @@ class FitbenchmarkParser(Parser):
           - strings (not containing '[](),=' )
 
         Example:
-          a=1,b=3.2,c='foo',d=(e=true,f='bar'),h=[1.0,1.0,1.0]
+          a=1,b=3.2,c='foo',d=(e=true,f='bar'),g=[1.0,1.0,1.0]
 
         :param func: The definition to parse
         :type func: str
@@ -362,29 +363,34 @@ class FitbenchmarkParser(Parser):
         :return: The function as a dict of name, value pairs.
         :rtype: dict
         """
-        lhs, rhs = func.strip().split("=", 1)
-        name = lhs
-        if not re.match(r"^\w+$", name):
-            raise ParsingError(
-                f"Unexpected character in parameter name: {name}"
-            )
+        func_dict = {}
+        pattern = (
+            r"(\w+)\s*=\s*(\([^)]*\)|\[[^\]]*\]"
+            r"|'[^']*'|\"[^\"]*\"|[\w\.\-+e]+)"
+        )
+        matches = re.findall(pattern, func)
 
-        if rhs[0] in "([":
-            value, rem = cls._parse_parens(rhs)
-        else:
-            value, _, rem = rhs.partition(",")
-            value = cls._parse_function_value(value)
+        for key, value in matches:
+            if not re.match(r"^\w+$", key):
+                raise ParsingError(
+                    f"Unexpected character in parameter name: {key}"
+                )
 
-        func_dict = {name: value}
-        if rem:
-            func_dict.update(cls._parse_single_function(rem))
+            if value.startswith(("(", "[")):
+                value = cls._parse_parens(value)
+            else:
+                value = value.strip("'").strip('"')
+                value = cls._parse_function_value(value)
+
+            func_dict[key] = value
+
         return func_dict
 
     @classmethod
     def _parse_parens(cls, string: str):
         """
         Parse a string starting with an opening bracket into the parsed
-        contents of the brackets and the remainder after the brackets.
+        contents of the brackets.
 
         If the string starts with '(' a dictionary is returned.
         If the string starts with '[' a list is returned.
@@ -393,34 +399,23 @@ class FitbenchmarkParser(Parser):
         :type string: str
         :raises ParsingError: If brackets remain unclosed
 
-        :return: The parsed value, the remainder of the string
-        :rtype: Union[dict, list], str
+        :return: The parsed value
+        :rtype: Union[dict, list]
         """
-        count = 0
-        delim = "[]" if string[0] == "[" else "()"
-
-        for i, c in enumerate(string):
-            if c == delim[0]:
-                count += 1
-            elif c == delim[1]:
-                count -= 1
-            if count == 0:
-                value = string[:i]
-                rem = string[i + 1 :].strip(",")
-                break
-        else:
+        if any(
+            string.count(open_bracket) != string.count(close_bracket)
+            for open_bracket, close_bracket in {"(": ")", "[": "]"}.items()
+        ):
             raise ParsingError("Not all brackets are closed in function.")
 
-        if delim == "()":
-            value = cls._parse_single_function(value[1:])
-        else:  # []
-            value = [
-                cls._parse_function_value(v.strip())
-                for v in value[1:].split(",")
-                if v != ""
-            ]
+        if string.startswith("("):
+            string = string.removeprefix("(").removesuffix(")")
+            value = cls._parse_single_function(string)
+        else:  # string.startswith("[")
+            string = string.removeprefix("[").removesuffix("]")
+            value = [cls._parse_function_value(s) for s in string.split(",")]
 
-        return value, rem
+        return value
 
     @staticmethod
     def _parse_function_value(value: str) -> Union[int, float, bool, str]:
@@ -438,10 +433,8 @@ class FitbenchmarkParser(Parser):
         if value.lower() == "false":
             return False
         for convert in [int, float]:
-            try:
+            with suppress(ValueError, TypeError):
                 return convert(value)
-            except (ValueError, TypeError):
-                continue
         return value
 
     def _get_data_points(self, data_file_path: str):
