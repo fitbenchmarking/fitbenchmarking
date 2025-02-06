@@ -173,6 +173,16 @@ class TestFitbenchmarkParser(TestCase):
                 'd=(e=true ,f = "bar"),  g=[ 1.0, 1.0, 1.0]',
                 {"d": {"e": True, "f": "bar"}, "g": [1.0, 1.0, 1.0]},
             ),
+            (
+                "module=func/anac,func=anac,step=0.1,gamma=15,mu=-0.5",
+                {
+                    "module": "func/anac",
+                    "func": "anac",
+                    "step": 0.1,
+                    "gamma": 15,
+                    "mu": -0.5,
+                },
+            ),
         ]
     )
     @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
