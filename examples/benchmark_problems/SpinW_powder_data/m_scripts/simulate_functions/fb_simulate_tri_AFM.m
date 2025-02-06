@@ -1,4 +1,4 @@
-function y = fb_simulate_IX_1D_test1(w,fitpars,msk)
+function y = fb_simulate_tri_AFM(w,fitpars,msk)
 % simulate loop to solve for the parameters 
 
 fit_func = @tri_AFM_powder;
