@@ -7,19 +7,13 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 from json import load
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 import numpy as np
-from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 from scipy.sparse import issparse
 
 from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.parsing.fitbenchmark_parser import (
-    FitbenchmarkParser,
-    _parse_range,
-)
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import (
     ParserFactory,
@@ -584,94 +578,3 @@ class TestParserNoJac(TestCase):
 
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
-
-
-class TestFitbenchmarkParser(TestCase):
-    """
-    Tests the FitbenchmarkParser class and related functions.
-    """
-
-    @parameterized.expand(
-        [
-            (["name = '\\sample_problem'"], {"name": "sample_problem"}),
-            (["name = 'sample_problem/'"], {"name": "sample_problem"}),
-            (['name = "sample_problem"'], {"name": "sample_problem"}),
-            (["name = '\\sample_problem/////'"], {"name": "sample_problem"}),
-            (["#fitbenchmarking"], {}),
-            ([" #fitbenchmarking"], {}),
-            (
-                ["name = 'sample_problem' # my important comment"],
-                {"name": "sample_problem"},
-            ),
-            (
-                ["function = 'Userdefined: a/4 ** 6'"],
-                {"function": "Userdefined: a/4 ** 6"},
-            ),
-            (
-                ["function = 'Userdefined = a/4 ** 6'"],
-                {"function": "Userdefined = a/4 ** 6"},
-            ),
-        ]
-    )
-    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
-    def test_get_data_problem_entries(self, file_data, expected):
-        """
-        Verifies the output of _get_data_problem_entries() method.
-        """
-        parser = FitbenchmarkParser("test_file.txt", {"parse"})
-        parser.file = MagicMock()
-        parser.file.readlines.return_value = file_data
-        # pylint: disable=protected-access
-        assert parser._get_data_problem_entries() == expected
-
-    @parameterized.expand(
-        [
-            (
-                "{'f0.I':(1,2),'f0.A':(3, 4), 'f1.B':(5, 6)}",
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-            (
-                "{'f0.I':[1,2],'f0.A':[3, 4], 'f1.B':[5, 6]}",
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-            (
-                "{'f0.I':{1,2},'f0.A':{3, 4}, 'f1.B':{5, 6}}",
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-            (
-                "{'f0.I':(1,2),'f0.A':[3, 4], 'f1.B':{5, 6}}",
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-            (
-                '{"f0.I":(1,2),"f0.A":[3, 4], "f1.B":{5, 6}}',
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-            (
-                '{"f0.I  ":(1,2),"f0.A ":[3, 4], " f1.B":{5, 6}}',
-                {"f0.i": [1.0, 2.0], "f0.a": [3.0, 4.0], "f1.b": [5.0, 6.0]},
-            ),
-        ]
-    )
-    def test_parse_range_with_valid_inputs(self, range_str, expected):
-        """
-        Verifies the output of _parse_range function.
-        """
-        assert _parse_range(range_str) == expected
-
-    @parameterized.expand(
-        [
-            "{'f0.I':(1,2),'f0.A':(3, 4, 'f1.B':(5, 6)}",
-            "{'f0.I':1,2],'f0.A':[3, 4], 'f1.B':[5, 6]}",
-            "{'f0.I':{1,2},'f0.A':{3, 4}, 'f1.B':{5, 6}",
-            "{'f0.I':(1,2,'f0.A':[3, 4, 'f1.B':{5, 6}",
-            "{'f0.I':(1,2],'f0.A':[3, 4}, 'f1.B':{5, 6)}",
-            "{'f0.I':(2,1),'f0.A':[3, 4], 'f1.B':{5, 6}}",
-            "{'f0.I':(1,1A),'f0.A':[55, 4], 'f1.B':{5, 6C}}",
-        ]
-    )
-    def test_parse_range_with_invalid_inputs(self, range_str):
-        """
-        Verifies the ParsingError is raised.
-        """
-        with self.assertRaises(exceptions.ParsingError):
-            _ = _parse_range(range_str)
