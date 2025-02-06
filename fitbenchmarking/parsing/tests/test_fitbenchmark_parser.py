@@ -19,6 +19,13 @@ class TestFitbenchmarkParser(TestCase):
     Tests the FitbenchmarkParser class and related functions.
     """
 
+    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
+    def setUp(self):
+        """
+        Set up resources before each test case.
+        """
+        self.parser = FitbenchmarkParser("test_file.txt", {"parse"})
+
     @parameterized.expand(
         [
             (["name = '\\sample_problem'"], {"name": "sample_problem"}),
@@ -53,15 +60,13 @@ class TestFitbenchmarkParser(TestCase):
             ),
         ]
     )
-    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
     def test_get_data_problem_entries(self, file_data, expected):
         """
         Verifies the output of _get_data_problem_entries() method.
         """
-        parser = FitbenchmarkParser("test_file.txt", {"parse"})
-        parser.file = MagicMock()
-        parser.file.readlines.return_value = file_data
-        assert parser._get_data_problem_entries() == expected
+        self.parser.file = MagicMock()
+        self.parser.file.readlines.return_value = file_data
+        assert self.parser._get_data_problem_entries() == expected
 
     @parameterized.expand(
         [
@@ -78,14 +83,105 @@ class TestFitbenchmarkParser(TestCase):
             ),
         ]
     )
-    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
     def test_parse_function(self, entries, expected):
         """
         Verifies the output of _parse_function() method.
         """
+        self.parser._entries = entries
+        assert self.parser._parse_function() == expected
+
+    @parameterized.expand(
+        [
+            ("True", True, bool),
+            ("TRUE", True, bool),
+            ("true", True, bool),
+            ("False", False, bool),
+            ("FALSE", False, bool),
+            ("false", False, bool),
+            ("BackToBackExponential", "BackToBackExponential", str),
+            ("1", 1, int),
+            ("100", 100, int),
+            ("2.0", 2.0, float),
+            ("200.0", 200.0, float),
+        ]
+    )
+    def test_parse_function_value(self, input, expected, expected_type):
+        """
+        Verifies the output of _parse_function_value() method.
+        """
+        result = self.parser._parse_function_value(input)
+        assert result == expected
+        assert isinstance(result, expected_type)
+
+    @parameterized.expand(
+        [
+            (
+                "name=BackToBackExponential, I=1.5e4, A=0.04, B=3",
+                {
+                    "name": "BackToBackExponential",
+                    "I": 15000.0,
+                    "A": 0.04,
+                    "B": 3,
+                },
+            ),
+            (
+                "name = BackToBackExponential, I = 1.5e4, A = 0.04, B = 3",
+                {
+                    "name": "BackToBackExponential",
+                    "I": 15000.0,
+                    "A": 0.04,
+                    "B": 3,
+                },
+            ),
+            (
+                "name= BackToBackExponential, I= 1.5e4, A= 0.04, B= 3",
+                {
+                    "name": "BackToBackExponential",
+                    "I": 15000.0,
+                    "A": 0.04,
+                    "B": 3,
+                },
+            ),
+            (
+                "name =BackToBackExponential, I =1.5e4, A =0.04, B =3",
+                {
+                    "name": "BackToBackExponential",
+                    "I": 15000.0,
+                    "A": 0.04,
+                    "B": 3,
+                },
+            ),
+            (
+                " name=FlatBackground, A0=30",
+                {"name": "FlatBackground", "A0": 30},
+            ),
+            (
+                "a=1,b=3.2,c='foo',d=(e=true,f='bar'),g=[1.0,1.0,1.0]",
+                {
+                    "a": 1,
+                    "b": 3.2,
+                    "c": "foo",
+                    "d": {"e": True, "f": "bar"},
+                    "g": [1.0, 1.0, 1.0],
+                },
+            ),
+            (
+                "d=(e=true,f='bar'),  g=[1.0,1.0,1.0]",
+                {"d": {"e": True, "f": "bar"}, "g": [1.0, 1.0, 1.0]},
+            ),
+            (
+                'd=(e=true ,f = "bar"),  g=[ 1.0, 1.0, 1.0]',
+                {"d": {"e": True, "f": "bar"}, "g": [1.0, 1.0, 1.0]},
+            ),
+        ]
+    )
+    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
+    def test_parse_single_function(self, input, expected):
+        """
+        Verifies the output of _parse_single_function() method.
+        """
         parser = FitbenchmarkParser("test_file.txt", {"parse"})
-        parser._entries = entries
-        assert parser._parse_function() == expected
+        assert parser._parse_single_function(input) == expected
 
     @parameterized.expand(
         [
