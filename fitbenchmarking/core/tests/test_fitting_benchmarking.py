@@ -539,6 +539,29 @@ class JacobianTests(unittest.TestCase):
         results = self.fit._Fit__loop_over_jacobians(self.controller)
         assert len(results) == 3
 
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    def test_loop_over_jacobians_jac_check_true(self, loop_over_hessians):
+        """
+        The test checks __loop_over_jacobians method
+        handles the check of the jacobian correctly
+        """
+        loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
+        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        assert len(results) == 2
+
+    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    def test_loop_over_jacobians_jac_check_false(self, loop_over_hessians):
+        """
+        The test checks __loop_over_jacobians method
+        handles the check of the jacobian correctly
+        """
+        with self.assertWarns(Warning):
+            # Modify jacobian to make it wrong
+            jac_f = self.controller.cost_func.jac_cost
+            self.controller.cost_func.jac_cost = lambda x: jac_f(jac_f(x))
+            loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
+            self.fit._Fit__loop_over_jacobians(self.controller)
+
 
 class MinimizersTests(unittest.TestCase):
     """

@@ -661,7 +661,7 @@ class Fit:
         max_range_finite_diff = abs(
             max(finite_diff_grad) - min(finite_diff_grad)
         )
-        max_range = max_range_analytical + max_range_finite_diff / 2
+        max_range = (max_range_analytical + max_range_finite_diff) / 2
 
         error_from_check_grad = check_grad(func, jac, init_params)
         normalized_error = error_from_check_grad / max_range
