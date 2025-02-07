@@ -2,6 +2,7 @@
 This file contains tests for the parsers.
 """
 
+from pathlib import Path, PosixPath
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -259,8 +260,66 @@ class TestFitbenchmarkParser(TestCase):
         with self.assertRaises(exceptions.ParsingError):
             _ = _parse_range(range_str)
 
-    def test_is_multifit(self):
+    @parameterized.expand(
+        [
+            ("['multifit1.txt','multifit2.txt']", True),
+            ('["multifit1.txt", "multifit2.txt"]', True),
+            ("fit1.txt", False),
+        ]
+    )
+    def test_is_multifit(self, input_file, expected):
         """
-        Verifies the output of _is_multifit() method is always False.
+        Verifies the output of _is_multifit() method.
         """
-        assert not self.parser._is_multifit()
+        self.parser._entries = {"input_file": input_file}
+        assert self.parser._is_multifit() == expected
+
+    @parameterized.expand(
+        [
+            (
+                "multifit.txt",
+                "['multifit1.txt','multifit2.txt']",
+                [
+                    PosixPath("mantid/data_files/multifit1.txt"),
+                    PosixPath("mantid/data_files/multifit2.txt"),
+                ],
+            ),
+            (
+                "start_end_x.txt",
+                "mantid_start_end_x.dat",
+                [
+                    PosixPath("mantid/data_files/mantid_start_end_x.dat"),
+                ],
+            ),
+        ]
+    )
+    def test_get_data_file_with_valid_inputs(self, file, input_file, expected):
+        """
+        Verifies the output of _get_data_file method with valid inputs.
+        """
+        self.parser._filename = Path(__file__).parent / "mantid" / file
+        self.parser._entries = {"input_file": input_file}
+        paths = [
+            path.relative_to(Path(__file__).parent)
+            for path in self.parser._get_data_file()
+        ]
+        assert paths == expected
+
+    @parameterized.expand(
+        [
+            ("multifit.txt", "['multit.txt','multift2.txt']", 2),
+            ("multifit.txt", "['multifit1.txt','multift2.txt']", 1),
+            ("start_end_x.txt", "mant_start_end_x.dat", 1),
+        ]
+    )
+    @patch("fitbenchmarking.parsing.fitbenchmark_parser.LOGGER")
+    def test_get_data_file_with_invalid_inputs(
+        self, filename, input_file, count, mock_logger
+    ):
+        """
+        Verifies error logged with _get_data_file method with invalid inputs.
+        """
+        self.parser._filename = Path(__file__).parent / "mantid" / filename
+        self.parser._entries = {"input_file": input_file}
+        self.parser._get_data_file()
+        assert len(mock_logger.method_calls) == count

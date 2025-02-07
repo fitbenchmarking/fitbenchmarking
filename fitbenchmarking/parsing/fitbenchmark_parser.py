@@ -8,6 +8,7 @@ import re
 import sys
 from contextlib import suppress
 from functools import partialmethod
+from pathlib import Path
 from typing import Callable, Optional, Union
 
 import numpy as np
@@ -131,7 +132,7 @@ class FitbenchmarkParser(Parser):
         :return: True if the problem is a multi fit problem.
         :rtype: bool
         """
-        return False
+        return self._entries["input_file"].startswith("[")
 
     def _create_function(self) -> Callable:
         """
@@ -201,34 +202,26 @@ class FitbenchmarkParser(Parser):
         FitBenchmark definition file, where the data_file is searched for in
         the directory of the definition file and subfolders of this file.
 
-        :return: (full) path to a data file. Return None if not found
+        :return: (full) path to a data file.
         :rtype: list<str>
         """
-        data_file_name = self._entries["input_file"]
-        if data_file_name.startswith("["):
-            # Parse list assuming filenames do not have quote symbols or commas
-            data_file_names = [
-                d.replace('"', "").replace("'", "").strip("[").strip("]")
-                for d in data_file_name.split(",")
-            ]
+        if self._is_multifit():
+            pattern = r"['\"]\s*([^'\"]+)\s*['\"]"
+            files = re.findall(pattern, self._entries["input_file"])
         else:
-            data_file_names = [data_file_name]
+            files = [self._entries["input_file"]]
 
-        # find or search for path for data_file_name
-        data_files = []
-        for data_file_name in data_file_names:
-            data_file = None
-            for root, _, files in os.walk(os.path.dirname(self._filename)):
-                for name in files:
-                    if data_file_name == name:
-                        data_file = os.path.join(root, data_file_name)
+        search_path = Path(self._filename).parent
 
-            if data_file is None:
-                LOGGER.error("Data file %s not found", data_file_name)
+        paths = [path for file in files for path in search_path.rglob(file)]
 
-            data_files.append(data_file)
+        missing_files = [
+            file for file in files if not any(search_path.rglob(file))
+        ]
+        for file in missing_files:
+            LOGGER.error("Data file %s not found", file)
 
-        return data_files
+        return paths
 
     def _get_data_problem_entries(self):
         """
@@ -240,9 +233,8 @@ class FitbenchmarkParser(Parser):
         entries = {}
         for line in self.file.readlines():
             # Discard comment after #
-            line = (
-                text[1] if (text := re.search(r"^(.*?)\s*#", line)) else line
-            )
+            text = re.search(r"^(.*?)\s*#", line)
+            line = text[1] if text else line
             if line and (match := re.search(r"(\w+)\s*=\s*(.+)", line)):
                 key, value = match.groups()
                 if key == "name":
