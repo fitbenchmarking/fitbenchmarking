@@ -171,7 +171,7 @@ class MantidDevParser(FitbenchmarkParser):
         :return: True if the problem is a multi fit problem.
         :rtype: bool
         """
-        return self._entries["input_file"][0] == "["
+        return self._entries["input_file"].startswith("[")
 
     def _get_starting_values(self) -> list:
         """

@@ -185,13 +185,27 @@ class TestFitbenchmarkParser(TestCase):
             ),
         ]
     )
-    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
-    def test_parse_single_function(self, input, expected):
+    def test_parse_single_function_with_valid_inputs(self, input, expected):
         """
-        Verifies the output of _parse_single_function() method.
+        Verifies the output of _parse_single_function() method with valid
+        inputs.
         """
-        parser = FitbenchmarkParser("test_file.txt", {"parse"})
-        assert parser._parse_single_function(input) == expected
+        assert self.parser._parse_single_function(input) == expected
+
+    @parameterized.expand(
+        [
+            "na+me= BackToBackExponential",
+            "na.me= BackToBackExponential",
+            "na$me = BackToBackExponential",
+            "na%me = BackToBackExponential",
+        ]
+    )
+    def test_parse_single_function_with_invalid_inputs(self, input):
+        """
+        Verifies the ParsingError is raised by _parse_single_function.
+        """
+        with self.assertRaises(exceptions.ParsingError):
+            _ = self.parser._parse_single_function(input)
 
     @parameterized.expand(
         [
@@ -223,7 +237,7 @@ class TestFitbenchmarkParser(TestCase):
     )
     def test_parse_range_with_valid_inputs(self, range_str, expected):
         """
-        Verifies the output of _parse_range function.
+        Verifies the output of _parse_range function with valid inputs.
         """
         assert _parse_range(range_str) == expected
 
@@ -240,7 +254,13 @@ class TestFitbenchmarkParser(TestCase):
     )
     def test_parse_range_with_invalid_inputs(self, range_str):
         """
-        Verifies the ParsingError is raised.
+        Verifies the ParsingError is raised by _parse_range.
         """
         with self.assertRaises(exceptions.ParsingError):
             _ = _parse_range(range_str)
+
+    def test_is_multifit(self):
+        """
+        Verifies the output of _is_multifit() method is always False.
+        """
+        assert not self.parser._is_multifit()
