@@ -215,12 +215,7 @@ class FitbenchmarkParser(Parser):
 
         paths = []
         for file in files:
-            search_results = (
-                path
-                for path in search_path.rglob(file)
-                if "data_files" in path.parts
-            )
-            found_path = next(search_results, None)
+            found_path = next((path for path in search_path.rglob(file)), None)
             if found_path is None:
                 LOGGER.error("Data file %s not found", file)
             paths.append(found_path)
@@ -264,7 +259,7 @@ class FitbenchmarkParser(Parser):
                  [{name1: value1, name2: value2, ...}, ...]
         :rtype: list of dict
         """
-        func = func if func else self._entries[key]
+        func = func or self._entries[key]
         function_def = [
             self._parse_single_function(f) for f in func.split(";")
         ]
