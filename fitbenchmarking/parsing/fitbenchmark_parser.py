@@ -211,13 +211,20 @@ class FitbenchmarkParser(Parser):
         else:
             files = [self._entries["input_file"]]
 
-        search_path = Path(self._filename).parent
+        folder_path = Path(self._filename).parent / "data_files"
 
         paths = []
         for file in files:
-            found_path = next((path for path in search_path.rglob(file)), None)
-            if found_path is None:
-                LOGGER.error("Data file %s not found", file)
+            # First tries to find the file in the data_files sub folder
+            found_path = next(
+                (path for path in folder_path.rglob(file)),
+                None,
+            )
+            if not found_path:
+                # Then look for it in parent directory of self._filename
+                found_path = next(folder_path.parent.rglob(file), None)
+                if found_path is None:
+                    LOGGER.error("Data file %s not found", file)
             paths.append(found_path)
 
         return paths
