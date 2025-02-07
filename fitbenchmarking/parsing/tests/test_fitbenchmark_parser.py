@@ -277,6 +277,7 @@ class TestFitbenchmarkParser(TestCase):
     @parameterized.expand(
         [
             (
+                "mantid",
                 "multifit.txt",
                 "['multifit1.txt','multifit2.txt']",
                 [
@@ -286,6 +287,7 @@ class TestFitbenchmarkParser(TestCase):
                 0,
             ),
             (
+                "mantid",
                 "start_end_x.txt",
                 "mantid_start_end_x.dat",
                 [
@@ -294,12 +296,14 @@ class TestFitbenchmarkParser(TestCase):
                 0,
             ),
             (
+                "mantid",
                 "multifit.txt",
                 "['multit.txt','multift2.txt']",
                 [None, None],
                 2,
             ),
             (
+                "mantid",
                 "multifit.txt",
                 "['multifit1.txt','multift2.txt']",
                 [
@@ -309,21 +313,36 @@ class TestFitbenchmarkParser(TestCase):
                 1,
             ),
             (
+                "mantid",
                 "start_end_x.txt",
                 "mant_start_end_x.dat",
                 [None],
                 1,
             ),
+            (
+                "ivp",
+                "simplified_anac.txt",
+                "simplified_anac.txt",
+                [PosixPath("ivp/data_files/simplified_anac.txt")],
+                0,
+            ),
+            (
+                "hogben",
+                "start_end_x.txt",
+                "start_end_x.txt",
+                [PosixPath("hogben/start_end_x.txt")],
+                0,
+            ),
         ]
     )
     @patch("fitbenchmarking.parsing.fitbenchmark_parser.LOGGER")
     def test_get_data_file(
-        self, file, input_file, expected, count, mock_logger
+        self, folder, file, input_file, expected, count, mock_logger
     ):
         """
         Verifies the output of _get_data_file method.
         """
-        self.parser._filename = Path(__file__).parent / "mantid" / file
+        self.parser._filename = Path(__file__).parent / folder / file
         self.parser._entries = {"input_file": input_file}
         paths = [
             path.relative_to(Path(__file__).parent) if path else None
