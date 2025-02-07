@@ -202,7 +202,7 @@ class FitbenchmarkParser(Parser):
         FitBenchmark definition file, where the data_file is searched for in
         the directory of the definition file and subfolders of this file.
 
-        :return: (full) path to a data file.
+        :return: (full) path to a data file. Return None if not found
         :rtype: list<str>
         """
         if self._is_multifit():
@@ -213,18 +213,17 @@ class FitbenchmarkParser(Parser):
 
         search_path = Path(self._filename).parent
 
-        paths = [
-            path
-            for file in files
-            for path in search_path.rglob(file)
-            if "data_files" in path.parts
-        ]
-
-        missing_files = [
-            file for file in files if not any(search_path.rglob(file))
-        ]
-        for file in missing_files:
-            LOGGER.error("Data file %s not found", file)
+        paths = []
+        for file in files:
+            search_results = (
+                path
+                for path in search_path.rglob(file)
+                if "data_files" in path.parts
+            )
+            found_path = next(search_results, None)
+            if found_path is None:
+                LOGGER.error("Data file %s not found", file)
+            paths.append(found_path)
 
         return paths
 
