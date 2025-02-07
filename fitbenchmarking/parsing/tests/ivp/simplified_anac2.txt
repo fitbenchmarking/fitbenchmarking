@@ -2,6 +2,6 @@
 software = 'ivp'
 name = 'Simplified ANAC'
 description = 'A simplified version of the axisymetric non-axisymmetric coupled system generated to test the ivp parser. Exact results should be 10, -0.1.'
-input_file = 'simplified_anac2.txt'
+input_file = 'simplified_anac2_data.txt'
 function = 'module=functions/simplified_anac,func=simplified_anac,step=0.1,gamma=15,mu=-0.5'
 jac = 'module=jacobian_functions/simplified_anac'
