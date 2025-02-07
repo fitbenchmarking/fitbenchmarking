@@ -213,7 +213,12 @@ class FitbenchmarkParser(Parser):
 
         search_path = Path(self._filename).parent
 
-        paths = [path for file in files for path in search_path.rglob(file)]
+        paths = [
+            path
+            for file in files
+            for path in search_path.rglob(file)
+            if "data_files" in path.parts
+        ]
 
         missing_files = [
             file for file in files if not any(search_path.rglob(file))
