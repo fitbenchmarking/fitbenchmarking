@@ -240,8 +240,9 @@ class FitbenchmarkParser(Parser):
         entries = {}
         for line in self.file.readlines():
             # Discard comment after #
-            text = re.search(r"^(.*?)\s*#", line)
-            line = text.group(1) if text else line
+            line = (
+                text[1] if (text := re.search(r"^(.*?)\s*#", line)) else line
+            )
             if line and (match := re.search(r"(\w+)\s*=\s*(.+)", line)):
                 key, value = match.groups()
                 if key == "name":
@@ -276,24 +277,6 @@ class FitbenchmarkParser(Parser):
     _parse_function = partialmethod(_parse_string, "function")
     _parse_jac_function = partialmethod(_parse_string, "jac")
 
-    def _dense_jacobian(self) -> Optional[Callable]:
-        """
-        Function to help getting dense jac.
-
-        :return: A callable function or None
-        :rtype: callable or None
-        """
-        return self._get_jacobian("dense_func")
-
-    def _sparse_jacobian(self) -> Optional[Callable]:
-        """
-        Function to help getting sparse jac.
-
-        :return: A callable function or None
-        :rtype: callable or None
-        """
-        return self._get_jacobian("sparse_func")
-
     def _get_jacobian(self, jac_type) -> Optional[Callable]:
         """
         Process the dense/sparse jac function into a callable.
@@ -316,6 +299,9 @@ class FitbenchmarkParser(Parser):
             return func
         else:
             return None
+
+    _dense_jacobian = partialmethod(_get_jacobian, "dense_func")
+    _sparse_jacobian = partialmethod(_get_jacobian, "sparse_func")
 
     @classmethod
     def _parse_single_function(cls, func: str) -> dict:
@@ -343,8 +329,8 @@ class FitbenchmarkParser(Parser):
         """
         func_dict = {}
         pattern = (
-            r"(\w+)\s*=\s*(\([^)]*\)|\[[^\]]*\]"
-            r"|'[^']*'|\"[^\"]*\"|[\w\.\-+e/]+)"
+            r"\s*([^=\s]+)\s*=\s*(\([^)]*\)|\[[^\]]*\]|'"
+            r"[^']*'|\"[^\"]*\"|[-\w\.\+e/]+)\s*(?:,|$)"
         )
         matches = re.findall(pattern, func)
 
@@ -357,7 +343,7 @@ class FitbenchmarkParser(Parser):
             if value.startswith(("(", "[")):
                 value = cls._parse_parens(value)
             else:
-                value = value.strip("'").strip('"')
+                value = value.strip("'\"")
                 value = cls._parse_function_value(value)
 
             func_dict[key] = value
