@@ -164,15 +164,6 @@ class MantidDevParser(FitbenchmarkParser):
 
         return wrapped
 
-    def _is_multifit(self) -> bool:
-        """
-        Returns true if the problem is a multi fit problem.
-
-        :return: True if the problem is a multi fit problem.
-        :rtype: bool
-        """
-        return self._entries["input_file"].startswith("[")
-
     def _get_starting_values(self) -> list:
         """
         Returns the starting values for the problem.
