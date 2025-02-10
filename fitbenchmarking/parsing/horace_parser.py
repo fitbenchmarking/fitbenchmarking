@@ -81,7 +81,6 @@ class HoraceParser(FitbenchmarkParser):
         function_params = self._entries["function"].split("J1")[1]
         J1 = float(function_params.split(",")[0].replace("=", "").strip())
 
-
         process_f = self._parse_function(self._entries["process_function"])
         script = pathlib.Path(process_f[0]["matlab_script"])
         path = pathlib.Path(self._filename).parent
@@ -94,13 +93,13 @@ class HoraceParser(FitbenchmarkParser):
         )
 
         # Remove nans if there are
-        for var in ['y', 'e']:
+        for var in ["y", "e"]:
             eng.evalc(f"{var} = fitpow.{var}")
             eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
             eng.evalc(f"{var}_final = {var}(sum(isnan({var}),2)==0,:)")
-    
-        eng.evalc("x = fitpow.ebin_cens")        
-        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")        
+
+        eng.evalc("x = fitpow.ebin_cens")
+        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")
         eng.evalc("x_final = repelem(x,3,1)'")
 
         # Create and fill struct
