@@ -85,6 +85,7 @@ class MantidController(Controller):
     ]
 
     support_for_bounds = True
+    incompatible_problems = ["sscanss"]
 
     def __init__(self, cost_func):
         """
