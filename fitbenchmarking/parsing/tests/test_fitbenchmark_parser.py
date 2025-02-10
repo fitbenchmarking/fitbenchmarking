@@ -10,6 +10,7 @@ from parameterized import parameterized
 
 from fitbenchmarking.parsing.fitbenchmark_parser import (
     FitbenchmarkParser,
+    _find_first_line,
     _parse_range,
 )
 from fitbenchmarking.utils import exceptions
@@ -396,3 +397,38 @@ class TestFitbenchmarkParser(TestCase):
         self.parser._entries = entries
         with self.assertRaises(exceptions.ParsingError):
             _ = self.parser._get_plot_scale()
+
+    @parameterized.expand(
+        [
+            (["# X Y Z\n", "", "1 2 3\n"], 2),
+            (["#   x0 x1 y e\n", "", "", "1 2 3 4\n"], 3),
+            (["# X0 X1 Y0 Y1 E0 E1\n", "", " 1 2 3 4 5"], 2),
+            (["<X> <Y> <E>", " 1  2  3 "], 1),
+            (["<X0> <X1> <Y> <E>", "", "1 2  3 4 "], 2),
+            (["# X Y Z\n", "", "-1 -2 -3\n"], 2),
+            (["# X Y Z\n", "1 2 -3\n"], 1),
+            (["# X Y\n", "1 2\n"], 1),
+        ]
+    )
+    def test_find_first_line_with_valid_inputs(self, file_lines, expected):
+        """
+        Verifies the output of _find_first_line() method.
+        """
+        assert _find_first_line(file_lines) == expected
+
+    @parameterized.expand(
+        [
+            (["# X Y Z\n", "", "\n"],),
+            (["#   x0 x1 y e\n"],),
+            (["<X> <Y> <E>"],),
+            ([],),
+            (["# X Y\n", "# comment", ""],),
+            (["# X Y\n", "# X Y\n"],),
+        ]
+    )
+    def test_find_first_line_with_invalid_inputs(self, file_lines):
+        """
+        Verifies the ParsingError is raised by _find_first_line().
+        """
+        with self.assertRaises(exceptions.ParsingError):
+            _ = _find_first_line(file_lines)
