@@ -383,8 +383,9 @@ class FitbenchmarkParser(Parser):
             raise ParsingError("Not all brackets are closed in function.")
 
         if string.startswith("("):
-            string = string.removeprefix("(").removesuffix(")")
-            value = cls._parse_single_function(string)
+            value = cls._parse_single_function(
+                string.removeprefix("(").removesuffix(")")
+            )
         else:  # string.startswith("[")
             string = string.removeprefix("[").removesuffix("]")
             value = [cls._parse_function_value(s) for s in string.split(",")]
@@ -523,17 +524,14 @@ def _find_first_line(file_lines: list[str]) -> int:
     :return: index of the first file line with data.
     :rtype: int
     """
-    for i, line in enumerate(file_lines):
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            float(line.split()[0])
-        except ValueError:
-            continue
-        return i
-
-    raise ParsingError("Could not find data points")
+    index = (
+        i
+        for i, line in enumerate(file_lines)
+        if re.match(r"^\s*-?\d+(\.\d+)?", line)
+    )
+    if not (data_start_index := next(index, None)):
+        raise ParsingError("Could not find data points")
+    return data_start_index
 
 
 def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
