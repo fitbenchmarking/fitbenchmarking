@@ -56,20 +56,7 @@ class FitbenchmarkParser(Parser):
         self.fitting_problem.function = self._create_function()
         self.fitting_problem.format = self._entries["software"].lower()
 
-        plot_scale_options = ["loglog", "logy", "logx", "linear"]
-
-        if "plot_scale" in self._entries:
-            if self._entries["plot_scale"].lower() in plot_scale_options:
-                self.fitting_problem.plot_scale = self._entries[
-                    "plot_scale"
-                ].lower()
-            else:
-                raise ParsingError(
-                    "The plot scale should be one of these "
-                    f"options {plot_scale_options}"
-                )
-        else:
-            self.fitting_problem.plot_scale = "linear"
+        self.fitting_problem.plot_scale = self._get_plot_scale()
 
         # If using a multivariate function wrap the call to take a single
         # argument
@@ -190,13 +177,29 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.start_x = fit_ranges[0]["x"][0]
             self.fitting_problem.end_x = fit_ranges[0]["x"][1]
 
+    def _get_plot_scale(self) -> str:
+        """
+        Gets the plot scale of the fitting problem.
+
+        :return: The plot scale. "linear" if not specified.
+        :rtype: str
+        """
+        valid_options = ["loglog", "logy", "logx", "linear"]
+        plot_scale = self._entries.get("plot_scale", "linear").lower()
+        if plot_scale not in valid_options:
+            raise ParsingError(
+                "The plot scale should be one of these "
+                f"options {valid_options}"
+            )
+        return plot_scale
+
     def _set_additional_info(self) -> None:
         """
         Sets any additional info for a fitting problem.
         """
         return
 
-    def _get_data_file(self):
+    def _get_data_file(self) -> list:
         """
         Find/create the (full) path to a data_file(s) specified in a
         FitBenchmark definition file, where the data_file is searched for in
@@ -238,7 +241,7 @@ class FitbenchmarkParser(Parser):
 
         return paths
 
-    def _get_data_problem_entries(self):
+    def _get_data_problem_entries(self) -> dict:
         """
         Get the problem entries from a problem definition file.
 
