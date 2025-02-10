@@ -357,3 +357,42 @@ class TestFitbenchmarkParser(TestCase):
         ]
         assert paths == expected
         assert len(mock_logger.method_calls) == count
+
+    @parameterized.expand(
+        [
+            ({"plot_scale": "loglog"}, "loglog"),
+            ({"plot_scale": "LOGLOG"}, "loglog"),
+            ({"plot_scale": "logLOG"}, "loglog"),
+            ({"plot_scale": "logy"}, "logy"),
+            ({"plot_scale": "logY"}, "logy"),
+            ({"plot_scale": "LOGY"}, "logy"),
+            ({"plot_scale": "logx"}, "logx"),
+            ({"plot_scale": "logX"}, "logx"),
+            ({"plot_scale": "LOGX"}, "logx"),
+            ({"plot_scale": "linear"}, "linear"),
+            ({"plot_scale": "LINEAR"}, "linear"),
+            ({}, "linear"),
+        ]
+    )
+    def test_get_plot_scale_with_valid_inputs(self, entries, expected):
+        """
+        Verifies the output of _get_plot_scale() method.
+        """
+        self.parser._entries = entries
+        assert self.parser._get_plot_scale() == expected
+
+    @parameterized.expand(
+        [
+            ({"plot_scale": "logs"},),
+            ({"plot_scale": "ylog"},),
+            ({"plot_scale": "xlog"},),
+            ({"plot_scale": "linaer"},),
+        ]
+    )
+    def test_get_plot_scale_with_invalid_inputs(self, entries):
+        """
+        Verifies the ParsingError is raised by _get_plot_scale().
+        """
+        self.parser._entries = entries
+        with self.assertRaises(exceptions.ParsingError):
+            _ = self.parser._get_plot_scale()
