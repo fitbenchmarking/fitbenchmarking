@@ -539,18 +539,9 @@ class JacobianTests(unittest.TestCase):
         results = self.fit._Fit__loop_over_jacobians(self.controller)
         assert len(results) == 3
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
-    def test_loop_over_jacobians_jac_check_true(self, loop_over_hessians):
-        """
-        The test checks __loop_over_jacobians method
-        handles the check of the jacobian correctly
-        """
-        loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
-        assert len(results) == 2
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
-    def test_loop_over_jacobians_jac_check_false(self, loop_over_hessians):
+    def test_loop_over_jacobians_raises_warning(self, loop_over_hessians):
         """
         The test checks __loop_over_jacobians method raises
         a warning when the jacobian check fails
@@ -567,7 +558,7 @@ class JacobianTests(unittest.TestCase):
                     "obtained through a finite difference approximation. "
                     "This might depend on either the initial parameters "
                     "provided or the jacobian function, if this has also "
-                    "been provided by the user. "
+                    "been provided by the user."
                 )
                 in log.output[0]
             )

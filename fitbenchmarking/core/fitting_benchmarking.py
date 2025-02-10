@@ -419,7 +419,7 @@ class Fit:
                     self.__check_jacobian(
                         func=cost_func.eval_cost,
                         jac=cost_func.jac_cost,
-                        init_params=params,
+                        params=params,
                     )
 
                     #######################
@@ -638,7 +638,7 @@ class Fit:
 
         return accuracy, runtimes, energy
 
-    def __check_jacobian(self, func, jac, init_params):
+    def __check_jacobian(self, func, jac, params):
         """
         Check how similar the jacobian is to a finite difference
         approximation of the function
@@ -649,13 +649,13 @@ class Fit:
         :param jac: The jacobian of the function being used in Fitb.
         :type jac: function
 
-        :param init_params: The values at which to evaluate the
+        :param params: The values at which to evaluate the
                             jacobian matrix
-        :type init_params: list
+        :type params: list
 
         """
-        analytical_grad = jac(init_params)
-        finite_diff_grad = approx_fprime(init_params, func)
+        analytical_grad = jac(params)
+        finite_diff_grad = approx_fprime(params, func)
 
         max_range_analytical = abs(max(analytical_grad) - min(analytical_grad))
         max_range_finite_diff = abs(
@@ -663,17 +663,18 @@ class Fit:
         )
         max_range = (max_range_analytical + max_range_finite_diff) / 2
 
-        error_from_check_grad = check_grad(func, jac, init_params)
+        error_from_check_grad = check_grad(func, jac, params)
         normalized_error = error_from_check_grad / max_range
 
         if (normalized_error > 10 ** (-3) and max_range < 10**4) or (
             normalized_error > 0.5
         ):
             LOGGER.warning(
-                "An unusually large relative error was detected between the "
-                "jacobian computed by Fitbenchmarking and the one obtained "
-                "through a finite difference approximation. This might depend "
-                "on either the initial parameters provided or the jacobian "
-                "function, if this has also been provided by the user."
+                    "An unusually large relative error was detected between "
+                    "the jacobian computed by Fitbenchmarking and the one  "
+                    "obtained through a finite difference approximation. "
+                    "This might depend on either the initial parameters "
+                    "provided or the jacobian function, if this has also "
+                    "been provided by the user."
             )
         return
