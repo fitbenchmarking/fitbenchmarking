@@ -328,10 +328,17 @@ class TestFitbenchmarkParser(TestCase):
             ),
             (
                 "hogben",
-                "start_end_x.txt",
-                "start_end_x.txt",
-                [PosixPath("hogben/start_end_x.txt")],
+                "simple_sample.txt",
+                "simple_sample.txt",
+                [PosixPath("hogben/data/simple_sample.txt")],
                 0,
+            ),
+            (
+                "hogben",
+                "simple_sample.txt",
+                "simple_sale.txt",
+                [None],
+                1,
             ),
         ]
     )

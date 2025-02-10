@@ -211,18 +211,27 @@ class FitbenchmarkParser(Parser):
         else:
             files = [self._entries["input_file"]]
 
-        folder_path = Path(self._filename).parent / "data_files"
+        search_path = Path(self._filename).parent
+        subdirs = [d for d in search_path.iterdir() if d.is_dir()]
 
         paths = []
         for file in files:
-            # First tries to find the file in the data_files sub folder
+            # Tries to find the first file in the sub folders
+            # with the same name. The data file is usually
+            # stored in a sub folder called data_files or data.
+            # The logic will also be able to handle cases
+            # where the sub folder has a different name.
             found_path = next(
-                (path for path in folder_path.rglob(file)),
+                (
+                    subdir_match
+                    for subdir in subdirs
+                    for subdir_match in subdir.rglob(file)
+                ),
                 None,
             )
             if not found_path:
                 # Then look for it in parent directory of self._filename
-                found_path = next(folder_path.parent.rglob(file), None)
+                found_path = next(search_path.rglob(file), None)
                 if found_path is None:
                     LOGGER.error("Data file %s not found", file)
             paths.append(found_path)
