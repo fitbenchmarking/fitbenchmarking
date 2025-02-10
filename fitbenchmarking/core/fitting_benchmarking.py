@@ -670,11 +670,11 @@ class Fit:
             normalized_error > 0.5
         ):
             LOGGER.warning(
-                    "An unusually large relative error was detected between "
-                    "the jacobian computed by Fitbenchmarking and the one  "
-                    "obtained through a finite difference approximation. "
-                    "This might depend on either the initial parameters "
-                    "provided or the jacobian function, if this has also "
-                    "been provided by the user."
+                "An unusually large relative error was detected between "
+                "the jacobian computed by Fitbenchmarking and the one  "
+                "obtained through a finite difference approximation. "
+                "This might depend on either the initial parameters "
+                "provided or the jacobian function, if this has also "
+                "been provided by the user."
             )
         return

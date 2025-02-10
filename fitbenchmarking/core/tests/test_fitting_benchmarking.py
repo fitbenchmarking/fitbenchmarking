@@ -539,7 +539,6 @@ class JacobianTests(unittest.TestCase):
         results = self.fit._Fit__loop_over_jacobians(self.controller)
         assert len(results) == 3
 
-
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
     def test_loop_over_jacobians_raises_warning(self, loop_over_hessians):
         """
