@@ -553,20 +553,21 @@ class JacobianTests(unittest.TestCase):
     def test_loop_over_jacobians_jac_check_false(self, loop_over_hessians):
         """
         The test checks __loop_over_jacobians method raises
-        a warning when the jacobian check fails        
+        a warning when the jacobian check fails
         """
         with self.assertLogs(LOGGER, level="WARNING") as log:
             # Modify jacobian to make it wrong
-            self.controller.cost_func.jac_cost = lambda x: 1000*x
+            self.controller.cost_func.jac_cost = lambda x: 1000 * x
             loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
             _ = self.fit._Fit__loop_over_jacobians(self.controller)
             self.assertTrue(
                 (
                     "An unusually large relative error was detected between "
-                    "the jacobian computed by Fitbenchmarking and the one obtained "
-                    "through a finite difference approximation. This might depend "
-                    "on either the initial parameters provided or the jacobian "
-                    "function, if this has also been provided by the user."
+                    "the jacobian computed by Fitbenchmarking and the one  "
+                    "obtained through a finite difference approximation. "
+                    "This might depend on either the initial parameters "
+                    "provided or the jacobian function, if this has also "
+                    "been provided by the user. "
                 )
                 in log.output[0]
             )
