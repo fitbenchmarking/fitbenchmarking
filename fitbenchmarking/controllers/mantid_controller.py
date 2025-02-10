@@ -82,6 +82,8 @@ class MantidController(Controller):
         "Trust Region",
     ]
 
+    incompatible_problems = ["sscanss"]
+
     def __init__(self, cost_func):
         """
         Setup workspace, cost_function, ignore_invalid, and initialise vars
