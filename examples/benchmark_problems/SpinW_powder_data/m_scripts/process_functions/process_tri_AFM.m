@@ -14,7 +14,7 @@ fitpow.crop_q_range(0.25, 3);
 fitpow.nQ = 5;
 fitpow.replace_2D_data_with_1D_cuts(qcens-dq, qcens+dq,'independent');
 
-qmax_final = qcens - dq;
+qmax_final = qcens + dq;
 qmin_final = qcens - dq;
 
 end
