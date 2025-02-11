@@ -308,14 +308,16 @@ class HoraceParser(FitbenchmarkParser):
                     eng.workspace["ebin_cens"], dtype=np.float64
                 )[0]
                 if "q_cens" in self._entries:
-                    self.fitting_problem.additional_info["q_cens"] = self._entries[
-                        "q_cens"
-                    ].split(",")
+                    self.fitting_problem.additional_info["q_cens"] = (
+                        self._entries["q_cens"].split(",")
+                    )
                     self.fitting_problem.additional_info["n_cuts"] = len(
                         self.fitting_problem.additional_info["q_cens"]
                     )
                 else:
-                    raise ParsingError("q_cens are required for plotting 1D cuts")
+                    raise ParsingError(
+                        "q_cens are required for plotting 1D cuts"
+                    )
                 if not float(
                     len(self.fitting_problem.data_y)
                     / self.fitting_problem.additional_info["n_cuts"]
