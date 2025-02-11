@@ -2,13 +2,12 @@
 Test the LOGGING section for the options file
 """
 
-import inspect
-import os
-import shutil
 import unittest
 
-from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.tests.test_options_fitting import (
+    BaseFittingOptionTests,
+)
 
 
 class LoggingOptionTests(unittest.TestCase):
@@ -55,73 +54,10 @@ class LoggingOptionTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
-class UserLoggingOptionTests(unittest.TestCase):
+class UserLoggingOptionTests(BaseFittingOptionTests):
     """
     Checks the logging in the options file are set correctly or raise errors
     """
-
-    def setUp(self):
-        """
-        Sets the directory to save the temporary ini files in
-        """
-        options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, "tests", "files")
-        os.mkdir(self.test_files_dir)
-
-    def tearDown(self):
-        """
-        Deletes temporary folder and results produced
-        """
-        if os.path.exists(self.test_files_dir):
-            shutil.rmtree(self.test_files_dir)
-
-    def generate_user_ini_file(self, opt_name, config_str):
-        """
-        Generates user defined ini file
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param config_str: section of an ini file which sets the option
-        :type config_str: str
-
-        :return: location of temporary ini file
-        :rtype: str
-        """
-        opts_file = os.path.join(
-            self.test_files_dir, f"test_{opt_name}_valid.ini"
-        )
-        with open(opts_file, "w", encoding="utf-8") as f:
-            f.write(config_str)
-        return opts_file
-
-    def shared_valid(self, opt_name, options_set, config_str):
-        """
-        Shared test to check that the logging option set is valid
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param options_set: option set to be tested
-        :type options_set: list
-        :param config_str: section of an ini file which sets the option
-        :type config_str: str
-        """
-        opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options(opts_file)
-        actual = getattr(options, opt_name)
-        self.assertEqual(options_set, actual)
-
-    def shared_invalid(self, opt_name, config_str):
-        """
-        Shared test to check that the logging option set is invalid
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param config_str: option set to be tested
-        :type config_str: list
-        """
-        opts_file = self.generate_user_ini_file(opt_name, config_str)
-        with self.assertRaises(exceptions.OptionsError):
-            Options(opts_file)
 
     def test_invalid_option_key(self):
         """
