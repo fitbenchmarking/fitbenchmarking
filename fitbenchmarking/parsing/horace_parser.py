@@ -127,10 +127,11 @@ class HoraceParser(FitbenchmarkParser):
         """
         new_data_path = data_file_path
 
-        # This if condition avoids error when no "plot_type" provided
-        if "plot_type" in self._entries:
-            if self._entries["plot_type"].lower() == "1d_cuts":
-                new_data_path = self._process_spinw_data(data_file_path)
+        # This if condition avoids error when "plot_type" not provided
+        if "plot_type" not in self._entries:
+            pass
+        elif self._entries["plot_type"].lower() == "1d_cuts":
+            new_data_path = self._process_spinw_data(data_file_path)
 
         wye_data_f = self._parse_function(self._entries["wye_function"])
         script = pathlib.Path(wye_data_f[0]["matlab_script"])
@@ -287,44 +288,52 @@ class HoraceParser(FitbenchmarkParser):
 
         self.fitting_problem.set_persistent_vars = set_persistent_vars
 
-        plot_type_options = ["1d_cuts"]
-
+        # This if condition avoids error when "plot_type" not provided
         if "plot_type" in self._entries:
-            if self._entries["plot_type"].lower() in plot_type_options:
-                self.fitting_problem.additional_info["plot_type"] = (
-                    self._entries["plot_type"].lower()
-                )
-            else:
-                raise ParsingError(
-                    "The plot type should be one of these "
-                    f"options {plot_type_options}"
-                )
-
-        # This if condition avoids error when no "plot_type" provided
-        if "plot_type" in self._entries:
-            if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
-                eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
-                self.fitting_problem.additional_info["ebin_cens"] = np.array(
-                    eng.workspace["ebin_cens"], dtype=np.float64
-                )[0]
-                if "q_cens" in self._entries:
-                    self.fitting_problem.additional_info["q_cens"] = (
-                        self._entries["q_cens"].split(",")
-                    )
-                    self.fitting_problem.additional_info["n_cuts"] = len(
-                        self.fitting_problem.additional_info["q_cens"]
-                    )
-                else:
-                    raise ParsingError(
-                        "q_cens are required for plotting 1D cuts"
-                    )
-                if not float(
-                    len(self.fitting_problem.data_y)
-                    / self.fitting_problem.additional_info["n_cuts"]
-                ).is_integer():
-                    raise ParsingError(
-                        "Number of data points must be divisible "
-                        "by number of q_cens"
-                    )
+            self._set_plot_type()
+            self._set_qcens_and_ncuts()
 
         return super()._set_additional_info()
+
+    def _set_plot_type(self) -> None:
+        """
+        Add plot_type to fitting_problem.additional_info.
+        """
+        plot_type_options = ["1d_cuts"]
+
+        if self._entries["plot_type"].lower() in plot_type_options:
+            self.fitting_problem.additional_info["plot_type"] = self._entries[
+                "plot_type"
+            ].lower()
+        else:
+            raise ParsingError(
+                "The plot type should be one of these "
+                f"options {plot_type_options}"
+            )
+
+    def _set_qcens_and_ncuts(self) -> None:
+        """
+        Add q_cens and n_cuts to fitting_problem.additional_info.
+        """
+        if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
+            eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
+            self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                eng.workspace["ebin_cens"], dtype=np.float64
+            )[0]
+            if "q_cens" in self._entries:
+                self.fitting_problem.additional_info["q_cens"] = self._entries[
+                    "q_cens"
+                ].split(",")
+                self.fitting_problem.additional_info["n_cuts"] = len(
+                    self.fitting_problem.additional_info["q_cens"]
+                )
+            else:
+                raise ParsingError("q_cens are required for plotting 1D cuts")
+            if not float(
+                len(self.fitting_problem.data_y)
+                / self.fitting_problem.additional_info["n_cuts"]
+            ).is_integer():
+                raise ParsingError(
+                    "Number of data points must be divisible "
+                    "by number of q_cens"
+                )
