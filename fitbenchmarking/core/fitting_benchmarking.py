@@ -410,7 +410,6 @@ class Fit:
                             jacobian.name() if jacobian.name() else "default",
                         )
 
-                    # Check jacobian
                     params = list(
                         controller.starting_values[
                             controller.parameter_set
