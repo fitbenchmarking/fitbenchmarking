@@ -219,10 +219,10 @@ class PlotTests(unittest.TestCase):
             "q_cens": [0.5, 1, 1.5],
             "ebin_cens": [0.9],
         }
-        df = self.df[("Fake_Test_Data", "prob_1")]
-        y_best = df["y"][df["best"]]
+        data = self.df[("Fake_Test_Data", "prob_1")]
+        y_best = data["y"][data["best"]]
 
-        fig = self.plot.plotly_spinw(df, "m10_[s1]_jj0", y_best)
+        fig = self.plot.plotly_spinw(data, "m10_[s1]_jj0", y_best)
         _, cols = fig._get_subplot_rows_columns()
 
         assert len(cols) == self.plot.result.spinw_plot_info["n_cuts"]
@@ -230,7 +230,7 @@ class PlotTests(unittest.TestCase):
         self.plot.result.spinw_plot_info["ebin_cens"] = [2, 4]
 
         with self.assertRaises(PlottingError):
-            self.plot.plotly_spinw(df, "m10_[s1]_jj0", y_best)
+            self.plot.plotly_spinw(data, "m10_[s1]_jj0", y_best)
 
     def test_plot_posteriors_create_files(self):
         """

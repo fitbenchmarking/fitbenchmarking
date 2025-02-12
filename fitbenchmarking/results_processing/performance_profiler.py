@@ -507,8 +507,8 @@ class DashPerfProfile:
 
         # If min found is inf, set min to 1 (to avoid getting nan
         # when dividing by min)
-        df_chosen_solvers["min"].replace(
-            to_replace=np.inf, value=1.0, inplace=True
+        df_chosen_solvers["min"] = df_chosen_solvers["min"].replace(
+            to_replace=np.inf, value=1.0
         )
 
         # Divide values by min (thus recalculating the profile)
@@ -516,7 +516,7 @@ class DashPerfProfile:
             df_chosen_solvers["min"], axis="rows"
         )
         # Remove min column
-        df_chosen_solvers.drop(columns=["min"], inplace=True)
+        df_chosen_solvers = df_chosen_solvers.drop(columns=["min"])
         new_dict = df_chosen_solvers.to_dict("list")
 
         step_values, _ = compute_step_values(new_dict)
