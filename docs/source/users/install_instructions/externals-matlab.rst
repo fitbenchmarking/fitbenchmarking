@@ -85,19 +85,18 @@ Get the current mac address
 Get the licence
 ---------------
 
-#. Open the mathworks licence centre (this may require you to log in): `<https://uk.mathworks.com/licensecenter/licenses>`_. 
-#. Click on your licence.
+#. Open the mathworks licence centre (this may require logging in): `<https://uk.mathworks.com/licensecenter/licenses>`_. 
+#. Click on the MALTAB licence.
 #. Go to the "Install and Activate" tab.
 #. Click "View current activations" on the right hand menu.
 #. Click "Activate a computer".
 #. Fill in the form:
-  * Operating System: Linux
-  * Host ID: `<host-id>` (the mac address previously noted)
-  * Computer login name: Your username in WSL
-  * Activation Label: A unique identifier for the licence (e.g. "R2022b wsl")
+    * Operating System: Linux
+    * Host ID: `<host-id>` (the mac address previously noted)
+    * Computer login name: Username in WSL
+    * Activation Label: A unique identifier for the licence (e.g. "R2022b wsl")
 #. Download the licence file to WSL and copy the file installation key somewhere temporarily.
-#. Create a "prep_matlab" function in one of your `~/.profile`, `~/.bashrc`, `~/.bash_aliases` or whatever you use. This will allow
-   you to reset an unused mac address to the one required for the licence.
+#. Create a "prep_matlab" function in one of `~/.profile`, `~/.bashrc`, or `~/.bash_aliases`. This will reset an unused mac address to the one required for the licence.
 
 .. code-block:: rst
 
@@ -114,12 +113,13 @@ Install
 -------
 
 Unzip the download and edit the `installer_input.txt` file, setting the following:
-  * Destination folder (e.g. `destinationFolder=/home/alister/MATLAB/R2022b`).
-  * File installation key from the licence steps.
-  * Agree to licence (`agreeToLicense=yes`).
-  * Output file - if anything fails this is the only way to get information.
-  * Improve matlab (e.g. `improveMATLAB=no`).
-  * Licence path.
-  * Uncomment all downloaded packages -- These must be a subset of the ones selected in Get the software, it won't download extras.
+
+    * Destination folder (e.g. `destinationFolder=/home/alister/MATLAB/R2022b`).
+    * File installation key from the licence steps.
+    * Agree to licence (`agreeToLicense=yes`).
+    * Output file - if anything fails this is the only way to get information.
+    * Improve matlab (e.g. `improveMATLAB=no`).
+    * Licence path.
+    * Uncomment all downloaded packages -- These must be a subset of the ones selected in Get the software, it won't download extras.
 
 Run `./install -inputFile installer_input.txt`
