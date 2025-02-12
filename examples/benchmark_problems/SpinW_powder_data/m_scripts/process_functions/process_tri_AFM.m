@@ -1,5 +1,5 @@
 function [fitpow, qmax_final, qmin_final] = process_tri_AFM(datafile, J1, qcens)
-% Create fitpow and cuts data based on qcens
+% Create fitpow and cut data based on qcens
 
 dq = 0.05;
 Ei = 20;
