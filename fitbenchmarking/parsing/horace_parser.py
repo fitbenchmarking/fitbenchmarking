@@ -74,8 +74,8 @@ class HoraceParser(FitbenchmarkParser):
         :param data_file_path: The path to the file to load the points from
         :type data_file_path: str
 
-        :return: data
-        :rtype: dict<str, np.ndarray>
+        :return: The path to the new file with 1d cuts
+        :rtype: str
         """
         qcens = [float(i) for i in self._entries["q_cens"].split(",")]
         function_params = self._entries["function"].split("J1")[1]
@@ -92,7 +92,7 @@ class HoraceParser(FitbenchmarkParser):
             f"('{data_file_path}',{J1}, {qcens})"
         )
 
-        # Remove nans if there are
+        # Remove nans
         for var in ["y", "e"]:
             eng.evalc(f"{var} = fitpow.{var}")
             eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
@@ -104,13 +104,13 @@ class HoraceParser(FitbenchmarkParser):
 
         # Create and fill struct
         eng.evalc(
-            "w = struct('x', {}, 'y', {}, 'e', {}," " 'qmax', {}, 'qmin', {})"
+            "w = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
         )
         for i in [1, 2, 3]:
             for var in ["x", "y", "e", "qmax", "qmin"]:
                 eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
 
-        # Save sliced data
+        # Save cuts
         new_path = data_file_path.split(".mat")[0] + "_cuts.mat"
         eng.evalc(f"save('{new_path}', 'w')")
         return new_path
