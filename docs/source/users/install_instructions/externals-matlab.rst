@@ -64,6 +64,8 @@ Method 2: without graphical interface
 
 The following instructions allow to install Matlab without using X11 Forwarding.
 
+.. _get-software:
+
 Get the software
 ----------------
 
@@ -75,6 +77,7 @@ Get the software
 
 
 .. _get-mac-address:
+
 Get the current mac address
 ---------------------------
 
@@ -92,7 +95,7 @@ Get the licence
 #. Click "Activate a computer".
 #. Fill in the form:
     * Operating System: Linux
-    * Host ID: `<host-id>` (the mac address previously noted)
+    * Host ID: `<host-id>` (the mac address noted in :ref:`get-mac-address`)
     * Computer login name: Username in WSL
     * Activation Label: A unique identifier for the licence (e.g. "R2022b wsl")
 #. Download the licence file to WSL and copy the file installation key somewhere temporarily.
@@ -120,6 +123,6 @@ Unzip the download and edit the `installer_input.txt` file, setting the followin
     * Output file - if anything fails this is the only way to get information.
     * Improve matlab (e.g. `improveMATLAB=no`).
     * Licence path.
-    * Uncomment all downloaded packages -- These must be a subset of the ones selected in Get the software, it won't download extras.
+    * Uncomment all downloaded packages -- These must be a subset of the ones selected in :ref:`get-software`, it won't download extras.
 
 Run `./install -inputFile installer_input.txt`
