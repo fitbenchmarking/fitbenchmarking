@@ -135,6 +135,7 @@ select = [
     "FURB", # refurb
     "FLY", # flynt
     "PIE", # flake8-pie
+    "PD", # pandas-vet
     ]
 ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 
