@@ -34,6 +34,8 @@ class MatlabCurveController(MatlabMixin, Controller):
     incompatible_problems = ["mantid", "horace"]
     controller_name = "matlab_curve"
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -43,7 +45,6 @@ class MatlabCurveController(MatlabMixin, Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.options = None
         self._status = None
         self.result = None

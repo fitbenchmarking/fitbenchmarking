@@ -112,7 +112,10 @@ class FittingResult:
             if v == self.minimizer
         ]
 
-        jac_enabled = self.minimizer in controller.jacobian_enabled_solvers
+        jac_enabled = (
+            cost_func.jacobian is not None
+            and self.minimizer in controller.jacobian_enabled_solvers
+        )
         hess_enabled = (
             cost_func.hessian is not None
             and self.minimizer in controller.hessian_enabled_solvers

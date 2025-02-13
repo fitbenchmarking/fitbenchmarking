@@ -33,6 +33,13 @@ following the instructions outlined on the `pycutest documentation <https://jfow
 Please note that the ``PYCUTEST_CACHE`` environment variable must be set, and it must be
 in the ``PYTHONPATH``.
 
+GALAHAD
+-------
+
+GALAHAD is used as a fitting software in FitBenchmarking.
+
+Install instructions can be found in the `GALAHAD README.md <https://github.com/ralna/GALAHAD#python-interface>`__.
+
 GSL
 ---
 
