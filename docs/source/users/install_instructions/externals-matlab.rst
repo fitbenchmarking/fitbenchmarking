@@ -27,8 +27,8 @@ Given VcXsrv is installed, the following steps are necessary to enable it:
 #. Click "Next" and then "Finish".
 
 For X11 Forwarding to work, it is also necessary to set a couple of environment variables (this could be done through `~./bashrc`, 
-to make sure there is no need to repeat the process in the future). Specifically, the environment variable called ``DISPLAY``, 
-which can be set by running, e.g., ``export DISPLAY=:0``, and the environment variable ``LIBGL_ALWAYS_INDIRECT``, which must be set to 1.
+to make sure there is no need to repeat the process in the future). Specifically, the environment variable called ``DISPLAY`` can be 
+set by running, e.g., ``export DISPLAY=:0``, and the environment variable ``LIBGL_ALWAYS_INDIRECT`` must be set to 1.
 
 At this point, X11 Forwarding can be tested by running ``xeyes`` from the WSL Linux environment, which should cause a pop-up with a 
 pair of eyes to appear. If ``xeyes`` does not work, it will be necessary to follow these steps:
@@ -44,8 +44,8 @@ Installing MATLAB
 -----------------
 
 Having configured the X11 Forwarding, this can be used for installing MATLAB. For this, one should follow the instructions 
-in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_, making sure that the 
-version of MATLAB being downloaded is compatible with the Python version being used. This can be checked at: 
+in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. It is possible to check that the 
+version of MATLAB being downloaded is compatible with the Python version being used, by referring to: 
 `<https://uk.mathworks.com/support/requirements/python-compatibility.html>`_. 
 
 After running ``sudo ./install`` from the MATLAB folder (as suggested in the Mathworks instructions), the graphical interface 
