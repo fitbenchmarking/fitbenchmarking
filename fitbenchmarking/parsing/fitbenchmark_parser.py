@@ -143,18 +143,14 @@ class FitbenchmarkParser(Parser):
         :return: The starting values for the problem.
         :rtype: list
         """
-        # SasView functions can have reserved keywords so ignore these
-        ignore = ["name"]
-
-        starting_values = [
+        # Functions can have reserved "name" keyword so ignore this
+        return [
             {
                 name: val
                 for name, val in self._parsed_func[0].items()
-                if name not in ignore
+                if name not in ["name"]
             }
         ]
-
-        return starting_values
 
     def _set_data_points(self, data_points: list, fit_ranges: list) -> None:
         """

@@ -594,3 +594,33 @@ class TestFitbenchmarkParser(TestCase):
         """
         self.parser._parsed_func = parsed_func
         assert self.parser._get_equation() == expected
+
+    @parameterized.expand(
+        [
+            (
+                [
+                    {
+                        "name": "BackToBackExponential",
+                        "I": 15000.0,
+                        "A": 0.04,
+                        "B": 0.03,
+                        "X0": 29950,
+                        "S": 12,
+                    },
+                ],
+                [{"I": 15000.0, "A": 0.04, "B": 0.03, "X0": 29950, "S": 12}],
+            ),
+            (
+                [
+                    {"name": "FlatBackground", "A0": 30},
+                ],
+                [{"A0": 30}],
+            ),
+        ]
+    )
+    def test_get_starting_values(self, parsed_func, expected):
+        """
+        Verifies the output of _get_starting_values() method.
+        """
+        self.parser._parsed_func = parsed_func
+        assert self.parser._get_starting_values() == expected
