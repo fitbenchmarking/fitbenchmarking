@@ -94,8 +94,8 @@ class FitbenchmarkParser(Parser):
         fit_ranges_str = self._entries.get("fit_ranges", "")
         # this creates a list of strs like '{key: val, ...}' and parses each
         fit_ranges = [
-            _parse_range("{" + r.split("}")[0] + "}")
-            for r in fit_ranges_str.split("{")[1:]
+            _parse_range(match)
+            for match in re.findall(r"\{[^}]*\}", fit_ranges_str)
         ]
 
         self._set_data_points(data_points, fit_ranges)
@@ -146,9 +146,9 @@ class FitbenchmarkParser(Parser):
         # Functions can have reserved "name" keyword so ignore this
         return [
             {
-                name: val
-                for name, val in self._parsed_func[0].items()
-                if name not in ["name"]
+                key: val
+                for key, val in self._parsed_func[0].items()
+                if key != "name"
             }
         ]
 
@@ -163,8 +163,7 @@ class FitbenchmarkParser(Parser):
         """
         self.fitting_problem.data_x = data_points[0]["x"]
         self.fitting_problem.data_y = data_points[0]["y"]
-        if "e" in data_points[0]:
-            self.fitting_problem.data_e = data_points[0]["e"]
+        self.fitting_problem.data_e = data_points[0].get("e", None)
 
         if fit_ranges and "x" in fit_ranges[0]:
             self.fitting_problem.start_x = fit_ranges[0]["x"][0]
