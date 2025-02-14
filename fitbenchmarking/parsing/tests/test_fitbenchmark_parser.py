@@ -566,3 +566,31 @@ class TestFitbenchmarkParser(TestCase):
         result = self.parser._get_data_points("test")
         for key in expected:
             np.testing.assert_array_equal(result[key], expected[key])
+
+    @parameterized.expand(
+        [
+            (
+                [
+                    {"name": "BackToBackExponential"},
+                    {"name": "FlatBackground"},
+                ],
+                "2 Functions",
+            ),
+            (
+                [
+                    {"name": "BackToBackExponential"},
+                    {"name": "FlatBackground"},
+                    {"name": "GausOsc"},
+                ],
+                "3 Functions",
+            ),
+            ([{"name": "BackToBackExponential"}], "BackToBackExponential"),
+            ([{"name": "FlatBackground"}], "FlatBackground"),
+        ]
+    )
+    def test_get_equation(self, parsed_func, expected):
+        """
+        Verifies the output of _get_equation() method.
+        """
+        self.parser._parsed_func = parsed_func
+        assert self.parser._get_equation() == expected
