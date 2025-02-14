@@ -15,7 +15,9 @@ from fitbenchmarking.parsing.fitbenchmark_parser import (
     _get_column_data,
     _parse_range,
 )
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
+from fitbenchmarking.utils.options import Options
 
 
 class TestFitbenchmarkParser(TestCase):
@@ -624,3 +626,51 @@ class TestFitbenchmarkParser(TestCase):
         """
         self.parser._parsed_func = parsed_func
         assert self.parser._get_starting_values() == expected
+
+    @parameterized.expand(
+        [
+            (
+                [
+                    {
+                        "x": np.array([0]),
+                        "y": np.array([1]),
+                        "e": np.array([2]),
+                    },
+                ],
+                [],
+            ),
+            (
+                [
+                    {
+                        "x": np.array([3]),
+                        "y": np.array([4]),
+                        "e": np.array([5]),
+                    },
+                ],
+                [{"x": [1, 4]}],
+            ),
+            (
+                [
+                    {
+                        "x": np.array([3]),
+                        "y": np.array([4]),
+                    },
+                ],
+                [],
+            ),
+        ]
+    )
+    def test_set_data_points(self, data_points, fit_ranges):
+        """
+        Verifies the output of _set_data_points() method.
+        """
+        self.parser.fitting_problem = FittingProblem(Options())
+        self.parser._set_data_points(data_points, fit_ranges)
+        assert self.parser.fitting_problem.data_x == data_points[0]["x"]
+        assert self.parser.fitting_problem.data_y == data_points[0]["y"]
+        assert self.parser.fitting_problem.data_e == data_points[0].get(
+            "e", None
+        )
+        if fit_ranges:
+            assert self.parser.fitting_problem.start_x == fit_ranges[0]["x"][0]
+            assert self.parser.fitting_problem.end_x == fit_ranges[0]["x"][1]
