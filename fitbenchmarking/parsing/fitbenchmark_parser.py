@@ -411,7 +411,7 @@ class FitbenchmarkParser(Parser):
                 return convert(value)
         return value
 
-    def _get_data_points(self, data_file_path: str):
+    def _get_data_points(self, data_file_path: str) -> dict:
         """
         Get the data points of the problem from the data file.
 
@@ -426,37 +426,36 @@ class FitbenchmarkParser(Parser):
             data_text = f.readlines()
 
         first_row = _find_first_line(data_text)
-        dim = len(data_text[first_row].split())
+        data_lines = data_text[first_row:]
+        dim = len(data_lines[0].split())
         cols = _get_column_data(data_text, first_row, dim)
 
-        data_points = np.zeros((len(data_text) - first_row, dim))
+        data_points = np.full((len(data_lines), dim), np.nan)
 
-        for idx, line in enumerate(data_text[first_row:]):
-            point_text = line.split()
+        for idx, line in enumerate(data_lines):
             # Skip any values that can't be represented
-            try:
-                point = [float(val) for val in point_text]
-            except ValueError:
-                point = [np.nan for _ in point_text]
-            data_points[idx, :] = point
+            with suppress(ValueError):
+                data_points[idx] = [float(val) for val in line.split()]
 
         # Strip all np.nan entries
-        data_points = data_points[~np.isnan(data_points[:, 0]), :]
+        data_points = data_points[~np.isnan(data_points).any(axis=1)]
 
         # Split into x, y, and e
-        data = {key: data_points[:, cols[key]] for key in ["x", "y"]}
-        if cols["e"]:
-            data["e"] = data_points[:, cols["e"]]
+        data = {
+            key: data_points[:, indices]
+            for key, indices in cols.items()
+            if indices
+        }
 
         # Flatten if the columns are 1D
-        for key, col in cols.items():
-            if len(col) == 1:
-                data[key] = data[key].flatten()
+        for key in data:
+            if data[key].shape[1] == 1:
+                data[key] = data[key].ravel()
 
         return data
 
 
-def _parse_range(range_str):
+def _parse_range(range_str: str) -> dict:
     """
     Parse a range string for the problem into a dict or list of dict if
     multi-fit.
@@ -550,6 +549,7 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> dict:
     cols = {"x": [], "y": [], "e": []}
 
     if first_row == 0:
+        # No header in data file
         cols["x"], cols["y"] = [0], [1]
         if dim == 3:
             cols["e"] = [2]
