@@ -211,6 +211,14 @@ class TestFitbenchmarkParser(TestCase):
         with self.assertRaises(exceptions.ParsingError):
             _ = self.parser._parse_single_function(input)
 
+    @parameterized.expand(['d=(e=true ,f = "bar"', "g=1.0,1.0,1.0]"])
+    def test_parse_parens_with_invalid_inputs(self, input):
+        """
+        Verifies the ParsingError is raised by _parse_parens.
+        """
+        with self.assertRaises(exceptions.ParsingError):
+            _ = self.parser._parse_parens(input)
+
     @parameterized.expand(
         [
             (
