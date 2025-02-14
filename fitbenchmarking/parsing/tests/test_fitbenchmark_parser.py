@@ -253,6 +253,7 @@ class TestFitbenchmarkParser(TestCase):
             "{'f0.I':(1,2],'f0.A':[3, 4}, 'f1.B':{5, 6)}",
             "{'f0.I':(2,1),'f0.A':[3, 4], 'f1.B':{5, 6}}",
             "{'f0.I':(1,1A),'f0.A':[55, 4], 'f1.B':{5, 6C}}",
+            "{'f0.I':(1,A),'f0.A':[55, B], 'f1.B':{5, C}}",
         ]
     )
     def test_parse_range_with_invalid_inputs(self, range_str):

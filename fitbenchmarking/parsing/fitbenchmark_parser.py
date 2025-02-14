@@ -485,22 +485,28 @@ def _parse_range(range_str):
             r'\'?"?([\w\.\s]+)"?\'?\s*:\s*'
             r"([\(\[\{])([\d\.]+),\s*([\d\.]+)([\)\]\}])"
         )
-        matches = re.findall(pattern, range_str)
+
+        if not (matches := re.findall(pattern, range_str)):
+            raise ParsingError(
+                f"Could not parse string '{range_str}'. "
+                "The range of variables should be defined as "
+                "'var': (min, max) where var is the variable"
+                "name and min and max values of the range "
+                "should be defined as floats"
+            )
 
         for var, open_bracket, low, high, close_bracket in matches:
             expected_closing = bracket_pairs.get(open_bracket, "")
             if close_bracket != expected_closing:
                 raise ParsingError(f"Mismatched parentheses for '{var}'")
 
-            try:
-                low, high = float(low), float(high)
-                if low >= high:
-                    raise ParsingError(
-                        f"MIN must be smaller than MAX value for '{var}'"
-                    )
-                output_ranges[var.lower().strip()] = [low, high]
-            except ValueError:
-                raise ParsingError(f"Expected floats for '{var}'")
+            low, high = float(low), float(high)
+            if low >= high:
+                raise ParsingError(
+                    f"MIN must be smaller than MAX value for '{var}'"
+                )
+
+            output_ranges[var.lower().strip()] = [low, high]
 
     return output_ranges
 
@@ -543,26 +549,7 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> dict:
     """
     cols = {"x": [], "y": [], "e": []}
 
-    if first_row != 0:
-        pattern = r"\bX\d*\b|\bY\d*\b|\bE\d*\b"
-        matches = [
-            m.lower()
-            for m in re.findall(pattern, file_lines[0], re.IGNORECASE)
-        ]
-        if dim != len(matches):
-            raise ParsingError("Could not match header to columns.")
-        for ix, col_name in enumerate(matches):
-            if (col_type := col_name[0]) in cols:
-                cols[col_type].append(ix)
-            else:
-                raise ParsingError(
-                    "Unrecognised header line, header names must start with "
-                    '"x", "y", or "e".'
-                    "Examples are: "
-                    '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
-                    '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...'
-                )
-    else:
+    if first_row == 0:
         cols["x"], cols["y"] = [0], [1]
         if dim == 3:
             cols["e"] = [2]
@@ -570,6 +557,26 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> dict:
             raise ParsingError(
                 "Cannot infer size of inputs and outputs in datafile. "
                 "Headers are required when not using 1D inputs and outputs."
+            )
+    else:
+        pattern = r"\bX\d*\b|\bY\d*\b|\bE\d*\b"
+        matches = [
+            m.lower()
+            for m in re.findall(pattern, file_lines[0], re.IGNORECASE)
+        ]
+        if matches:
+            if dim != len(matches):
+                raise ParsingError("Could not match header to columns.")
+            for ix, col_name in enumerate(matches):
+                if (col_type := col_name[0]) in cols:
+                    cols[col_type].append(ix)
+        else:
+            raise ParsingError(
+                "Unrecognised header line, header names must start with "
+                '"x", "y", or "e".'
+                "Examples are: "
+                '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
+                '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...'
             )
 
     if not (cols["x"] and cols["y"]):
