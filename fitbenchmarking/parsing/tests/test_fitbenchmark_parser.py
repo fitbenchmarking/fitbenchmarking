@@ -4,8 +4,9 @@ This file contains tests for the parsers.
 
 from pathlib import Path, PosixPath
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
+import numpy as np
 from parameterized import parameterized
 
 from fitbenchmarking.parsing.fitbenchmark_parser import (
@@ -414,7 +415,7 @@ class TestFitbenchmarkParser(TestCase):
     )
     def test_find_first_line_with_valid_inputs(self, file_lines, expected):
         """
-        Verifies the output of _find_first_line() method.
+        Verifies the output of _find_first_line().
         """
         assert _find_first_line(file_lines) == expected
 
@@ -493,3 +494,67 @@ class TestFitbenchmarkParser(TestCase):
         """
         with self.assertRaises(exceptions.ParsingError):
             _ = _get_column_data(file_lines, first_line, dim)
+
+    @parameterized.expand(
+        [
+            (
+                ["# X Y E\n", "", "1 2 3\n"],
+                2,
+                {"x": [0], "y": [1], "e": [2]},
+                {"x": np.array([1]), "y": np.array([2]), "e": np.array([3])},
+            ),
+            (
+                ["# X Y E\n", "1 2 3\n", "4 B C\n"],
+                1,
+                {"x": [0], "y": [1], "e": [2]},
+                {"x": np.array([1]), "y": np.array([2]), "e": np.array([3])},
+            ),
+            (
+                ["# X Y E\n", "", "", "1 2 3\n", "4 5  6\n", "7  8 9\n"],
+                3,
+                {"x": [0], "y": [1], "e": [2]},
+                {
+                    "x": np.array([1, 4, 7]),
+                    "y": np.array([2, 5, 8]),
+                    "e": np.array([3, 6, 9]),
+                },
+            ),
+            (
+                ["1 2\n", "4 5\n", "7  8\n"],
+                0,
+                {"x": [0], "y": [1], "e": []},
+                {"x": np.array([1, 4, 7]), "y": np.array([2, 5, 8])},
+            ),
+            (
+                ["# X0 X1 Y0 Y1\n", "1 2 3 4\n", "5 6 7 8\n"],
+                1,
+                {"x": [0, 1], "y": [2, 3], "e": []},
+                {
+                    "x": np.array([[1, 2], [5, 6]]),
+                    "y": np.array([[3, 4], [7, 8]]),
+                },
+            ),
+        ]
+    )
+    @patch("fitbenchmarking.parsing.fitbenchmark_parser._find_first_line")
+    @patch("fitbenchmarking.parsing.fitbenchmark_parser._get_column_data")
+    @patch("builtins.open", new_callable=mock_open)
+    def test_get_data_points(
+        self,
+        file_lines,
+        first_line,
+        cols,
+        expected,
+        mock_open_file,
+        mock_get_column_data,
+        mock_find_first_line,
+    ):
+        """
+        Verifies the output of _get_data_points() method.
+        """
+        mock_find_first_line.return_value = first_line
+        mock_get_column_data.return_value = cols
+        mock_open_file.return_value.readlines.return_value = file_lines
+        result = self.parser._get_data_points("test")
+        for key in expected:
+            np.testing.assert_array_equal(result[key], expected[key])
