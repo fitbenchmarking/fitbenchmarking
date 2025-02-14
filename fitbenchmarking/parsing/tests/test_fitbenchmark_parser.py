@@ -11,6 +11,7 @@ from parameterized import parameterized
 from fitbenchmarking.parsing.fitbenchmark_parser import (
     FitbenchmarkParser,
     _find_first_line,
+    _get_column_data,
     _parse_range,
 )
 from fitbenchmarking.utils import exceptions
@@ -432,3 +433,62 @@ class TestFitbenchmarkParser(TestCase):
         """
         with self.assertRaises(exceptions.ParsingError):
             _ = _find_first_line(file_lines)
+
+    @parameterized.expand(
+        [
+            (["# X Y E\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (["# Y X E\n"], 2, 3, {"x": [1], "y": [0], "e": [2]}),
+            (["# E Y X\n"], 2, 3, {"x": [2], "y": [1], "e": [0]}),
+            (["# X   Y   E\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (["# X Y   E\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (["# x y e\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (
+                ["# X0 X1  Y0 Y1  E1 E2\n"],
+                2,
+                6,
+                {"x": [0, 1], "y": [2, 3], "e": [4, 5]},
+            ),
+            (["<x> <y> <e>\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (["<x> <y> <e>\n"], 2, 3, {"x": [0], "y": [1], "e": [2]}),
+            (["<X1> <Y1>\n"], 2, 2, {"x": [0], "y": [1], "e": []}),
+            (
+                ["<X0> <X1> <Y0> <Y1> <E1> <E2>\n"],
+                2,
+                6,
+                {"x": [0, 1], "y": [2, 3], "e": [4, 5]},
+            ),
+            (
+                ["<X0>    <X1>  <Y0>   <Y1>  <E1>  <E2>\n"],
+                2,
+                6,
+                {"x": [0, 1], "y": [2, 3], "e": [4, 5]},
+            ),
+            (["<Y> <X>\n"], 2, 2, {"x": [1], "y": [0], "e": []}),
+            ([""], 0, 2, {"x": [0], "y": [1], "e": []}),
+            ([""], 0, 3, {"x": [0], "y": [1], "e": [2]}),
+        ]
+    )
+    def test_get_column_data_valid_inputs(
+        self, file_lines, first_line, dim, expected
+    ):
+        """
+        Verifies the output of _get_column_data() function with valid inputs.
+        """
+        assert _get_column_data(file_lines, first_line, dim) == expected
+
+    @parameterized.expand(
+        [
+            (["# X Y E\n"], 2, 2),
+            (["# A B C\n"], 2, 3),
+            ([""], 0, 1),
+            ([""], 0, 4),
+            (["# X0 X1  Y0 Y1  E1\n"], 2, 5),
+            (["# X0 X1 E1\n"], 2, 3),
+        ]
+    )
+    def test_get_column_data_invalid_inputs(self, file_lines, first_line, dim):
+        """
+        Verifies the ParsingError is raised by _get_column_data().
+        """
+        with self.assertRaises(exceptions.ParsingError):
+            _ = _get_column_data(file_lines, first_line, dim)

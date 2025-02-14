@@ -90,8 +90,7 @@ class FitbenchmarkParser(Parser):
         # PARAMETER RANGES
         # Creates list containing tuples of lower and upper bounds
         # (lb,ub) for each parameter
-        vr = _parse_range(self._entries.get("parameter_ranges", ""))
-        if vr:
+        if vr := _parse_range(self._entries.get("parameter_ranges", "")):
             self.fitting_problem.set_value_ranges(vr)
 
         # FIT RANGES
@@ -232,7 +231,7 @@ class FitbenchmarkParser(Parser):
                 ),
                 None,
             )
-            if not found_path:
+            if found_path is None:
                 # Then look for it in parent directory of self._filename
                 found_path = next(search_path.rglob(file), None)
                 if found_path is None:
@@ -430,11 +429,6 @@ class FitbenchmarkParser(Parser):
         dim = len(data_text[first_row].split())
         cols = _get_column_data(data_text, first_row, dim)
 
-        if not cols["x"] or not cols["y"]:
-            raise ParsingError("Input files need both X and Y values.")
-        if cols["e"] and len(cols["y"]) != len(cols["e"]):
-            raise ParsingError("Error must be of the same dimension as Y.")
-
         data_points = np.zeros((len(data_text) - first_row, dim))
 
         for idx, line in enumerate(data_text[first_row:]):
@@ -500,15 +494,13 @@ def _parse_range(range_str):
 
             try:
                 low, high = float(low), float(high)
+                if low >= high:
+                    raise ParsingError(
+                        f"MIN must be smaller than MAX value for '{var}'"
+                    )
+                output_ranges[var.lower().strip()] = [low, high]
             except ValueError:
                 raise ParsingError(f"Expected floats for '{var}'")
-
-            if low >= high:
-                raise ParsingError(
-                    f"MIN value must be smaller than MAX value for '{var}'"
-                )
-
-            output_ranges[var.lower().strip()] = [low, high]
 
     return output_ranges
 
@@ -529,14 +521,14 @@ def _find_first_line(file_lines: list[str]) -> int:
         for i, line in enumerate(file_lines)
         if re.match(r"^\s*-?\d+(\.\d+)?", line)
     )
-    if not (data_start_index := next(index, None)):
+    if (data_start_index := next(index, None)) is None:
         raise ParsingError("Could not find data points")
     return data_start_index
 
 
-def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
+def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> dict:
     """
-    Gets the data in the file as a dictionary of x, y and e data.
+    Gets the data columns in the file as a dictionary of x, y and e.
 
     :param file_lines: A list of lines from a file.
     :type file_lines: A list of strings.
@@ -545,22 +537,23 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
     :param dim: The number of columns in the file.
     :type dim: int
 
-    :return: index of the first file line with data.
-    :rtype: int
+    :return: A dictionary mapping "x", "y", and "e" to their
+             respective column indices.
+    :rtype: dict
     """
     cols = {"x": [], "y": [], "e": []}
-    num_cols = 0
+
     if first_row != 0:
-        header = file_lines[0].split()
-        for heading in header:
-            if heading == "#":
-                continue
-            if heading[0] == "<" and heading[-1] == ">":
-                heading = heading[1:-1]
-            col_type = heading[0].lower()
-            if col_type in ["x", "y", "e"]:
-                cols[col_type].append(num_cols)
-                num_cols += 1
+        pattern = r"\bX\d*\b|\bY\d*\b|\bE\d*\b"
+        matches = [
+            m.lower()
+            for m in re.findall(pattern, file_lines[0], re.IGNORECASE)
+        ]
+        if dim != len(matches):
+            raise ParsingError("Could not match header to columns.")
+        for ix, col_name in enumerate(matches):
+            if (col_type := col_name[0]) in cols:
+                cols[col_type].append(ix)
             else:
                 raise ParsingError(
                     "Unrecognised header line, header names must start with "
@@ -569,8 +562,6 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
                     '"# X Y E", "#   x0 x1 y e", "# X0 X1 Y0 Y1 E0 E1", '
                     '"<X> <Y> <E>", "<X0> <X1> <Y> <E>"...'
                 )
-        if dim != num_cols:
-            raise ParsingError("Could not match header to columns.")
     else:
         cols["x"], cols["y"] = [0], [1]
         if dim == 3:
@@ -580,4 +571,10 @@ def _get_column_data(file_lines: list[str], first_row: int, dim: int) -> list:
                 "Cannot infer size of inputs and outputs in datafile. "
                 "Headers are required when not using 1D inputs and outputs."
             )
+
+    if not (cols["x"] and cols["y"]):
+        raise ParsingError("Input files need both X and Y values.")
+    if cols["e"] and len(cols["y"]) != len(cols["e"]):
+        raise ParsingError("Error must be of the same dimension as Y.")
+
     return cols
