@@ -60,25 +60,22 @@ class FitbenchmarkParser(Parser):
 
         # If using a multivariate function wrap the call to take a single
         # argument
-        if len(data_points[0]["x"].shape) > 1:
+        if data_points[0]["x"].ndim > 1:
             old_function = self.fitting_problem.function
-            all_data = []
+            all_data = np.concatenate([dp["x"] for dp in data_points])
             count = 0
             for dp in data_points:
-                all_data.append(dp["x"])
                 dp["x"] = np.arange(count, count + dp["x"].shape[0])
-                count = count + dp["x"].shape[0]
-            all_data = np.concatenate(all_data)
+                count += dp["x"].shape[0]
 
-            def new_function(x, *p):
-                inp = all_data[x]
-                return old_function(inp, *p)
-
-            self.fitting_problem.function = new_function
+            self.fitting_problem.function = lambda x, *p: old_function(
+                all_data[x], *p
+            )
             self.fitting_problem.multivariate = True
 
         # Set this flag if the output is non-scalar either
-        if len(data_points[0]["y"].shape) > 2:
+
+        if data_points[0]["y"].ndim > 2:
             self.fitting_problem.multivariate = True
 
         # EQUATION
@@ -133,10 +130,11 @@ class FitbenchmarkParser(Parser):
         :return: The equation in the problem definition file.
         :rtype: str
         """
-        equation_count = len(self._parsed_func)
-        if equation_count == 1:
-            return self._parsed_func[0]["name"]
-        return f"{equation_count} Functions"
+        return (
+            self._parsed_func[0]["name"]
+            if len(self._parsed_func) == 1
+            else f"{len(self._parsed_func)} Functions"
+        )
 
     def _get_starting_values(self) -> list:
         """
