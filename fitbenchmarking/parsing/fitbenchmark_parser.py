@@ -73,8 +73,7 @@ class FitbenchmarkParser(Parser):
             self.fitting_problem.multivariate = True
 
         # Set this flag if the output is non-scalar either
-
-        if data_points[0]["y"].ndim > 2:
+        if data_points[0]["y"].ndim > 1:
             self.fitting_problem.multivariate = True
 
         # EQUATION
