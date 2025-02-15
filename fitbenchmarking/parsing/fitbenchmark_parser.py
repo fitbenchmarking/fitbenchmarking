@@ -481,9 +481,9 @@ def _parse_range(range_str: str) -> dict:
             raise ParsingError(
                 f"Could not parse string '{range_str}'. "
                 "The range of variables should be defined as "
-                "'var': (min, max) where var is the variable"
-                "name and min and max values of the range "
-                "should be defined as floats"
+                "'var': (min, max) where var should be the "
+                "variable name and min and max values of the "
+                "range should be defined as floats."
             )
 
         for var, open_bracket, low, high, close_bracket in matches:
