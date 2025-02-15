@@ -53,8 +53,7 @@ class MantidDevParser(FitbenchmarkParser):
         :return: the jacobian, or None
         :rtype: Callable or None
         """
-        jac = super()._dense_jacobian()
-        if jac is not None:
+        if (jac := super()._dense_jacobian()) is not None:
             return jac
 
         fp = self.fitting_problem
