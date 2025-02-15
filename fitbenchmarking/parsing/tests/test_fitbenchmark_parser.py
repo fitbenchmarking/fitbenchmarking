@@ -2,6 +2,7 @@
 This file contains tests for the parsers.
 """
 
+import sys
 from pathlib import Path, PosixPath
 from unittest import TestCase
 from unittest.mock import MagicMock, mock_open, patch
@@ -675,7 +676,7 @@ class TestFitbenchmarkParser(TestCase):
             assert self.parser.fitting_problem.start_x == fit_ranges[0]["x"][0]
             assert self.parser.fitting_problem.end_x == fit_ranges[0]["x"][1]
 
-    @patch("sys.path", new_callable=list)
+    @patch.object(sys, "path", new_callable=list)
     @patch("importlib.import_module")
     def test_get_jacobian(
         self,
