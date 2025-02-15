@@ -675,34 +675,19 @@ class TestFitbenchmarkParser(TestCase):
             assert self.parser.fitting_problem.start_x == fit_ranges[0]["x"][0]
             assert self.parser.fitting_problem.end_x == fit_ranges[0]["x"][1]
 
-    @parameterized.expand(
-        [
-            (
-                {"jac": "module=j/p/sample, dense_func=d, sparse_func=s"},
-                "test/j/p",
-                ("sample",),
-            ),
-            (
-                {},
-                "",
-                "",
-            ),
-        ]
-    )
     @patch("sys.path", new_callable=list)
     @patch("importlib.import_module")
     def test_get_jacobian(
         self,
-        entries,
-        expected_sys_path,
-        expected_module,
         mock_import_module,
         mock_sys_path,
     ):
         """
         Verifies the output of _get_jacobian().
         """
-        self.parser._entries = entries
+        self.parser._entries = {
+            "jac": "module=jac/sample, dense_func=d, sparse_func=s"
+        }
         self.parser._filename = Path("test") / "problem.txt"
 
         for jac in ["dense_func", "sparse_func"]:
@@ -711,9 +696,25 @@ class TestFitbenchmarkParser(TestCase):
             setattr(mock_module, jac[0], mock_function)
             mock_import_module.return_value = mock_module
             result = self.parser._get_jacobian(jac)
-            if entries:
-                self.assertIn(expected_sys_path, mock_sys_path)
-                assert mock_import_module.mock_calls[0].args == expected_module
-                self.assertEqual(result, mock_function)
-            else:
-                assert result is None
+
+            self.assertIn("test/jac", mock_sys_path)
+            self.assertIn(
+                ("sample",),
+                [call.args for call in mock_import_module.mock_calls],
+            )
+            self.assertEqual(result, mock_function)
+
+    @parameterized.expand(
+        [
+            ({"jac": "module=j/p/sample"},),
+            ({},),
+        ]
+    )
+    def test_get_jacobian_returns_none(self, entries):
+        """
+        Verifies the output of _get_jacobian() returns None.
+        """
+        self.parser._entries = entries
+        for jac in ["dense_func", "sparse_func"]:
+            result = self.parser._get_jacobian(jac)
+            assert result is None
