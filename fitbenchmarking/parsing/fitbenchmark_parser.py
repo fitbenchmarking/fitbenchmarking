@@ -3,7 +3,6 @@ This file implements a parser for the Fitbenchmark data format.
 """
 
 import importlib
-import os
 import re
 import sys
 from contextlib import suppress
@@ -289,18 +288,18 @@ class FitbenchmarkParser(Parser):
         :return: A callable function or None
         :rtype: callable or None
         """
-        if "jac" in self._entries:
-            parsed_jac_func = self._parse_jac_function()
-            if jac_type not in parsed_jac_func[0]:
-                return None
-            pf = parsed_jac_func[0]
-            path = os.path.join(os.path.dirname(self._filename), pf["module"])
-            sys.path.append(os.path.dirname(path))
-            module = importlib.import_module(os.path.basename(path))
-            func = getattr(module, pf[jac_type])
-            return func
-        else:
+        if "jac" not in self._entries:
             return None
+
+        parsed_jac_func = self._parse_jac_function()
+        if jac_type not in parsed_jac_func[0]:
+            return None
+
+        pf = parsed_jac_func[0]
+        module_path = Path(self._filename).parent / pf["module"]
+        sys.path.append(str(module_path.parent))
+        module = importlib.import_module(module_path.stem)
+        return getattr(module, pf[jac_type])
 
     _dense_jacobian = partialmethod(_get_jacobian, "dense_func")
     _sparse_jacobian = partialmethod(_get_jacobian, "sparse_func")

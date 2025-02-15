@@ -674,3 +674,46 @@ class TestFitbenchmarkParser(TestCase):
         if fit_ranges:
             assert self.parser.fitting_problem.start_x == fit_ranges[0]["x"][0]
             assert self.parser.fitting_problem.end_x == fit_ranges[0]["x"][1]
+
+    @parameterized.expand(
+        [
+            (
+                {"jac": "module=j/p/sample, dense_func=d, sparse_func=s"},
+                "test/j/p",
+                ("sample",),
+            ),
+            (
+                {},
+                "",
+                "",
+            ),
+        ]
+    )
+    @patch("sys.path", new_callable=list)
+    @patch("importlib.import_module")
+    def test_get_jacobian(
+        self,
+        entries,
+        expected_sys_path,
+        expected_module,
+        mock_import_module,
+        mock_sys_path,
+    ):
+        """
+        Verifies the output of _get_jacobian().
+        """
+        self.parser._entries = entries
+        self.parser._filename = Path("test") / "problem.txt"
+
+        for jac in ["dense_func", "sparse_func"]:
+            mock_function = MagicMock()
+            mock_module = MagicMock()
+            setattr(mock_module, jac[0], mock_function)
+            mock_import_module.return_value = mock_module
+            result = self.parser._get_jacobian(jac)
+            if entries:
+                self.assertIn(expected_sys_path, mock_sys_path)
+                assert mock_import_module.mock_calls[0].args == expected_module
+                self.assertEqual(result, mock_function)
+            else:
+                assert result is None
