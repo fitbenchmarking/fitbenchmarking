@@ -726,3 +726,73 @@ class TestFitbenchmarkParser(TestCase):
         """
         with self.assertRaises(NotImplementedError):
             _ = self.parser._create_function()
+
+    @patch(
+        "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser._get_data_points"
+    )
+    @patch(
+        "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser._get_data_file"
+    )
+    @patch(
+        "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser._parse_function"
+    )
+    @patch(
+        "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser._create_function"
+    )
+    @patch(
+        "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser._get_data_problem_entries"
+    )
+    def test_parse(
+        self,
+        mock_get_data_problem_entries,
+        mock_create_function,
+        mock_parse_function,
+        mock_get_data_file,
+        mock_get_data_points,
+    ):
+        """
+        Verifies the output of the parse() method.
+        """
+        mock_get_data_problem_entries.return_value = {
+            "software": "Mantid",
+            "name": "Basic MultiFit",
+            "description": "Test Parse",
+            "input_file": "['basic1.txt','basic2.txt']",
+            "function": "name=LinearBackground,A0=0,A1=0",
+            "parameter_ranges": "{'A0': (1,10), 'A1': (1,5)}",
+        }
+
+        mock_parse_function.return_value = [
+            {"name": "LinearBackground", "A0": "0", "A1": "0"}
+        ]
+
+        mock_get_data_file.return_value = ["basic1.txt", "basic2.txt"]
+        mock_x = np.array([1.0, 2.0, 3.0])
+        mock_y = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+        mock_get_data_points.return_value = {"x": mock_x, "y": mock_y}
+        mock_create_function.return_value = ["mock_function"]
+
+        self.parser.options = Options()
+        result = self.parser.parse()
+
+        # Verify all the parameters are set correctly
+        assert not result.additional_info
+        assert not result.data_e
+        assert result.data_x.shape == (3,)
+        assert result.data_y.shape == (3, 2)
+        assert result.description == "Test Parse"
+        assert not result.end_x
+        assert result.equation == "LinearBackground"
+        assert result.format == "mantid"
+        assert result.function == ["mock_function"]
+        assert not result.hessian
+        assert not result.jacobian
+        assert result.multifit
+        assert result.multivariate
+        assert result.name == "Basic MultiFit"
+        assert result.param_names == ["A0", "A1"]
+        assert result.plot_scale == "linear"
+        assert not result.sorted_index
+        assert not result.sparse_jacobian
+        assert not result.start_x
+        assert result.value_ranges == [(1.0, 10.0), (1.0, 5.0)]
