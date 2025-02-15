@@ -719,3 +719,10 @@ class TestFitbenchmarkParser(TestCase):
         for jac in ["dense_func", "sparse_func"]:
             result = self.parser._get_jacobian(jac)
             assert result is None
+
+    def test_create_function(self):
+        """
+        Verifies the NotImplementedError is raised by _create_function().
+        """
+        with self.assertRaises(NotImplementedError):
+            _ = self.parser._create_function()
