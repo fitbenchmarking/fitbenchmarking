@@ -350,7 +350,7 @@ class BaseControllerTests(TestCase):
         with self.assertRaises(exceptions.UnknownMinimizerError):
             controller.validate_minimizer(minimizer, algorithm_type)
 
-    def test_check_minimizer_bounds_true(self):
+    def test_check_minimizer_bounds_no_bounds(self):
         """
         BaseSoftwareController: Test check_minimizer_bounds with
                                 minimizer that supports bounds
@@ -361,16 +361,30 @@ class BaseControllerTests(TestCase):
         minimizer = "bounds_minimizer"
         controller.check_minimizer_bounds(minimizer)
 
-    def test_check_minimizer_bounds_false(self):
+    def test_check_minimizer_bounds_bounds_not_supported(self):
         """
         BaseSoftwareController: Test check_minimizer_bounds with
                                 minimizer that does not support bounds
         """
         controller = DummyController(self.cost_func)
         controller.support_for_bounds = True
+        controller.value_ranges = [(0.0, 1.0)]
         controller.no_bounds_minimizers = ["no_bounds_minimizer"]
         minimizer = "no_bounds_minimizer"
         with self.assertRaises(exceptions.IncompatibleMinimizerError):
+            controller.check_minimizer_bounds(minimizer)
+
+    def test_check_minimizer_bounds_missing_bounds(self):
+        """
+        BaseSoftwareController: Test check_minimizer_bounds with minimizer
+                                that requires bounds but no bounds passed
+        """
+        controller = DummyController(self.cost_func)
+        controller.support_for_bounds = True
+        controller.no_bounds_minimizers = ["no_bounds_minimizer"]
+        controller.bounds_required_minimizers = ["bounds_minimizer"]
+        minimizer = "bounds_minimizer"
+        with self.assertRaises(exceptions.MissingBoundsError):
             controller.check_minimizer_bounds(minimizer)
 
     def test_record_alg_type(self):

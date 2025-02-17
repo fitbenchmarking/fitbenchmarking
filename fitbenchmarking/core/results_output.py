@@ -350,13 +350,13 @@ def create_plots(options, results, best_results, figures_dir):
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
         initial_guess_path = {}
-        df = {}
+        data = {}
 
         # Create a dataframe for each problem
         # Rows are datapoints in the fits
         for cf, cat_results in prob_result.items():
             # first, load with raw data
-            df[cf] = pd.DataFrame(
+            data[cf] = pd.DataFrame(
                 {
                     "x": cat_results[0].data_x,
                     "y": cat_results[0].data_y,
@@ -377,7 +377,7 @@ def create_plots(options, results, best_results, figures_dir):
                     "best": False,
                 }
             )
-            df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+            data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
             # then get data for each minimizer
             for result in cat_results:
@@ -391,7 +391,7 @@ def create_plots(options, results, best_results, figures_dir):
                         "best": result.is_best_fit,
                     }
                 )
-                df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+                data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
         # For each result, if it succeeded, create a plot and add plot links to
         # the results object
@@ -408,7 +408,7 @@ def create_plots(options, results, best_results, figures_dir):
                 continue
 
             # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess(df[cf])
+            initial_guess_path[cf] = plot.plot_initial_guess(data[cf])
 
             # Get filenames of best plot first
             # If none of the fits succeeded, params could be None
@@ -423,7 +423,7 @@ def create_plots(options, results, best_results, figures_dir):
             best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
-            plot_paths = plot.plotly_fit(df[cf])
+            plot_paths = plot.plotly_fit(data[cf])
 
             # Check if plot was successful
             if cf not in plot_dict:

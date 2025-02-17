@@ -31,6 +31,8 @@ class ParamonteController(Controller):
         "MCMC": ["paraDram_sampler"],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -39,7 +41,6 @@ class ParamonteController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.result = None
         self.pmpd = pm.ParaDRAM()
 

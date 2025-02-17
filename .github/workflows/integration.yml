@@ -14,33 +14,22 @@ jobs:
       matrix:
         os: [macos-13, windows-latest]
         python: ['3.9', '3.13']
-        exclude:
-          - os: windows-latest
-            python: '3.13'
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Set up conda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Install python
+      uses: actions/setup-python@v5
       with:
-          miniconda-version: "latest"
-    - name: Install dependencies in conda env
-      shell: bash
+        python-version: ${{ matrix.python }}
+        check-latest: true
+    - name: Install dependencies
       run: |
-        source $CONDA/etc/profile.d/conda.sh
-        conda create -n default-test-env python=${{ matrix.python }} -y
-        conda activate default-test-env
-        conda install -c conda-forge nlopt -y
-        python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit]
+        python -m pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         python -m pip install --upgrade .[dev]
-    - name: Run tests
-      shell: bash
-      run: |
-        source $CONDA/etc/profile.d/conda.sh
-        conda activate default-test-env
-        if [ "${{ matrix.os }}" == "macos-13" ]; then
-          ci/unit_tests_default.sh
-        else
-          bash ci/unit_tests_default.sh
-        fi
+    - name: Run tests (Mac)
+      if: matrix.os == 'macos-13'
+      run: ci/unit_tests_default.sh
+    - name: Run tests (Windows)
+      if: matrix.os == 'windows-latest'
+      run: bash ci/unit_tests_default.sh

@@ -83,6 +83,7 @@ class MantidController(Controller):
     ]
 
     incompatible_problems = ["sscanss"]
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -94,8 +95,6 @@ class MantidController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-
-        self.support_for_bounds = True
 
         for fb_cf, mantid_cf in self.COST_FUNCTION_MAP.items():
             if isinstance(self.cost_func, create_cost_func(fb_cf)):
