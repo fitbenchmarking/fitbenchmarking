@@ -46,20 +46,29 @@
                             </tr>
                             <!-- Functions Section -->
                             <tr>
-                                <td class="heading" colspan="2">Functions</td>
+                                <td class="heading" colspan="2">Function</td>
                             </tr>
                             <tr>
                                 <td class="label">Form</td>
                                 <td>{{ equation }}</td>
                             </tr>
+                            <!-- Initial Parameters Section -->
                             <tr>
-                                <td class="label">Initial Parameters</td>
-                                {% if list_params %}
-                                    <td>{{ initial_guess }}</td>
-                                {% else %}
-                                    <td>Too many parameters to display</td>
-                                {% endif %}
+                                <td class="heading" colspan="2">Initial Parameters</td>
                             </tr>
+                            {% if list_params %}
+                                {% for param in initial_guess.split(", ") %}
+                                    {% set key, value = param.split("=") %}
+                                    <tr>
+                                        <td class="label">{{ key.strip() }}</td>
+                                        <td>{{ value.strip() }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="2">Too many parameters to display</td>
+                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                     <div class="row">
@@ -129,20 +138,29 @@
                                 </tr>
                                 <!-- Functions Section -->
                                 <tr>
-                                    <td class="heading" colspan="2">Functions</td>
+                                    <td class="heading" colspan="2">Function</td>
                                 </tr>
                                 <tr>
                                     <td class="label">Form</td>
                                     <td>{{ equation }}</td>
                                 </tr>
+                                <!-- Best Parameters Section -->
                                 <tr>
-                                    <td class="label">Best Parameters</td>
-                                    {% if list_params %}
-                                        <td>{{ min_params }}</td>
-                                    {% else %}
-                                        <td>Too many parameters to display</td>
-                                    {% endif %}
+                                    <td class="heading" colspan="2">Best Parameters</td>
                                 </tr>
+                                {% if list_params %}
+                                    {% for param in min_params.split(", ") %}
+                                        {% set key, value = param.split("=") %}
+                                        <tr>
+                                            <td class="label">{{ key.strip() }}</td>
+                                            <td>{{ value.strip() }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="2">Too many parameters to display</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                         <div align="center" class="figure align-center">
@@ -181,20 +199,29 @@
                                     </tr>
                                     <!-- Functions Section -->
                                     <tr>
-                                        <td class="heading" colspan="2">Functions</td>
+                                        <td class="heading" colspan="2">Function</td>
                                     </tr>
                                     <tr>
                                         <td class="label">Form</td>
                                         <td>{{ equation }}</td>
                                     </tr>
+                                    <!-- Best Parameters Section -->
                                     <tr>
-                                        <td class="label">Best Parameters</td>
-                                        {% if list_params %}
-                                            <td>{{ min_params }}</td>
-                                        {% else %}
-                                            <td>Too many parameters to display</td>
-                                        {% endif %}
+                                        <td class="heading" colspan="2">Best Parameters</td>
                                     </tr>
+                                    {% if list_params %}
+                                        {% for param in min_params.split(", ") %}
+                                            {% set key, value = param.split("=") %}
+                                            <tr>
+                                                <td class="label">{{ key.strip() }}</td>
+                                                <td>{{ value.strip() }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="2">Too many parameters to display</td>
+                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                             <div align="center" class="figure align-center">
