@@ -4,7 +4,7 @@
 Installing Matlab through WSL in a Linux environment
 ####################################################
 
-There are a couple of different ways to install MATLAB through WSL in a Linux environment, one of which requires X11 Forwarding, 
+There are a couple of ways to install MATLAB through WSL in a Linux environment, one of which requires X11 Forwarding, 
 while the other doesn't require a graphical interface.
 
 
@@ -45,10 +45,10 @@ Installing MATLAB
 
 Having configured the X11 Forwarding, this can be used for installing MATLAB. For this, one should follow the instructions 
 in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. It is possible to check that the 
-version of MATLAB being downloaded is compatible with the Python version being used, by referring to: 
+version of MATLAB being downloaded is compatible with the Python version being used, by referring to 
 `<https://uk.mathworks.com/support/requirements/python-compatibility.html>`_. 
 
-After running ``sudo ./install`` from the MATLAB folder (as suggested in the Mathworks instructions), the graphical interface 
+After running ``sudo ./install`` from the MATLAB folder (as suggested in the MathWorks instructions), the graphical interface 
 will open. Here, the user is asked to select a suitable folder for the MATLAB installation. Let's call this path `<matlabroot>`. 
 In the last window, before the installation starts, there will be a question on whether to create symbolic links and where. 
 That box should be ticked, and the path provided there should correspond to the previously used `<matlabroot>`.
@@ -70,7 +70,7 @@ Get the software
 ----------------
 
 #. Download the installer in Windows from Matlab: `<https://uk.mathworks.com/downloads/>`_. 
-#. Log in to your mathworks account.
+#. Log in to your MathWorks account.
 #. Go to "Advanced Options" in the installer and select "Download without installing".
 #. Select the toolboxes you want to install.
 #. Copy the download to WSL.
@@ -81,14 +81,14 @@ Get the software
 Get the current mac address
 ---------------------------
 
-#. Open WSl and type ``ip link show bond0``.
+#. Open WSL and type ``ip link show bond0``.
 #. Note the mac address (just after ``link/ether`` in the output).
 
 
 Get the licence
 ---------------
 
-#. Open the mathworks licence centre (this may require logging in): `<https://uk.mathworks.com/licensecenter/licenses>`_. 
+#. Open the MathWorks licence centre (this may require logging in): `<https://uk.mathworks.com/licensecenter/licenses>`_. 
 #. Click on the MALTAB licence.
 #. Go to the "Install and Activate" tab.
 #. Click "View current activations" on the right hand menu.
@@ -125,6 +125,6 @@ Unzip the download and edit the `installer_input.txt` file, setting the followin
     * Output file - if anything fails this is the only way to get information.
     * Improve matlab (e.g. `improveMATLAB=no`).
     * Licence path.
-    * Uncomment all downloaded packages -- these must be a subset of the ones selected in :ref:`get-software`, it won't download extras.
+    * Uncomment all downloaded packages -- these must be a subset of the ones selected in :ref:`get-software`, it will not download extras.
 
 Run `./install -inputFile installer_input.txt`
