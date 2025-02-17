@@ -241,8 +241,9 @@ class FitbenchmarkParser(Parser):
         entries = {}
         for line in self.file.readlines():
             # Discard comment after #
-            text = re.search(r"^(.*?)\s*#", line)
-            line = text[1] if text else line
+            line = (
+                text[1] if (text := re.search(r"^(.*?)\s*#", line)) else line
+            )
             if line and (match := re.search(r"(\w+)\s*=\s*(.+)", line)):
                 key, value = match.groups()
                 if key == "name":
@@ -343,8 +344,7 @@ class FitbenchmarkParser(Parser):
             if value.startswith(("(", "[")):
                 value = cls._parse_parens(value)
             else:
-                value = value.strip("'\"")
-                value = cls._parse_function_value(value)
+                value = cls._parse_function_value(value.strip("'\""))
 
             func_dict[key] = value
 

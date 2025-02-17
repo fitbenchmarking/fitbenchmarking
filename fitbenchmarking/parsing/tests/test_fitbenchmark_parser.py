@@ -1,5 +1,5 @@
 """
-This file contains tests for the parsers.
+This file contains tests for the fitbenchmark parser.
 """
 
 import sys
@@ -692,8 +692,7 @@ class TestFitbenchmarkParser(TestCase):
         self.parser._filename = Path("test") / "problem.txt"
 
         for jac in ["dense_func", "sparse_func"]:
-            mock_function = MagicMock()
-            mock_module = MagicMock()
+            mock_function, mock_module = MagicMock(), MagicMock()
             setattr(mock_module, jac[0], mock_function)
             mock_import_module.return_value = mock_module
             result = self.parser._get_jacobian(jac)
