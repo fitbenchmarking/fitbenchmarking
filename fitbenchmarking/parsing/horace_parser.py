@@ -125,13 +125,11 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
-        new_data_path = data_file_path
-
-        # This if condition avoids error when "plot_type" not provided
-        if "plot_type" not in self._entries:
-            pass
-        elif self._entries["plot_type"].lower() == "1d_cuts":
+	# This if condition avoids error when "plot_type" not provided
+        if "plot_type" in self._entries and self._entries["plot_type"].lower() == "1d_cuts":
             new_data_path = self._process_spinw_data(data_file_path)
+        else:
+            new_data_path = data_file_path
 
         wye_data_f = self._parse_function(self._entries["wye_function"])
         script = pathlib.Path(wye_data_f[0]["matlab_script"])
