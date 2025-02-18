@@ -135,14 +135,18 @@
                                 <td class="heading" colspan="2">Fitted Parameters</td>
                             </tr>
                             {% if list_params %}
-                                {% for param in min_params.replace("], ", "]||").split("||") %}
-                                    {% if "=" in param %}
-                                        {% set key, value = param.split("=", 1) %}
-                                        <tr>
-                                            <td class="label">{{ key.strip() }}</td>
-                                            <td>{{ value.strip() }}</td>
-                                        </tr>
-                                    {% endif %}
+                                {% if "[" in min_params %}
+                                    {% set formatted_params = min_params.replace("], ", "]||") %}
+                                {% else %}
+                                    {% set formatted_params = min_params.replace(", ", "||") %}
+                                {% endif %}
+                                
+                                {% for param in formatted_params.split("||") %}
+                                    {% set key, value = param.split("=", 1) %}
+                                    <tr>
+                                        <td class="label">{{ key.strip() }}</td>
+                                        <td>{{ value.strip() }}</td>
+                                    </tr>
                                 {% endfor %}
                             {% else %}
                             <tr>
