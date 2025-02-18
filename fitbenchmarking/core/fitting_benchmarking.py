@@ -490,6 +490,11 @@ class Fit:
                     for i in range(len(accuracy)):
                         result_args["dataset"] = i
                         result = fitbm_result.FittingResult(**result_args)
+                        result.fin_function_params = (
+                            problem.get_function_params(
+                                params=controller.final_params[i]
+                            )
+                        )
                         results.append(result)
                         self._checkpointer.add_result(result)
                 else:
