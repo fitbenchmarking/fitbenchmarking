@@ -172,9 +172,10 @@ process_function
   For SpinW 2D powder fitting problems, a process_function must be added. This is defined by a matlab file which, given the 
   2D powder data, produces 1D cuts along Q values defined by the user, by using the function `replace_2D_data_with_1D_cuts()` 
   from SpinW. The matlab file takes in:
-  * the path to the 2D powder data, 
-  * `params_dict` (a dictionary of parameters, including `J1` and the model parameters)
-  * `qcens` (the Q values provided by the user). 
+
+    * the path to the 2D powder data, 
+    * `params_dict` (a dictionary of parameters, including `J1` and the model parameters)
+    * `qcens` (the Q values provided by the user). 
 
 Examples of the process_function:
   

@@ -1,11 +1,12 @@
-function [fitpow, qmax_final, qmin_final] = process_tri_AFM(datafile, J1, qcens)
-% Create fitpow and cuts data based on qcens
+function [fitpow, qmax_final, qmin_final] = process_tri_AFM(datafile, params_dict, qcens)
+% Create fitpow and cut data based on qcens
 
 dq = 0.05;
 Ei = 20;
 tri = sw_model('triAF', 1);
 data = load(datafile).data;
 fit_func =  @tri_AFM_powder;
+J1 = params_dict("J1");
 
 fitpow = sw_fitpowder(tri, data, fit_func, [J1]);
 
