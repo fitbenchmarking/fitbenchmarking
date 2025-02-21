@@ -2,6 +2,7 @@
 This file implements a parser for Horace problem sets.
 """
 
+import collections
 import os
 import pathlib
 import typing
@@ -78,8 +79,13 @@ class HoraceParser(FitbenchmarkParser):
         :rtype: str
         """
         qcens = [float(i) for i in self._entries["q_cens"].split(",")]
-        function_params = self._entries["function"].split("J1")[1]
-        J1 = float(function_params.split(",")[0].replace("=", "").strip())
+        foreground_dict = self._parsed_func[0]
+        foreground_params_keys = [
+            k for k in foreground_dict if k != "foreground"
+        ]
+        params_dict = collections.OrderedDict(
+            {key: foreground_dict[key] for key in foreground_params_keys}
+        )
 
         process_f = self._parse_function(self._entries["process_function"])
         script = pathlib.Path(process_f[0]["matlab_script"])
@@ -87,9 +93,10 @@ class HoraceParser(FitbenchmarkParser):
         eng.addpath(str(path / script.parent))
         process_f_name = script.stem
 
+        eng.workspace["params_dict"] = params_dict
         eng.evalc(
             f"[fitpow, qmax_final, qmin_final] = {process_f_name}"
-            f"('{data_file_path}',{J1}, {qcens})"
+            f"('{data_file_path}', params_dict, {qcens})"
         )
 
         # Remove nans
@@ -106,7 +113,7 @@ class HoraceParser(FitbenchmarkParser):
         eng.evalc(
             "w = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
         )
-        for i in range(len(qcens)):
+        for i in np.arange(1, len(qcens) + 1):
             for var in ["x", "y", "e", "qmax", "qmin"]:
                 eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
 
