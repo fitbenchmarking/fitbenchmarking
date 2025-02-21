@@ -110,6 +110,22 @@
                             <h3>{{ summary_plot }}</h3>
                         {% endif %}
                     </div>
+                    <p>
+                        The plot below shows the residuals for each fit. 
+                        In this case, different colours correspond to different minimizers. 
+                        The minimizer that produced closest fit is marked in the legend. To be able 
+                        to compare this to the residuals for other minimizers, it might
+                        be necessary to click on the minimizers in the legend to 
+                        hide/show the respective data. 
+
+                    </p>
+                    <div align="center" class="figure align-center">
+                        {% if residuals_plot_available %}
+		            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
+                        {% else %}
+                            <h3>{{ residuals_plot }}</h3>
+                        {% endif %}
+                    </div>
                 </div>
             </section>
 

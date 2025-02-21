@@ -30,7 +30,7 @@ class Plot:
         "bgcolor": "rgba(0,0,0,0.1)",
     }
     _summary_best_plot_line = {"width": 2}
-    _summary_plot_line = {"width": 1}
+    _summary_plot_line = {"width": 1, "dash": "dash"}
     _subplots_line = {"width": 1, "color": "red"}
     _error_dict = {"type": "data", "array": None, "thickness": 1, "width": 4}
 
@@ -448,6 +448,7 @@ class Plot:
         for (key, results), colour in zip(categories.items(), plotly_colours):
             # Plot category
             for result in results:
+                minim = result.minimizer
                 if result.params is not None:
                     line = (
                         cls._summary_best_plot_line
@@ -456,7 +457,12 @@ class Plot:
                     )
 
                     line["color"] = colour
-                    label = key if result.is_best_fit else ""
+
+                    if result.is_best_fit:
+                        label = key + f" [{minim}] - best fit"
+                    else:
+                        label = key + f" [{minim}]"
+
                     if result.is_best_fit:
                         line = cls._summary_best_plot_line
                         line["color"] = colour
@@ -482,7 +488,7 @@ class Plot:
                                     mode="lines",
                                     name=label,
                                     line=line,
-                                    showlegend=result.is_best_fit and i == 0,
+                                    showlegend=i == 0,
                                 ),
                                 row=1,
                                 col=i + 1,
@@ -495,7 +501,6 @@ class Plot:
                                 mode="lines",
                                 name=label,
                                 line=line,
-                                showlegend=result.is_best_fit,
                             )
                         )
 
@@ -513,3 +518,114 @@ class Plot:
         )
 
         return html_fname
+
+    @classmethod
+    def plot_residuals(cls, categories, title, options, figures_dir):
+        """
+        Create a comparison plot showing residuals for all fits,
+        while emphasizing the residuals for the best fit .
+
+        :param categories: The results to plot sorted into colour groups
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+
+        col_vals = np.linspace(0, 1, len(categories))
+        plotly_colours = ptly_colors.sample_colorscale(
+            ptly_colors.sequential.Rainbow, samplepoints=col_vals
+        )
+
+        first_result = next(iter(categories.values()))[0]
+
+        if first_result.spinw_plot_info is not None:
+            n_plots = first_result.spinw_plot_info["n_cuts"]
+            titles_with_unit = [
+                f"{i} Å<sup>-1</sup>"
+                for i in first_result.spinw_plot_info["q_cens"]
+            ]
+            plotlyfig = make_subplots(
+                rows=1,
+                cols=n_plots,
+                subplot_titles=titles_with_unit,
+            )
+            data_len = int(len(first_result.data_y) / n_plots)
+        else:
+            n_plots = 1
+            plotlyfig = go.Figure()
+
+        for (key, results), colour in zip(categories.items(), plotly_colours):
+            # Plot category
+            for result in results:
+                minim = result.minimizer
+                if result.params is not None:
+                    if result.is_best_fit:
+                        label = key + f" [{minim}] - best fit"
+                    else:
+                        label = key + f" [{minim}]"
+
+                    ###############################################################
+                    # if result.is_best_fit:
+                    #     line = cls._summary_best_plot_line
+                    #     line["color"] = colour
+                    # else:
+                    #     line = cls._summary_plot_line
+                    #     transparency = 0.5
+                    #     line["color"] = (
+                    #         "rgba"
+                    #         + colour[3:-1]
+                    #         + ", "
+                    #         + str(transparency)
+                    #         + ")"
+                    #     )
+                    ###############################################################
+
+                    if n_plots > 1:
+                        for i in range(n_plots):
+                            plotlyfig.add_trace(
+                                go.Scatter(
+                                    x=result.spinw_plot_info["ebin_cens"],
+                                    y=result.r_x[
+                                        (data_len * i) : (data_len * (i + 1))
+                                    ],
+                                    mode="markers",
+                                    # line=line,
+                                    name=label,
+                                    showlegend=i == 0,
+                                ),
+                                row=1,
+                                col=i + 1,
+                            )
+                    else:
+                        plotlyfig.add_trace(
+                            go.Scatter(
+                                x=result.data_x[result.sorted_index],
+                                y=result.r_x[result.sorted_index],
+                                mode="markers",
+                                # line=line,
+                                name=label,
+                            )
+                        )
+
+                    plotlyfig.update_layout(title=title + " : residuals")
+
+                if result.plot_scale in ["loglog", "logx"]:
+                    plotlyfig.update_xaxes(type="log")
+                if result.plot_scale in ["loglog", "logy"]:
+                    plotlyfig.update_yaxes(type="log")
+
+        html_fname = f"residual_plot_for_{first_result.sanitised_name}.html"
+
+        cls.write_html_with_link_plotlyjs(
+            plotlyfig, figures_dir, html_fname, options
+        )
+
+        return html_fname
+        ###
