@@ -171,12 +171,14 @@ Examples of the simulate_function:
 process_function
   For SpinW 2D powder fitting problems, a process_function must be added. This is defined by a matlab file which, given the 
   2D powder data, produces 1D cuts along Q values defined by the user, by using the function `replace_2D_data_with_1D_cuts()` 
-  from SpinW. The matlab file takes in the path to the 2D powder data, `params_dict` (a dictionary of parameters, including J1 
-  and the model parameters) and `qcens` (the Q values provided by the user). 
+  from SpinW. The matlab file takes in:
+  * the path to the 2D powder data, 
+  * `params_dict` (a dictionary of parameters, including `J1` and the model parameters)
+  * `qcens` (the Q values provided by the user). 
 
 Examples of the process_function:
   
-.. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/process_functions/process_tri_AFM.m
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW_powder_data/m_scripts/process_functions/process_tri_AFM.m
 
 plot_type
   For SpinW 2D powder fitting problems, the plot type must be specified. Currently, support is only available for plotting
