@@ -7,7 +7,7 @@ import json
 import os
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 from parameterized import parameterized
@@ -383,10 +383,15 @@ class HessianTests(unittest.TestCase):
         )
         self.controller.problem.multifit = True
         self.controller.final_params = [None] * 2
+        self.controller.problem.get_function_params = MagicMock()
+        self.fit._checkpointer = MagicMock()
+        self.fit._checkpointer.add_result = MagicMock()
         results = self.fit._loop_over_hessians(self.controller)
         assert len(results) == 4
         assert perform_fit.call_count == 2
         assert mock.call_count == 4
+        assert self.controller.problem.get_function_params.call_count == 4
+        assert self.fit._checkpointer.add_result.call_count == 4
 
     @patch(f"{FITTING_DIR}.Fit._perform_fit", return_value=(1, 2, 3))
     def test_loop_over_hessians_minimizer_check(self, perform_fit):
