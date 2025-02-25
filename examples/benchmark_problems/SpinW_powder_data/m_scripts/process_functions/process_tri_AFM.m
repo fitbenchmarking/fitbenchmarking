@@ -6,7 +6,7 @@ Ei = 20;
 tri = sw_model('triAF', 1);
 data = load(datafile).data;
 fit_func =  @tri_AFM_powder;
-J1 = params_dict("J1");
+J1 = params_dict.J1;
 
 fitpow = sw_fitpowder(tri, data, fit_func, [J1]);
 

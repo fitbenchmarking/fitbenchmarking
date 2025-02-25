@@ -2,7 +2,6 @@
 This file implements a parser for Horace problem sets.
 """
 
-import collections
 import os
 import pathlib
 import typing
@@ -80,12 +79,9 @@ class HoraceParser(FitbenchmarkParser):
         """
         qcens = [float(i) for i in self._entries["q_cens"].split(",")]
         foreground_dict = self._parsed_func[0]
-        foreground_params_keys = [
-            k for k in foreground_dict if k != "foreground"
-        ]
-        params_dict = collections.OrderedDict(
-            {key: foreground_dict[key] for key in foreground_params_keys}
-        )
+        params_dict = {
+            k: v for k, v in foreground_dict.items() if k not in {"foreground"}
+        }
 
         process_f = self._parse_function(self._entries["process_function"])
         script = pathlib.Path(process_f[0]["matlab_script"])
