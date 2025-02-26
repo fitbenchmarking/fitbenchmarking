@@ -410,16 +410,17 @@ class Fit:
                             jacobian.name() if jacobian.name() else "default",
                         )
 
-                    params = list(
-                        controller.starting_values[
-                            controller.parameter_set
-                        ].values()
-                    )
-                    self.__check_jacobian(
-                        func=cost_func.eval_cost,
-                        jac=cost_func.jac_cost,
-                        params=params,
-                    )
+                    if self._options.check_jacobian:
+                        params = list(
+                            controller.starting_values[
+                                controller.parameter_set
+                            ].values()
+                        )
+                        self.__check_jacobian(
+                            func=cost_func.eval_cost,
+                            jac=cost_func.jac_cost,
+                            params=params,
+                        )
 
                     #######################
                     # Loops over Hessians #
@@ -670,12 +671,10 @@ class Fit:
         error_from_check_grad = check_grad(func, jac, params)
         normalized_error = error_from_check_grad / max_range
 
-        if (normalized_error > 10 ** (-3) and max_range < 10**4) or (
-            normalized_error > 0.5
-        ):
+        if normalized_error > 10**-2:
             LOGGER.warning(
                 "An unusually large relative error was detected between "
-                "the jacobian computed by Fitbenchmarking and the one  "
+                "the jacobian computed by Fitbenchmarking and the one "
                 "obtained through a finite difference approximation. "
                 "This might depend on either the initial parameters "
                 "provided or the jacobian function, if this has also "

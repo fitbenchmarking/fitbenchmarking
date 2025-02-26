@@ -192,6 +192,16 @@ They can be changed using the arguments in the table below.
      - ``--dont_run_dash``
      - | Use this option if you have decided
        | not to run the Dash app.
+   * - *Check jacobian*
+     -
+     - ``--check_jacobian``
+     - | Use this option if you have decided
+       | to check the jacobian.
+   * - *Don't check jacobian*
+     -
+     - ``--dont_check_jacobian``
+     - | Use this option if you have decided
+       | not to check the jacobian.
 
 **For example, to change the results directory:**
 

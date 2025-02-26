@@ -292,6 +292,7 @@ class Options:
         ],
         "results_browser": [True, False],
         "run_dash": [True, False],
+        "check_jacobian": [True, False],
         "colour_map": plt.colormaps(),
     }
     VALID_LOGGING = {
@@ -469,6 +470,7 @@ class Options:
         "comparison_mode": "both",
         "results_browser": True,
         "run_dash": True,
+        "check_jacobian": True,
         "table_type": [
             "acc",
             "runtime",
@@ -626,6 +628,13 @@ class Options:
         else:
             self.run_dash = self.read_value(
                 output.getboolean, "run_dash", additional_options
+            )
+
+        if "check_jacobian" in additional_options:
+            self.check_jacobian = additional_options["check_jacobian"]
+        else:
+            self.check_jacobian = self.read_value(
+                output.getboolean, "check_jacobian", additional_options
             )
 
         if "pbar" in additional_options:
@@ -805,6 +814,7 @@ class Options:
             "make_plots": self.make_plots,
             "results_browser": self.results_browser,
             "run_dash": self.run_dash,
+            "check_jacobian": self.check_jacobian,
             "pbar": self.pbar,
             "table_type": list_to_string(self.table_type),
             "run_name": self.run_name,

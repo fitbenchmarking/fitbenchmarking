@@ -334,6 +334,20 @@ of the Fitbenchmarking docs. """
             "run dash for interactive plots."
         ),
     )
+
+    group5 = parser.add_mutually_exclusive_group()
+    group5.add_argument(
+        "--check_jacobian",
+        action="store_true",
+        help=("Use this option if you have decided to check the jacobian."),
+    )
+    group5.add_argument(
+        "--dont_check_jacobian",
+        action="store_true",
+        help=(
+            "Use this option if you have decided not to check the jacobian."
+        ),
+    )
     return parser
 
 
@@ -546,6 +560,13 @@ def main():
         options_dictionary["run_dash"] = True
     elif args.dont_run_dash:
         options_dictionary["run_dash"] = False
+
+    # Check if check_jacobian in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.check_jacobian:
+        options_dictionary["check_jacobian"] = True
+    elif args.dont_check_jacobian:
+        options_dictionary["check_jacobian"] = False
 
     # Check if benchmark in options.py should be overridden, and if so,
     # add to options_dictionary
