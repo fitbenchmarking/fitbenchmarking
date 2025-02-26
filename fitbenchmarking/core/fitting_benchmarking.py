@@ -651,11 +651,10 @@ class Fit:
         :param func: The function for which to compute the jacobian
         :type func: function
 
-        :param jac: The jacobian of the function being used in Fitb.
+        :param jac: The jacobian of the function being used in Fitbenchmarking
         :type jac: function
 
-        :param params: The values at which to evaluate the
-                            jacobian matrix
+        :param params: The values at which to evaluate the jacobian matrix
         :type params: list
 
         """
