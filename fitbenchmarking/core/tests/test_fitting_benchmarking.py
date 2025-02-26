@@ -549,7 +549,7 @@ class JacobianTests(unittest.TestCase):
             _ = self.fit._loop_over_jacobians(self.controller)
             self.assertTrue(
                 (
-                    "An unusually large relative error was detected between "
+                    "A relative error larger than 10^-3 was detected between "
                     "the jacobian computed by Fitbenchmarking and the one "
                     "obtained through a finite difference approximation. "
                     "This might depend on either the initial parameters "

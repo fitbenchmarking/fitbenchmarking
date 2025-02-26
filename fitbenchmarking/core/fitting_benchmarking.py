@@ -670,9 +670,9 @@ class Fit:
         error_from_check_grad = check_grad(func, jac, params)
         normalized_error = error_from_check_grad / max_range
 
-        if normalized_error > 10**-2:
+        if normalized_error > 10**-3:
             LOGGER.warning(
-                "An unusually large relative error was detected between "
+                "A relative error larger than 10^-3 was detected between "
                 "the jacobian computed by Fitbenchmarking and the one "
                 "obtained through a finite difference approximation. "
                 "This might depend on either the initial parameters "
