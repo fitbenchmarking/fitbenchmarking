@@ -195,8 +195,8 @@ They can be changed using the arguments in the table below.
    * - *Check jacobian*
      -
      - ``--check_jacobian``
-     - | Use this option if you have decided
-       | to check the jacobian.
+     - | Use this option to check the jacobian 
+       | against a finite difference approximation.
    * - *Don't check jacobian*
      -
      - ``--dont_check_jacobian``

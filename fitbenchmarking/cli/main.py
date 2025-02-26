@@ -339,7 +339,10 @@ of the Fitbenchmarking docs. """
     group5.add_argument(
         "--check_jacobian",
         action="store_true",
-        help=("Use this option if you have decided to check the jacobian."),
+        help=(
+            "Use this option to check the jacobian against"
+            "a finite difference approximation."
+        ),
     )
     group5.add_argument(
         "--dont_check_jacobian",
