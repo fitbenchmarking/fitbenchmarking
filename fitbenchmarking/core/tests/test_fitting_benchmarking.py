@@ -7,7 +7,7 @@ import json
 import os
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 from parameterized import parameterized
@@ -21,18 +21,8 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
 )
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
+from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.checkpoint import Checkpoint
-from fitbenchmarking.utils.exceptions import (
-    FitBenchmarkException,
-    IncompatibleCostFunctionError,
-    IncompatibleMinimizerError,
-    MaxRuntimeError,
-    NoHessianError,
-    NoJacobianError,
-    UnknownMinimizerError,
-    UnsupportedMinimizerError,
-    ValidationException,
-)
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
@@ -50,7 +40,7 @@ DATA_DIR = os.path.join(
 
 def mock_loop_over_hessians_func_call(controller):
     """
-    Mock function for the __loop_over_hessian method
+    Mock function for the _loop_over_hessian method
     """
     result_args = {
         "controller": controller,
@@ -65,7 +55,7 @@ def mock_loop_over_hessians_func_call(controller):
 
 def mock_loop_over_jacobians_func_call(controller):
     """
-    Mock function for the __loop_over_jacobians method
+    Mock function for the _loop_over_jacobians method
     """
     controller.cost_func.jacobian = Analytic(controller.cost_func.problem)
     result = mock_loop_over_hessians_func_call(controller)
@@ -74,7 +64,7 @@ def mock_loop_over_jacobians_func_call(controller):
 
 def mock_loop_over_minimizers_func_call(controller, minimizers):
     """
-    Mock function for the __loop_over_minimizers method
+    Mock function for the _loop_over_minimizers method
     """
     results = []
     for _ in minimizers:
@@ -85,7 +75,7 @@ def mock_loop_over_minimizers_func_call(controller, minimizers):
 
 def mock_loop_over_softwares_func_call(cost_func):
     """
-    Mock function for the __loop_over_softwares method
+    Mock function for the _loop_over_softwares method
     """
     controller = ScipyController(cost_func)
     controller.cost_func.jacobian = Analytic(controller.cost_func.problem)
@@ -99,7 +89,7 @@ def mock_loop_over_softwares_func_call(cost_func):
 
 def mock_loop_over_cost_func_call(problem):
     """
-    Mock function for the __loop_over_cost_func method
+    Mock function for the _loop_over_cost_func method
     """
     cost_func = WeightedNLLSCostFunc(problem)
     results = mock_loop_over_softwares_func_call(cost_func)
@@ -108,7 +98,7 @@ def mock_loop_over_cost_func_call(problem):
 
 def mock_loop_over_cost_func_call_all_fail(problem):
     """
-    Mock function for the __loop_over_cost_func method
+    Mock function for the _loop_over_cost_func method
     when an exception is raised and accuracy, runtime and
     energy are all np.inf.
     """
@@ -128,7 +118,7 @@ def mock_loop_over_cost_func_call_all_fail(problem):
 
 def mock_loop_over_starting_values(problem):
     """
-    Mock function for the __loop_over_starting_values method
+    Mock function for the _loop_over_starting_values method
     """
     cost_func = WeightedNLLSCostFunc(problem)
     controller = ScipyController(cost_func)
@@ -158,7 +148,7 @@ def set_up_controller(file, options):
 
 class PerformFitTests(unittest.TestCase):
     """
-    Verifies the output of the __perform_fit method
+    Verifies the output of the _perform_fit method
     in the Fit class when run with different options.
     """
 
@@ -178,7 +168,7 @@ class PerformFitTests(unittest.TestCase):
     )
     def test_perform_fit_method(self, file, expected):
         """
-        The test checks __perform_fit method.
+        The test checks _perform_fit method.
         Three /NIST/average_difficulty problem sets
         are run with 2 scipy software minimizers.
         """
@@ -187,7 +177,7 @@ class PerformFitTests(unittest.TestCase):
 
         for minimizer, acc in zip(["Nelder-Mead", "Powell"], expected):
             controller.minimizer = minimizer
-            accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
+            accuracy, runtimes, energy = fit._perform_fit(controller)
 
             self.assertAlmostEqual(accuracy, acc, 6)
             assert len(runtimes) == self.options.num_runs
@@ -208,18 +198,21 @@ class PerformFitTests(unittest.TestCase):
 
         fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
         mock.return_value = 2
-        accuracy, _, _ = fit._Fit__perform_fit(controller)
+        accuracy, _, _ = fit._perform_fit(controller)
         assert accuracy == 0.5
         assert mock.call_count == 1
 
         mock.return_value = 0
-        accuracy, _, _ = fit._Fit__perform_fit(controller)
+        accuracy, _, _ = fit._perform_fit(controller)
         assert accuracy == np.inf
 
+    @parameterized.expand(
+        [exceptions.ValidationException, exceptions.FitBenchmarkException]
+    )
     @patch("fitbenchmarking.controllers.base_controller.Controller.validate")
-    def test_perform_fit_error_handling(self, mock):
+    def test_perform_fit_error_handling(self, exp, mock):
         """
-        The test checks ___perform_fit method
+        The test checks _perform_fit method
         handles Exceptions correctly.
         """
         controller = set_up_controller("Gauss3.dat", self.options)
@@ -227,12 +220,11 @@ class PerformFitTests(unittest.TestCase):
 
         fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
 
-        for exp in [ValidationException, FitBenchmarkException]:
-            mock.side_effect = exp
-            accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
-            assert accuracy == np.inf
-            assert energy == np.inf
-            assert runtimes == [np.inf] * 5
+        mock.side_effect = exp
+        accuracy, runtimes, energy = fit._perform_fit(controller)
+        assert accuracy == np.inf
+        assert energy == np.inf
+        assert runtimes == [np.inf] * 5
 
     @patch("timeit.Timer.repeat")
     @patch(
@@ -243,7 +235,7 @@ class PerformFitTests(unittest.TestCase):
     )
     def test_perform_fit_runtime_warning(self, mock1, mock2, mock3):
         """
-        The test checks ___perform_fit method
+        The test checks _perform_fit method
         creates warning correctly when the time taken
         by controller.execute increases too much across
         runs (caching).
@@ -260,7 +252,7 @@ class PerformFitTests(unittest.TestCase):
                 options=self.options, data_dir="test4", checkpointer=self.cp
             )
 
-            _ = fit._Fit__perform_fit(controller)
+            _ = fit._perform_fit(controller)
             self.assertTrue(
                 (
                     "The ratio of the max time to the min is "
@@ -273,7 +265,7 @@ class PerformFitTests(unittest.TestCase):
     @patch("fitbenchmarking.controllers.base_controller.Controller.validate")
     def test_perform_fit_max_runtime_error(self, mock):
         """
-        The test checks ___perform_fit method handles
+        The test checks _perform_fit method handles
         MaxRuntimeError correctly (i.e., sets controller.flag to 6).
         """
         controller = set_up_controller("Gauss3.dat", self.options)
@@ -281,8 +273,8 @@ class PerformFitTests(unittest.TestCase):
 
         fit = Fit(options=self.options, data_dir="test5", checkpointer=self.cp)
 
-        mock.side_effect = MaxRuntimeError
-        accuracy, runtimes, energy = fit._Fit__perform_fit(controller)
+        mock.side_effect = exceptions.MaxRuntimeError
+        accuracy, runtimes, energy = fit._perform_fit(controller)
         assert controller.flag == 6
         assert accuracy == np.inf
         assert energy == np.inf
@@ -293,7 +285,7 @@ class PerformFitTests(unittest.TestCase):
     )
     def test_perform_fit_check_bounds_respected(self, mock):
         """
-        The test checks ___perform_fit method checks the
+        The test checks _perform_fit method checks the
         function 'check_bounds_respected' is called when the
         problem has value ranges.
         """
@@ -301,13 +293,13 @@ class PerformFitTests(unittest.TestCase):
         controller.minimizer = "Nelder-Mead"
         controller.problem.value_ranges = {"test": (0, 1)}
         fit = Fit(options=self.options, data_dir="test6", checkpointer=self.cp)
-        _ = fit._Fit__perform_fit(controller)
+        _ = fit._perform_fit(controller)
         assert mock.call_count == 1
 
 
 class HessianTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_hessians method
+    Verifies the output of the _loop_over_hessians method
     in the Fit class when run with different options.
     """
 
@@ -340,29 +332,29 @@ class HessianTests(unittest.TestCase):
 
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit", return_value=(1, 2, 3))
+    @patch(f"{FITTING_DIR}.Fit._perform_fit", return_value=(1, 2, 3))
     def test_loop_over_hessians_method(self, mock):
         """
-        The test checks __loop_over_hessians method.
+        The test checks _loop_over_hessians method.
         /NIST/average_difficulty problem set
         is run with 2 hessian methods.
         """
-        results = self.fit._Fit__loop_over_hessians(self.controller)
+        results = self.fit._loop_over_hessians(self.controller)
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
         assert mock.call_count == 2
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit", return_value=(1, 2, 3))
+    @patch(f"{FITTING_DIR}.Fit._perform_fit", return_value=(1, 2, 3))
     @patch("fitbenchmarking.hessian.scipy_hessian.Scipy.__init__")
     @patch("fitbenchmarking.hessian.analytic_hessian.Analytic.__init__")
     def test_loop_over_hessians_fallback(self, analytic, scipy, perform_fit):
         """
-        The test checks __loop_over_hessians method
+        The test checks _loop_over_hessians method
         handles fallback
         """
-        analytic.side_effect = NoHessianError
-        scipy.side_effect = NoHessianError
-        results = self.fit._Fit__loop_over_hessians(self.controller)
+        analytic.side_effect = exceptions.NoHessianError
+        scipy.side_effect = exceptions.NoHessianError
+        results = self.fit._loop_over_hessians(self.controller)
 
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
@@ -374,12 +366,12 @@ class HessianTests(unittest.TestCase):
 
     @patch("fitbenchmarking.utils.fitbm_result.FittingResult")
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__perform_fit",
+        f"{FITTING_DIR}.Fit._perform_fit",
         return_value=([1, 1], [2, 2], [3, 3]),
     )
     def test_loop_over_hessians_multifit(self, perform_fit, mock):
         """
-        The test checks __loop_over_hessians method
+        The test checks _loop_over_hessians method
         handles multfit
         """
         mock.return_value = FittingResult(
@@ -391,19 +383,24 @@ class HessianTests(unittest.TestCase):
         )
         self.controller.problem.multifit = True
         self.controller.final_params = [None] * 2
-        results = self.fit._Fit__loop_over_hessians(self.controller)
+        self.controller.problem.get_function_params = MagicMock()
+        self.fit._checkpointer = MagicMock()
+        self.fit._checkpointer.add_result = MagicMock()
+        results = self.fit._loop_over_hessians(self.controller)
         assert len(results) == 4
         assert perform_fit.call_count == 2
         assert mock.call_count == 4
+        assert self.controller.problem.get_function_params.call_count == 4
+        assert self.fit._checkpointer.add_result.call_count == 4
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__perform_fit", return_value=(1, 2, 3))
+    @patch(f"{FITTING_DIR}.Fit._perform_fit", return_value=(1, 2, 3))
     def test_loop_over_hessians_minimizer_check(self, perform_fit):
         """
-        The test checks __loop_over_hessians method
+        The test checks _loop_over_hessians method
         handles minimizer check
         """
         self.controller.hessian_enabled_solvers = []
-        results = self.fit._Fit__loop_over_hessians(self.controller)
+        results = self.fit._loop_over_hessians(self.controller)
 
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
@@ -416,7 +413,7 @@ class HessianTests(unittest.TestCase):
 
 class JacobianTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_jacobians method
+    Verifies the output of the _loop_over_jacobians method
     in the Fit class when run with different options.
     """
 
@@ -448,69 +445,69 @@ class JacobianTests(unittest.TestCase):
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_hessians",
+        f"{FITTING_DIR}.Fit._loop_over_hessians",
         side_effect=mock_loop_over_hessians_func_call,
     )
     def test_loop_over_jacobians_methods(self, mock):
         """
-        The test checks __loop_over_jacobians method.
+        The test checks _loop_over_jacobians method.
         /NIST/average_difficulty problem set
         is run with 2 jacobian methods.
         """
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 2
         assert all(isinstance(r, FittingResult) for r in results)
         assert [r.jac for r in results] == ["analytic", ""]
         assert [r.jacobian_tag for r in results] == ["analytic", ""]
         assert mock.call_count == 2
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
     @patch("fitbenchmarking.jacobian.default_jacobian.Default.__init__")
     @patch("fitbenchmarking.jacobian.analytic_jacobian.Analytic.__init__")
     def test_loop_over_jacobians_fallback(
         self, analytic, default, loop_over_hessians
     ):
         """
-        The test checks __loop_over_jacobians method
+        The test checks _loop_over_jacobians method
         handles fallback correctly.
         """
-        analytic.side_effect = NoJacobianError
-        default.side_effect = NoJacobianError
+        analytic.side_effect = exceptions.NoJacobianError
+        default.side_effect = exceptions.NoJacobianError
         loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
 
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
 
         assert len(results) == 1
         assert results[0].jac == "scipy 2-point"
         assert results[0].jacobian_tag == "scipy 2-point"
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
     def test_loop_over_jacobians_stop_iteration_1(self, loop_over_hessians):
         """
-        The test checks __loop_over_jacobians method
+        The test checks _loop_over_jacobians method
         handles stop_iteration correctly.
         """
         loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
         self.controller.jacobian_enabled_solvers = [""]
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 1
 
     @patch("fitbenchmarking.jacobian.analytic_jacobian.Analytic.__init__")
     def test_loop_over_jacobians_stop_iteration_2(self, analytic):
         """
-        The test checks __loop_over_jacobians method
+        The test checks _loop_over_jacobians method
         handles stop_iteration correctly.
         """
         analytic.side_effect = StopIteration
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 0
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
+    @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
     def test_loop_over_jacobians_sparsity_check_false(
         self, loop_over_hessians
     ):
         """
-        The test checks __loop_over_jacobians method
+        The test checks _loop_over_jacobians method
         handles the check for sparsity correctly
         """
         self.fit._options.jac_method.append("scipy")
@@ -518,7 +515,7 @@ class JacobianTests(unittest.TestCase):
         loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
         self.controller.jacobian_enabled_solvers = ["Newton-CG"]
         self.controller.sparsity_enabled_solvers = [""]
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 2
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
@@ -527,7 +524,7 @@ class JacobianTests(unittest.TestCase):
         self, check_jacobian, loop_over_hessians
     ):
         """
-        The test checks __loop_over_jacobians method
+        The test checks _loop_over_jacobians method
         handles the check for sparsity correctly
         """
         self.fit._options.jac_method.append("scipy")
@@ -536,7 +533,7 @@ class JacobianTests(unittest.TestCase):
         check_jacobian.return_value = True
         self.controller.jacobian_enabled_solvers = ["Newton-CG"]
         self.controller.sparsity_enabled_solvers = ["Newton-CG"]
-        results = self.fit._Fit__loop_over_jacobians(self.controller)
+        results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 3
 
     @patch(f"{FITTING_DIR}.Fit._Fit__loop_over_hessians")
@@ -565,7 +562,7 @@ class JacobianTests(unittest.TestCase):
 
 class MinimizersTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_minimizers method
+    Verifies the output of the _loop_over_minimizers method
     in the Fit class when run with different options.
     """
 
@@ -594,17 +591,17 @@ class MinimizersTests(unittest.TestCase):
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_jacobians",
+        f"{FITTING_DIR}.Fit._loop_over_jacobians",
         side_effect=mock_loop_over_jacobians_func_call,
     )
     def test_loop_over_minimizers(self, mock):
         """
-        The test checks __loop_over_minimizers method.
+        The test checks _loop_over_minimizers method.
         Enso.dat /NIST/average_difficulty problem set
         is run with 3 minimizers.
         """
         minimizers = ["Powell", "CG", "BFGS"]
-        results, minimizer_failed = self.fit._Fit__loop_over_minimizers(
+        results, minimizer_failed = self.fit._loop_over_minimizers(
             self.controller, minimizers
         )
         assert len(results) == 3
@@ -618,12 +615,12 @@ class MinimizersTests(unittest.TestCase):
     )
     def test_unknown_minimizers_error(self, mock):
         """
-        The test checks __loop_over_minimizers method
+        The test checks _loop_over_minimizers method
         handles UnknownMinimizerError correctly.
         """
-        mock.side_effect = UnknownMinimizerError
+        mock.side_effect = exceptions.UnknownMinimizerError
         minimizers = ["Powell", "CG", "BFGS"]
-        results, minimizer_failed = self.fit._Fit__loop_over_minimizers(
+        results, minimizer_failed = self.fit._loop_over_minimizers(
             self.controller, minimizers
         )
         assert len(results) == 0
@@ -635,12 +632,12 @@ class MinimizersTests(unittest.TestCase):
     )
     def test_incompatible_minimizers_error_1(self, mock):
         """
-        The test checks __loop_over_minimizers method.
+        The test checks _loop_over_minimizers method.
         handles IncompatibleMinimizerError correctly.
         """
-        mock.side_effect = IncompatibleMinimizerError
+        mock.side_effect = exceptions.IncompatibleMinimizerError
         self.controller.problem.value_ranges = "1"
-        results, minimizer_failed = self.fit._Fit__loop_over_minimizers(
+        results, minimizer_failed = self.fit._loop_over_minimizers(
             self.controller, ["Powell"]
         )
         assert len(results) == 1
@@ -652,11 +649,11 @@ class MinimizersTests(unittest.TestCase):
     )
     def test_incompatible_minimizers_error_2(self, mock):
         """
-        The test checks __loop_over_minimizers method.
+        The test checks _loop_over_minimizers method.
         handles IncompatibleMinimizerError correctly.
         """
-        mock.side_effect = IncompatibleMinimizerError
-        results, minimizer_failed = self.fit._Fit__loop_over_minimizers(
+        mock.side_effect = exceptions.IncompatibleMinimizerError
+        results, minimizer_failed = self.fit._loop_over_minimizers(
             self.controller, ["Powell"]
         )
         assert len(results) == 0
@@ -665,8 +662,8 @@ class MinimizersTests(unittest.TestCase):
 
 class SoftwareTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_software method
-    in the Fit class when run with different options.
+    Verifies the output of the _loop_over_fitting_software
+    method in the Fit class when run with different options.
     """
 
     def setUp(self):
@@ -688,12 +685,12 @@ class SoftwareTests(unittest.TestCase):
         self.cost_func = WeightedNLLSCostFunc(parsed_problem)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_minimizers",
+        f"{FITTING_DIR}.Fit._loop_over_minimizers",
         side_effect=mock_loop_over_minimizers_func_call,
     )
     def test_loop_over_software(self, mock):
         """
-        The test checks __loop_over_software method.
+        The test checks _loop_over_fitting_software method.
         Enso.dat /NIST/average_difficulty problem set
         is run with 2 softwares.
         """
@@ -701,7 +698,7 @@ class SoftwareTests(unittest.TestCase):
             options=self.options, data_dir=self.data_file, checkpointer=self.cp
         )
 
-        results = fit._Fit__loop_over_fitting_software(self.cost_func)
+        results = fit._loop_over_fitting_software(self.cost_func)
 
         assert mock.call_count == 2
         assert mock.call_args_list[0][1]["minimizers"] == [
@@ -725,7 +722,7 @@ class SoftwareTests(unittest.TestCase):
 
     def test_loop_over_software_error(self):
         """
-        The test checks __loop_over_software method.
+        The test checks _loop_over_fitting_software method.
         handles the UnsupportedMinimizerError correctly.
         """
         self.options.minimizers = {}
@@ -733,13 +730,13 @@ class SoftwareTests(unittest.TestCase):
             options=self.options, data_dir=self.data_file, checkpointer=self.cp
         )
 
-        with self.assertRaises(UnsupportedMinimizerError) as _:
-            fit._Fit__loop_over_fitting_software(self.cost_func)
+        with self.assertRaises(exceptions.UnsupportedMinimizerError) as _:
+            fit._loop_over_fitting_software(self.cost_func)
 
 
 class CostFunctionTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_cost_function method
+    Verifies the output of the _loop_over_cost_function method
     in the Fit class when run with different options.
     """
 
@@ -764,16 +761,16 @@ class CostFunctionTests(unittest.TestCase):
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
+        f"{FITTING_DIR}.Fit._loop_over_fitting_software",
         side_effect=mock_loop_over_softwares_func_call,
     )
     def test_loop_over_cost_function(self, mock):
         """
-        The test checks __loop_over_cost_function method.
+        The test checks _loop_over_cost_function method.
         Enso.dat /NIST/average_difficulty problem set
         is run with 2 cost functions.
         """
-        results = self.fit._Fit__loop_over_cost_function(self.parsed_problem)
+        results = self.fit._loop_over_cost_function(self.parsed_problem)
 
         assert len(results) == 18
         assert mock.call_count == 2
@@ -785,18 +782,18 @@ class CostFunctionTests(unittest.TestCase):
         "fitbenchmarking.cost_func.nlls_cost_func.NLLSCostFunc.validate_problem"
     )
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_fitting_software",
+        f"{FITTING_DIR}.Fit._loop_over_fitting_software",
         side_effect=mock_loop_over_softwares_func_call,
     )
     def test_loop_over_cost_function_error(
         self, loop_over_fitting_software, mock
     ):
         """
-        The test checks __loop_over_cost_function method
+        The test checks _loop_over_cost_function method
         handles IncompatibleCostFunctionError correctly
         """
-        mock.side_effect = IncompatibleCostFunctionError
-        results = self.fit._Fit__loop_over_cost_function(self.parsed_problem)
+        mock.side_effect = exceptions.IncompatibleCostFunctionError
+        results = self.fit._loop_over_cost_function(self.parsed_problem)
 
         assert len(results) == 9
         assert loop_over_fitting_software.call_count == 1
@@ -809,7 +806,7 @@ class CostFunctionTests(unittest.TestCase):
 
 class StartingValueTests(unittest.TestCase):
     """
-    Verifies the output of the __loop_over_starting_values method
+    Verifies the output of the _loop_over_starting_values method
     in the Fit class when run with different options.
     """
 
@@ -833,29 +830,29 @@ class StartingValueTests(unittest.TestCase):
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_cost_function",
+        f"{FITTING_DIR}.Fit._loop_over_cost_function",
         side_effect=mock_loop_over_cost_func_call,
     )
     def test_loop_over_starting_values(self, mock):
         """
-        The test checks __loop_over_starting_values method.
+        The test checks _loop_over_starting_values method.
         Enso.dat /NIST/average_difficulty problem set is used.
         """
-        results = self.fit._Fit__loop_over_starting_values(self.parsed_problem)
+        results = self.fit._loop_over_starting_values(self.parsed_problem)
 
         assert len(results) == 18
         assert mock.call_count == 2
         assert all(isinstance(r, FittingResult) for r in results)
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_cost_function",
+        f"{FITTING_DIR}.Fit._loop_over_cost_function",
         side_effect=mock_loop_over_cost_func_call_all_fail,
     )
     def test_loop_over_starting_values_fail(self, mock):
         """
         The test checks that _failed_problems is updated correctly.
         """
-        _ = self.fit._Fit__loop_over_starting_values(self.parsed_problem)
+        _ = self.fit._loop_over_starting_values(self.parsed_problem)
 
         assert self.fit._failed_problems == ["ENSO, Start 1", "ENSO, Start 2"]
         assert mock.call_count == 2
@@ -942,7 +939,7 @@ class BenchmarkTests(unittest.TestCase):
         This test checks if FitBenchmarkException is caught
         during the method execution and no results are returned.
         """
-        mock_parse_problem_file.side_effect = FitBenchmarkException
+        mock_parse_problem_file.side_effect = exceptions.FitBenchmarkException
         results, failed_problems, _ = self.fit.benchmark()
         assert not results
         assert not failed_problems
@@ -950,7 +947,7 @@ class BenchmarkTests(unittest.TestCase):
         assert mock_parse_problem_file.call_count == 2
 
     @patch(
-        f"{FITTING_DIR}.Fit._Fit__loop_over_starting_values",
+        f"{FITTING_DIR}.Fit._loop_over_starting_values",
         side_effect=mock_loop_over_starting_values,
     )
     @patch(f"{FITTING_DIR}.misc.get_problem_files")
