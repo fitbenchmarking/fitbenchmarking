@@ -49,17 +49,28 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
                 options=options,
                 figures_dir=figures_dir,
             )
+            residuals_plot_path = Plot.plot_residuals(
+                categories=problem_results,
+                title=categorised[0][1].name,
+                options=options,
+                figures_dir=figures_dir,
+            )
 
         _create_summary_page(
             categorised_best_results=categorised,
             summary_plot_path=summary_plot_path,
+            residuals_plot_path=residuals_plot_path,
             support_pages_dir=support_pages_dir,
             options=options,
         )
 
 
 def _create_summary_page(
-    categorised_best_results, summary_plot_path, support_pages_dir, options
+    categorised_best_results,
+    summary_plot_path,
+    residuals_plot_path,
+    support_pages_dir,
+    options,
 ):
     """
     Create a summary page for a problem from given categories.
@@ -69,6 +80,8 @@ def _create_summary_page(
     :type categorised_best_results: list[tuple[str, FittingResult, str]]
     :param summary_plot_path: Path to the summary plot
     :type summary_plot_path: str
+    :param residuals_plot_path: Path to the residuals plot
+    :type residuals_plot_path: str
     :param support_pages_dir: Directory to save suport page to
     :type support_pages_dir: str
     :param options: The chosen fitbenchmaring options
@@ -87,7 +100,9 @@ def _create_summary_page(
     best_plot_available = []
     best_fits = []
     summary_plot_available = True
+    residuals_plot_available = True
     summary_plot_path = os.path.join("figures", summary_plot_path)
+    residuals_plot_path = os.path.join("figures", residuals_plot_path)
 
     if options.make_plots:
         for result in results:
@@ -127,6 +142,8 @@ def _create_summary_page(
                 custom_style=css["custom"],
                 summary_plot_available=summary_plot_available,
                 summary_plot=summary_plot_path,
+                residuals_plot_available=residuals_plot_available,
+                residuals_plot=residuals_plot_path,
                 title=results[0].name,
                 description=results[0].problem_desc,
                 equation=results[0].equation,

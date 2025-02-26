@@ -20,7 +20,7 @@ class Plot:
     Class providing plotting functionality.
     """
 
-    _data_marker = {"symbol": "x", "color": "black"}
+    _data_marker = {"symbol": "x", "color": "black", "opacity": 0.3}
     _best_fit_line = {"dash": "dot", "color": "#6699ff"}
     _legend_options = {
         "yanchor": "top",
@@ -30,9 +30,15 @@ class Plot:
         "bgcolor": "rgba(0,0,0,0.1)",
     }
     _summary_best_plot_line = {"width": 2}
-    _summary_plot_line = {"width": 1}
+    _summary_plot_line = {"width": 1, "dash": "dash"}
     _subplots_line = {"width": 1, "color": "red"}
-    _error_dict = {"type": "data", "array": None, "thickness": 1, "width": 4}
+    _error_dict = {
+        "type": "data",
+        "array": None,
+        "thickness": 1,
+        "width": 4,
+        "color": "rgba(0,0,0,0.4)",
+    }
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
@@ -410,7 +416,7 @@ class Plot:
             error_y = {
                 "type": "data",
                 "array": first_result.data_e,
-                "color": "rgb(0,0,0,0.8)",
+                "color": "rgba(0,0,0,0.4)",
                 "thickness": 1,
                 "visible": True,
             }
@@ -513,3 +519,106 @@ class Plot:
         )
 
         return html_fname
+
+    @classmethod
+    def plot_residuals(cls, categories, title, options, figures_dir):
+        """
+        Create a comparison plot showing residuals for all fits,
+        while emphasizing the residuals for the best fit .
+
+        :param categories: The results to plot sorted into colour groups
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+
+        first_result = next(iter(categories.values()))[0]
+
+        if first_result.spinw_plot_info is not None:
+            n_plots_on_a_row = first_result.spinw_plot_info["n_cuts"]
+            titles = [
+                f"{i} Å<sup>-1</sup>"
+                for i in first_result.spinw_plot_info["q_cens"]
+            ]
+            plotlyfig = make_subplots(
+                rows=1,
+                cols=n_plots_on_a_row,
+                subplot_titles=titles,
+            )
+            data_len = int(len(first_result.data_y) / n_plots_on_a_row)
+        else:
+            n_plots_on_a_row = 1
+            n_categories = len(categories)
+            titles = list(categories.keys())
+            plotlyfig = make_subplots(
+                rows=n_categories, cols=n_plots_on_a_row, subplot_titles=titles
+            )
+
+        for categ_ind, (key, results) in enumerate(categories.items()):
+            for result in results:
+                minim = result.minimizer
+
+                if result.params is not None:
+                    if result.is_best_fit:
+                        label = f" {minim} (best fit)"
+                    else:
+                        label = f" {minim}"
+
+                    if n_plots_on_a_row > 1:
+                        for i in range(n_plots_on_a_row):
+                            plotlyfig.add_trace(
+                                go.Scatter(
+                                    x=result.spinw_plot_info["ebin_cens"],
+                                    y=result.r_x[
+                                        (data_len * i) : (data_len * (i + 1))
+                                    ],
+                                    mode="markers",
+                                    name=label,
+                                    showlegend=i == 0,
+                                ),
+                                row=categ_ind + 1,
+                                col=i + 1,
+                            )
+                    else:
+                        plotlyfig.add_trace(
+                            go.Scatter(
+                                x=result.data_x[result.sorted_index],
+                                y=result.r_x[result.sorted_index],
+                                mode="markers",
+                                name=label,
+                                showlegend=True,
+                            ),
+                            row=categ_ind + 1,
+                            col=1,
+                        )
+
+                    plotlyfig.update_layout(title=title + " : residuals")
+
+                if result.plot_scale in ["loglog", "logx"]:
+                    plotlyfig.update_xaxes(type="log")
+                if result.plot_scale in ["loglog", "logy"]:
+                    plotlyfig.update_yaxes(type="log")
+
+        for i, yaxis in enumerate(plotlyfig.select_yaxes(), 1):
+            legend_name = f"legend{i}"
+            plotlyfig.update_layout(
+                {legend_name: {"y": yaxis.domain[1], "yanchor": "top"}},
+                showlegend=True,
+            )
+            plotlyfig.update_traces(row=i, legend=legend_name)
+
+        html_fname = f"residual_plot_for_{first_result.sanitised_name}.html"
+
+        cls.write_html_with_link_plotlyjs(
+            plotlyfig, figures_dir, html_fname, options
+        )
+
+        return html_fname
+        ###
