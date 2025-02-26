@@ -416,7 +416,7 @@ class Fit:
                                 controller.parameter_set
                             ].values()
                         )
-                        self.__check_jacobian(
+                        self._check_jacobian(
                             func=cost_func.eval_cost,
                             jac=cost_func.jac_cost,
                             params=params,
@@ -643,7 +643,7 @@ class Fit:
 
         return accuracy, runtimes, energy
 
-    def __check_jacobian(self, func, jac, params):
+    def _check_jacobian(self, func, jac, params):
         """
         Check how similar the jacobian is to a finite difference
         approximation of the function

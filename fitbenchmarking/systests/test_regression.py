@@ -52,7 +52,7 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
-    @patch(f"{FITTING_DIR}.Fit._Fit__check_jacobian")
+    @patch(f"{FITTING_DIR}.Fit._check_jacobian")
     def test_multifit_consistent(self, check_jacobian):
         """
         Regression testing that the results of fitting multifit problems
