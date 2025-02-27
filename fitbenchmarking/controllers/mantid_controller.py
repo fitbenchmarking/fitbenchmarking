@@ -82,6 +82,7 @@ class MantidController(Controller):
         "Trust Region",
     ]
 
+    incompatible_problems = ["sscanss"]
     support_for_bounds = True
 
     def __init__(self, cost_func):
