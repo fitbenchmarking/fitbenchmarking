@@ -519,7 +519,10 @@ class JacobianTests(unittest.TestCase):
         assert len(results) == 2
 
     @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
-    def test_loop_over_jacobians_sparsity_check_true(self, loop_over_hessians):
+    @patch(f"{FITTING_DIR}.Fit._check_jacobian")
+    def test_loop_over_jacobians_sparsity_check_true(
+        self, check_jacobian, loop_over_hessians
+    ):
         """
         The test checks _loop_over_jacobians method
         handles the check for sparsity correctly
@@ -527,10 +530,34 @@ class JacobianTests(unittest.TestCase):
         self.fit._options.jac_method.append("scipy")
         self.fit._options.jac_num_method["scipy"] = ["2-point_sparse"]
         loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
+        check_jacobian.return_value = True
         self.controller.jacobian_enabled_solvers = ["Newton-CG"]
         self.controller.sparsity_enabled_solvers = ["Newton-CG"]
         results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 3
+
+    @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
+    def test_loop_over_jacobians_raises_warning(self, loop_over_hessians):
+        """
+        The test checks __loop_over_jacobians method raises
+        a warning when the jacobian check fails
+        """
+        with self.assertLogs(LOGGER, level="WARNING") as log:
+            # Modify jacobian to make it wrong
+            self.controller.cost_func.jac_cost = lambda x: 1000 * x
+            loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
+            _ = self.fit._loop_over_jacobians(self.controller)
+            self.assertTrue(
+                (
+                    "A relative error larger than 10^-3 was detected between "
+                    "the jacobian computed by Fitbenchmarking and the one "
+                    "obtained through a finite difference approximation. "
+                    "This might depend on either the initial parameters "
+                    "provided or the jacobian function, if this has also "
+                    "been provided by the user."
+                )
+                in log.output[0]
+            )
 
 
 class MinimizersTests(unittest.TestCase):

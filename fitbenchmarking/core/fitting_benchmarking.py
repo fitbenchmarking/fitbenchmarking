@@ -9,6 +9,7 @@ import timeit
 
 import numpy as np
 from codecarbon import EmissionsTracker
+from scipy.optimize import approx_fprime, check_grad
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -409,6 +410,18 @@ class Fit:
                             jacobian.name() if jacobian.name() else "default",
                         )
 
+                    if self._options.check_jacobian:
+                        params = list(
+                            controller.starting_values[
+                                controller.parameter_set
+                            ].values()
+                        )
+                        self._check_jacobian(
+                            func=cost_func.eval_cost,
+                            jac=cost_func.jac_cost,
+                            params=params,
+                        )
+
                     #######################
                     # Loops over Hessians #
                     #######################
@@ -629,3 +642,41 @@ class Fit:
             controller.check_bounds_respected()
 
         return accuracy, runtimes, energy
+
+    def _check_jacobian(self, func, jac, params):
+        """
+        Check how similar the jacobian is to a finite difference
+        approximation of the function
+
+        :param func: The function for which to compute the jacobian
+        :type func: function
+
+        :param jac: The jacobian of the function being used in Fitbenchmarking
+        :type jac: function
+
+        :param params: The values at which to evaluate the jacobian matrix
+        :type params: list
+
+        """
+        analytical_grad = jac(params)
+        finite_diff_grad = approx_fprime(params, func)
+
+        max_range_analytical = abs(max(analytical_grad) - min(analytical_grad))
+        max_range_finite_diff = abs(
+            max(finite_diff_grad) - min(finite_diff_grad)
+        )
+        max_range = (max_range_analytical + max_range_finite_diff) / 2
+
+        error_from_check_grad = check_grad(func, jac, params)
+        normalized_error = error_from_check_grad / max_range
+
+        if normalized_error > 10**-3:
+            LOGGER.warning(
+                "A relative error larger than 10^-3 was detected between "
+                "the jacobian computed by Fitbenchmarking and the one "
+                "obtained through a finite difference approximation. "
+                "This might depend on either the initial parameters "
+                "provided or the jacobian function, if this has also "
+                "been provided by the user."
+            )
+        return
