@@ -94,8 +94,8 @@ class UserOutputOptionTests(BaseFittingOptionTests):
         config_str = "[OUTPUT]\nresults_dir: new_results/"
         opts_file = self.generate_user_ini_file("results_dir", config_str)
         options = Options(opts_file)
-        actual = getattr(options, "results_dir")
-        self.assertEqual(str(set_option), actual)
+        actual = Path(getattr(options, "results_dir")).resolve()
+        self.assertEqual(set_option, actual)
 
     def test_invalid_option_key(self):
         """
