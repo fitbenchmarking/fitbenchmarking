@@ -540,6 +540,10 @@ class Plot:
         """
 
         first_result = next(iter(categories.values()))[0]
+        col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
+        plotly_colours = ptly_colors.sample_colorscale(
+            ptly_colors.sequential.Rainbow, samplepoints=col_vals
+        )
 
         if first_result.spinw_plot_info is not None:
             n_plots_on_a_row = first_result.spinw_plot_info["n_cuts"]
@@ -561,8 +565,8 @@ class Plot:
                 rows=n_categories, cols=n_plots_on_a_row, subplot_titles=titles
             )
 
-        for categ_ind, (key, results) in enumerate(categories.items()):
-            for result in results:
+        for categ_ind, (results) in enumerate(categories.values()):
+            for result, colour in zip(results, plotly_colours):
                 minim = result.minimizer
 
                 if result.params is not None:
@@ -581,6 +585,7 @@ class Plot:
                                     ],
                                     mode="markers",
                                     name=label,
+                                    marker={"color": colour},
                                     showlegend=i == 0,
                                 ),
                                 row=categ_ind + 1,
@@ -593,6 +598,7 @@ class Plot:
                                 y=result.r_x[result.sorted_index],
                                 mode="markers",
                                 name=label,
+                                marker={"color": colour},
                                 showlegend=True,
                             ),
                             row=categ_ind + 1,
