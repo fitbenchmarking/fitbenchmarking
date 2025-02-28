@@ -2,13 +2,13 @@
 Test the OUTPUT section for the options file
 """
 
-import inspect
-import os
-import shutil
 import unittest
+from pathlib import Path
 
-from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.tests.test_options_fitting import (
+    BaseFittingOptionTests,
+)
 
 
 class OutputOptionTests(unittest.TestCase):
@@ -21,9 +21,9 @@ class OutputOptionTests(unittest.TestCase):
         Checks results_dir default
         """
         options = Options(
-            additional_options={"results_dir": os.path.dirname(__file__)}
+            additional_options={"results_dir": Path(__file__).parent}
         )
-        default = os.path.abspath("fitbenchmarking_results")
+        default = Path("fitbenchmarking_results").resolve()
         self.assertNotEqual(default, options.results_dir)
 
     def setUp(self):
@@ -81,81 +81,21 @@ class OutputOptionTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
-class UserOutputOptionTests(unittest.TestCase):
+class UserOutputOptionTests(BaseFittingOptionTests):
     """
     Checks the output options in the file are set correctly or raise errors
     """
-
-    def setUp(self):
-        """
-        Sets the directory to save the temporary ini files in
-        """
-        options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, "tests", "files")
-        os.mkdir(self.test_files_dir)
-
-    def tearDown(self):
-        """
-        Deletes temporary folder and results produced
-        """
-        if os.path.exists(self.test_files_dir):
-            shutil.rmtree(self.test_files_dir)
-
-    def generate_user_ini_file(self, opt_name, config_str):
-        """
-        Generates user defined ini file
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param config_str: section of an ini file which sets the option
-        :type config_str: str
-
-        :return: location of temporary ini file
-        :rtype: str
-        """
-        opts_file = os.path.join(
-            self.test_files_dir, f"test_{opt_name}_valid.ini"
-        )
-        with open(opts_file, "w", encoding="utf-8") as f:
-            f.write(config_str)
-        return opts_file
-
-    def shared_valid(self, opt_name, options_set, config_str):
-        """
-        Shared test to check that the output option set is valid
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param options_set: option set to be tested
-        :type options_set: list
-        :param config_str: section of an ini file which sets the option
-        :type config_str: str
-        """
-        opts_file = self.generate_user_ini_file(opt_name, config_str)
-        options = Options(opts_file)
-        actual = getattr(options, opt_name)
-        self.assertEqual(options_set, actual)
-
-    def shared_invalid(self, opt_name, config_str):
-        """
-        Shared test to check that the output option set is invalid
-
-        :param opt_name: name of option to be set
-        :type opt_name: str
-        :param config_str: option set to be tested
-        :type config_str: list
-        """
-        opts_file = self.generate_user_ini_file(opt_name, config_str)
-        with self.assertRaises(exceptions.OptionsError):
-            Options(opts_file)
 
     def test_output_results_directory_valid(self):
         """
         Checks user set make_plots is valid
         """
-        set_option = os.path.abspath("new_results")
+        set_option = Path("new_results").resolve()
         config_str = "[OUTPUT]\nresults_dir: new_results/"
-        self.shared_valid("results_dir", set_option, config_str)
+        opts_file = self.generate_user_ini_file("results_dir", config_str)
+        options = Options(opts_file)
+        actual = Path(getattr(options, "results_dir")).resolve()
+        self.assertEqual(set_option.name, actual.name)
 
     def test_invalid_option_key(self):
         """
