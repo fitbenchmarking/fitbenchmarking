@@ -103,7 +103,7 @@ class HoraceParser(FitbenchmarkParser):
 
         eng.evalc("x = fitpow.ebin_cens")
         eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")
-        eng.evalc("x_final = repelem(x,3,1)'")
+        eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
 
         # Create and fill struct
         eng.evalc(
