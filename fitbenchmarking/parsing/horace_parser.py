@@ -67,6 +67,57 @@ class HoraceParser(FitbenchmarkParser):
         self._horace_msk: typing.Optional[str] = None
         self._horace_path: typing.Optional[str] = None
 
+    def _process_spinw_data(self, data_file_path):
+        """
+        Cut SpinW data based on qcens.
+
+        :param data_file_path: The path to the file to load the points from
+        :type data_file_path: str
+
+        :return: The path to the new file with 1d cuts
+        :rtype: str
+        """
+        qcens = [float(i) for i in self._entries["q_cens"].split(",")]
+        foreground_dict = self._parsed_func[0]
+        params_dict = {
+            k: v for k, v in foreground_dict.items() if k not in {"foreground"}
+        }
+
+        process_f = self._parse_function(self._entries["process_function"])
+        script = pathlib.Path(process_f[0]["matlab_script"])
+        path = pathlib.Path(self._filename).parent
+        eng.addpath(str(path / script.parent))
+        process_f_name = script.stem
+
+        eng.workspace["params_dict"] = params_dict
+        eng.evalc(
+            f"[fitpow, qmax_final, qmin_final] = {process_f_name}"
+            f"('{data_file_path}', params_dict, {qcens})"
+        )
+
+        # Remove nans
+        for var in ["y", "e"]:
+            eng.evalc(f"{var} = fitpow.{var}")
+            eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
+            eng.evalc(f"{var}_final = {var}(sum(isnan({var}),2)==0,:)")
+
+        eng.evalc("x = fitpow.ebin_cens")
+        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")
+        eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
+
+        # Create and fill struct
+        eng.evalc(
+            "w = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
+        )
+        for i in np.arange(1, len(qcens) + 1):
+            for var in ["x", "y", "e", "qmax", "qmin"]:
+                eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
+
+        # Save cuts
+        new_path = data_file_path.split(".mat")[0] + "_cuts.mat"
+        eng.evalc(f"save('{new_path}', 'w')")
+        return new_path
+
     def _get_data_points(self, data_file_path):
         """
         Get the data points of the problem from the data file.
@@ -77,6 +128,15 @@ class HoraceParser(FitbenchmarkParser):
         :return: data
         :rtype: dict<str, np.ndarray>
         """
+        # This if condition avoids error when "plot_type" not provided
+        if (
+            "plot_type" in self._entries
+            and self._entries["plot_type"].lower() == "1d_cuts"
+        ):
+            new_data_path = self._process_spinw_data(data_file_path)
+        else:
+            new_data_path = data_file_path
+
         wye_data_f = self._parse_function(self._entries["wye_function"])
         script = pathlib.Path(wye_data_f[0]["matlab_script"])
         func_name = script.stem
@@ -93,7 +153,7 @@ class HoraceParser(FitbenchmarkParser):
         try:
             eng.evalc(
                 f"[{self._horace_w}, y, e, {self._horace_msk}] ="
-                f"{func_name}('{data_file_path}','{self._horace_path}')"
+                f"{func_name}('{new_data_path}','{self._horace_path}')"
             )
         except Exception as e:
             raise ParsingError(
@@ -232,19 +292,33 @@ class HoraceParser(FitbenchmarkParser):
 
         self.fitting_problem.set_persistent_vars = set_persistent_vars
 
+        # This if condition avoids error when "plot_type" not provided
+        if "plot_type" in self._entries:
+            self._set_plot_type()
+            self._set_qcens_and_ncuts()
+
+        return super()._set_additional_info()
+
+    def _set_plot_type(self) -> None:
+        """
+        Add plot_type to fitting_problem.additional_info.
+        """
         plot_type_options = ["1d_cuts"]
 
-        if "plot_type" in self._entries:
-            if self._entries["plot_type"].lower() in plot_type_options:
-                self.fitting_problem.additional_info["plot_type"] = (
-                    self._entries["plot_type"].lower()
-                )
-            else:
-                raise ParsingError(
-                    "The plot type should be one of these "
-                    f"options {plot_type_options}"
-                )
+        if self._entries["plot_type"].lower() in plot_type_options:
+            self.fitting_problem.additional_info["plot_type"] = self._entries[
+                "plot_type"
+            ].lower()
+        else:
+            raise ParsingError(
+                "The plot type should be one of these "
+                f"options {plot_type_options}"
+            )
 
+    def _set_qcens_and_ncuts(self) -> None:
+        """
+        Add q_cens and n_cuts to fitting_problem.additional_info.
+        """
         if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
             self.fitting_problem.additional_info["ebin_cens"] = np.array(
@@ -267,5 +341,3 @@ class HoraceParser(FitbenchmarkParser):
                     "Number of data points must be divisible "
                     "by number of q_cens"
                 )
-
-        return super()._set_additional_info()
