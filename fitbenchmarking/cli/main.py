@@ -335,8 +335,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group5 = parser.add_mutually_exclusive_group()
-    group5.add_argument(
+    jacobian_check = parser.add_mutually_exclusive_group()
+    jacobian_check.add_argument(
         "--check_jacobian",
         action="store_true",
         help=(
@@ -344,7 +344,7 @@ of the Fitbenchmarking docs. """
             "a finite difference approximation."
         ),
     )
-    group5.add_argument(
+    jacobian_check.add_argument(
         "--dont_check_jacobian",
         action="store_true",
         help=(
