@@ -661,11 +661,7 @@ class Fit:
         analytical_grad = jac(params)
         finite_diff_grad = approx_fprime(params, func)
 
-        max_range_analytical = abs(max(analytical_grad) - min(analytical_grad))
-        max_range_finite_diff = abs(
-            max(finite_diff_grad) - min(finite_diff_grad)
-        )
-        max_range = (max_range_analytical + max_range_finite_diff) / 2
+        max_range = (np.ptp(analytical_grad) + np.ptp(finite_diff_grad)) / 2
 
         error_from_check_grad = check_grad(func, jac, params)
         normalized_error = error_from_check_grad / max_range
