@@ -178,8 +178,8 @@ of the Fitbenchmarking docs. """
         help="Set the port for Dash.",
     )
 
-    group1 = parser.add_mutually_exclusive_group()
-    group1.add_argument(
+    make_plots_group = parser.add_mutually_exclusive_group()
+    make_plots_group.add_argument(
         "--make_plots",
         action="store_true",
         help=(
@@ -187,7 +187,7 @@ of the Fitbenchmarking docs. """
             "during runtime."
         ),
     )
-    group1.add_argument(
+    make_plots_group.add_argument(
         "--dont_make_plots",
         action="store_true",
         help=(
@@ -196,8 +196,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument(
+    results_browser_group = parser.add_mutually_exclusive_group()
+    results_browser_group.add_argument(
         "--results_browser",
         action="store_true",
         help=(
@@ -206,7 +206,7 @@ of the Fitbenchmarking docs. """
             "of a fit benchmark."
         ),
     )
-    group2.add_argument(
+    results_browser_group.add_argument(
         "--no_results_browser",
         action="store_true",
         help=(
@@ -216,8 +216,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group3 = parser.add_mutually_exclusive_group()
-    group3.add_argument(
+    pbar_group = parser.add_mutually_exclusive_group()
+    pbar_group.add_argument(
         "--pbar",
         action="store_true",
         help=(
@@ -225,7 +225,7 @@ of the Fitbenchmarking docs. """
             "see the progress bar during runtime."
         ),
     )
-    group3.add_argument(
+    pbar_group.add_argument(
         "--no_pbar",
         action="store_true",
         help=(
@@ -268,8 +268,8 @@ of the Fitbenchmarking docs. """
         help="Specify the file path to write the logs to.",
     )
 
-    group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument(
+    append_log_group = parser.add_mutually_exclusive_group()
+    append_log_group.add_argument(
         "--append_log",
         action="store_true",
         help=(
@@ -279,7 +279,7 @@ of the Fitbenchmarking docs. """
             "subsequent run."
         ),
     )
-    group2.add_argument(
+    append_log_group.add_argument(
         "--overwrite_log",
         action="store_true",
         help=(
@@ -317,8 +317,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group4 = parser.add_mutually_exclusive_group()
-    group4.add_argument(
+    run_dash_group = parser.add_mutually_exclusive_group()
+    run_dash_group.add_argument(
         "--run_dash",
         action="store_true",
         help=(
@@ -326,7 +326,7 @@ of the Fitbenchmarking docs. """
             "interactive plots."
         ),
     )
-    group4.add_argument(
+    run_dash_group.add_argument(
         "--dont_run_dash",
         action="store_true",
         help=(
@@ -335,8 +335,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    jacobian_check = parser.add_mutually_exclusive_group()
-    jacobian_check.add_argument(
+    jacobian_check_group = parser.add_mutually_exclusive_group()
+    jacobian_check_group.add_argument(
         "--check_jacobian",
         action="store_true",
         help=(
@@ -344,7 +344,7 @@ of the Fitbenchmarking docs. """
             "a finite difference approximation."
         ),
     )
-    jacobian_check.add_argument(
+    jacobian_check_group.add_argument(
         "--dont_check_jacobian",
         action="store_true",
         help=(
