@@ -675,4 +675,3 @@ class Fit:
                 "provided or the jacobian function, if this has also "
                 "been provided by the user."
             )
-        return
