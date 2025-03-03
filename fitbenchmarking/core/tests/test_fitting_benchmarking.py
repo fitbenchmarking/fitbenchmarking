@@ -535,17 +535,24 @@ class JacobianTests(unittest.TestCase):
         results = self.fit._loop_over_jacobians(self.controller)
         assert len(results) == 3 == check_jacobian.call_count
 
-    @patch(f"{FITTING_DIR}.Fit._loop_over_hessians")
-    def test_loop_over_jacobians_raises_warning(self, loop_over_hessians):
+    @patch(f"{FITTING_DIR}.check_grad")
+    @patch(f"{FITTING_DIR}.np.ptp")
+    def test_check_jacobian_raises_warning(self, mock_ptp, mock_check_grad):
         """
-        The test checks __loop_over_jacobians method raises
+        The test checks _check_jacobian method raises
         a warning when the jacobian check fails
         """
         with self.assertLogs(LOGGER, level="WARNING") as log:
-            # Modify jacobian to make it wrong
-            self.controller.cost_func.jac_cost = lambda x: 1000 * x
-            loop_over_hessians.side_effect = mock_loop_over_hessians_func_call
-            _ = self.fit._loop_over_jacobians(self.controller)
+            mock_check_grad.return_value = 0.01
+            mock_ptp.return_value = 1
+            self.controller.cost_func.jacobian = Analytic(
+                self.controller.cost_func.problem
+            )
+            self.fit._check_jacobian(
+                func=self.controller.cost_func.eval_cost,
+                jac=self.controller.cost_func.jac_cost,
+                params=[94.9, 0.009, 90.1, 113.0, 20.0, 73.8, 140.0, 20.0],
+            )
             self.assertTrue(
                 (
                     "A relative error larger than 10^-3 was detected between "
