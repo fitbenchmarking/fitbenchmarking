@@ -12,15 +12,12 @@ from sys import platform
 from tempfile import NamedTemporaryFile
 from typing import Optional
 from unittest import TestCase
-from unittest.mock import patch
 
 from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
-
-FITTING_DIR = "fitbenchmarking.core.fitting_benchmarking"
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -52,13 +49,11 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
-    @patch(f"{FITTING_DIR}.Fit._check_jacobian")
-    def test_multifit_consistent(self, check_jacobian):
+    def test_multifit_consistent(self):
         """
         Regression testing that the results of fitting multifit problems
         against a single minimizer from mantid.
         """
-        check_jacobian.return_value = True
         problem_sub_directory = "multifit_set"
 
         run_benchmark(
