@@ -555,7 +555,7 @@ class JacobianTests(unittest.TestCase):
             )
             self.assertTrue(
                 (
-                    "A relative error larger than 10^-3 was detected between "
+                    "A relative error of 0.010000 was detected between "
                     "the jacobian computed by Fitbenchmarking and the one "
                     "obtained through a finite difference approximation. "
                     "This might depend on either the initial parameters "
