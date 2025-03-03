@@ -410,7 +410,10 @@ class Fit:
                             jacobian.name() if jacobian.name() else "default",
                         )
 
-                    if self._options.check_jacobian:
+                    if (
+                        self._options.check_jacobian
+                        and not controller.problem.multifit
+                    ):
                         params = list(
                             controller.starting_values[
                                 controller.parameter_set
