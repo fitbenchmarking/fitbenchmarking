@@ -4,11 +4,15 @@ on:
   workflow_dispatch:
   pull_request_review:
     types: [submitted]
+  pull_request:
+    branches:
+      - 'master'
+      - 'release-**'
 
 jobs:
   default_tests_win_mac:
     name: Default Unit Tests
-    if: github.event.review.state == 'approved' && github.event.repository.fork == false
+    if: github.event.repository.fork == false
     strategy:
       fail-fast: false
       matrix:
