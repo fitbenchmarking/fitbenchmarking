@@ -565,7 +565,7 @@ class Plot:
 
             # Place the name of the cost function on the left hand side
             plotlyfig.for_each_annotation(
-                lambda a: a.update(x=-0.09, textangle=-90)
+                lambda a: a.update(x=-0.08, textangle=-90)
                 if a.text in row_titles
                 else ()
             )
