@@ -544,28 +544,37 @@ class Plot:
         plotly_colours = ptly_colors.sample_colorscale(
             ptly_colors.sequential.Rainbow, samplepoints=col_vals
         )
+        n_categories = len(categories)
 
         if first_result.spinw_plot_info is not None:
             n_plots_on_a_row = first_result.spinw_plot_info["n_cuts"]
-            titles = [
+            subplot_titles = [
                 f"{i} Å<sup>-1</sup>"
                 for i in first_result.spinw_plot_info["q_cens"]
             ]
+            row_titles = list(categories.keys())
             plotlyfig = make_subplots(
-                rows=1,
+                rows=n_categories,
                 cols=n_plots_on_a_row,
-                subplot_titles=titles,
+                row_titles=row_titles,
+                subplot_titles=subplot_titles * len(row_titles),
             )
             data_len = int(len(first_result.data_y) / n_plots_on_a_row)
+
+            # Place the name of the cost function on the left hand side
+            plotlyfig.for_each_annotation(
+                lambda a: a.update(x=-0.09, textangle=-90)
+                if a.text in row_titles
+                else ()
+            )
         else:
             n_plots_on_a_row = 1
-            n_categories = len(categories)
             titles = list(categories.keys())
             plotlyfig = make_subplots(
                 rows=n_categories, cols=n_plots_on_a_row, subplot_titles=titles
             )
 
-        for categ_ind, (results) in enumerate(categories.values()):
+        for categ, (results) in enumerate(categories.values()):
             for result, colour in zip(results, plotly_colours):
                 minim = result.minimizer
 
@@ -587,8 +596,9 @@ class Plot:
                                     name=label,
                                     marker={"color": colour},
                                     showlegend=i == 0,
+                                    legendgroup=f"group{categ + 1}-{minim}",
                                 ),
-                                row=categ_ind + 1,
+                                row=categ + 1,
                                 col=i + 1,
                             )
                     else:
@@ -601,7 +611,7 @@ class Plot:
                                 marker={"color": colour},
                                 showlegend=True,
                             ),
-                            row=categ_ind + 1,
+                            row=categ + 1,
                             col=1,
                         )
 
@@ -612,13 +622,21 @@ class Plot:
                 if result.plot_scale in ["loglog", "logy"]:
                     plotlyfig.update_yaxes(type="log")
 
-        for i, yaxis in enumerate(plotlyfig.select_yaxes(), 1):
-            legend_name = f"legend{i}"
+        # Position the legends correctly
+        yaxis_top_coords = {
+            yaxis.domain[1] for yaxis in plotlyfig.select_yaxes()
+        }
+
+        for row, yaxis_coord in enumerate(
+            sorted(yaxis_top_coords, reverse=True), 1
+        ):
+            legend_name = f"legend{row}"
             plotlyfig.update_layout(
-                {legend_name: {"y": yaxis.domain[1], "yanchor": "top"}},
+                {legend_name: {"y": yaxis_coord, "yanchor": "top"}},
                 showlegend=True,
             )
-            plotlyfig.update_traces(row=i, legend=legend_name)
+
+            plotlyfig.update_traces(row=row, legend=legend_name)
 
         html_fname = f"residual_plot_for_{first_result.sanitised_name}.html"
 
