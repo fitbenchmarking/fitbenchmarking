@@ -62,10 +62,6 @@ class FitbenchmarkParser(Parser):
         if data_points[0]["x"].ndim > 1:
             old_function = self.fitting_problem.function
             all_data = np.concatenate([dp["x"] for dp in data_points])
-            count = 0
-            for dp in data_points:
-                dp["x"] = np.arange(count, count + dp["x"].shape[0])
-                count += dp["x"].shape[0]
 
             self.fitting_problem.function = lambda x, *p: old_function(
                 all_data[x], *p
