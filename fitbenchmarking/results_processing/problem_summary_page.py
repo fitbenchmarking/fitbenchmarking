@@ -42,6 +42,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
             )
 
         summary_plot_path = ""
+        residuals_plot_path = ""
         if options.make_plots:
             summary_plot_path = Plot.plot_summary(
                 categories=problem_results,
