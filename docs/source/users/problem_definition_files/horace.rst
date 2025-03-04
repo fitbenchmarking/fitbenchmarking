@@ -174,7 +174,7 @@ process_function
   from SpinW. The matlab file takes in:
 
     * the path to the 2D powder data, 
-    * `params_dict` (a structure of parameters, including `J1` and the model parameters)
+    * `params` (a structure of parameters, including `J1` and the model parameters)
     * `qcens` (the Q values provided by the user). 
 
 Examples of the process_function:
