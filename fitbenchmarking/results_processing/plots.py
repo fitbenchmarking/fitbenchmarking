@@ -548,17 +548,17 @@ class Plot:
         )
 
         if first_result.spinw_plot_info is not None:
-            n_plots_on_a_row = first_result.spinw_plot_info["n_cuts"]
+            n_plots_per_row = first_result.spinw_plot_info["n_cuts"]
             plotlyfig = cls(
                 first_result, options, figures_dir
             )._create_empty_residuals_plot_spinw(
-                first_result, categories, n_plots_on_a_row
+                first_result, categories, n_plots_per_row
             )
         else:
-            n_plots_on_a_row = 1
+            n_plots_per_row = 1
             plotlyfig = make_subplots(
                 rows=len(categories),
-                cols=n_plots_on_a_row,
+                cols=n_plots_per_row,
                 subplot_titles=list(categories.keys()),
             )
 
@@ -572,9 +572,9 @@ class Plot:
                         if result.is_best_fit
                         else f" {minim}"
                     )
-                    if n_plots_on_a_row > 1:
-                        data_len = int(len(result.data_y) / n_plots_on_a_row)
-                        for i in range(n_plots_on_a_row):
+                    if n_plots_per_row > 1:
+                        data_len = int(len(result.data_y) / n_plots_per_row)
+                        for i in range(n_plots_per_row):
                             plotlyfig.add_trace(
                                 go.Scatter(
                                     x=result.spinw_plot_info["ebin_cens"],
@@ -629,7 +629,7 @@ class Plot:
         return html_fname
 
     def _create_empty_residuals_plot_spinw(
-        self, first_result, categories, n_plots_on_a_row
+        self, first_result, categories, n_plots_per_row
     ):
         """
         Helper function to create the initially empty residuals_plot
@@ -644,12 +644,12 @@ class Plot:
 
         plotlyfig = make_subplots(
             rows=n_categories,
-            cols=n_plots_on_a_row,
+            cols=n_plots_per_row,
             row_titles=row_titles,
             subplot_titles=subplot_titles * n_categories,
         )
 
-        data_len = int(len(first_result.data_y) / n_plots_on_a_row)
+        data_len = int(len(first_result.data_y) / n_plots_per_row)
         if data_len != len(first_result.spinw_plot_info["ebin_cens"]):
             raise PlottingError("x and y data lengths are not the same")
 
