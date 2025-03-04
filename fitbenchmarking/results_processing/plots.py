@@ -546,34 +546,20 @@ class Plot:
         plotly_colours = ptly_colors.sample_colorscale(
             ptly_colors.sequential.Rainbow, samplepoints=col_vals
         )
-        n_categories = len(categories)
 
         if first_result.spinw_plot_info is not None:
             n_plots_on_a_row = first_result.spinw_plot_info["n_cuts"]
-            subplot_titles = [
-                f"{i} Å<sup>-1</sup>"
-                for i in first_result.spinw_plot_info["q_cens"]
-            ]
-            row_titles = list(categories.keys())
-            plotlyfig = make_subplots(
-                rows=n_categories,
-                cols=n_plots_on_a_row,
-                row_titles=row_titles,
-                subplot_titles=subplot_titles * len(row_titles),
-            )
-            data_len = int(len(first_result.data_y) / n_plots_on_a_row)
-
-            # Place the name of the cost function on the left hand side
-            plotlyfig.for_each_annotation(
-                lambda a: a.update(x=-0.08, textangle=-90)
-                if a.text in row_titles
-                else ()
+            plotlyfig = cls(
+                first_result, options, figures_dir
+            )._create_empty_residuals_plot_spinw(
+                first_result, categories, n_plots_on_a_row
             )
         else:
             n_plots_on_a_row = 1
-            titles = list(categories.keys())
             plotlyfig = make_subplots(
-                rows=n_categories, cols=n_plots_on_a_row, subplot_titles=titles
+                rows=len(categories),
+                cols=n_plots_on_a_row,
+                subplot_titles=list(categories.keys()),
             )
 
         for categ, (results) in enumerate(categories.values()):
@@ -581,12 +567,13 @@ class Plot:
                 minim = result.minimizer
 
                 if result.params is not None:
-                    if result.is_best_fit:
-                        label = f" {minim} (best fit)"
-                    else:
-                        label = f" {minim}"
-
+                    label = (
+                        f" {minim} (best fit)"
+                        if result.is_best_fit
+                        else f" {minim}"
+                    )
                     if n_plots_on_a_row > 1:
+                        data_len = int(len(result.data_y) / n_plots_on_a_row)
                         for i in range(n_plots_on_a_row):
                             plotlyfig.add_trace(
                                 go.Scatter(
@@ -625,26 +612,51 @@ class Plot:
                     plotlyfig.update_yaxes(type="log")
 
         # Position the legends correctly
-        yaxis_top_coords = {
-            yaxis.domain[1] for yaxis in plotlyfig.select_yaxes()
-        }
-
-        for row, yaxis_coord in enumerate(
-            sorted(yaxis_top_coords, reverse=True), 1
-        ):
+        yaxes_top = {yaxis.domain[1] for yaxis in plotlyfig.select_yaxes()}
+        for row, yaxis_coord in enumerate(sorted(yaxes_top, reverse=True), 1):
             legend_name = f"legend{row}"
             plotlyfig.update_layout(
                 {legend_name: {"y": yaxis_coord, "yanchor": "top"}},
                 showlegend=True,
             )
-
             plotlyfig.update_traces(row=row, legend=legend_name)
 
-        html_fname = f"residual_plot_for_{first_result.sanitised_name}.html"
-
+        html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             plotlyfig, figures_dir, html_fname, options
         )
 
         return html_fname
-        ###
+
+    def _create_empty_residuals_plot_spinw(
+        self, first_result, categories, n_plots_on_a_row
+    ):
+        """
+        Helper function to create the initially empty residuals_plot
+        for spinw problems .
+        """
+        subplot_titles = [
+            f"{i} Å<sup>-1</sup>"
+            for i in first_result.spinw_plot_info["q_cens"]
+        ]
+        row_titles = list(categories.keys())
+        n_categories = len(row_titles)
+
+        plotlyfig = make_subplots(
+            rows=n_categories,
+            cols=n_plots_on_a_row,
+            row_titles=row_titles,
+            subplot_titles=subplot_titles * n_categories,
+        )
+
+        data_len = int(len(first_result.data_y) / n_plots_on_a_row)
+        if data_len != len(first_result.spinw_plot_info["ebin_cens"]):
+            raise PlottingError("x and y data lengths are not the same")
+
+        # Place the name of the cost function on the left hand side
+        plotlyfig.for_each_annotation(
+            lambda a: a.update(x=-0.08, textangle=-90)
+            if a.text in row_titles
+            else ()
+        )
+        return plotlyfig

@@ -288,6 +288,54 @@ class PlotTests(unittest.TestCase):
 
         assert file_size_KB < 50
 
+    def test_plot_residuals_create_files(self):
+        """
+        Test that plot_residuals creates a file
+        """
+
+        file_name = self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(file_name, "residuals_plot_for_prob_0.html")
+        path = os.path.join(self.figures_dir, file_name)
+        self.assertTrue(os.path.exists(path))
+
+    def test_create_empty_residuals_plot_spinw(self):
+        """
+        Test that plot_residuals creates correct number of subplots
+        and raises error if data lengths are unexpected
+        """
+        result = next(iter(self.fr.values()))[0]
+        result.spinw_plot_info = {
+            "plot_type": "1d_cuts",
+            "n_cuts": 3,
+            "q_cens": [0.5, 1, 1.5],
+            "ebin_cens": [0.9],
+        }
+
+        fig = self.plot._create_empty_residuals_plot_spinw(
+            first_result=result,
+            categories=self.fr,
+            n_plots_on_a_row=result.spinw_plot_info["n_cuts"],
+        )
+        rows, cols = fig._get_subplot_rows_columns()
+
+        assert len(rows) == len(self.fr.keys())
+        assert len(cols) == result.spinw_plot_info["n_cuts"]
+
+        result.spinw_plot_info["ebin_cens"] = [2, 4]
+
+        with self.assertRaises(PlottingError):
+            self.plot._create_empty_residuals_plot_spinw(
+                first_result=result,
+                categories=self.fr,
+                n_plots_on_a_row=result.spinw_plot_info["n_cuts"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
