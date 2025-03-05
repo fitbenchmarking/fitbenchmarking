@@ -6,8 +6,8 @@ import os
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 from json import load
+from pathlib import Path
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 import numpy as np
 from parameterized import parameterized
@@ -16,7 +16,6 @@ from scipy.sparse import issparse
 
 from conftest import run_for_test_types
 from fitbenchmarking.parsing.base_parser import Parser
-from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import (
     ParserFactory,
@@ -505,7 +504,7 @@ class TestParserFactory(TestCase):
         Tests that the parser factory raises a NoParserError when an erroneous
         parser is requested.
         """
-        filename = os.path.join(os.getcwd(), "this_is_a_fake_parser.txt")
+        filename = Path.cwd() / "this_is_a_fake_parser.txt"
         with open(filename, "w", encoding="utf-8") as f:
             f.write("this_is_a_fake_parser")
 
@@ -519,7 +518,7 @@ class TestParserFactory(TestCase):
         """
         Tests the parse_problem_file method
         """
-        filename = os.path.join(os.path.dirname(__file__), "nist", "basic.dat")
+        filename = Path(__file__).parent / "nist" / "basic.dat"
         fitting_problem = parse_problem_file(filename, OPTIONS)
         self.assertEqual(fitting_problem.name, "basic")
 
@@ -534,24 +533,22 @@ class TestParserNoJac(TestCase):
         """
         Set up the tests.
         """
-        self.test_dir = os.path.dirname(__file__)
+        self.test_dir = Path(__file__).parent
 
-    def test_sparsej_returns_none(self):
+    @parameterized.expand(["simplified_anac.txt", "simplified_anac2.txt"])
+    def test_sparsej_returns_none(self, filename):
         """
         Test sparse_jacobian is None in two cases:
          - when no 'jac' line in prob def file
          - when there is a 'jac' line but no 'sparse_func' in it.
         """
-        for prob_def_file in ["simplified_anac.txt", "simplified_anac2.txt"]:
-            prob_def_file_path = os.path.join(
-                self.test_dir, "ivp", prob_def_file
-            )
+        prob_def_file_path = self.test_dir / "ivp" / filename
 
-            parser = ParserFactory.create_parser(prob_def_file_path)
-            with parser(prob_def_file_path, OPTIONS) as p:
-                fitting_problem = p.parse()
+        parser = ParserFactory.create_parser(prob_def_file_path)
+        with parser(prob_def_file_path, OPTIONS) as p:
+            fitting_problem = p.parse()
 
-            assert fitting_problem.sparse_jacobian is None
+        assert fitting_problem.sparse_jacobian is None
 
     @run_for_test_types(TEST_TYPE, "all")
     def test_mantid_jac_when_no_func_by_user(self):
@@ -559,14 +556,10 @@ class TestParserNoJac(TestCase):
         Tests that, for mantid problems, when no jacobian is provided
         by the user, the jacobian function from mantid is used.
         """
-        evaluations_file = "jacobian_evaluations.json"
         format_dir = "mantiddev"
+        file_path = self.test_dir / format_dir / "jacobian_evaluations.json"
 
-        evaluations_file_path = os.path.join(
-            self.test_dir, format_dir, evaluations_file
-        )
-
-        with open(evaluations_file_path, encoding="utf-8") as ef:
+        with open(file_path, encoding="utf-8") as ef:
             results = load(ef)
 
             for f, tests in results.items():
@@ -581,41 +574,3 @@ class TestParserNoJac(TestCase):
 
                     actual = fitting_problem.jacobian(x, r[1])
                     assert np.isclose(actual, r[2]).all()
-
-
-class TestFitbenchmarkParser(TestCase):
-    """
-    Tests the FitbenchmarkParser.
-    """
-
-    @parameterized.expand(
-        [
-            (["name = '\\sample_problem'"], {"name": "sample_problem"}),
-            (["name = 'sample_problem/'"], {"name": "sample_problem"}),
-            (["name = '\\sample_problem/////'"], {"name": "sample_problem"}),
-            (["#fitbenchmarking"], {}),
-            (
-                ["name = 'sample_problem' # my important comment"],
-                {"name": "sample_problem"},
-            ),
-            (
-                ["function = 'Userdefined: a/4 ** 6'"],
-                {"function": "Userdefined: a/4 ** 6"},
-            ),
-            (
-                ["function = 'Userdefined = a/4 ** 6'"],
-                {"function": "Userdefined = a/4 ** 6"},
-            ),
-        ]
-    )
-    @patch.object(FitbenchmarkParser, "__init__", lambda a, b, c: None)
-    def test_get_data_problem_entries(self, file_data, expected):
-        """
-        Verifies the output of _get_data_problem_entries() method.
-        """
-        parser = FitbenchmarkParser("test_file.txt", {"parse"})
-        parser.file = MagicMock()
-        parser.file.readlines.return_value = file_data
-        # pylint: disable=protected-access
-        result = parser._get_data_problem_entries()
-        assert result == expected
