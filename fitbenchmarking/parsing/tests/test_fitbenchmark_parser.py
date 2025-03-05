@@ -3,7 +3,7 @@ This file contains tests for the fitbenchmark parser.
 """
 
 import sys
-from pathlib import Path, PosixPath
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, mock_open, patch
 
@@ -296,8 +296,8 @@ class TestFitbenchmarkParser(TestCase):
                 "multifit.txt",
                 "['multifit1.txt','multifit2.txt']",
                 [
-                    PosixPath("mantid/data_files/multifit1.txt"),
-                    PosixPath("mantid/data_files/multifit2.txt"),
+                    Path("mantid/data_files/multifit1.txt"),
+                    Path("mantid/data_files/multifit2.txt"),
                 ],
                 0,
             ),
@@ -306,7 +306,7 @@ class TestFitbenchmarkParser(TestCase):
                 "start_end_x.txt",
                 "mantid_start_end_x.dat",
                 [
-                    PosixPath("mantid/data_files/mantid_start_end_x.dat"),
+                    Path("mantid/data_files/mantid_start_end_x.dat"),
                 ],
                 0,
             ),
@@ -322,7 +322,7 @@ class TestFitbenchmarkParser(TestCase):
                 "multifit.txt",
                 "['multifit1.txt','multift2.txt']",
                 [
-                    PosixPath("mantid/data_files/multifit1.txt"),
+                    Path("mantid/data_files/multifit1.txt"),
                     None,
                 ],
                 1,
@@ -338,14 +338,14 @@ class TestFitbenchmarkParser(TestCase):
                 "ivp",
                 "simplified_anac.txt",
                 "simplified_anac.txt",
-                [PosixPath("ivp/data_files/simplified_anac.txt")],
+                [Path("ivp/data_files/simplified_anac.txt")],
                 0,
             ),
             (
                 "hogben",
                 "simple_sample.txt",
                 "simple_sample.txt",
-                [PosixPath("hogben/data/simple_sample.txt")],
+                [Path("hogben/data/simple_sample.txt")],
                 0,
             ),
             (
