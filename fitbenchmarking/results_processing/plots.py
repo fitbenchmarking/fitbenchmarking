@@ -562,9 +562,7 @@ class Plot:
 
         if first_result.spinw_plot_info is not None:
             n_plots_per_row = first_result.spinw_plot_info["n_cuts"]
-            plotlyfig = cls(
-                first_result, options, figures_dir
-            )._create_empty_residuals_plot_spinw(
+            plotlyfig = cls._create_empty_residuals_plot_spinw(
                 first_result, categories, n_plots_per_row
             )
         else:
@@ -577,46 +575,10 @@ class Plot:
 
         for categ, (results) in enumerate(categories.values()):
             for result, colour in zip(results, plotly_colours):
-                minim = result.minimizer
-
                 if result.params is not None:
-                    label = (
-                        f" {minim} (best fit)"
-                        if result.is_best_fit
-                        else f" {minim}"
+                    plotlyfig = cls._add_traces_to_fig(
+                        plotlyfig, result, n_plots_per_row, colour, categ
                     )
-                    if n_plots_per_row > 1:
-                        data_len = int(len(result.data_y) / n_plots_per_row)
-                        for i in range(n_plots_per_row):
-                            plotlyfig.add_trace(
-                                go.Scatter(
-                                    x=result.spinw_plot_info["ebin_cens"],
-                                    y=result.r_x[
-                                        (data_len * i) : (data_len * (i + 1))
-                                    ],
-                                    mode="markers",
-                                    name=label,
-                                    marker={"color": colour},
-                                    showlegend=i == 0,
-                                    legendgroup=f"group{categ + 1}-{minim}",
-                                ),
-                                row=categ + 1,
-                                col=i + 1,
-                            )
-                    else:
-                        plotlyfig.add_trace(
-                            go.Scatter(
-                                x=result.data_x[result.sorted_index],
-                                y=result.r_x[result.sorted_index],
-                                mode="markers",
-                                name=label,
-                                marker={"color": colour},
-                                showlegend=True,
-                            ),
-                            row=categ + 1,
-                            col=1,
-                        )
-
                     plotlyfig.update_layout(title=title + " : residuals")
 
                 if result.plot_scale in ["loglog", "logx"]:
@@ -641,11 +603,12 @@ class Plot:
 
         return html_fname
 
+    @classmethod
     def _create_empty_residuals_plot_spinw(
-        self, first_result, categories, n_plots_per_row
+        cls, first_result, categories, n_plots_per_row
     ):
         """
-        Helper function to create the initially empty residuals_plot
+        Helper function to create the initially empty residuals plot
         for spinw problems .
         """
         subplot_titles = [
@@ -672,4 +635,46 @@ class Plot:
             if a.text in row_titles
             else ()
         )
+        return plotlyfig
+
+    @classmethod
+    def _add_traces_to_fig(
+        cls, plotlyfig, result, n_plots_per_row, colour, categ
+    ):
+        """
+        Helper function to add traces to the empty residuals plot figure.
+        """
+        minim = result.minimizer
+
+        label = f" {minim} (best fit)" if result.is_best_fit else f" {minim}"
+        if n_plots_per_row > 1:
+            data_len = int(len(result.data_y) / n_plots_per_row)
+            for i in range(n_plots_per_row):
+                plotlyfig.add_trace(
+                    go.Scatter(
+                        x=result.spinw_plot_info["ebin_cens"],
+                        y=result.r_x[(data_len * i) : (data_len * (i + 1))],
+                        mode="markers",
+                        name=label,
+                        marker={"color": colour},
+                        showlegend=i == 0,
+                        legendgroup=f"group{categ + 1}-{minim}",
+                    ),
+                    row=categ + 1,
+                    col=i + 1,
+                )
+        else:
+            plotlyfig.add_trace(
+                go.Scatter(
+                    x=result.data_x[result.sorted_index],
+                    y=result.r_x[result.sorted_index],
+                    mode="markers",
+                    name=label,
+                    marker={"color": colour},
+                    showlegend=True,
+                ),
+                row=categ + 1,
+                col=1,
+            )
+
         return plotlyfig
