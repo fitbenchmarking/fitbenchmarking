@@ -576,7 +576,7 @@ class Plot:
         for categ, (results) in enumerate(categories.values()):
             for result, colour in zip(results, plotly_colours):
                 if result.params is not None:
-                    plotlyfig = cls._add_traces_to_fig(
+                    plotlyfig = cls._add_residual_traces_to_fig(
                         plotlyfig, result, n_plots_per_row, colour, categ
                     )
                     plotlyfig.update_layout(title=title + " : residuals")
@@ -638,7 +638,7 @@ class Plot:
         return plotlyfig
 
     @classmethod
-    def _add_traces_to_fig(
+    def _add_residual_traces_to_fig(
         cls, plotlyfig, result, n_plots_per_row, colour, categ
     ):
         """
