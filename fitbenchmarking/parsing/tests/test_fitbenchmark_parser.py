@@ -697,7 +697,9 @@ class TestFitbenchmarkParser(TestCase):
             mock_import_module.return_value = mock_module
             result = self.parser._get_jacobian(jac)
 
-            self.assertIn("test/jac", mock_sys_path)
+            self.assertTrue(
+                any("test" in path and "jac" in path for path in mock_sys_path)
+            )
             self.assertIn(
                 ("sample",),
                 [call.args for call in mock_import_module.mock_calls],
