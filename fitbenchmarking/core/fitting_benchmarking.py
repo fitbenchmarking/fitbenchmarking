@@ -668,7 +668,6 @@ class Fit:
 
         error_from_check_grad = check_grad(func, jac, params)
         normalized_error = error_from_check_grad / max_range
-        print(normalized_error)
 
         if normalized_error > 10**-3:
             LOGGER.warning(
