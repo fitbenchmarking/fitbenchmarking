@@ -5,7 +5,10 @@ Installing Matlab through WSL in a Linux environment
 ####################################################
 
 There are a couple of ways to install MATLAB through WSL in a Linux environment, one of which requires X11 Forwarding, 
-while the other doesn't require a graphical interface.
+while the other doesn't require a graphical interface. 
+
+Note that these instructions assume that WSL is running a Ubuntu/Debian based system, and using a bash shell. The user 
+should follow the equivalent steps for their setup if it differs.
 
 
 .. _with_x11_forwarding:
@@ -31,7 +34,8 @@ to make sure there is no need to repeat the process in the future). Specifically
 set by running, e.g., ``export DISPLAY=:0``, and the environment variable ``LIBGL_ALWAYS_INDIRECT`` must be set to 1.
 
 At this point, X11 Forwarding can be tested by running ``xeyes`` from the WSL Linux environment, which should cause a pop-up with a 
-pair of eyes to appear. If ``xeyes`` does not work, it will be necessary to follow these steps:
+pair of eyes to appear. ``xeyes`` can be installed by running ``sudo apt install x11-apps`` . If ``xeyes`` does not work, it will 
+be necessary to follow these steps:
 
 #. Navigate to Control Panel > System and Security > Defender Firewall > Advanced settings > Inbound rules. 
 #. Here, there should be two rules with the name "VcXsrv windows server" marked as Public. If these have red stop signs next to them, 
@@ -48,8 +52,20 @@ in `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-con
 version of MATLAB being downloaded is compatible with the Python version being used, by referring to 
 `<https://uk.mathworks.com/support/requirements/python-compatibility.html>`_. 
 
+If the user finds difficulty downloading the MALTAB Linux version from a Windows machine at the link provided in the MathWorks 
+instructions, then the other option would be to do so by using a browser on WSL. 
+
+Assuming one is able to download the MATLAB installation compressed files on the Windows machine, it will be necessary to copy the  
+folder to the WSL environment and unzip it there. On WSL, the user should be able to access their Windows system through a command  
+like ``cd /mnt/c/Users/<windows.username>/`` and then use the command ``cp`` to copy the compressed folder across to the desired 
+location on WSL. We recommend creating a dedicated folder on WSL where to unzip it. Then, the compressed file can be unzipped using 
+a command like ``unzip compressed_file.zip -d destination_folder``. The ``unzip`` command can be installed with 
+``sudo apt-get install unzip``.
+
 After running ``sudo ./install`` from the MATLAB folder (as suggested in the MathWorks instructions), the graphical interface 
 will open. Here, the user is asked to select a suitable folder for the MATLAB installation. Let's call this path `<matlabroot>`. 
+Next, it will be necessary to select the toolboxes to include in the installation, and here the following 
+should be ticked: MATLAB, Curve Fitting Toolbox, Optimization Toolbox, and Statistics and Machine Learning Toolbox.
 In the last window, before the installation starts, there will be a question on whether to create symbolic links and where. 
 That box should be ticked, and the path provided there should correspond to the previously used `<matlabroot>`.
 
