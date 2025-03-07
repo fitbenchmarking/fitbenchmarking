@@ -67,8 +67,10 @@ a command like ``unzip compressed_file.zip -d destination_folder``. The ``unzip`
 As suggested in the MathWorks instructions, the user should run the install script from the installation folder using sudo. 
 Running install using sudo will allow MATLAB to be installed in the default path `/usr/local/`. Once the graphical interface has 
 opened, the user is asked the confirm (or change) this path. Let's call this path `<matlabroot>`. 
+
 Next, it will be necessary to select the toolboxes to include in the installation, and the following should be ticked: 
 MATLAB, Curve Fitting Toolbox, Optimization Toolbox, and Statistics and Machine Learning Toolbox.
+
 In the last window, before the installation starts, there will be a question on whether to create symbolic links and where. 
 Ticking that box is needed if the selected `<matlabroot>` does not correspond to the default `/usr/local/`, and the path 
 provided there should correspond to the previously used `<matlabroot>`.
