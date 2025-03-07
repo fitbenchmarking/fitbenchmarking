@@ -44,20 +44,29 @@
                                 </tr>
                                 <!-- Functions Section -->
                                 <tr>
-                                    <td class="heading" colspan="2">Functions</td>
+                                    <td class="heading" colspan="2">Function</td>
                                 </tr>
                                 <tr>
                                     <td class="label">Form</td>
                                     <td>{{ equation }}</td>
                                 </tr>
+                                <!-- Initial Parameters Section -->
                                 <tr>
-                                    <td class="label">Initial Parameters</td>
-                                    {% if list_params %}
-                                        <td>{{ initial_guess }}</td>
-                                    {% else %}
-                                        <td>Too many parameters to display</td>
-                                    {% endif %}
+                                    <td class="heading" colspan="2">Initial Parameters</td>
                                 </tr>
+                                {% if list_params %}
+                                    {% for param in initial_guess.split(", ") %}
+                                        {% set key, value = param.split("=") %}
+                                        <tr>
+                                            <td class="label">{{ key.strip() }}</td>
+                                            <td>{{ value.strip() }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="2">Too many parameters to display</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                         <div class="row">
@@ -81,54 +90,79 @@
                     <br>
                     <table class="simple-table">
                         <colgroup>
-                            <col width="30%" />
-                            <col width="70%" />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="25%" />
                         </colgroup>
                         <tbody valign="top">
                             <!-- Summary Section -->
                             <tr>
-                                <td class="heading" colspan="2">Summary</td>
+                                <td class="heading" colspan="4">Summary</td>
                             </tr>
                             <tr>
                                 <td class="label">Minimizer</td>
-                                <td>{{ minimizer }}</td>
+                                <td colspan="3">{{ minimizer }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Accuracy</td>
-                                <td>{{ accuracy }}</td>
+                                <td colspan="3">{{ accuracy }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Runtime</td>
-                                <td>{{ runtime }} seconds</td>
+                                <td colspan="3">{{ runtime }} seconds</td>
                             </tr>
                             <tr>
                                 <td class="label">Energy Usage</td>
-                                <td>{{ energy }}</td>
+                                <td colspan="3">{{ energy }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Number of iterations</td>
-                                <td>{{ iteration_count }}</td>
+                                <td colspan="3">{{ iteration_count }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Number of function evaluations</td>
-                                <td>{{ func_evals }}</td>
+                                <td colspan="3">{{ func_evals }}</td>
                             </tr>
                             <!-- Functions Section -->
                             <tr>
-                                <td class="heading" colspan="2">Functions</td>
+                                <td class="heading" colspan="4">Function</td>
                             </tr>
                             <tr>
                                 <td class="label">Form</td>
-                                <td>{{ equation }}</td>
+                                <td colspan="3">{{ equation }}</td>
+                            </tr>
+                            <!-- Parameters Section -->
+                            <tr>
+                                <td class="heading" colspan="4">Parameters</td>
                             </tr>
                             <tr>
-                                <td class="label">Fitted Parameters</td>
-                                {% if list_params %}
-                                    <td>{{ min_params }}</td>
-                                {% else %}
-                                    <td>Too many parameters to display</td>
-                                {% endif %}
+                                <td class="subheading">Name</td>
+                                <td class="subheading">Initial value</td>
+                                <td class="subheading">Fitted value</td>
+                                <td class="subheading">Change (Δ)</td>
                             </tr>
+
+                            {% if list_params %}
+                                {% set initial_list = initial_guess.split(", ") %}
+                                {% set fitted_list = min_params.split(", ") %}
+
+                                {% for init in initial_list %}
+                                    {% set fit = fitted_list[loop.index0] %}
+                                    {% set init_key, init_value = init.split("=") %}
+                                    {% set fit_key, fit_value = fit.split("=") %}
+                                    <tr>
+                                        <td class="label">{{ init_key.strip() }}</td>
+                                        <td>{{ init_value.strip() }}</td>
+                                        <td>{{ fit_value.strip() }}</td>
+                                        <td>{{ fit_value.strip()|float - init_value.strip()|float }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="4">Too many parameters to display</td>
+                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                     <div align="center" class="figure align-center">

@@ -433,6 +433,10 @@ class DashPerfProfile:
         self.group_label = group_label
         self.id = self.group_label + "-" + self.profile_name
 
+        dash_not_allowed_characters = [".", "{"]
+        for character in dash_not_allowed_characters:
+            self.id = self.id.replace(character, "")
+
         self.default_opt = []
         for solver in self.data.columns:
             self.default_opt.append({"value": solver, "label": solver})

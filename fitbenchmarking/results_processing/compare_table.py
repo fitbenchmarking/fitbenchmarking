@@ -119,13 +119,15 @@ class CompareTable(Table):
         )
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Override vals_to_colour to allow it to run for both accuracy and
         runtime.
 
         :param vals: The relative values to get the colours for
         :type vals: list[list[float, float]]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping
@@ -139,10 +141,10 @@ class CompareTable(Table):
         """
         acc, runtime = zip(*vals)
         acc_colours, acc_text = Table.vals_to_colour(
-            acc, cmap, cmap_range, log_ulim
+            acc, flags, cmap, cmap_range, log_ulim
         )
         runtime_colours, runtime_text = Table.vals_to_colour(
-            runtime, cmap, cmap_range, log_ulim
+            runtime, flags, cmap, cmap_range, log_ulim
         )
         background_col = zip(acc_colours, runtime_colours)
         foreground_text = zip(acc_text, runtime_text)

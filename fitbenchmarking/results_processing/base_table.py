@@ -281,7 +281,11 @@ class Table:
             error_str = self.get_error_str(
                 result, error_template="<sup>{}</sup>"
             )
-            if "inf" in val_str and self.table_name != "local_min_table.":
+            if (
+                "inf" in val_str
+                and self.table_name != "local_min_table."
+                and "2" not in error_str
+            ):
                 val_str = f'<span class="blank">Error {error_str}</span>'
             elif "N/A" in val_str:
                 val_str = '<span class="blank">N/A</span>'
@@ -338,6 +342,7 @@ class Table:
         :rtype: tuple[list[str], list[str]]
         """
         values = [self.get_value(r)[0] for r in results]
+        flags = [r.error_flag for r in results]
 
         cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
@@ -348,7 +353,7 @@ class Table:
         col_strs = ["background-colour: #ffffff" for _ in results]
 
         colours, text_str = self.vals_to_colour(
-            values, cmap, cmap_range, log_ulim
+            values, flags, cmap, cmap_range, log_ulim
         )
         for i, c in enumerate(colours):
             try:
@@ -582,7 +587,7 @@ class Table:
         self._file_path = value
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Converts an array of values to a list of hexadecimal colour
         strings using logarithmic sampling from a matplotlib colourmap
@@ -590,6 +595,8 @@ class Table:
 
         :param vals: values in the range [0, 1] to convert to colour strings
         :type vals: list[float]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping
@@ -605,7 +612,7 @@ class Table:
         log_vals = np.log10(vals)
         log_llim = min(log_vals)
         if np.isinf(log_llim):
-            norm_vals = np.repeat(np.nan, len(vals))
+            norm_vals = np.repeat(1, len(vals))
         else:
             norm_vals = (log_vals - log_llim) / (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
@@ -614,9 +621,9 @@ class Table:
         rgba = cmap(norm_vals)
         hex_strs = [
             mpl.colors.to_hex("whitesmoke")
-            if np.isinf(v)
+            if np.isinf(v) and f != 2
             else mpl.colors.rgb2hex(colour)
-            for colour, v in zip(rgba, vals)
+            for colour, v, f in zip(rgba, vals, flags)
         ]
         text_str = [
             background_to_text(colour[:3], CONTRAST_RATIO_AAA)
