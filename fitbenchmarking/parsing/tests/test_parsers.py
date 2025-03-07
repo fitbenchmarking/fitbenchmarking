@@ -91,6 +91,7 @@ def generate_test_cases():
             "hogben",
             "mantiddev",
             "bal",
+            "sscanss",
         ]
     elif TEST_TYPE == "default":
         formats = ["nist"]
@@ -207,7 +208,7 @@ class TestParsers:
         assert test_file is not None, f"No test file for {file_format}"
 
         with open(test_file, encoding="utf-8") as f:
-            if f.readline() == "NA":
+            if f.readline().strip() == "NA":
                 # Test File cannot be written
                 return
 
@@ -230,6 +231,9 @@ class TestParsers:
         # Test parse
         with parser(test_file, OPTIONS) as p:
             fitting_problem = p.parse()
+
+        if isinstance(fitting_problem, list):
+            fitting_problem = fitting_problem[0]
 
         # Allow for problems not supporting certain test cases
         # (e.g. value_ranges)
@@ -323,6 +327,9 @@ class TestParsers:
             parser = ParserFactory.create_parser(f)
             with parser(f, OPTIONS) as p:
                 fitting_problem = p.parse()
+
+            if isinstance(fitting_problem, list):
+                fitting_problem = fitting_problem[0]
 
             for r in tests:
                 # for problems with too many params to type out individually
@@ -480,7 +487,7 @@ class TestParsers:
         :type test_file: string
         """
         with open(test_file, encoding="utf-8") as f:
-            if f.readline() == "NA":
+            if f.readline().strip() == "NA":
                 # Skip the test files with no data
                 return
 
@@ -518,8 +525,8 @@ class TestParserFactory(TestCase):
         """
         Tests the parse_problem_file method
         """
-        filename = Path(__file__).parent / "nist" / "basic.dat"
-        fitting_problem = parse_problem_file(filename, OPTIONS)
+        filename = os.path.join(os.path.dirname(__file__), "nist", "basic.dat")
+        fitting_problem = parse_problem_file(filename, OPTIONS)[0]
         self.assertEqual(fitting_problem.name, "basic")
 
 
