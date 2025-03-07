@@ -541,7 +541,7 @@ class Plot:
         Create a comparison plot showing residuals for all fits,
         while emphasizing the residuals for the best fit .
 
-        :param categories: The results to plot sorted into colour groups
+        :param categories: The results to plot
         :type categories: dict[str, list[FittingResults]]
         :param title: A title for the graph
         :type title: str
@@ -563,7 +563,7 @@ class Plot:
         if first_result.spinw_plot_info is not None:
             n_plots_per_row = first_result.spinw_plot_info["n_cuts"]
             plotlyfig = cls._create_empty_residuals_plot_spinw(
-                first_result, categories, n_plots_per_row
+                categories, n_plots_per_row
             )
         else:
             n_plots_per_row = 1
@@ -573,13 +573,13 @@ class Plot:
                 subplot_titles=list(categories.keys()),
             )
 
-        for categ, (results) in enumerate(categories.values()):
+        for row_ind, (results) in enumerate(categories.values(), 1):
             for result, colour in zip(results, plotly_colours):
                 if result.params is not None:
                     plotlyfig = cls._add_residual_traces_to_fig(
-                        plotlyfig, result, n_plots_per_row, colour, categ
+                        plotlyfig, result, n_plots_per_row, colour, row_ind
                     )
-                    plotlyfig.update_layout(title=title + " : residuals")
+                    plotlyfig.update_layout(title=title + ": residuals")
 
                 if result.plot_scale in ["loglog", "logx"]:
                     plotlyfig.update_xaxes(type="log")
@@ -604,25 +604,32 @@ class Plot:
         return html_fname
 
     @classmethod
-    def _create_empty_residuals_plot_spinw(
-        cls, first_result, categories, n_plots_per_row
-    ):
+    def _create_empty_residuals_plot_spinw(cls, categories, n_plots_per_row):
         """
         Helper function to create the initially empty residuals plot
-        for spinw problems .
+        for spinw problems.
+
+        :param categories: The results to plot
+        :type categories: dict[str, list[FittingResults]]
+        :param n_plots_per_row: Number of subplots in each row
+        :type n_plots_per_row: integer
+
+        :return: The produced plotly figure
+        :rtype: plotly.graph_objects.Figure
         """
+        first_result = next(iter(categories.values()))[0]
+
         subplot_titles = [
             f"{i} Å<sup>-1</sup>"
             for i in first_result.spinw_plot_info["q_cens"]
         ]
         row_titles = list(categories.keys())
-        n_categories = len(row_titles)
 
         plotlyfig = make_subplots(
-            rows=n_categories,
+            rows=len(categories),
             cols=n_plots_per_row,
             row_titles=row_titles,
-            subplot_titles=subplot_titles * n_categories,
+            subplot_titles=subplot_titles * len(categories),
         )
 
         data_len = int(len(first_result.data_y) / n_plots_per_row)
@@ -639,10 +646,25 @@ class Plot:
 
     @classmethod
     def _add_residual_traces_to_fig(
-        cls, plotlyfig, result, n_plots_per_row, colour, categ
+        cls, plotlyfig, result, n_plots_per_row, colour, row_ind
     ):
         """
         Helper function to add traces to the empty residuals plot figure.
+
+        :param plotlyfig: The plotly figure to add the traces to
+        :type plotlyfig: plotly.graph_objects.Figure
+        :param result: The result we want to add the trace for
+        :type result: FittingResult
+        :param n_plots_per_row: number of subplots per row
+        :type n_plots_per_row: integer
+        :param colour: The colour for the minimizer we are plotting
+        :type colour: str
+        :param row_ind: The index of the row in the plot we are adding
+                        traces to
+        :type row_ind:  integer
+
+        :return: The updated plot
+        :rtype: plotly.graph_objects.Figure
         """
         minim = result.minimizer
 
@@ -658,9 +680,9 @@ class Plot:
                         name=label,
                         marker={"color": colour},
                         showlegend=i == 0,
-                        legendgroup=f"group{categ + 1}-{minim}",
+                        legendgroup=f"group{row_ind}-{minim}",
                     ),
-                    row=categ + 1,
+                    row=row_ind,
                     col=i + 1,
                 )
         else:
@@ -673,7 +695,7 @@ class Plot:
                     marker={"color": colour},
                     showlegend=True,
                 ),
-                row=categ + 1,
+                row=row_ind,
                 col=1,
             )
 
