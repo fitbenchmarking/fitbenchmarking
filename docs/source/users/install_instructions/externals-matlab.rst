@@ -25,8 +25,8 @@ Enabling X11 Forwarding
 To check whether X11 Forwarding is already enabled, run ``xeyes`` from the WSL Linux environment. ``xeyes`` can be installed  
 through the command ``sudo apt install x11-apps`` and running ``xeyes`` should cause a pop-up with a pair of eyes to appear.
 
-If X11 Forwarding is not already enabled, install VcXsrv on your Windows machine (you can find installation instructions at 
- `<https://vcxsrv.com/>`_) and follow these steps to enable it:
+If X11 Forwarding is not already enabled, install VcXsrv on your Windows machine 
+(you can find installation instructions at `<https://vcxsrv.com/>`_) and follow these steps to enable it:
 
 #. Start XLaunch.
 #. Click "Next" till the window "Extra settings".
@@ -58,8 +58,8 @@ If the user finds difficulty downloading the MALTAB Linux version from a Windows
 instructions, then the other option would be to do so by using a browser on WSL. 
 
 Assuming the user is able to download the MATLAB installation compressed files on the Windows machine, it will be necessary to copy the  
-folder to the WSL environment and unzip it there. On WSL, the user should be able to access their Windows system through a command  
-like ``cd /mnt/c/Users/<windows.username>/`` and then use the command ``cp`` to copy the compressed folder across to the desired 
+folder to the WSL environment and unzip it there. On WSL, the user should be able to access their Windows system  at the path 
+`/mnt/c/Users/<windows.username>/` and then use the command ``cp`` to copy the compressed folder across to the desired 
 location on WSL. We recommend creating a dedicated folder on WSL where to unzip it. Then, the compressed file can be unzipped using 
 a command like ``unzip compressed_file.zip -d destination_folder``. The ``unzip`` command can be installed with 
 ``sudo apt-get install unzip``.
