@@ -24,6 +24,7 @@ class MantidDevParser(FitbenchmarkParser):
     """
     Parser for a Mantid problem definition file.
     """
+
     _PARAM_IGNORE_LIST = ["name"]
 
     def __init__(self, filename, options):

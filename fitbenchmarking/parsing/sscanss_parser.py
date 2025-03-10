@@ -39,13 +39,13 @@ class SScanSSParser(FitbenchmarkParser):
             fp = FittingProblem(self.options)
             fp.multifit = template.multifit
             fp.name = (
-                f"{template.name} - target {i+1}"
+                f"{template.name} - target {i + 1}"
                 if len(targets) > 1
                 else template.name
             )
             fp.description = (
-                f'{template.description.rstrip().rstrip(".")}. '
-                f'This problem is associated with target {i+1}.'
+                f"{template.description.rstrip().rstrip('.')}. "
+                f"This problem is associated with target {i + 1}."
             )
             fp.function = self.inverse_kinematics_error(robot, t)
             fp.format = template.format
