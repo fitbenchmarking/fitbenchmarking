@@ -114,7 +114,7 @@ class HoraceParser(FitbenchmarkParser):
                 eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
 
         # Save cuts
-        new_path = data_file_path.split(".mat")[0] + "_cuts.mat"
+        new_path = str(data_file_path).split(".mat")[0] + "_cuts.mat"
         eng.evalc(f"save('{new_path}', 'w')")
         return new_path
 
