@@ -166,9 +166,9 @@ class FitbenchmarkParser(Parser):
         """
         return [
             {
-                name: val
-                for name, val in self._parsed_func[0].items()
-                if name not in self._PARAM_IGNORE_LIST
+                key: val
+                for key, val in self._parsed_func[0].items()
+                if key not in self._PARAM_IGNORE_LIST
             }
         ]
 
