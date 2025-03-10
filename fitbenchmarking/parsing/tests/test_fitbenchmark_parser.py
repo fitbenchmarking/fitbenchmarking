@@ -626,6 +626,7 @@ class TestFitbenchmarkParser(TestCase):
         Verifies the output of _get_starting_values() method.
         """
         self.parser._parsed_func = parsed_func
+        self.parser._PARAM_IGNORE_LIST = ["name"]
         assert self.parser._get_starting_values() == expected
 
     @parameterized.expand(
@@ -774,6 +775,7 @@ class TestFitbenchmarkParser(TestCase):
         mock_create_function.return_value = ["mock_function"]
 
         self.parser.options = Options()
+        self.parser._PARAM_IGNORE_LIST = ["name"]
         result = self.parser.parse()
 
         # Verify all the parameters are set correctly
