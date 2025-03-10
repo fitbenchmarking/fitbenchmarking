@@ -107,6 +107,8 @@ class FitbenchmarkParser(Parser):
         :return: True if the problem is a multi fit problem.
         :rtype: bool
         """
+        if "input_file" not in self._entries:
+            return False
         return self._entries["input_file"].startswith("[")
 
     def _is_multistart(self) -> bool:
