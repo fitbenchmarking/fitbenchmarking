@@ -824,6 +824,7 @@ class TestFitbenchmarkParser(TestCase):
         mock_create_function.return_value = ["mock_function"]
 
         self.parser.options = Options()
+        self.parser._PARAM_IGNORE_LIST = ["name"]
         result = self.parser.parse()
 
         # Verify all the parameters are set correctly
