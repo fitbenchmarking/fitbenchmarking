@@ -86,19 +86,6 @@ class Plot:
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
     def plotly_spinw(self, df, minimizer=None, y_best=None):
-        """
-        Plots the SpinW results along with the data
-
-        :param df: A dataframe holding the data
-        :type df: Pandas dataframe
-        :param minimizer: the minimizer name
-        :type minimizer: str
-        :param y_best: y data for the best minimizer
-        :type y_best: str
-
-        :return: plot created
-        :rtype: plotly figure
-        """
         n_cuts = self.result.spinw_plot_info["n_cuts"]
         titles_with_unit = [
             f"{i} Å<sup>-1</sup>"
