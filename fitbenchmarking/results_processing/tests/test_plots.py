@@ -306,8 +306,8 @@ class PlotTests(unittest.TestCase):
 
     def test_create_empty_residuals_plot_spinw(self):
         """
-        Test that plot_residuals creates correct number of subplots
-        and raises error if data lengths are unexpected
+        Test that create_empty_residuals_plot_spinw creates correct
+        number of subplots and raises error if data lengths are unexpected
         """
         result = next(iter(self.fr.values()))[0]
         result.spinw_plot_info = {
