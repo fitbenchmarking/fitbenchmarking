@@ -135,6 +135,12 @@ a {
   color: white;
 }
 
+.simple-table .subheading {
+  font-weight: bold;
+  background-color:#c2bfbf;
+  color: white;
+}
+
 .table-row {
   display: flex;
   flex-wrap: wrap;
