@@ -318,7 +318,6 @@ class PlotTests(unittest.TestCase):
         }
 
         fig = self.plot._create_empty_residuals_plot_spinw(
-            first_result=result,
             categories=self.fr,
             n_plots_per_row=result.spinw_plot_info["n_cuts"],
         )
@@ -331,7 +330,6 @@ class PlotTests(unittest.TestCase):
 
         with self.assertRaises(PlottingError):
             self.plot._create_empty_residuals_plot_spinw(
-                first_result=result,
                 categories=self.fr,
                 n_plots_per_row=result.spinw_plot_info["n_cuts"],
             )
