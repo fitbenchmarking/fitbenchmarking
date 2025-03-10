@@ -593,15 +593,14 @@ class Plot:
     @classmethod
     def _create_empty_residuals_plot_spinw(cls, categories, n_plots_per_row):
         """
-        Helper function to create the initially empty residuals plot
-        for spinw problems.
+        Creates the initially empty residuals plot for spinw problems.
 
         :param categories: The results to plot
         :type categories: dict[str, list[FittingResults]]
         :param n_plots_per_row: Number of subplots in each row
-        :type n_plots_per_row: integer
+        :type n_plots_per_row: int
 
-        :return: The produced plotly figure
+        :return: The produced figure
         :rtype: plotly.graph_objects.Figure
         """
         first_result = next(iter(categories.values()))[0]
@@ -623,7 +622,7 @@ class Plot:
         if data_len != len(first_result.spinw_plot_info["ebin_cens"]):
             raise PlottingError("x and y data lengths are not the same")
 
-        # Place the name of the cost function on the left hand side
+        # Place name of cost function on left hand side of figure
         plotlyfig.for_each_annotation(
             lambda a: a.update(x=-0.08, textangle=-90)
             if a.text in row_titles
@@ -636,21 +635,20 @@ class Plot:
         cls, plotlyfig, result, n_plots_per_row, colour, row_ind
     ):
         """
-        Helper function to add traces to the empty residuals plot figure.
+        Adds traces to the empty residuals plot figure.
 
         :param plotlyfig: The plotly figure to add the traces to
         :type plotlyfig: plotly.graph_objects.Figure
-        :param result: The result we want to add the trace for
+        :param result: Result we want to add the trace for
         :type result: FittingResult
         :param n_plots_per_row: number of subplots per row
-        :type n_plots_per_row: integer
-        :param colour: The colour for the minimizer we are plotting
+        :type n_plots_per_row: int
+        :param colour: Colour for the minimizer we are plotting
         :type colour: str
-        :param row_ind: The index of the row in the plot we are adding
-                        traces to
-        :type row_ind:  integer
+        :param row_ind: Index of the row we are adding traces to
+        :type row_ind: int
 
-        :return: The updated plot
+        :return: Updated plot
         :rtype: plotly.graph_objects.Figure
         """
         minim = result.minimizer
