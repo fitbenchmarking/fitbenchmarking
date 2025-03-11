@@ -209,13 +209,7 @@ class MantidDevParser(FitbenchmarkParser):
         :return: A list of ties used for a mantid fit function.
         :rtype: list
         """
-        ties = []
-        if "ties" in self._entries:
-            for t in self._entries["ties"].split(","):
-                # Strip out these chars
-                t = re.sub(r"[\[\]\"\' ]", "", t)
-                ties.append(t)
-        return ties
+        return re.findall(r"['\"](.*?)['\"]", self._entries.get("ties", ""))
 
     def _parse_function(self, *args, **kwargs):
         """
