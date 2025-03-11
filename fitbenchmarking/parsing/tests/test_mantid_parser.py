@@ -168,7 +168,12 @@ class TestMantidParser(TestCase):
         """
         Set up resources before each test case.
         """
-        path = Path(__file__).parent / "mantid" / "basic.txt"
+        path = (
+            Path("examples")
+            / "benchmark_problems"
+            / "MultiFit"
+            / "basic_multifit.txt"
+        )
         mantid_parser_cls = ParserFactory.create_parser(path)
         with patch.object(mantid_parser_cls, "__init__", lambda a, b, c: None):
             self.parser = mantid_parser_cls("test_file.txt", {"parse"})
