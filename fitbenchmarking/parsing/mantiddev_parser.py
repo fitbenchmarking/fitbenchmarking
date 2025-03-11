@@ -10,6 +10,7 @@ speed.
 """
 
 import re
+from itertools import repeat
 from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
@@ -183,7 +184,6 @@ class MantidDevParser(FitbenchmarkParser):
         :type fit_ranges: list
         """
         if self.fitting_problem.multifit:
-            num_files = len(data_points)
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]
             self.fitting_problem.data_e = [
@@ -191,7 +191,7 @@ class MantidDevParser(FitbenchmarkParser):
             ]
 
             if not fit_ranges:
-                fit_ranges = [{} for _ in range(num_files)]
+                fit_ranges = list(repeat({}, len(data_points)))
 
             self.fitting_problem.start_x = [
                 f["x"][0] if "x" in f else None for f in fit_ranges

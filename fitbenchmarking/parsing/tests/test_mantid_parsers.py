@@ -1,5 +1,5 @@
 """
-This file contains unit tests for the mantid and mantid parser.
+This file contains unit tests for the mantid and mantiddev parser.
 """
 
 from pathlib import Path
@@ -156,6 +156,51 @@ class TestMantidDevParser(TestCase):
             self.parser._starting_values == self.parser._get_starting_values()
         )
         assert self.parser._equation == self.parser._get_equation()
+
+    @parameterized.expand(
+        [
+            (
+                [{"x": [2, 8]}],
+                [2],
+                [8],
+            ),
+            (
+                [],
+                [None, None],
+                [None, None],
+            ),
+        ]
+    )
+    def test_set_data_points(self, fit_ranges, start_x, end_x):
+        """
+        Verifies the outputs of _set_data_points() method.
+        """
+        self.parser._filename = (
+            Path("examples")
+            / "benchmark_problems"
+            / "MultiFit"
+            / "basic_multifit.txt"
+        )
+        self.parser._entries = {
+            "input_file": "['basic1.txt','basic2.txt']",
+        }
+        self.parser.fitting_problem = FittingProblem(Options())
+        self.parser.fitting_problem.multifit = True
+        data_points = [
+            self.parser._get_data_points(p)
+            for p in self.parser._get_data_file()
+        ]
+        self.parser._set_data_points(data_points, fit_ranges)
+        assert len(self.parser.fitting_problem.data_x) == 2
+        assert len(self.parser.fitting_problem.data_x[0]) == 18
+        assert len(self.parser.fitting_problem.data_x[1]) == 18
+        assert len(self.parser.fitting_problem.data_y) == 2
+        assert len(self.parser.fitting_problem.data_y[0]) == 18
+        assert len(self.parser.fitting_problem.data_y[1]) == 18
+        assert len(self.parser.fitting_problem.data_e) == 2
+        assert self.parser.fitting_problem.data_e == [None, None]
+        assert self.parser.fitting_problem.start_x == start_x
+        assert self.parser.fitting_problem.end_x == end_x
 
 
 @run_for_test_types(TEST_TYPE, "all")
