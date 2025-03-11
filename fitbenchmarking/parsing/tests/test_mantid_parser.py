@@ -10,7 +10,9 @@ from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import ParserFactory
+from fitbenchmarking.utils.options import Options
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -33,31 +35,48 @@ class TestMantidDevParser(TestCase):
             (
                 {"ties": "['A1']"},
                 ["A1"],
+                True,
             ),
             (
                 {"ties": '["A1"]'},
                 ["A1"],
+                True,
             ),
             (
                 {"ties": "['f1.Sigma', 'f1.Frequency']"},
                 ["f1.Sigma", "f1.Frequency"],
+                True,
             ),
             (
                 {"ties": '["f1.Sigma", "f1.Frequency"]'},
                 ["f1.Sigma", "f1.Frequency"],
+                True,
             ),
             (
                 {},
                 [],
+                True,
+            ),
+            (
+                {},
+                {},
+                False,
             ),
         ]
     )
-    def test_parse_ties(self, entries, expected):
+    def test_set_additional_info(self, entries, expected, multifit):
         """
-        Verifies the output of _parse_ties() method.
+        Verifies the output of _set_additional_info() method.
         """
         self.parser._entries = entries
-        assert self.parser._parse_ties() == expected
+        self.parser.fitting_problem = FittingProblem(Options())
+        self.parser.fitting_problem.multifit = multifit
+        self.parser._set_additional_info()
+        if multifit:
+            result = self.parser.fitting_problem.additional_info["mantid_ties"]
+            assert result == expected
+        else:
+            assert self.parser.fitting_problem.additional_info == expected
 
     def test_parse_function(self):
         """

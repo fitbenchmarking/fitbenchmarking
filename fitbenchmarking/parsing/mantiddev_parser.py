@@ -38,8 +38,9 @@ class MantidDevParser(FitbenchmarkParser):
         Sets any additional info for a fitting problem.
         """
         if self.fitting_problem.multifit:
-            self.fitting_problem.additional_info["mantid_ties"] = (
-                self._parse_ties()
+            # Sets the ties used for a mantid fit function.
+            self.fitting_problem.additional_info["mantid_ties"] = re.findall(
+                r"['\"](.*?)['\"]", self._entries.get("ties", "")
             )
 
     def _dense_jacobian(self) -> Optional[Callable]:
@@ -201,15 +202,6 @@ class MantidDevParser(FitbenchmarkParser):
 
         else:
             super()._set_data_points(data_points, fit_ranges)
-
-    def _parse_ties(self) -> list:
-        """
-        Returns the ties used for a mantid fit function.
-
-        :return: A list of ties used for a mantid fit function.
-        :rtype: list
-        """
-        return re.findall(r"['\"](.*?)['\"]", self._entries.get("ties", ""))
 
     def _parse_function(self, *args, **kwargs):
         """
