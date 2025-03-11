@@ -64,3 +64,74 @@ class TestMantidDevParser(TestCase):
         Verifies the output of _parse_function() method.
         """
         assert self.parser._parse_function() == []
+
+    @parameterized.expand(
+        [
+            (
+                {
+                    "function": (
+                        "name=LinearBackground,A0=0,A1=0;name=GausOsc"
+                        ",A=0.2,Sigma=0.2,Frequency=1,Phi=0"
+                    )
+                },
+                "CompositeFunction",
+                [
+                    {
+                        "f0.A0": 0.0,
+                        "f0.A1": 0.0,
+                        "f1.A": 0.2,
+                        "f1.Sigma": 0.2,
+                        "f1.Frequency": 1.0,
+                        "f1.Phi": 0.0,
+                    }
+                ],
+            ),
+            (
+                {"function": "name=LinearBackground,A0=0,A1=0"},
+                "LinearBackground",
+                [{"A0": 0.0, "A1": 0.0}],
+            ),
+            (
+                {"function": "name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"},
+                "GausOsc",
+                [{"A": 0.2, "Sigma": 0.2, "Frequency": 1.0, "Phi": 0.0}],
+            ),
+            (
+                {
+                    "function": (
+                        "name=GausOsc,A=0.2,Sigma=0.2,"
+                        "Frequency=1,Phi=0,ties=(Sigma=0.2,Phi=0)"
+                    )
+                },
+                "GausOsc",
+                [{"A": 0.2, "Frequency": 1.0}],
+            ),
+        ]
+    )
+    def test_create_function(self, entries, equation, params):
+        """
+        Verifies the output of _create_function() method.
+        """
+        self.parser._entries = entries
+        func = self.parser._create_function()
+        assert callable(func)
+        assert self.parser._equation == equation
+        assert self.parser._mantid_function.name == equation
+        assert str(self.parser._mantid_function.fun) == entries["function"]
+        assert (
+            str(self.parser._mantid_function.function) == entries["function"]
+        )
+        assert self.parser._starting_values == params
+        assert self.parser._params_dict == params[0]
+
+    def test_get_starting_values_and_get_equation(self):
+        """
+        Verifies the outputs of _get_starting_values()
+        and _get_equation() methods.
+        """
+        self.parser._entries = {"function": "name=LinearBackground,A0=0,A1=0"}
+        _ = self.parser._create_function()
+        assert (
+            self.parser._starting_values == self.parser._get_starting_values()
+        )
+        assert self.parser._equation == self.parser._get_equation()
