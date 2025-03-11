@@ -1,7 +1,8 @@
 """
-This file contains tests for the mantid and mantid parser.
+This file contains unit tests for the mantid and mantid parser.
 """
 
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -9,7 +10,7 @@ from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
-from fitbenchmarking.parsing.mantiddev_parser import MantidDevParser
+from fitbenchmarking.parsing.parser_factory import ParserFactory
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -18,12 +19,20 @@ class TestMantidDevParser(TestCase):
     Unit tests the MantidDevParser class.
     """
 
-    @patch.object(MantidDevParser, "__init__", lambda a, b, c: None)
     def setUp(self):
         """
         Set up resources before each test case.
         """
-        self.parser = MantidDevParser("test_file.txt", {"parse"})
+        path = (
+            Path("examples")
+            / "benchmark_problems"
+            / "Mantid_System_Test_Data"
+            / "osi97935"
+            / "spectrum_0.txt"
+        )
+        mantid_parser_cls = ParserFactory.create_parser(path)
+        with patch.object(mantid_parser_cls, "__init__", lambda a, b, c: None):
+            self.parser = mantid_parser_cls("test_file.txt", {"parse"})
 
     @parameterized.expand(
         [
