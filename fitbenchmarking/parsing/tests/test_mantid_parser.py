@@ -26,9 +26,11 @@ class TestMantidDevParser(TestCase):
         Set up resources before each test case.
         """
         path = Path(__file__).parent / "mantiddev" / "basic.txt"
-        mantid_parser_cls = ParserFactory.create_parser(path)
-        with patch.object(mantid_parser_cls, "__init__", lambda a, b, c: None):
-            self.parser = mantid_parser_cls("test_file.txt", {"parse"})
+        mantiddev_parser_cls = ParserFactory.create_parser(path)
+        with patch.object(
+            mantiddev_parser_cls, "__init__", lambda a, b, c: None
+        ):
+            self.parser = mantiddev_parser_cls("test_file.txt", {"parse"})
 
     @parameterized.expand(
         [
@@ -154,3 +156,35 @@ class TestMantidDevParser(TestCase):
             self.parser._starting_values == self.parser._get_starting_values()
         )
         assert self.parser._equation == self.parser._get_equation()
+
+
+@run_for_test_types(TEST_TYPE, "all")
+class TestMantidParser(TestCase):
+    """
+    Unit tests the MantidParser class.
+    """
+
+    def setUp(self):
+        """
+        Set up resources before each test case.
+        """
+        path = Path(__file__).parent / "mantid" / "basic.txt"
+        mantid_parser_cls = ParserFactory.create_parser(path)
+        with patch.object(mantid_parser_cls, "__init__", lambda a, b, c: None):
+            self.parser = mantid_parser_cls("test_file.txt", {"parse"})
+
+    @parameterized.expand(
+        [
+            ({"function": "name=LinearBackground,A0=0,A1=0"},),
+            ({"function": "name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"},),
+        ]
+    )
+    def test_set_additional_info(self, entries):
+        """
+        Verifies the output of _set_additional_info() method.
+        """
+        self.parser._entries = entries
+        self.parser.fitting_problem = FittingProblem(Options())
+        self.parser._set_additional_info()
+        e = self.parser.fitting_problem.additional_info["mantid_equation"]
+        assert e == entries["function"]
