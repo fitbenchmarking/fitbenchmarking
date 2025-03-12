@@ -63,19 +63,13 @@ class MantidDevParser(FitbenchmarkParser):
             # currently cannot do Jacobian and multifit
             return None
         # need to trim x data to the correct range for Jacobian
-        i0 = 0
-        iN = len(fp.data_x)
-        if fp.start_x:
-            i0 = np.argmax(fp.data_x >= fp.start_x)
-        if fp.end_x:
-            # returns a list of lists if more than one match,
-            # otherwise an int is returned
-            iN = np.where(fp.data_x <= fp.end_x)
-            if not isinstance(iN, int):
-                iN = iN[0][-1]
+        i0 = np.argmax(fp.data_x >= fp.start_x) if fp.start_x else 0
+        # np.where returns a list of lists if more than one match,
+        # otherwise an int is returned
+        iN = np.where(fp.data_x <= fp.end_x) if fp.end_x else len(fp.data_x)
+        iN = iN[0][-1] if not isinstance(iN, int) else iN
 
-        x_data = fp.data_x
-        x_data = x_data[i0 : iN + 1]
+        x_data = fp.data_x[i0 : iN + 1]
 
         # cache the x values for later
         self._cache_x = FDV(x_data)
