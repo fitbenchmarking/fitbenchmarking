@@ -573,8 +573,8 @@ class Plot:
                 if result.plot_scale in ["loglog", "logy"]:
                     plotlyfig.update_yaxes(type="log")
 
-            legend_name = f"legend{row_ind}"
-            plotlyfig.update_traces(row=row_ind, legend=legend_name)
+            if row_ind == 1:
+                plotlyfig.update_traces(row=row_ind)
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
@@ -646,7 +646,7 @@ class Plot:
         """
         minim = result.minimizer
 
-        label = f" {minim} (best fit)" if result.is_best_fit else f" {minim}"
+        label = f" {minim}"
         if n_plots_per_row > 1:
             data_len = int(len(result.data_y) / n_plots_per_row)
             for i in range(n_plots_per_row):
@@ -657,7 +657,7 @@ class Plot:
                         mode="markers",
                         name=label,
                         marker={"color": colour},
-                        showlegend=i == 0,
+                        showlegend=(i == 0 and row_ind == 1),
                         legendgroup=f"group{minim}",
                     ),
                     row=row_ind,
@@ -671,7 +671,7 @@ class Plot:
                     mode="markers",
                     name=label,
                     marker={"color": colour},
-                    showlegend=True,
+                    showlegend=row_ind == 1,
                     legendgroup=f"group{minim}",
                 ),
                 row=row_ind,
