@@ -177,7 +177,7 @@ class MantidDevParser(FitbenchmarkParser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        if self.fitting_problem.multifit:
+        if self._is_multifit():
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]
             self.fitting_problem.data_e = [

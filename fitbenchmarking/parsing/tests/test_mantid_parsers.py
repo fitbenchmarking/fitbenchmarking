@@ -186,7 +186,6 @@ class TestMantidDevParser(TestCase):
             "input_file": "['basic1.txt','basic2.txt']",
         }
         self.parser.fitting_problem = FittingProblem(Options())
-        self.parser.fitting_problem.multifit = True
         data_points = [
             self.parser._get_data_points(p)
             for p in self.parser._get_data_file()
@@ -215,6 +214,22 @@ class TestMantidDevParser(TestCase):
         mock.assert_called_once()
         assert jac is not None
         assert callable(jac)
+
+    @patch.object(FitbenchmarkParser, "_dense_jacobian", return_value=None)
+    def test_dense_jacobian_exception(self, mock):
+        """
+        Verifies _dense_jacobian() returns None when exception
+        is raised.
+        """
+        self.parser._entries = {
+            "input_file": "basic1.txt",
+        }
+        self.parser._params_dict = {}
+        self.parser.fitting_problem = FittingProblem(Options())
+        self.parser.fitting_problem.data_x = [1, 2, 3]
+        self.parser.fitting_problem.data_y = [4, 5, 6]
+        with patch.object(self.parser, "_jacobian", side_effect=RuntimeError):
+            assert self.parser._dense_jacobian() is None
 
 
 @run_for_test_types(TEST_TYPE, "all")
