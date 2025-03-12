@@ -100,10 +100,11 @@ def _create_summary_page(
 
     best_plot_available = []
     best_fits = []
+    fig_start = None
     summary_plot_available = True
-    residuals_plot_available = True
     summary_plot_path = os.path.join("figures", summary_plot_path)
     residuals_plot_path = os.path.join("figures", residuals_plot_path)
+    rerun_make_plots_msg = ""
 
     if options.make_plots:
         for result in results:
@@ -117,12 +118,13 @@ def _create_summary_page(
                 init_success = False
             best_fits.append(fig_fit)
     else:
+        summary_plot_available = False
         best_plot_available = [False] * len(results)
-        fig_start = (
-            "Re-run with make_plots set to yes ",
-            "in the ini file to generate plots.",
+        rerun_make_plots_msg = (
+            "Re-run with make_plots set to yes "
+            "in the ini file to generate plots."
         )
-        best_fits = [fig_start] * len(results)
+        best_fits = [rerun_make_plots_msg] * len(results)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
@@ -143,7 +145,6 @@ def _create_summary_page(
                 custom_style=css["custom"],
                 summary_plot_available=summary_plot_available,
                 summary_plot=summary_plot_path,
-                residuals_plot_available=residuals_plot_available,
                 residuals_plot=residuals_plot_path,
                 title=results[0].name,
                 description=results[0].problem_desc,
@@ -161,6 +162,7 @@ def _create_summary_page(
                 n_params=n_params,
                 list_params=list_params,
                 n_data_points=results[0].get_n_data_points(),
+                rerun_make_plots_msg=rerun_make_plots_msg,
             )
         )
 

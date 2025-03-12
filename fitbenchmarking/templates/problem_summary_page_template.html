@@ -86,42 +86,39 @@
                     <label for="comparison-accordion">Comparison</label>
                 </h2>
                 <div class="content">
-                    {% if best_results|length > 1 %}
+                    {% if summary_plot_available %}
+                        {% if best_results|length > 1 %}
+                            <p>
+                                This plot shows a comparison of the runs across cost
+                                functions. Colours are used to distinguish between fits
+                                obtained using each cost function. Within a cost function,
+                                the minimizer which produced closest fit is in bold and
+                                the other minimizers are shown as thinner dashed lines for context.
+                                <br>Please note that this plot is intended for use as an
+                                indication of the variety of the fits that were obtained
+                                for specific details, please consult the individual support
+                                pages.
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
+                            </div>
+                        {% endif %}
                         <p>
-                            This plot shows a comparison of the runs across cost
-                            functions. Colours are used to distinguish between fits
-                            obtained using each cost function. Within a cost function,
-                            the minimizer which produced closest fit is in bold and
-                            the other minimizers are shown as thinner dashed lines for context.
-                            <br>Please note that this plot is intended for use as an
-                            indication of the variety of the fits that were obtained
-                            for specific details, please consult the individual support
-                            pages.
+                            Below, you can see a plot for each cost function used (one or multiple),
+                            showing the residuals for each fit. Different colours correspond to 
+                            different minimizers. The minimizer that produced the best fit is marked 
+                            in the legend. To be able to compare this to the residuals for other 
+                            minimizers, it might be necessary to click on their names in the legend to 
+                            hide/show the respective data. 
                         </p>
                         <div align="center" class="figure align-center">
-                            {% if summary_plot_available %}
-                        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
-                            {% else %}
-                                <h3>{{ summary_plot }}</h3>
-                            {% endif %}
+                            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
+                        </div>
+                    {% else %}
+                        <div align="center" class="figure align-center">
+                            <h3>{{ rerun_make_plots_msg }}</h3>
                         </div>
                     {% endif %}
-                    <p>
-                        Below, you can see a plot for each cost function used (one or multiple),
-                        showing the residuals for each fit. Different colours correspond to 
-                        different minimizers. The minimizer that produced the best fit is marked 
-                        in the legend. To be able to compare this to the residuals for other 
-                        minimizers, it might be necessary to click on their names in the legend to 
-                        hide/show the respective data. 
-
-                    </p>
-                    <div align="center" class="figure align-center">
-                        {% if residuals_plot_available %}
-		            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
-                        {% else %}
-                            <h3>{{ residuals_plot }}</h3>
-                        {% endif %}
-                    </div>
                 </div>
             </section>
 
@@ -179,7 +176,7 @@
                             {% if best_plots_available[0] %}
 			        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[0] }}"></iframe>
                             {% else %}
-                                <h3>{{ best_plots[0] }}</h3>
+                                <h3>{{ rerun_make_plots_msg }}</h3>
                             {% endif %}
                         </div>
                     </div>
@@ -240,7 +237,7 @@
                                 {% if best_plots_available[loop.index0] %}
 				    <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[loop.index0] }}"></iframe>
                                 {% else %}
-                                    <h3>{{ best_plots[loop.index0] }}</h3>
+                                    <h3>{{ rerun_make_plots_msg }}</h3>
                                 {% endif %}
                             </div>
                         </div>
