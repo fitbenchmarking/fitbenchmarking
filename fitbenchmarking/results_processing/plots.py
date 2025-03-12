@@ -573,15 +573,8 @@ class Plot:
                 if result.plot_scale in ["loglog", "logy"]:
                     plotlyfig.update_yaxes(type="log")
 
-        # Position the legends correctly
-        yaxes_top = {yaxis.domain[1] for yaxis in plotlyfig.select_yaxes()}
-        for row, yaxis_coord in enumerate(sorted(yaxes_top, reverse=True), 1):
-            legend_name = f"legend{row}"
-            plotlyfig.update_layout(
-                {legend_name: {"y": yaxis_coord, "yanchor": "top"}},
-                showlegend=True,
-            )
-            plotlyfig.update_traces(row=row, legend=legend_name)
+            legend_name = f"legend{row_ind}"
+            plotlyfig.update_traces(row=row_ind, legend=legend_name)
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
@@ -665,7 +658,7 @@ class Plot:
                         name=label,
                         marker={"color": colour},
                         showlegend=i == 0,
-                        legendgroup=f"group{row_ind}-{minim}",
+                        legendgroup=f"group{minim}",
                     ),
                     row=row_ind,
                     col=i + 1,
@@ -679,6 +672,7 @@ class Plot:
                     name=label,
                     marker={"color": colour},
                     showlegend=True,
+                    legendgroup=f"group{minim}",
                 ),
                 row=row_ind,
                 col=1,
