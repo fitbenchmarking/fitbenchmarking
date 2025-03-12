@@ -10,6 +10,7 @@ from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
+from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import ParserFactory
 from fitbenchmarking.utils.options import Options
@@ -201,6 +202,19 @@ class TestMantidDevParser(TestCase):
         assert self.parser.fitting_problem.data_e == [None, None]
         assert self.parser.fitting_problem.start_x == start_x
         assert self.parser.fitting_problem.end_x == end_x
+
+    @patch.object(
+        FitbenchmarkParser, "_dense_jacobian", return_value=lambda x: x
+    )
+    def test_dense_jacobian(self, mock):
+        """
+        Verifies _dense_jacobian() returns jac returned by
+        super()._dense_jacobian() if it is not None.
+        """
+        jac = self.parser._dense_jacobian()
+        mock.assert_called_once()
+        assert jac is not None
+        assert callable(jac)
 
 
 @run_for_test_types(TEST_TYPE, "all")
