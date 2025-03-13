@@ -7,7 +7,6 @@ import os
 
 import numpy as np
 import plotly.colors as ptly_colors
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -22,13 +21,6 @@ class Plot:
 
     _data_marker = {"symbol": "x", "color": "black", "opacity": 0.3}
     _best_fit_line = {"dash": "dot", "color": "#6699ff"}
-    _legend_options = {
-        "yanchor": "top",
-        "y": 0.99,
-        "xanchor": "left",
-        "x": 0.01,
-        "bgcolor": "rgba(0,0,0,0.1)",
-    }
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1, "dash": "dash"}
     _starting_guess_plot_line = {"width": 1, "color": "#5F8575"}
@@ -40,6 +32,8 @@ class Plot:
         "width": 4,
         "color": "rgba(0,0,0,0.4)",
     }
+    _SpinW_ax_titles = {"x": "Energy (meV)", "y": "Intensity"}
+    _default_ax_titles = {"x": "x", "y": "y"}
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
@@ -86,131 +80,71 @@ class Plot:
         html_file_name = os.path.join(figures_dir, htmlfile)
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
-    def plotly_spinw(self, df, minimizer=None, y_best=None):
-        n_cuts = self.result.spinw_plot_info["n_cuts"]
-        titles_with_unit = [
-            f"{i} Å<sup>-1</sup>"
-            for i in self.result.spinw_plot_info["q_cens"]
-        ]
-        fig = make_subplots(
-            rows=1,
-            cols=n_cuts,
-            subplot_titles=titles_with_unit,
-        )
-        data_len = int(len(df["y"][df["minimizer"] == "Data"]) / n_cuts)
-        if data_len != len(self.result.spinw_plot_info["ebin_cens"]):
-            raise PlottingError("x and y data lengths are not the same")
-
-        for i in range(n_cuts):
-            fig.update_xaxes(title_text="Energy (meV)", row=1, col=i + 1)
-            fig.update_yaxes(title_text="Intensity", row=1, col=i + 1)
-
-            if minimizer and minimizer not in ["Data", "Starting Guess"]:
-                fig.add_trace(
-                    go.Scatter(
-                        x=self.result.spinw_plot_info["ebin_cens"],
-                        y=df["y"][df["minimizer"] == minimizer][
-                            (data_len * i) : (data_len * (i + 1))
-                        ],
-                        name=minimizer,
-                        line=self._subplots_line,
-                        showlegend=i == 0,
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
-                if not df["best"][df["minimizer"] == minimizer].iloc[0]:
-                    name = f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
-                    fig.add_trace(
-                        go.Scatter(
-                            x=self.result.spinw_plot_info["ebin_cens"],
-                            y=y_best[(data_len * i) : (data_len * (i + 1))],
-                            name=name,
-                            line=self._best_fit_line,
-                            showlegend=i == 0,
-                        ),
-                        row=1,
-                        col=i + 1,
-                    )
-            # plot starting guess if minimizer not provided
-            fig.add_trace(
-                go.Scatter(
-                    x=self.result.spinw_plot_info["ebin_cens"],
-                    y=df["y"][df["minimizer"] == "Starting Guess"][
-                        (data_len * i) : (data_len * (i + 1))
-                    ],
-                    name="Starting Guess",
-                    line=self._starting_guess_plot_line,
-                    showlegend=i == 0,
-                ),
-                row=1,
-                col=i + 1,
-            )
-            # plot data in both cases
-            fig.add_trace(
-                go.Scatter(
-                    x=self.result.spinw_plot_info["ebin_cens"],
-                    y=df["y"][df["minimizer"] == "Data"][
-                        (data_len * i) : (data_len * (i + 1))
-                    ],
-                    mode="markers",
-                    name="Data",
-                    marker=self._data_marker,
-                    showlegend=i == 0,
-                ),
-                row=1,
-                col=i + 1,
-            )
-
-        fig.update_layout(
-            legend={"yanchor": "auto", "y": 0.5, "xanchor": "right", "x": -0.1}
-        )
-        return fig
-
-    def plot_initial_guess(self, df):
+    def plot_initial_guess(self, df_fit):
         """
         Plots the initial guess along with the data and stores in a file
 
-        :param df: A dataframe holding the data
-        :type df: Pandas dataframe
+        :param df_fit: A dataframe holding the data
+        :type df_fit: Pandas dataframe
 
         :return: path to the saved file
         :rtype: str
         """
+        title = self.result.name
+        subplot_titles = None
+        ax_titles = self._default_ax_titles
+        n_plots = 1
+        data_x = df_fit["x"][df_fit["minimizer"] == "Data"]
 
         if self.result.spinw_plot_info is not None:
-            fig = self.plotly_spinw(df)
-        else:
-            # Plotly implementation below
-            fig = px.line(
-                df[df["minimizer"] == "Starting Guess"],
-                x="x",
-                y="y",
-                color="minimizer",
-                title=self.result.name,
-                markers=True,
-            )
-            self._error_dict["array"] = df["e"][df["minimizer"] == "Data"]
-            # add the raw data as a scatter plot
+            n_plots = self.result.spinw_plot_info["n_cuts"]
+            data_x = self.result.spinw_plot_info["ebin_cens"]
+            subplot_titles = self._get_subplot_titles_SpinW(self.result)
+            ax_titles = self._SpinW_ax_titles
+
+        fig = make_subplots(
+            rows=1,
+            cols=n_plots,
+            subplot_titles=subplot_titles,
+        )
+
+        self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
+        data_len = int(
+            len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
+        )
+
+        for i in range(n_plots):
+            # Plot starting guess
             fig.add_trace(
                 go.Scatter(
-                    x=df["x"][df["minimizer"] == "Data"],
-                    y=df["y"][df["minimizer"] == "Data"],
-                    error_y=self._error_dict,
-                    mode="markers",
-                    name="Data",
-                    marker=self._data_marker,
-                )
+                    x=data_x,
+                    y=df_fit["y"][df_fit["minimizer"] == "Starting Guess"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    name="Starting Guess",
+                    line=self._subplots_line,
+                    showlegend=i == 0,
+                    legendgroup="starting-guess",
+                    mode="markers+lines",
+                ),
+                row=1,
+                col=i + 1,
             )
-            fig.update_layout(legend=self._legend_options)
+            self._update_axes_titles(fig, i, ax_titles)
 
-        if self.result.plot_scale in ["loglog", "logx"]:
-            fig.update_xaxes(type="log")
-        if self.result.plot_scale in ["loglog", "logy"]:
-            fig.update_yaxes(type="log")
+        # Add raw data as a scatter plot
+        self._add_data_points(
+            fig,
+            data_x,
+            df_fit["y"][df_fit["minimizer"] == "Data"],
+            self._error_dict,
+            n_plots,
+        )
+
+        fig.update_layout(title=title)
+        self._update_to_logscale_if_needed(fig, self.result)
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
-
         self.write_html_with_link_plotlyjs(
             fig, self.figures_dir, htmlfile, self.options
         )
@@ -233,53 +167,90 @@ class Plot:
         )
         return htmlfile
 
-    def plotly_fit(self, df):
+    def plotly_fit(self, df_fit):
         """
         Uses plotly to plot the calculated fit, along with the best fit.
         Stores the plot in a file
 
-        :param df: A dataframe holding the data
-        :type df: Pandas dataframe
+        :param df_fit: A dataframe holding the data
+        :type df_fit: Pandas dataframe
 
         :return: A dictionary of paths to the saved files
         :rtype: dict[str, str]
         """
         # Plotly implementation below
         htmlfiles = {}
-        x_best = df["x"][df["best"]]
-        y_best = df["y"][df["best"]]
-        x_data = df["x"][df["minimizer"] == "Data"]
-        y_data = df["y"][df["minimizer"] == "Data"]
+        x_best = df_fit["x"][df_fit["best"]]
+        y_best = df_fit["y"][df_fit["best"]]
+        x_data = df_fit["x"][df_fit["minimizer"] == "Data"]
+        y_data = df_fit["y"][df_fit["minimizer"] == "Data"]
         x_start = df[df["minimizer"] == "Starting Guess"]["x"]
         y_start = df[df["minimizer"] == "Starting Guess"]["y"]
-        self._error_dict["array"] = df["e"][df["minimizer"] == "Data"]
+        self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
+        n_plots = 1
+        subplot_titles = None
+        ax_titles = self._default_ax_titles
 
-        for minimizer in df["minimizer"].unique():
-            if minimizer not in ["Data", "Starting Guess"]:
-                if self.result.spinw_plot_info is None:
-                    fig = px.line(
-                        df[df["minimizer"] == minimizer],
-                        x="x",
-                        y="y",
-                        color="minimizer",
-                        title=self.result.name,
-                        markers=True,
+        if self.result.spinw_plot_info is not None:
+            n_plots = self.result.spinw_plot_info["n_cuts"]
+            x_data = x_best = x_minim = self.result.spinw_plot_info[
+                "ebin_cens"
+            ]
+            subplot_titles = self._get_subplot_titles_SpinW(self.result)
+            ax_titles = self._SpinW_ax_titles
+            self._check_spinw_data_len(self.result, len(y_data), n_plots)
+
+        data_len = int(
+            len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
+        )
+        df_fit = df_fit[~df_fit.minimizer.isin(["Data", "Starting Guess"])]
+
+        for minimizer in df_fit["minimizer"].unique():
+            fig = make_subplots(
+                rows=1,
+                cols=n_plots,
+                subplot_titles=subplot_titles,
+            )
+
+            if n_plots == 1:
+                x_minim = df_fit["x"][df_fit["minimizer"] == minimizer]
+
+            for i in range(n_plots):
+                fig.add_trace(
+                    go.Scatter(
+                        x=x_minim,
+                        y=df_fit["y"][df_fit["minimizer"] == minimizer][
+                            (data_len * i) : (data_len * (i + 1))
+                        ],
+                        name=minimizer,
+                        line=self._subplots_line,
+                        showlegend=i == 0,
+                        mode="markers+lines",
+                        legendgroup=minimizer,
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+
+                if not df_fit["best"][df_fit["minimizer"] == minimizer].iloc[
+                    0
+                ]:
+                    # Add the best plot
+                    name = (
+                        "Best Fit "
+                        + f"({df_fit['minimizer'][df_fit['best']].iloc[0]})"
                     )
-                    if not df["best"][df["minimizer"] == minimizer].iloc[0]:
-                        # add the best plot
-                        name = (
-                            f"Best Fit ({df['minimizer'][df['best']].iloc[0]})"
-                        )
-                        fig.add_trace(
-                            go.Scatter(
-                                x=x_best,
-                                y=y_best,
-                                mode="lines",
-                                name=name,
-                                line=self._best_fit_line,
-                            )
-                        )
-                    # add the raw data as a scatter plot
+                    fig.add_trace(
+                        go.Scatter(
+                            x=x_best,
+                            y=y_best[(data_len * i) : (data_len * (i + 1))],
+                            name=name,
+                            line=self._best_fit_line,
+                            showlegend=i == 0,
+                        ),
+                        row=1,
+                        col=i + 1,
+                    )
                     fig.add_trace(
                         go.Scatter(
                             x=x_start,
@@ -289,35 +260,25 @@ class Plot:
                             line=self._starting_guess_plot_line,
                         )
                     )
-                    fig.add_trace(
-                        go.Scatter(
-                            x=x_data,
-                            y=y_data,
-                            error_y=self._error_dict,
-                            mode="markers",
-                            name="Data",
-                            marker=self._data_marker,
-                        )
-                    )
-                    fig.update_layout(legend=self._legend_options)
-                else:
-                    fig = self.plotly_spinw(df, minimizer, y_best)
 
-                if self.result.plot_scale in ["loglog", "logx"]:
-                    fig.update_xaxes(type="log")
-                if self.result.plot_scale in ["loglog", "logy"]:
-                    fig.update_yaxes(type="log")
+                self._update_axes_titles(fig, i, ax_titles)
 
-                htmlfile = (
-                    f"{minimizer}_fit_for_{self.result.costfun_tag}"
-                    f"_{self.result.sanitised_name}.html"
-                )
+            # Add raw data
+            self._add_data_points(
+                fig, x_data, y_data, self._error_dict, n_plots
+            )
+            fig.update_layout(title=self.result.name)
+            self._update_to_logscale_if_needed(fig, self.result)
 
-                self.write_html_with_link_plotlyjs(
-                    fig, self.figures_dir, htmlfile, self.options
-                )
+            htmlfile = (
+                f"{minimizer}_fit_for_{self.result.costfun_tag}"
+                f"_{self.result.sanitised_name}.html"
+            )
+            self.write_html_with_link_plotlyjs(
+                fig, self.figures_dir, htmlfile, self.options
+            )
 
-                htmlfiles[minimizer] = htmlfile
+            htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
 
@@ -333,7 +294,6 @@ class Plot:
         """
 
         par_names = self.result.param_names
-
         fig = make_subplots(
             rows=len(par_names), cols=1, subplot_titles=par_names
         )
@@ -400,139 +360,166 @@ class Plot:
         :rtype: str
         """
 
-        col_vals = np.linspace(0, 1, len(categories))
-        plotly_colours = ptly_colors.sample_colorscale(
-            ptly_colors.sequential.Rainbow, samplepoints=col_vals
-        )
-
+        colours = cls._sample_colours(np.linspace(0, 1, len(categories)))
         first_result = next(iter(categories.values()))[0]
+        n_plots = 1
+        ax_titles = cls._default_ax_titles
+        subplot_titles = None
 
         if first_result.spinw_plot_info is not None:
-            n_plots = first_result.spinw_plot_info["n_cuts"]
-            titles_with_unit = [
-                f"{i} Å<sup>-1</sup>"
-                for i in first_result.spinw_plot_info["q_cens"]
-            ]
-            plotlyfig = make_subplots(
-                rows=1,
-                cols=n_plots,
-                subplot_titles=titles_with_unit,
-            )
-            data_len = int(len(first_result.data_y) / n_plots)
-        else:
-            n_plots = 1
-            plotlyfig = go.Figure()
+            categories = cls._update_data_x_SpinW(categories)
+            subplot_titles = cls._get_subplot_titles_SpinW(first_result)
+            n_plots = len(subplot_titles)
+            ax_titles = cls._SpinW_ax_titles
+
+        fig = make_subplots(
+            rows=1,
+            cols=n_plots,
+            subplot_titles=subplot_titles,
+        )
 
         # Plot data
         if "weighted_nlls" in options.cost_func_type:
             error_y = {
                 "type": "data",
                 "array": first_result.data_e,
-                "color": "rgba(0,0,0,0.4)",
+                "color": "rgba(0,0,0,0.3)",
                 "thickness": 1,
                 "visible": True,
             }
         else:
             error_y = None
-        if n_plots > 1:
-            for i in range(n_plots):
-                plotlyfig.add_trace(
-                    go.Scatter(
-                        x=first_result.spinw_plot_info["ebin_cens"],
-                        y=first_result.data_y[
-                            (data_len * i) : (data_len * (i + 1))
-                        ],
-                        error_y=error_y,
-                        mode="markers",
-                        name="Data",
-                        marker=cls._data_marker,
-                        showlegend=i == 0,
-                        legendgroup="group-data",
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
-        else:
-            plotlyfig.add_trace(
-                go.Scatter(
-                    x=first_result.data_x,
-                    y=first_result.data_y,
-                    error_y=error_y,
-                    mode="markers",
-                    name="Data",
-                    marker=cls._data_marker,
-                )
-            )
 
-        for (key, results), colour in zip(categories.items(), plotly_colours):
-            # Plot category
+        data_x = first_result.data_x
+        data_y = first_result.data_y
+        cls._add_data_points(fig, data_x, data_y, error_y, n_plots)
+
+        # Plot categories (cost functions)
+        for (categ, results), colour in zip(categories.items(), colours):
             for result in results:
                 if result.params is not None:
-                    line = (
-                        cls._summary_best_plot_line
-                        if result.is_best_fit
-                        else cls._summary_plot_line
+                    cls.plot_minimizer_results(
+                        fig,
+                        result,
+                        n_plots,
+                        categ,
+                        ax_titles,
+                        colour,
                     )
+                    fig.update_layout(title=title)
 
-                    line["color"] = colour
-                    label = key if result.is_best_fit else ""
-                    if result.is_best_fit:
-                        line = cls._summary_best_plot_line
-                        line["color"] = colour
-                    else:
-                        line = cls._summary_plot_line
-                        transparency = 0.5
-                        line["color"] = (
-                            "rgba"
-                            + colour[3:-1]
-                            + ", "
-                            + str(transparency)
-                            + ")"
-                        )
-
-                    if n_plots > 1:
-                        for i in range(n_plots):
-                            plotlyfig.add_trace(
-                                go.Scatter(
-                                    x=result.spinw_plot_info["ebin_cens"],
-                                    y=result.fin_y[
-                                        (data_len * i) : (data_len * (i + 1))
-                                    ],
-                                    mode="lines",
-                                    name=label,
-                                    line=line,
-                                    showlegend=result.is_best_fit and i == 0,
-                                    legendgroup=f"group-{key}-{result.is_best_fit}",
-                                ),
-                                row=1,
-                                col=i + 1,
-                            )
-                    else:
-                        plotlyfig.add_trace(
-                            go.Scatter(
-                                x=result.data_x[result.sorted_index],
-                                y=result.fin_y[result.sorted_index],
-                                mode="lines",
-                                name=label,
-                                line=line,
-                                showlegend=result.is_best_fit,
-                            )
-                        )
-
-                    plotlyfig.update_layout(title=title)
-
-                if result.plot_scale in ["loglog", "logx"]:
-                    plotlyfig.update_xaxes(type="log")
-                if result.plot_scale in ["loglog", "logy"]:
-                    plotlyfig.update_yaxes(type="log")
+                cls._update_to_logscale_if_needed(fig, result)
 
         html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
 
         cls.write_html_with_link_plotlyjs(
-            plotlyfig, figures_dir, html_fname, options
+            fig, figures_dir, html_fname, options
         )
-
         return html_fname
+
+    @classmethod
+    def _add_data_points(cls, fig, data_x, data_y, error_y, n_plots):
+        """
+        Adds data points and error bars to given plot.
+
+        :param fig: The plotly figure to add the data to
+        :type fig: plotly.graph_objects.Figure
+        :param data_x: Data along x axis
+        :type data_x: np.ndarray
+        :param data_y: Data along y axis
+        :type data_y: np.ndarray
+        :param error_y: Error associated with the points
+        :type error_y: np.ndarray
+        :param n_plots: number of subplots in the one row
+        :type n_plots: int
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        data_len = int(len(data_y) / n_plots)
+
+        for i in range(n_plots):
+            fig.add_trace(
+                go.Scatter(
+                    x=data_x,
+                    y=data_y[(data_len * i) : (data_len * (i + 1))],
+                    error_y=error_y,
+                    mode="markers",
+                    name="Data",
+                    marker=cls._data_marker,
+                    showlegend=i == 0,
+                    legendgroup="group-data",
+                ),
+                row=1,
+                col=i + 1,
+            )
+        return fig
+
+    @classmethod
+    def plot_minimizer_results(
+        cls, fig, result, n_plots, categ, ax_titles, colour
+    ):
+        """
+        Plot results for each minimizer.
+        :param fig: The plotly figure to add the traces to
+        :type fig: plotly.graph_objects.Figure
+        :param result: Result we want to add the trace for
+        :type result: FittingResult
+        :param n_plots_per_row: number of subplots per row
+        :type n_plots_per_row: int
+        :param categ: Cost function name
+        :type categ: str
+        :param ax_titles: dict with titles for x and y axis
+        :type ax_titles: dict
+        :param colour: Colour for the minimizer we are plotting
+        :type colour: str
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        line = (
+            cls._summary_best_plot_line
+            if result.is_best_fit
+            else cls._summary_plot_line
+        )
+        label = categ if result.is_best_fit else ""
+        if result.is_best_fit:
+            line = cls._summary_best_plot_line
+            line["color"] = colour
+        else:
+            line = cls._summary_plot_line
+            line["color"] = (
+                "rgba" + colour[3:-1] + ", 0.5)"  # 0.5 transparency
+            )
+
+        data_len = int(len(result.data_y) / n_plots)
+
+        for i in range(n_plots):
+            if n_plots > 1:
+                x = result.data_x
+                y = result.fin_y[(data_len * i) : (data_len * (i + 1))]
+            else:
+                x = result.data_x[result.sorted_index]
+                y = result.fin_y[result.sorted_index]
+
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=y,
+                    mode="lines",
+                    name=label,
+                    line=line,
+                    showlegend=result.is_best_fit and i == 0,
+                    legendgroup=f"group-{categ}-{result.is_best_fit}"
+                    if n_plots > 1
+                    else None,
+                ),
+                row=1,
+                col=i + 1,
+            )
+
+            cls._update_axes_titles(fig, i, ax_titles)
+
+        return fig
 
     @classmethod
     def plot_residuals(cls, categories, title, options, figures_dir):
@@ -552,98 +539,90 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-
         first_result = next(iter(categories.values()))[0]
         col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
-        plotly_colours = ptly_colors.sample_colorscale(
-            ptly_colors.sequential.Rainbow, samplepoints=col_vals
-        )
+        colours = cls._sample_colours(col_vals)
+        n_plots_per_row = 1
 
         if first_result.spinw_plot_info is not None:
-            n_plots_per_row = first_result.spinw_plot_info["n_cuts"]
-            plotlyfig = cls._create_empty_residuals_plot_spinw(
-                categories, n_plots_per_row
+            categories = cls._update_data_x_SpinW(categories)
+            subplot_titles = cls._get_subplot_titles_SpinW(first_result)
+            cls._check_spinw_data_len(
+                first_result,
+                len(first_result.data_y),
+                len(subplot_titles),
             )
+            n_plots_per_row = len(subplot_titles)
+
+        # Create subplots on each row if needed
+        if n_plots_per_row > 1:
+            fig = cls._create_empty_residuals_plots(categories, subplot_titles)
         else:
-            n_plots_per_row = 1
-            plotlyfig = make_subplots(
+            fig = make_subplots(
                 rows=len(categories),
                 cols=n_plots_per_row,
                 subplot_titles=list(categories.keys()),
             )
 
         for row_ind, (results) in enumerate(categories.values(), 1):
-            for result, colour in zip(results, plotly_colours):
+            for result, colour in zip(results, colours):
                 if result.params is not None:
-                    plotlyfig = cls._add_residual_traces_to_fig(
-                        plotlyfig, result, n_plots_per_row, colour, row_ind
+                    fig = cls._add_residual_traces_to_fig(
+                        fig, result, n_plots_per_row, colour, row_ind
                     )
-                    plotlyfig.update_layout(title=title + ": residuals")
+                    fig.update_layout(title=title + ": residuals")
 
-                if result.plot_scale in ["loglog", "logx"]:
-                    plotlyfig.update_xaxes(type="log")
-                if result.plot_scale in ["loglog", "logy"]:
-                    plotlyfig.update_yaxes(type="log")
+                cls._update_to_logscale_if_needed(fig, result)
 
             if row_ind == 1:
-                plotlyfig.update_traces(row=row_ind)
+                fig.update_traces(row=row_ind)
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
-            plotlyfig, figures_dir, html_fname, options
+            fig, figures_dir, html_fname, options
         )
 
         return html_fname
 
     @classmethod
-    def _create_empty_residuals_plot_spinw(cls, categories, n_plots_per_row):
+    def _create_empty_residuals_plots(cls, categories, subplot_titles):
         """
         Creates the initially empty residuals plot for spinw problems.
 
         :param categories: The results to plot
         :type categories: dict[str, list[FittingResults]]
-        :param n_plots_per_row: Number of subplots in each row
-        :type n_plots_per_row: int
+        :param subplot_titles: Subplot titles
+        :type subplot_titles: list
 
         :return: The produced figure
         :rtype: plotly.graph_objects.Figure
         """
-        first_result = next(iter(categories.values()))[0]
-
-        subplot_titles = [
-            f"{i} Å<sup>-1</sup>"
-            for i in first_result.spinw_plot_info["q_cens"]
-        ]
         row_titles = list(categories.keys())
 
-        plotlyfig = make_subplots(
+        fig = make_subplots(
             rows=len(categories),
-            cols=n_plots_per_row,
+            cols=len(subplot_titles),
             row_titles=row_titles,
             subplot_titles=subplot_titles * len(categories),
         )
 
-        data_len = int(len(first_result.data_y) / n_plots_per_row)
-        if data_len != len(first_result.spinw_plot_info["ebin_cens"]):
-            raise PlottingError("x and y data lengths are not the same")
-
         # Place name of cost function on left hand side of figure
-        plotlyfig.for_each_annotation(
+        fig.for_each_annotation(
             lambda a: a.update(x=-0.08, textangle=-90)
             if a.text in row_titles
             else ()
         )
-        return plotlyfig
+        return fig
 
     @classmethod
     def _add_residual_traces_to_fig(
-        cls, plotlyfig, result, n_plots_per_row, colour, row_ind
+        cls, fig, result, n_plots_per_row, colour, row_ind
     ):
         """
         Adds traces to the empty residuals plot figure.
 
-        :param plotlyfig: The plotly figure to add the traces to
-        :type plotlyfig: plotly.graph_objects.Figure
+        :param fig: The plotly figure to add the traces to
+        :type fig: plotly.graph_objects.Figure
         :param result: Result we want to add the trace for
         :type result: FittingResult
         :param n_plots_per_row: number of subplots per row
@@ -657,37 +636,80 @@ class Plot:
         :rtype: plotly.graph_objects.Figure
         """
         minim = result.minimizer
-
         label = f" {minim}"
-        if n_plots_per_row > 1:
-            data_len = int(len(result.data_y) / n_plots_per_row)
-            for i in range(n_plots_per_row):
-                plotlyfig.add_trace(
-                    go.Scatter(
-                        x=result.spinw_plot_info["ebin_cens"],
-                        y=result.r_x[(data_len * i) : (data_len * (i + 1))],
-                        mode="markers",
-                        name=label,
-                        marker={"color": colour},
-                        showlegend=(i == 0 and row_ind == 1),
-                        legendgroup=f"group{minim}",
-                    ),
-                    row=row_ind,
-                    col=i + 1,
-                )
-        else:
-            plotlyfig.add_trace(
+        data_len = int(len(result.data_y) / n_plots_per_row)
+
+        for i in range(n_plots_per_row):
+            fig.add_trace(
                 go.Scatter(
-                    x=result.data_x[result.sorted_index],
-                    y=result.r_x[result.sorted_index],
+                    x=result.data_x,
+                    y=result.r_x[(data_len * i) : (data_len * (i + 1))],
                     mode="markers",
                     name=label,
                     marker={"color": colour},
-                    showlegend=row_ind == 1,
+                    showlegend=(i == 0 and row_ind == 1),
                     legendgroup=f"group{minim}",
                 ),
                 row=row_ind,
-                col=1,
+                col=i + 1,
             )
 
-        return plotlyfig
+        return fig
+
+    @classmethod
+    def _check_spinw_data_len(cls, result, y_data_len, n_plots_per_row):
+        """
+        Checks x and y data have same length
+
+        :param result: Any of the results
+        :type result: FittingResult
+        :param y_data_len: Length of data along y
+        :type y_data_len: int
+        :param n_plots_per_row: Number of subplots in a row
+        :type n_plots_per_row: int
+        """
+        data_len = int(y_data_len / n_plots_per_row)
+        if data_len != len(result.spinw_plot_info["ebin_cens"]):
+            raise PlottingError("x and y data lengths are not the same")
+
+    @classmethod
+    def _get_subplot_titles_SpinW(cls, result):
+        """Get subplot titles for SpinW"""
+        subplot_titles = [
+            f"{i} Å<sup>-1</sup>" for i in result.spinw_plot_info["q_cens"]
+        ]
+        return subplot_titles
+
+    @classmethod
+    def _update_data_x_SpinW(cls, categories):
+        """Fill data_x with the right values"""
+        for categ in categories.values():
+            for result in categ:
+                result.data_x = result.spinw_plot_info["ebin_cens"]
+        return categories
+
+    @classmethod
+    def _update_axes_titles(cls, fig, col_ind, ax_titles=None):
+        ax_titles = ax_titles if not None else cls._default_ax_titles
+        if col_ind == 0:
+            fig.update_yaxes(title_text=ax_titles["y"], row=1, col=col_ind + 1)
+        fig.update_xaxes(title_text=ax_titles["x"], row=1, col=col_ind + 1)
+        return fig
+
+    @classmethod
+    def _update_to_logscale_if_needed(self, fig, result):
+        if result.plot_scale in ["loglog", "logx"]:
+            fig.update_xaxes(type="log")
+        if result.plot_scale in ["loglog", "logy"]:
+            fig.update_yaxes(type="log")
+        return fig
+
+    @classmethod
+    def _sample_colours(cls, points):
+        """
+        Samples plotly colours based on values passed as input
+        """
+        plotly_colours = ptly_colors.sample_colorscale(
+            ptly_colors.sequential.Rainbow, samplepoints=points
+        )
+        return plotly_colours
