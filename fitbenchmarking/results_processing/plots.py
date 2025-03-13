@@ -94,11 +94,9 @@ class Plot:
         subplot_titles = None
         ax_titles = self._default_ax_titles
         n_plots = 1
-        data_x = df_fit["x"][df_fit["minimizer"] == "Data"]
 
         if self.result.spinw_plot_info is not None:
             n_plots = self.result.spinw_plot_info["n_cuts"]
-            data_x = self.result.spinw_plot_info["ebin_cens"]
             subplot_titles = self._get_subplot_titles_SpinW(self.result)
             ax_titles = self._SpinW_ax_titles
 
@@ -117,7 +115,7 @@ class Plot:
             # Plot starting guess
             fig.add_trace(
                 go.Scatter(
-                    x=data_x,
+                    x=df_fit["x"][df_fit["minimizer"] == "Data"],
                     y=df_fit["y"][df_fit["minimizer"] == "Starting Guess"][
                         (data_len * i) : (data_len * (i + 1))
                     ],
@@ -135,7 +133,7 @@ class Plot:
         # Add raw data as a scatter plot
         self._add_data_points(
             fig,
-            data_x,
+            df_fit["x"][df_fit["minimizer"] == "Data"],
             df_fit["y"][df_fit["minimizer"] == "Data"],
             self._error_dict,
             n_plots,
@@ -193,9 +191,6 @@ class Plot:
 
         if self.result.spinw_plot_info is not None:
             n_plots = self.result.spinw_plot_info["n_cuts"]
-            x_data = x_best = x_minim = self.result.spinw_plot_info[
-                "ebin_cens"
-            ]
             subplot_titles = self._get_subplot_titles_SpinW(self.result)
             ax_titles = self._SpinW_ax_titles
             self._check_spinw_data_len(self.result, len(y_data), n_plots)
@@ -212,13 +207,10 @@ class Plot:
                 subplot_titles=subplot_titles,
             )
 
-            if n_plots == 1:
-                x_minim = df_fit["x"][df_fit["minimizer"] == minimizer]
-
             for i in range(n_plots):
                 fig.add_trace(
                     go.Scatter(
-                        x=x_minim,
+                        x=df_fit["x"][df_fit["minimizer"] == minimizer],
                         y=df_fit["y"][df_fit["minimizer"] == minimizer][
                             (data_len * i) : (data_len * (i + 1))
                         ],
@@ -367,7 +359,6 @@ class Plot:
         subplot_titles = None
 
         if first_result.spinw_plot_info is not None:
-            categories = cls._update_data_x_SpinW(categories)
             subplot_titles = cls._get_subplot_titles_SpinW(first_result)
             n_plots = len(subplot_titles)
             ax_titles = cls._SpinW_ax_titles
@@ -545,7 +536,6 @@ class Plot:
         n_plots_per_row = 1
 
         if first_result.spinw_plot_info is not None:
-            categories = cls._update_data_x_SpinW(categories)
             subplot_titles = cls._get_subplot_titles_SpinW(first_result)
             cls._check_spinw_data_len(
                 first_result,
@@ -679,14 +669,6 @@ class Plot:
             f"{i} Å<sup>-1</sup>" for i in result.spinw_plot_info["q_cens"]
         ]
         return subplot_titles
-
-    @classmethod
-    def _update_data_x_SpinW(cls, categories):
-        """Fill data_x with the right values"""
-        for categ in categories.values():
-            for result in categ:
-                result.data_x = result.spinw_plot_info["ebin_cens"]
-        return categories
 
     @classmethod
     def _update_axes_titles(cls, fig, col_ind, ax_titles=None):

@@ -83,6 +83,13 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
+        # if SpinW, make sure data_x is correct
+        if self.name == "Triangular AFM Powder Spectrum":
+            n_cuts = problem.additional_info["n_cuts"]
+            self.data_x = np.array(
+                n_cuts * problem.additional_info["ebin_cens"].tolist()
+            )
+
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
         self.energy = energy
