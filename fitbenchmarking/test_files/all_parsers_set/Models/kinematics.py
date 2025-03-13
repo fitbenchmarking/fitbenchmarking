@@ -180,12 +180,13 @@ def enginx_combo():
                              links=[l1, l2, l3, l4, l5, l6, l7])
 
 
-def noise():
+def noise(rng):
     """
     Small gaussian noise to create non-exact solution in 4x4 target matrices.
     """
-    return np.random.normal(loc=0.0, scale=1e-8, size=(4, 4))
+    return rng.normal(loc=0.0, scale=1e-8, size=(4, 4))
 
+rng = np.random.default_rng(seed=38752)
 
 twolink_robot = two_link()
 table_robot = table()
@@ -193,20 +194,20 @@ goniometer_robot = goniometer()
 enginx_combo_robot = enginx_combo()
 
 tl_targets = [
-    twolink_robot.fkine([np.pi / 2, -np.pi / 2]) + noise(),
-    twolink_robot.fkine([1, 0.001]) + noise()]
+    twolink_robot.fkine([np.pi / 2, -np.pi / 2]) + noise(rng),
+    twolink_robot.fkine([1, 0.001]) + noise(rng)]
 
-t_targets = [table_robot.fkine([109.23, np.pi / 2, -100, 40]) + noise(),
-             table_robot.fkine([53.81, -np.pi / 4, -10, 40.9]) + noise()]
+t_targets = [table_robot.fkine([109.23, np.pi / 2, -100, 40]) + noise(rng),
+             table_robot.fkine([53.81, -np.pi / 4, -10, 40.9]) + noise(rng)]
 
 g_targets = [
-    goniometer_robot.fkine([np.pi / 2, -np.pi / 3, -np.pi / 4]) + noise(),
-    goniometer_robot.fkine([np.pi / 3, np.pi / 4, np.pi / 3]) + noise()
+    goniometer_robot.fkine([np.pi / 2, -np.pi / 3, -np.pi / 4]) + noise(rng),
+    goniometer_robot.fkine([np.pi / 3, np.pi / 4, np.pi / 3]) + noise(rng)
 ]
 
 ec_targets = [
     enginx_combo_robot.fkine([24, np.pi / 5, -103, -125, -np.pi / 2,
-                              -np.pi / 2, np.pi / 1.1]) + noise(),
+                              -np.pi / 2, np.pi / 1.1]) + noise(rng),
     enginx_combo_robot.fkine([12, -np.pi / 5, -113, -15,
-                              np.pi / 1.5, -np.pi / 20, np.pi / 4]) + noise()
+                              np.pi / 1.5, -np.pi / 20, np.pi / 4]) + noise(rng)
 ]
