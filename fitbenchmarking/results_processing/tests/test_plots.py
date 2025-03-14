@@ -306,7 +306,7 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test_create_empty_residuals_plots(self):
+    def test__create_empty_residuals_plots(self):
         """
         Test that create_empty_residuals_plot_spinw creates correct
         number of subplots
@@ -330,6 +330,83 @@ class PlotTests(unittest.TestCase):
         assert len(cols) == result.spinw_plot_info["n_cuts"]
 
         result.spinw_plot_info["ebin_cens"] = [2, 4]
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
+    )
+    def test__create_empty_residuals_plots_not_called_when_no_subplots(
+        self, create_empty_residuals
+    ):
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        create_empty_residuals.assert_not_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
+    )
+    def test__add_residual_traces_called_in_plot_residuals(
+        self, add_residual_traces
+    ):
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        add_residual_traces.assert_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
+    )
+    def test__plot_minimizer_results_called_in_plot_summary(
+        self, plot_minimizer_results
+    ):
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        plot_minimizer_results.assert_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
+    )
+    def test__add_data_points_called(self, add_data_points):
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        add_data_points.assert_called()
+
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        add_data_points.assert_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        add_data_points.assert_called()
+
+    def test__sample_colours(self):
+        exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
+        colours = self.plot._sample_colours([0.4, 0.7])
+        self.assertEqual(exp_colours, colours)
+
+    def test__get_subplot_titles_SpinW(self):
+        result = next(iter(self.fr.values()))[0]
+        result.spinw_plot_info = {
+            "plot_type": "1d_cuts",
+            "n_cuts": 3,
+            "q_cens": [0.5, 1],
+            "ebin_cens": [0.9],
+        }
+        exp_titles = ["0.5 Å<sup>-1</sup>", "1 Å<sup>-1</sup>"]
+        titles = self.plot._get_subplot_titles_SpinW(result)
+        self.assertEqual(exp_titles, titles)
 
 
 if __name__ == "__main__":

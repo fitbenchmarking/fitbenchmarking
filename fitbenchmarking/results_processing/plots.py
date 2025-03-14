@@ -389,7 +389,7 @@ class Plot:
         for (categ, results), colour in zip(categories.items(), colours):
             for result in results:
                 if result.params is not None:
-                    cls.plot_minimizer_results(
+                    cls._plot_minimizer_results(
                         fig,
                         result,
                         n_plots,
@@ -447,7 +447,7 @@ class Plot:
         return fig
 
     @classmethod
-    def plot_minimizer_results(
+    def _plot_minimizer_results(
         cls, fig, result, n_plots, categ, ax_titles, colour
     ):
         """
@@ -556,7 +556,7 @@ class Plot:
         for row_ind, (results) in enumerate(categories.values(), 1):
             for result, colour in zip(results, colours):
                 if result.params is not None:
-                    fig = cls._add_residual_traces_to_fig(
+                    fig = cls._add_residual_traces(
                         fig, result, n_plots_per_row, colour, row_ind
                     )
                     fig.update_layout(title=title + ": residuals")
@@ -604,7 +604,7 @@ class Plot:
         return fig
 
     @classmethod
-    def _add_residual_traces_to_fig(
+    def _add_residual_traces(
         cls, fig, result, n_plots_per_row, colour, row_ind
     ):
         """
