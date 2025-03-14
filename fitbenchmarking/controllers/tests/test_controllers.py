@@ -1239,6 +1239,7 @@ class BayesianControllerTests(TestCase):
         controller_class = ControllerFactory.create_controller(controller_name)
         controller = controller_class(self.cost_func)
         controller.minimizer = minimizer
+        controller.chain_length = 1000
         self.shared_tests.controller_run_test(controller)
 
         self.assertEqual(
@@ -1297,6 +1298,7 @@ class BayesianControllerBoundsTests(TestCase):
         """
         controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
+        controller.chain_length = 1000
 
         self.check_bounds(controller)
 
