@@ -56,7 +56,7 @@ Horace
 ------
 
 Horace can be installed by following the instructions `on the Horace
-website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`__.
+website <https://pace-neutrons.github.io/Horace/v4.0.0/introduction/Download_and_setup.html>`__.
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
 
@@ -91,16 +91,17 @@ at `<https://download.mantidproject.org/>`_.
 MATLAB
 ------
 
-MATLAB is available to use as fitting software in FitBenchmarking, and is
-called via the MATLAB Engine API for Python.
+MATLAB is available to use as fitting software in FitBenchmarking, and is called via the MATLAB Engine API for Python. Therefore, 
+to use MATLAB within Fitbenchmarking, both MATLAB and the MATLAB engine must be installed. Official installation instructions 
+for MATLAB are available at `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. For more 
+information on how to install MATLAB through WSL, please refer to :ref:`external-instructions-matlab`. 
 
-To use this fitting software, both MATLAB and the MATLAB engine must be
-installed. Installation instructions for MATLAB are available at
-`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_,
-and instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
-Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how to install 
-these packages by following the link provided: :ref:`here <extra_dependencies>`.
+Instructions for installing and setting up the MATLAB engine are
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_. 
+
+Furthermore, MATLAB requires additional Python packages to be installed. You can find the instructions on how 
+to install these packages by following the link provided: :ref:`here <extra_dependencies>`.
+
 
 RALFit
 ------
