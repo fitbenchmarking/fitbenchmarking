@@ -193,7 +193,7 @@ class Plot:
             n_plots = self.result.spinw_plot_info["n_cuts"]
             subplot_titles = self._get_subplot_titles_SpinW(self.result)
             ax_titles = self._SpinW_ax_titles
-            self._check_spinw_data_len(self.result, len(y_data), n_plots)
+            self._check_spinw_data_len(x_data, y_data)
 
         data_len = int(
             len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
@@ -538,9 +538,8 @@ class Plot:
         if first_result.spinw_plot_info is not None:
             subplot_titles = cls._get_subplot_titles_SpinW(first_result)
             cls._check_spinw_data_len(
-                first_result,
-                len(first_result.data_y),
-                len(subplot_titles),
+                first_result.data_x,
+                first_result.data_y,
             )
             n_plots_per_row = len(subplot_titles)
 
@@ -647,19 +646,16 @@ class Plot:
         return fig
 
     @classmethod
-    def _check_spinw_data_len(cls, result, y_data_len, n_plots_per_row):
+    def _check_spinw_data_len(cls, x_data, y_data):
         """
         Checks x and y data have same length
 
-        :param result: Any of the results
-        :type result: FittingResult
-        :param y_data_len: Length of data along y
-        :type y_data_len: int
-        :param n_plots_per_row: Number of subplots in a row
-        :type n_plots_per_row: int
+        :param x_data: Length of data along x
+        :type x_data: int
+        :param y_data: Length of data along y
+        :type y_data: int
         """
-        data_len = int(y_data_len / n_plots_per_row)
-        if data_len != len(result.spinw_plot_info["ebin_cens"]):
+        if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
 
     @classmethod
