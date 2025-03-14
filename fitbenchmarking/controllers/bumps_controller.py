@@ -120,10 +120,7 @@ class BumpsController(Controller):
 
         # Determine the order of the parameters in `self.fit_problem` as this
         # could differ from the ordering of parameters in `self._param_names`
-        self.fit_order = [
-            str(self._fit_problem._parameters[i])
-            for i in range(len(self._param_names))
-        ]
+        self.fit_order = self._fit_problem.labels()
 
         if self.minimizer == "lm-bumps":
             self._minimizer = "lm"

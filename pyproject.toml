@@ -131,13 +131,23 @@ select = [
     "C4", # flake8-comprehensions
     "TCH", # flake8-type-checking
     "G", # flake8-logging-format
+    "PIE", # flake8-pie
+    "SLF", # flake8-self
     "RUF", # ruff-specific-rules
     "FURB", # refurb
     "FLY", # flynt
-    "PIE", # flake8-pie
     "PD", # pandas-vet
     ]
 ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
+
+[tool.ruff.lint.per-file-ignores]
+"fitbenchmarking/core/tests/test_fitting_benchmarking.py" = ["SLF001"]
+"fitbenchmarking/parsing/tests/test_fitbenchmark_parser.py" = ["SLF001"]
+"fitbenchmarking/utils/tests/test_options_generic.py" = ["SLF001"]
+"fitbenchmarking/results_processing/tests/test_problem_summary_page.py" = ["SLF001"]
+"fitbenchmarking/controllers/tests/test_controllers.py" = ["SLF001"]
+"fitbenchmarking/results_processing/tests/test_plots.py" = ["SLF001"]
+"fitbenchmarking/parsing/tests/test_mantid_parsers.py" = ["SLF001"]
 
 [tool.ruff.format]
 quote-style = "double"
