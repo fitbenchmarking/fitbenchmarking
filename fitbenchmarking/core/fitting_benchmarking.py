@@ -125,7 +125,7 @@ class Fit:
             else problems
         )
 
-        name_index = {key: 0 for key in name_count}
+        name_index = dict.fromkeys(name_count, 0)
 
         with logging_redirect_tqdm(loggers=[LOGGER]):
             for i, (fname, problem) in enumerate(benchmark_pbar):
