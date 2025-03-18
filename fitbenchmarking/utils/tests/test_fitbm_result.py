@@ -255,7 +255,7 @@ class FitbmResultTests(unittest.TestCase):
             runtime_metric=metric,
         )
         result.min_runtime = min_runtime
-        self.assertAlmostEqual(expected, result.norm_runtime, places=5)
+        self.assertAlmostEqual(expected, result.norm_runtime(), places=5)
 
     def test_norm_runtime_infinite_min(self):
         """
@@ -263,7 +263,7 @@ class FitbmResultTests(unittest.TestCase):
         """
         self.result.runtime = np.inf
         self.result.min_runtime = np.inf
-        self.assertEqual(self.result.norm_runtime, np.inf)
+        self.assertEqual(self.result.norm_runtime(), np.inf)
 
     def test_sanitised_name(self):
         """

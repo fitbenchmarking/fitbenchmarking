@@ -247,7 +247,6 @@ class Checkpoint:
         self.finalised = True
 
     def load(self):
-        # pylint: disable=R0915
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.

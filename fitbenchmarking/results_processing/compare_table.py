@@ -79,7 +79,7 @@ class CompareTable(Table):
         acc_rel = result.norm_acc
         acc_abs = result.accuracy
 
-        runtime_rel = result.norm_runtime
+        runtime_rel = result.norm_runtime()
         runtime_abs = result.runtime
 
         return [[acc_rel, runtime_rel], [acc_abs, runtime_abs]]
@@ -177,6 +177,6 @@ class CompareTable(Table):
             f"{val_str[0]}</a>"
             f"<a {color_to_class[stext]} "
             f'href="{self.get_link_str(result)}">'
-            f"{val_str[1]}</a>"
+            f"{self.get_runtime_value_str(result, val_str[1])}</a>"
         )
         return val_str

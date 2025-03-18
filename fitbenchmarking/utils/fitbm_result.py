@@ -173,10 +173,15 @@ class FittingResult:
         """
         # Variable for calculating best result
         self._norm_acc = None
-        self._norm_runtime = None
         self._norm_energy = None
         self.min_accuracy = np.inf
-        self.min_runtime = np.inf
+        self.min_mean_runtime = np.inf
+        self.min_minimum_runtime = np.inf
+        self.min_maximum_runtime = np.inf
+        self.min_first_runtime = np.inf
+        self.min_median_runtime = np.inf
+        self.min_harmonic_runtime = np.inf
+        self.min_trim_runtime = np.inf
         self.min_energy = np.inf
         self.is_best_fit = False
 
@@ -307,9 +312,9 @@ class FittingResult:
     @property
     def minimum_runtime(self):
         """
-        Getting function for min_runtime attribute
+        Getting function for minimum_runtime attribute
 
-        :return: min_runtime value
+        :return: minimum_runtime value
         :rtype: float
         """
         return min(self.runtimes)
@@ -317,9 +322,9 @@ class FittingResult:
     @property
     def maximum_runtime(self):
         """
-        Getting function for max_runtime attribute
+        Getting function for maximum_runtime attribute
 
-        :return: max_runtime value
+        :return: maximum_runtime value
         :rtype: float
         """
         return max(self.runtimes)
@@ -396,30 +401,20 @@ class FittingResult:
         """
         self._norm_acc = value
 
-    @property
-    def norm_runtime(self):
+    def norm_runtime(self, runtime_metric=None):
         """
-        Getting function for norm_runtime attribute
+        Calculates the norm runtime of a given runtime metric.
 
-        :return: normalised runtime value
+        :return: normalised runtime value of the selected
         :rtype: float
         """
-        if self._norm_runtime is None:
-            if self.min_runtime in [np.nan, np.inf]:
-                self._norm_runtime = np.inf
-            else:
-                self._norm_runtime = self.runtime / self.min_runtime
-        return self._norm_runtime
-
-    @norm_runtime.setter
-    def norm_runtime(self, value):
-        """
-        Stores the normalised runtime and updates the value
-
-        :param value: New value for norm_runtime
-        :type value: float
-        """
-        self._norm_runtime = value
+        metric = runtime_metric or self.runtime_metric
+        min_rumtime = getattr(self, f"min_{metric}_runtime")
+        if min_rumtime in [np.nan, np.inf]:
+            norm_runtime = np.inf
+        else:
+            norm_runtime = getattr(self, f"{metric}_runtime") / min_rumtime
+        return norm_runtime
 
     @property
     def norm_energy(self):
