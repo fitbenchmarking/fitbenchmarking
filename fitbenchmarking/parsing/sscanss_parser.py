@@ -3,10 +3,10 @@ This file implements a parser for SScanSS problem sets.
 """
 
 import math
-import os
 import sys
 import typing
 from importlib import import_module
+from pathlib import Path
 
 import numpy as np
 
@@ -23,15 +23,15 @@ class SScanSSParser(FitbenchmarkParser):
 
     _PARAM_IGNORE_LIST = ["robot", "module", "targets"]
 
-    def parse(self) -> "list[FittingProblem]":
+    def parse(self) -> list[FittingProblem]:
         template = super().parse()
 
         out = []
 
         pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf["module"])
-        sys.path.append(os.path.dirname(path))
-        module = import_module(os.path.basename(path))
+        path = Path(self._filename).parent / pf["module"]
+        sys.path.append(str(path.parent))
+        module = import_module(path.stem)
         robot = getattr(module, pf["robot"])
         targets = getattr(module, pf["targets"])
 
@@ -76,7 +76,6 @@ class SScanSSParser(FitbenchmarkParser):
         :rtype: callable
         """
 
-        # pylint: disable=unused-argument
         def dummy(x, *params):
             pass
 
@@ -90,7 +89,6 @@ class SScanSSParser(FitbenchmarkParser):
         """
 
         def error_func(x, *params):
-            # pylint: disable=unused-argument
             cur_pose = robot.fkine(params)
             pos_diff = cur_pose[:3, 3] - target[:3, 3]
             angle_diff = SScanSSParser.emap(
@@ -136,8 +134,7 @@ class SScanSSParser(FitbenchmarkParser):
         return ["no_file_required"]
 
     def _get_data_points(self, _filename):
-        # pylint: disable=unused-argument
-        # x data is the spatial and agular coordinates for the pose
+        # x data is the spatial and angular coordinates for the pose
         # y data is the error in each coord at the fit (as defined in
         #     inverse_kinematics_error)
         return {
