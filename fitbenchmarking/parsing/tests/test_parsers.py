@@ -524,7 +524,7 @@ class TestParserFactory(TestCase):
         """
         Tests the parse_problem_file method
         """
-        filename = os.path.join(os.path.dirname(__file__), "nist", "basic.dat")
+        filename = Path(__file__).parent / "nist" / "basic.dat"
         fitting_problem = parse_problem_file(filename, OPTIONS)[0]
         self.assertEqual(fitting_problem.name, "basic")
 
