@@ -31,6 +31,7 @@ class Plot:
     }
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1, "dash": "dash"}
+    _starting_guess_plot_line = {"width": 2, "color": "#5F8575"}
     _subplots_line = {"width": 1, "color": "red"}
     _error_dict = {
         "type": "data",
@@ -249,6 +250,8 @@ class Plot:
         y_best = df["y"][df["best"]]
         x_data = df["x"][df["minimizer"] == "Data"]
         y_data = df["y"][df["minimizer"] == "Data"]
+        x_start = df[df["minimizer"] == "Starting Guess"]["x"]
+        y_start = df[df["minimizer"] == "Starting Guess"]["y"]
         self._error_dict["array"] = df["e"][df["minimizer"] == "Data"]
 
         for minimizer in df["minimizer"].unique():
@@ -277,6 +280,15 @@ class Plot:
                             )
                         )
                     # add the raw data as a scatter plot
+                    fig.add_trace(
+                        go.Scatter(
+                            x=x_start,
+                            y=y_start,
+                            mode="lines+markers",
+                            name="Starting Guess",
+                            line=self._starting_guess_plot_line,
+                        )
+                    )
                     fig.add_trace(
                         go.Scatter(
                             x=x_data,
