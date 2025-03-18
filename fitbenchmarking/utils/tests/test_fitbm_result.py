@@ -6,7 +6,9 @@ import inspect
 import os
 import textwrap
 import unittest
+from statistics import StatisticsError
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import numpy as np
 from parameterized import parameterized
@@ -204,6 +206,21 @@ class FitbmResultTests(unittest.TestCase):
         )
         self.assertAlmostEqual(expected, result.runtime, places=5)
 
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.harmonic_mean",
+        side_effect=StatisticsError,
+    )
+    def test_harmonic_runtime_is_inf_when_error(self, mock):
+        """
+        Tests the harmonic runtime is set to np.inf in case of invalid values.
+        """
+        result = FittingResult(
+            controller=self.controller,
+            runtimes=[0, -5, -10],
+            runtime_metric="harmonic",
+        )
+        self.assertEqual(np.inf, result.runtime)
+
     @parameterized.expand(
         [
             (np.inf, np.inf, np.inf, False),
@@ -254,8 +271,8 @@ class FitbmResultTests(unittest.TestCase):
             runtimes=runtimes,
             runtime_metric=metric,
         )
-        result.min_runtime = min_runtime
-        self.assertAlmostEqual(expected, result.norm_runtime(), places=5)
+        setattr(result, "min_" + metric + "_runtime", min_runtime)
+        self.assertAlmostEqual(expected, result.norm_runtime(metric), places=5)
 
     def test_norm_runtime_infinite_min(self):
         """

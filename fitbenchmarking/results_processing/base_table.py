@@ -777,30 +777,28 @@ class Table:
             "runtime_dropdown", "Select Runtime Metric", items
         )
 
-    def get_runtime_value_str(self, result, val_str):
+    def get_runtime_value_str(self, result):
         """
         Generates the value str for the compare and runtime tables.
 
         :param result: The result to generate a string for
         :type result: fitbenchmarking.utils.ftibm_result.FittingResult
-        :param val_str: Preprocessed val_str to display
-        :type val_str: str
 
         :return: The value string representation containing all runtime
                  metrics.
         :rtype: str
         """
-        str = ""
+        val_str = ""
         for rt in self.runtime_choices:
-            runtime_value = result.norm_runtime(rt)
-            formatted_value = f"{runtime_value:.4g}"
+            formated_runtime = f"{getattr(result, rt + '_runtime'):.4g}"
+            formatted_norm_runtime = f"{result.norm_runtime(rt):.4g}"
             display_style = "inline" if rt == result.runtime_metric else "none"
-            str += (
+            val_str += (
                 f"<span class='runtime' id='{rt}' "
                 f"style='display:{display_style}'>"
-                f"{val_str.split(' (')[0]} ({formatted_value})</span>"
+                f"{formated_runtime} ({formatted_norm_runtime})</span>"
             )
-        return str
+        return val_str
 
     @staticmethod
     def _dropdown_html(

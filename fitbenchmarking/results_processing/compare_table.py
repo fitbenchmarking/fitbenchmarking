@@ -177,6 +177,6 @@ class CompareTable(Table):
             f"{val_str[0]}</a>"
             f"<a {color_to_class[stext]} "
             f'href="{self.get_link_str(result)}">'
-            f"{self.get_runtime_value_str(result, val_str[1])}</a>"
+            f"{self.get_runtime_value_str(result)}</a>"
         )
         return val_str

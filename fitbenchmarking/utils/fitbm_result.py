@@ -2,7 +2,7 @@
 FitBenchmarking results object
 """
 
-from statistics import fmean, harmonic_mean, median
+from statistics import StatisticsError, fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import numpy as np
@@ -175,6 +175,9 @@ class FittingResult:
         self._norm_acc = None
         self._norm_energy = None
         self.min_accuracy = np.inf
+        self.min_energy = np.inf
+        self.is_best_fit = False
+
         self.min_mean_runtime = np.inf
         self.min_minimum_runtime = np.inf
         self.min_maximum_runtime = np.inf
@@ -182,8 +185,6 @@ class FittingResult:
         self.min_median_runtime = np.inf
         self.min_harmonic_runtime = np.inf
         self.min_trim_runtime = np.inf
-        self.min_energy = np.inf
-        self.is_best_fit = False
 
         # Paths to various output files
         self.problem_summary_page_link = ""
@@ -357,7 +358,12 @@ class FittingResult:
         :return: harmonic_runtime value
         :rtype: float
         """
-        return harmonic_mean(self.runtimes)
+        # This try except is added to handle scenarios
+        # when harmonic_mean cannot be calculated.
+        try:
+            return harmonic_mean(self.runtimes)
+        except StatisticsError:
+            return np.inf
 
     @property
     def trim_runtime(self):

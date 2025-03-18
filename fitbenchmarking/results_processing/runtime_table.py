@@ -53,6 +53,6 @@ class RuntimeTable(Table):
         val_str = (
             f"<a {self.color_to_class[text_col]} "
             f'href="{self.get_link_str(result)}">'
-            f"{self.get_runtime_value_str(result, val_str)}</a>"
+            f"{self.get_runtime_value_str(result)}</a>"
         )
         return val_str
