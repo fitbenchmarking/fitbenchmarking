@@ -766,10 +766,13 @@ class Table:
         :return: HTML for a dropdown radio buttons of runtimes.
         :rtype: str
         """
+        problem = next(p for p in self.best_results)
+        cost_func = next(w for w in self.best_results[problem])
+        metric = self.best_results[problem][cost_func].runtime_metric
         items = [
             f'        <li><label class="noselect"><input '
             f'type="radio" name="runtime_selection" '
-            f"{'checked' if rc == self.options.runtime_metric else ''} "
+            f"{'checked' if rc == metric else ''} "
             f"onclick=\"update_runtime('{rc}')\"/> {rc}</label></li>"
             for rc in self.runtime_choices
         ]
