@@ -294,7 +294,6 @@ class PlotTests(unittest.TestCase):
         """
         Test that plot_residuals creates a file
         """
-
         file_name = self.plot.plot_residuals(
             categories=self.fr,
             title="",
@@ -337,6 +336,10 @@ class PlotTests(unittest.TestCase):
     def test__create_empty_residuals_plots_not_called_when_no_subplots(
         self, create_empty_residuals
     ):
+        """
+        Test that _create_empty_residuals is not called when there is only
+        one plot (no subplots).
+        """
         self.plot.plot_residuals(
             categories=self.fr,
             title="",
@@ -348,9 +351,10 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
     )
-    def test__add_residual_traces_called_in_plot_residuals(
-        self, add_residual_traces
-    ):
+    def test__add_residual_traces_called(self, add_residual_traces):
+        """
+        Test that _add_residual_traces gets called by plot_residuals.
+        """
         self.plot.plot_residuals(
             categories=self.fr,
             title="",
@@ -358,13 +362,15 @@ class PlotTests(unittest.TestCase):
             figures_dir=self.figures_dir,
         )
         add_residual_traces.assert_called()
+        self.assertEqual(add_residual_traces.call_count, 15)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
     )
-    def test__plot_minimizer_results_called_in_plot_summary(
-        self, plot_minimizer_results
-    ):
+    def test__plot_minimizer_results_called(self, plot_minimizer_results):
+        """
+        Test that _plot_minimizer_results gets called by plot_summary.
+        """
         self.plot.plot_summary(
             categories=self.fr,
             title="",
@@ -377,6 +383,10 @@ class PlotTests(unittest.TestCase):
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
     def test__add_data_points_called(self, add_data_points):
+        """
+        Test that _add_data_points gets called by plot_summary,
+        plot_initial_guess and plotly_fit.
+        """
         self.plot.plot_summary(
             categories=self.fr,
             title="",
@@ -395,6 +405,10 @@ class PlotTests(unittest.TestCase):
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
     )
     def test__add_starting_guess_called(self, add_starting_guess):
+        """
+        Test that _add_starting_guess gets called by plot_initial_guess
+        and plotly_fit.
+        """
         self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
         add_starting_guess.assert_called()
 
@@ -402,11 +416,17 @@ class PlotTests(unittest.TestCase):
         add_starting_guess.assert_called()
 
     def test__sample_colours(self):
+        """
+        Test that _sample_colours produces the expected output.
+        """
         exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
         colours = self.plot._sample_colours([0.4, 0.7])
         self.assertEqual(exp_colours, colours)
 
     def test__get_subplot_titles_SpinW(self):
+        """
+        Test that _get_subplot_titles_SpinW gets the correct subplot titles.
+        """
         result = next(iter(self.fr.values()))[0]
         result.spinw_plot_info = {
             "plot_type": "1d_cuts",
@@ -417,6 +437,76 @@ class PlotTests(unittest.TestCase):
         exp_titles = ["0.5 Å<sup>-1</sup>", "1 Å<sup>-1</sup>"]
         titles = self.plot._get_subplot_titles_SpinW(result)
         self.assertEqual(exp_titles, titles)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._get_subplot_titles_SpinW"
+    )
+    def test__get_subplot_titles_SpinW_called(self, get_subplot_titles_SpinW):
+        """
+        Test that plot_initial_guess, plotly_fit, plot_summary and
+        plots_residuals call _get_subplot_titles_SpinW when spinw_plot_info
+        is set.
+        """
+        self.plot.result.spinw_plot_info = {
+            "plot_type": "1d_cuts",
+            "n_cuts": 2,
+            "q_cens": [0.5, 1],
+            "ebin_cens": [0.9, 1.6, 1.1],
+        }
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        get_subplot_titles_SpinW.assert_called()
+
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        get_subplot_titles_SpinW.assert_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        get_subplot_titles_SpinW.assert_called()
+
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        get_subplot_titles_SpinW.assert_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._get_subplot_titles_SpinW"
+    )
+    def test__get_subplot_titles_SpinW_not_called(
+        self, get_subplot_titles_SpinW
+    ):
+        """
+        Test that plot_initial_guess, plotly_fit, plot_summary and
+        plots_residuals DO NOT call _get_subplot_titles_SpinW when
+        spinw_plot_info is not set.
+        """
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        get_subplot_titles_SpinW.assert_not_called()
+
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        get_subplot_titles_SpinW.assert_not_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        get_subplot_titles_SpinW.assert_not_called()
+
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        get_subplot_titles_SpinW.assert_not_called()
 
 
 if __name__ == "__main__":
