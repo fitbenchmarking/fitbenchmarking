@@ -351,9 +351,12 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
     )
-    def test__add_residual_traces_called(self, add_residual_traces):
+    def test__add_residual_traces_called_exact_n_times(
+        self, add_residual_traces
+    ):
         """
-        Test that _add_residual_traces gets called by plot_residuals.
+        Test that _add_residual_traces gets called by plot_residuals
+        the right number of times (based on number of categories and results).
         """
         self.plot.plot_residuals(
             categories=self.fr,
@@ -361,13 +364,15 @@ class PlotTests(unittest.TestCase):
             options=self.opts,
             figures_dir=self.figures_dir,
         )
-        add_residual_traces.assert_called()
-        self.assertEqual(add_residual_traces.call_count, 15)
+        expected = len(self.fr["Fake_Test_Data"])
+        self.assertEqual(add_residual_traces.call_count, expected)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
     )
-    def test__plot_minimizer_results_called(self, plot_minimizer_results):
+    def test__plot_minimizer_results_called_exact_n_times(
+        self, plot_minimizer_results
+    ):
         """
         Test that _plot_minimizer_results gets called by plot_summary.
         """
@@ -377,7 +382,8 @@ class PlotTests(unittest.TestCase):
             options=self.opts,
             figures_dir=self.figures_dir,
         )
-        plot_minimizer_results.assert_called()
+        expected = len(self.fr["Fake_Test_Data"])
+        self.assertEqual(plot_minimizer_results.call_count, expected)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
@@ -398,8 +404,18 @@ class PlotTests(unittest.TestCase):
         self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
         add_data_points.assert_called()
 
-        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
-        add_data_points.assert_called()
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
+    )
+    def test__add_data_points_called_exact_n_times(self, add_data_points):
+        """
+        Test that _add_data_points gets called the right number of times
+        by plotly_fit.
+        """
+        input_df = self.df[("Fake_Test_Data", "prob_1")]
+        self.plot.plotly_fit(input_df)
+        expected = len(input_df["minimizer"].unique()) - 2
+        self.assertEqual(add_data_points.call_count, expected)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
