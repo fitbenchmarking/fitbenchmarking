@@ -154,7 +154,6 @@ class Plot:
         :return: A dictionary of paths to the saved files
         :rtype: dict[str, str]
         """
-        # Plotly implementation below
         htmlfiles = {}
         x_best = df_fit["x"][df_fit["best"]]
         y_best = df_fit["y"][df_fit["best"]]
@@ -235,7 +234,6 @@ class Plot:
             self.write_html_with_link_plotlyjs(
                 fig, self.figures_dir, htmlfile, self.options
             )
-
             htmlfiles[minimizer] = htmlfile
 
         return htmlfiles
@@ -317,7 +315,6 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-
         colours = cls._sample_colours(np.linspace(0, 1, len(categories)))
         first_result = next(iter(categories.values()))[0]
         n_plots = 1
@@ -335,7 +332,6 @@ class Plot:
             subplot_titles=subplot_titles,
         )
 
-        # Plot data
         if "weighted_nlls" in options.cost_func_type:
             error_y = {
                 "type": "data",
@@ -367,8 +363,8 @@ class Plot:
                 cls._update_to_logscale_if_needed(fig, result)
 
         fig.update_layout(title=title)
-        html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
 
+        html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
         )
@@ -417,7 +413,8 @@ class Plot:
         cls, fig, result, n_plots, categ, ax_titles, colour
     ):
         """
-        Plot results for each minimizer.
+        Plots results for each minimizer.
+
         :param fig: The plotly figure to add the traces to
         :type fig: plotly.graph_objects.Figure
         :param result: Result we want to add the trace for
@@ -430,6 +427,7 @@ class Plot:
         :type ax_titles: dict
         :param colour: Colour for the minimizer we are plotting
         :type colour: str
+
         :return: Updated plot
         :rtype: plotly.graph_objects.Figure
         """
@@ -473,7 +471,6 @@ class Plot:
                 row=1,
                 col=i + 1,
             )
-
             cls._update_axes_titles(fig, i, ax_titles)
 
         return fig
@@ -531,11 +528,11 @@ class Plot:
                 fig.update_traces(row=row_ind)
 
         fig.update_layout(title=title + ": residuals")
+
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
         )
-
         return html_fname
 
     @classmethod
@@ -652,21 +649,20 @@ class Plot:
 
     @classmethod
     def _check_data_len(cls, x_data, y_data):
-        """Checks x and y data have same length"""
+        """Checks x and y data have same length and raises error if not."""
         if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
 
     @classmethod
     def _get_subplot_titles_SpinW(cls, result):
-        """Gets subplot titles for SpinW"""
+        """Gets subplot titles for SpinW."""
         subplot_titles = [
             f"{i} Å<sup>-1</sup>" for i in result.spinw_plot_info["q_cens"]
         ]
         return subplot_titles
 
     @classmethod
-    def _update_axes_titles(cls, fig, col_ind, ax_titles=None):
-        ax_titles = ax_titles if not None else cls._default_ax_titles
+    def _update_axes_titles(cls, fig, col_ind, ax_titles):
         if col_ind == 0:
             fig.update_yaxes(title_text=ax_titles["y"], row=1, col=col_ind + 1)
         fig.update_xaxes(title_text=ax_titles["x"], row=1, col=col_ind + 1)
