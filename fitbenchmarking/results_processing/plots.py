@@ -115,12 +115,12 @@ class Plot:
             # Plot starting guess
             fig.add_trace(
                 go.Scatter(
-                    x=df_fit["x"][df_fit["minimizer"] == "Data"],
+                    x=df_fit["x"][df_fit["minimizer"] == "Starting Guess"],
                     y=df_fit["y"][df_fit["minimizer"] == "Starting Guess"][
                         (data_len * i) : (data_len * (i + 1))
                     ],
                     name="Starting Guess",
-                    line=self._subplots_line,
+                    line=self._starting_guess_plot_line,
                     showlegend=i == 0,
                     legendgroup="starting-guess",
                     mode="markers+lines",
@@ -182,8 +182,8 @@ class Plot:
         y_best = df_fit["y"][df_fit["best"]]
         x_data = df_fit["x"][df_fit["minimizer"] == "Data"]
         y_data = df_fit["y"][df_fit["minimizer"] == "Data"]
-        x_start = df[df["minimizer"] == "Starting Guess"]["x"]
-        y_start = df[df["minimizer"] == "Starting Guess"]["y"]
+        x_start = df_fit["x"][df_fit["minimizer"] == "Starting Guess"]
+        y_start = df_fit["y"][df_fit["minimizer"] == "Starting Guess"]
         self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
         n_plots = 1
         subplot_titles = None
@@ -224,6 +224,20 @@ class Plot:
                     col=i + 1,
                 )
 
+                fig.add_trace(
+                    go.Scatter(
+                        x=x_start,
+                        y=y_start[(data_len * i) : (data_len * (i + 1))],
+                        name="Starting Guess",
+                        line=self._starting_guess_plot_line,
+                        showlegend=i == 0,
+                        legendgroup="starting-guess",
+                        mode="lines+markers",
+                    ),
+                    row=1,
+                    col=i + 1,
+                )
+
                 if not df_fit["best"][df_fit["minimizer"] == minimizer].iloc[
                     0
                 ]:
@@ -238,19 +252,11 @@ class Plot:
                             y=y_best[(data_len * i) : (data_len * (i + 1))],
                             name=name,
                             line=self._best_fit_line,
+                            legendgroup="best-minim",
                             showlegend=i == 0,
                         ),
                         row=1,
                         col=i + 1,
-                    )
-                    fig.add_trace(
-                        go.Scatter(
-                            x=x_start,
-                            y=y_start,
-                            mode="lines+markers",
-                            name="Starting Guess",
-                            line=self._starting_guess_plot_line,
-                        )
                     )
 
                 self._update_axes_titles(fig, i, ax_titles)
