@@ -178,11 +178,11 @@ class PlotTests(unittest.TestCase):
             self.assertEqual(find_error_bar_count(path), 2)
 
     @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._check_spinw_data_len"
+        "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_spinw_data_len_called(self, check_data_len):
+    def test__check_data_len_called(self, check_data_len):
         """
-        Test that plotly_fit and plots_residuals call _check_spinw_data_len
+        Test that plotly_fit and plots_residuals call _check_data_len
         when spinw_plot_info is set.
         """
         self.plot.result.spinw_plot_info = {
@@ -204,12 +204,12 @@ class PlotTests(unittest.TestCase):
         check_data_len.assert_called()
 
     @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._check_spinw_data_len"
+        "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_spinw_data_len_not_called(self, check_data_len):
+    def test__check_data_len_not_called(self, check_data_len):
         """
         Test that plotly_fit and plots_residuals don't call
-        _check_spinw_data_len when spinw_plot_info is not set.
+        _check_data_len when spinw_plot_info is not set.
         """
         self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
         check_data_len.assert_not_called()
@@ -222,9 +222,9 @@ class PlotTests(unittest.TestCase):
         )
         check_data_len.assert_not_called()
 
-    def test__check_spinw_data_len_raises_error(self):
+    def test__check_data_len_raises_error(self):
         """
-        Test _check_spinw_data_len raises error if data lengths are
+        Test _check_data_len raises error if data lengths are
         unexpected
         """
         data = self.df[("Fake_Test_Data", "prob_1")]
@@ -232,7 +232,7 @@ class PlotTests(unittest.TestCase):
         x_best = 10 * data["x"][data["best"]].to_list()
 
         with self.assertRaises(PlottingError):
-            self.plot._check_spinw_data_len(y_best, x_best)
+            self.plot._check_data_len(y_best, x_best)
 
     def test_plot_posteriors_create_files(self):
         """
@@ -390,6 +390,16 @@ class PlotTests(unittest.TestCase):
 
         self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
         add_data_points.assert_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
+    )
+    def test__add_starting_guess_called(self, add_starting_guess):
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        add_starting_guess.assert_called()
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        add_starting_guess.assert_called()
 
     def test__sample_colours(self):
         exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]

@@ -107,30 +107,7 @@ class Plot:
         )
 
         self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
-        data_len = int(
-            len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
-        )
 
-        for i in range(n_plots):
-            # Plot starting guess
-            fig.add_trace(
-                go.Scatter(
-                    x=df_fit["x"][df_fit["minimizer"] == "Starting Guess"],
-                    y=df_fit["y"][df_fit["minimizer"] == "Starting Guess"][
-                        (data_len * i) : (data_len * (i + 1))
-                    ],
-                    name="Starting Guess",
-                    line=self._starting_guess_plot_line,
-                    showlegend=i == 0,
-                    legendgroup="starting-guess",
-                    mode="markers+lines",
-                ),
-                row=1,
-                col=i + 1,
-            )
-            self._update_axes_titles(fig, i, ax_titles)
-
-        # Add raw data as a scatter plot
         self._add_data_points(
             fig,
             df_fit["x"][df_fit["minimizer"] == "Data"],
@@ -138,6 +115,7 @@ class Plot:
             self._error_dict,
             n_plots,
         )
+        self._add_starting_guess(fig, df_fit, n_plots, ax_titles)
 
         fig.update_layout(title=title)
         self._update_to_logscale_if_needed(fig, self.result)
@@ -182,8 +160,6 @@ class Plot:
         y_best = df_fit["y"][df_fit["best"]]
         x_data = df_fit["x"][df_fit["minimizer"] == "Data"]
         y_data = df_fit["y"][df_fit["minimizer"] == "Data"]
-        x_start = df_fit["x"][df_fit["minimizer"] == "Starting Guess"]
-        y_start = df_fit["y"][df_fit["minimizer"] == "Starting Guess"]
         self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
         n_plots = 1
         subplot_titles = None
@@ -193,7 +169,7 @@ class Plot:
             n_plots = self.result.spinw_plot_info["n_cuts"]
             subplot_titles = self._get_subplot_titles_SpinW(self.result)
             ax_titles = self._SpinW_ax_titles
-            self._check_spinw_data_len(x_data, y_data)
+            self._check_data_len(x_data, y_data)
 
         data_len = int(
             len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
@@ -206,6 +182,10 @@ class Plot:
                 cols=n_plots,
                 subplot_titles=subplot_titles,
             )
+            self._add_data_points(
+                fig, x_data, y_data, self._error_dict, n_plots
+            )
+            self._add_starting_guess(fig, df_fit, n_plots, ax_titles)
 
             for i in range(n_plots):
                 fig.add_trace(
@@ -219,20 +199,6 @@ class Plot:
                         showlegend=i == 0,
                         mode="markers+lines",
                         legendgroup=minimizer,
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
-
-                fig.add_trace(
-                    go.Scatter(
-                        x=x_start,
-                        y=y_start[(data_len * i) : (data_len * (i + 1))],
-                        name="Starting Guess",
-                        line=self._starting_guess_plot_line,
-                        showlegend=i == 0,
-                        legendgroup="starting-guess",
-                        mode="lines+markers",
                     ),
                     row=1,
                     col=i + 1,
@@ -259,12 +225,6 @@ class Plot:
                         col=i + 1,
                     )
 
-                self._update_axes_titles(fig, i, ax_titles)
-
-            # Add raw data
-            self._add_data_points(
-                fig, x_data, y_data, self._error_dict, n_plots
-            )
             fig.update_layout(title=self.result.name)
             self._update_to_logscale_if_needed(fig, self.result)
 
@@ -403,10 +363,10 @@ class Plot:
                         ax_titles,
                         colour,
                     )
-                    fig.update_layout(title=title)
 
                 cls._update_to_logscale_if_needed(fig, result)
 
+        fig.update_layout(title=title)
         html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
 
         cls.write_html_with_link_plotlyjs(
@@ -543,7 +503,7 @@ class Plot:
 
         if first_result.spinw_plot_info is not None:
             subplot_titles = cls._get_subplot_titles_SpinW(first_result)
-            cls._check_spinw_data_len(
+            cls._check_data_len(
                 first_result.data_x,
                 first_result.data_y,
             )
@@ -565,13 +525,12 @@ class Plot:
                     fig = cls._add_residual_traces(
                         fig, result, n_plots_per_row, colour, row_ind
                     )
-                    fig.update_layout(title=title + ": residuals")
-
                 cls._update_to_logscale_if_needed(fig, result)
 
             if row_ind == 1:
                 fig.update_traces(row=row_ind)
 
+        fig.update_layout(title=title + ": residuals")
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
@@ -607,6 +566,46 @@ class Plot:
             if a.text in row_titles
             else ()
         )
+        return fig
+
+    def _add_starting_guess(self, fig, df_fit, n_plots_per_row, ax_titles):
+        """
+        Adds starting guess to figure.
+
+        :param fig: The plotly figure to add the traces to
+        :type fig: plotly.graph_objects.Figure
+        :param df_fit: The dataframe with the data to plot
+        :type df_fit: Pandas dataframe
+        :param n_plots_per_row: number of subplots per row
+        :type n_plots_per_row: int
+        :param ax_titles: Titles for axes
+        :type ax_titles: list
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        data_len = int(
+            len(df_fit["y"][df_fit["minimizer"] == "Starting Guess"])
+            / n_plots_per_row
+        )
+        for i in range(n_plots_per_row):
+            fig.add_trace(
+                go.Scatter(
+                    x=df_fit["x"][df_fit["minimizer"] == "Starting Guess"],
+                    y=df_fit["y"][df_fit["minimizer"] == "Starting Guess"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    name="Starting Guess",
+                    line=self._starting_guess_plot_line,
+                    showlegend=i == 0,
+                    legendgroup="starting-guess",
+                    mode="markers+lines",
+                ),
+                row=1,
+                col=i + 1,
+            )
+            self._update_axes_titles(fig, i, ax_titles)
+
         return fig
 
     @classmethod
@@ -652,21 +651,14 @@ class Plot:
         return fig
 
     @classmethod
-    def _check_spinw_data_len(cls, x_data, y_data):
-        """
-        Checks x and y data have same length
-
-        :param x_data: Length of data along x
-        :type x_data: int
-        :param y_data: Length of data along y
-        :type y_data: int
-        """
+    def _check_data_len(cls, x_data, y_data):
+        """Checks x and y data have same length"""
         if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
 
     @classmethod
     def _get_subplot_titles_SpinW(cls, result):
-        """Get subplot titles for SpinW"""
+        """Gets subplot titles for SpinW"""
         subplot_titles = [
             f"{i} Å<sup>-1</sup>" for i in result.spinw_plot_info["q_cens"]
         ]
