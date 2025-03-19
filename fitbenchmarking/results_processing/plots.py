@@ -31,7 +31,7 @@ class Plot:
     }
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1, "dash": "dash"}
-    _starting_guess_plot_line = {"width": 2, "color": "#5F8575"}
+    _starting_guess_plot_line = {"width": 1, "color": "#5F8575"}
     _subplots_line = {"width": 1, "color": "red"}
     _error_dict = {
         "type": "data",
@@ -132,20 +132,20 @@ class Plot:
                         row=1,
                         col=i + 1,
                     )
-            else:  # plot starting guess if minimizer not provided
-                fig.add_trace(
-                    go.Scatter(
-                        x=self.result.spinw_plot_info["ebin_cens"],
-                        y=df["y"][df["minimizer"] == "Starting Guess"][
-                            (data_len * i) : (data_len * (i + 1))
-                        ],
-                        name="Starting Guess",
-                        line=self._subplots_line,
-                        showlegend=i == 0,
-                    ),
-                    row=1,
-                    col=i + 1,
-                )
+            # plot starting guess if minimizer not provided
+            fig.add_trace(
+                go.Scatter(
+                    x=self.result.spinw_plot_info["ebin_cens"],
+                    y=df["y"][df["minimizer"] == "Starting Guess"][
+                        (data_len * i) : (data_len * (i + 1))
+                    ],
+                    name="Starting Guess",
+                    line=self._starting_guess_plot_line,
+                    showlegend=i == 0,
+                ),
+                row=1,
+                col=i + 1,
+            )
             # plot data in both cases
             fig.add_trace(
                 go.Scatter(

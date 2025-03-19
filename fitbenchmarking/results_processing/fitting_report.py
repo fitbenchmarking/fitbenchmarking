@@ -58,7 +58,7 @@ def create_prob_group(result, support_pages_dir, options):
     fit_success = pdf_success = options.make_plots
 
     if options.make_plots:
-        fig_fit, _, fig_pdf = get_figure_paths(result)
+        fig_fit, fig_pdf = get_figure_paths(result)
         fit_success = fig_fit != ""
         pdf_success = fig_pdf != ""
         if not fit_success:
@@ -135,13 +135,12 @@ def get_figure_paths(result):
     :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
 
     :return: the paths to the required figures
-    :rtype: tuple(str, str, str)
+    :rtype: tuple(str, str)
     """
     return tuple(
         os.path.join("figures", link) if link else ""
         for link in [
             result.figure_link,
-            result.start_figure_link,
             result.posterior_plots,
         ]
     )
