@@ -190,6 +190,9 @@ class Controller:
         # save number of function evaluations
         self.func_evals = None
 
+        # set default chain length for Bayesian minimizers
+        self.chain_length = 100000
+
     @property
     def flag(self):
         """
