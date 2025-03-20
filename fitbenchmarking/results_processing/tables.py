@@ -102,15 +102,6 @@ def create_results_tables(
             else:
                 table_format = description[options.comparison_mode]
 
-            if suffix in ["runtime", "compare"]:
-                run_str = (
-                    "The <b>runtime metric</b> displayed in "
-                    "the tables is <span class='pill'>{}</span>."
-                )
-                description[suffix] = description[suffix] + run_str.format(
-                    options.runtime_metric
-                )
-
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, "templates")
 
@@ -129,12 +120,10 @@ def create_results_tables(
                 minimizers for minimizers in unselected_minimzers.values()
             )
 
-            n_solvers_large = False
             key1 = list(results.keys())[0]
             key11 = list(results[key1].keys())[0]
             n_solvers = len(results[key1][key11])
-            if n_solvers > 15:
-                n_solvers_large = True
+            n_solvers_large = n_solvers > 15
 
             with open(f"{table.file_path}html", "w", encoding="utf-8") as f:
                 f.write(
@@ -149,7 +138,8 @@ def create_results_tables(
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
                         minimizer_dropdown=html["minim_dropdown"],
-                        probsize_checkbox=html["probsize_checkb"],
+                        probsize_checkbox=html["probsize_checkbox"],
+                        runtime_dropdown=html["runtime_dropdown"],
                         table_description=description[suffix],
                         table_format=table_format,
                         result_name=table.table_title,
@@ -253,15 +243,15 @@ def generate_table(
     csv_table = table.to_csv_file()
     cbar = table.save_colourbar(fig_dir)
 
-    problem_dropdown_html = table.problem_dropdown_html()
-    minimizer_dropdown_html = table.minimizer_dropdown_html()
-    probsize_checkbox_html = table.probsize_checkbox_html()
-
     html_dict = {
         "table": html_table,
-        "problem_dropdown": problem_dropdown_html,
-        "minim_dropdown": minimizer_dropdown_html,
-        "probsize_checkb": probsize_checkbox_html,
+        "problem_dropdown": table.problem_dropdown_html(),
+        "minim_dropdown": table.minimizer_dropdown_html(),
+        "probsize_checkbox": table.probsize_checkbox_html(),
+        "runtime_dropdown": "",
     }
+
+    if suffix in ["compare", "runtime"]:
+        html_dict["runtime_dropdown"] = table.runtime_dropdown_html()
 
     return table, html_dict, csv_table, cbar

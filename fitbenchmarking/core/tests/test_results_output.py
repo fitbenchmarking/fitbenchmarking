@@ -184,7 +184,7 @@ class PreprocessDataTests(unittest.TestCase):
             {"results_dir": self.results_dir}
         )
         self.min_accuracy = 0.2
-        self.min_runtime = 1.0
+        self.min_mean_runtime = 1.0
 
     def test_preprocess_data(self):
         """
@@ -200,7 +200,7 @@ class PreprocessDataTests(unittest.TestCase):
             for category in problem.values():
                 for r in category:
                     self.assertEqual(r.min_accuracy, self.min_accuracy)
-                    self.assertEqual(r.min_runtime, self.min_runtime)
+                    self.assertEqual(r.min_mean_runtime, self.min_mean_runtime)
 
 
 class CreatePlotsTests(unittest.TestCase):
@@ -536,7 +536,8 @@ class ProcessBestResultsTests(unittest.TestCase):
                 self.results, [2, 1, 5, 3, 4], [5, 4, 1, 2, 3]
             ):
                 r.accuracy = accuracy
-                r.runtime = runtime
+                r.runtimes = [runtime]
+                r.runtime_metric = "mean"
             self.best = _process_best_results(self.results)
 
     def test_returns_best_result(self):
@@ -564,11 +565,11 @@ class ProcessBestResultsTests(unittest.TestCase):
 
     def test_minimum_runtime_set(self):
         """
-        Test that min_runtime is set correctly.
+        Test that min_mean_runtime is set correctly.
         """
         fastest = self.results[2]
         for r in self.results:
-            self.assertEqual(r.min_runtime, fastest.runtime)
+            self.assertEqual(r.min_mean_runtime, fastest.mean_runtime)
 
 
 class UpdateWarningTests(unittest.TestCase):

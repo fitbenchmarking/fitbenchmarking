@@ -46,6 +46,19 @@ class Table:
     }
     colour_template = "background-color: {0}"
     cbar_title = "No colour bar description given"
+    runtime_choices = [
+        "mean",
+        "minimum",
+        "maximum",
+        "first",
+        "median",
+        "harmonic",
+        "trim",
+    ]
+    color_to_class = {
+        "rgb(0,0,0)": 'class="dark"',
+        "rgb(255,255,255)": 'class="light"',
+    }
 
     def __init__(
         self,
@@ -314,12 +327,8 @@ class Table:
         :return: The hyperlink representation.
         :rtype: str
         """
-        color_to_class = {
-            "rgb(0,0,0)": 'class="dark"',
-            "rgb(255,255,255)": 'class="light"',
-        }
         val_str = (
-            f"<a {color_to_class[text_col]} "
+            f"<a {self.color_to_class[text_col]} "
             f'href="{self.get_link_str(result)}">'
             f"{val_str}</a>"
         )
@@ -749,6 +758,50 @@ class Table:
         return self._dropdown_html(
             "minimizer_dropdown", "Select Minimizers", items
         )
+
+    def runtime_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown radio buttons of runtimes.
+
+        :return: HTML for a dropdown radio buttons of runtimes.
+        :rtype: str
+        """
+        problem = next(p for p in self.best_results)
+        cost_func = next(w for w in self.best_results[problem])
+        metric = self.best_results[problem][cost_func].runtime_metric
+        items = [
+            f'        <li><label class="noselect"><input '
+            f'type="radio" name="runtime_selection" '
+            f"{'checked' if rc == metric else ''} "
+            f"onclick=\"update_runtime('{rc}')\"/> {rc}</label></li>"
+            for rc in self.runtime_choices
+        ]
+        return self._dropdown_html(
+            "runtime_dropdown", "Select Runtime Metric", items
+        )
+
+    def get_runtime_value_str(self, result):
+        """
+        Generates the value str for the compare and runtime tables.
+
+        :param result: The result to generate a string for
+        :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+
+        :return: The value string representation containing all runtime
+                 metrics.
+        :rtype: str
+        """
+        val_str = ""
+        for rt in self.runtime_choices:
+            formated_runtime = f"{getattr(result, rt + '_runtime'):.4g}"
+            formatted_norm_runtime = f"{result.norm_runtime(rt):.4g}"
+            display_style = "inline" if rt == result.runtime_metric else "none"
+            val_str += (
+                f"<span class='runtime' id='{rt}' "
+                f"style='display:{display_style}'>"
+                f"{formated_runtime} ({formatted_norm_runtime})</span>"
+            )
+        return val_str
 
     @staticmethod
     def _dropdown_html(

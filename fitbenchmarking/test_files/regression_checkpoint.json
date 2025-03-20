@@ -304,6 +304,7 @@
                 0.0023708750086370856,
                 0.0022464170033345
         ],
+        "runtime_metric": "mean",
         "energy": 1.3810022468213092e-08,
         "iteration_count": null,
         "func_evals": 23,
@@ -337,6 +338,7 @@
                 0.0031050420075189322,
                 0.002993957998114638
         ],
+        "runtime_metric": "mean",
         "energy": 1.849952823293049e-08,
         "iteration_count": null,
         "func_evals": 22,
@@ -370,6 +372,7 @@
                 0.0054976249957690015,
                 0.005278666998492554
         ],
+        "runtime_metric": "mean",
         "energy": 1.0605073449939896e-08,
         "iteration_count": null,
         "func_evals": 22,
@@ -403,6 +406,7 @@
                 0.0034340839920332655,
                 0.002982749996590428
         ],
+        "runtime_metric": "mean",
         "energy": 7.33967736034619e-10,
         "iteration_count": null,
         "func_evals": 22,
@@ -436,6 +440,7 @@
                 0.004883790999883786,
                 0.003975915999035351
         ],
+        "runtime_metric": "mean",
         "energy": 4.0616884467871645e-09,
         "iteration_count": null,
         "func_evals": 20,
@@ -469,6 +474,7 @@
                 0.004795875007403083,
                 0.004808792000403628
         ],
+        "runtime_metric": "mean",
         "energy": 3.4336781125879947e-09,
         "iteration_count": null,
         "func_evals": 20,
@@ -502,6 +508,7 @@
                 0.0009763749985722825,
                 0.0009662919910624623
         ],
+        "runtime_metric": "mean",
         "energy": 4.667983729585149e-09,
         "iteration_count": null,
         "func_evals": 7,
@@ -535,6 +542,7 @@
                 0.0013146669953130186,
                 0.0013240830012364313
         ],
+        "runtime_metric": "mean",
         "energy": 3.2893796731737767e-09,
         "iteration_count": null,
         "func_evals": 7,
@@ -568,6 +576,7 @@
                 0.0024756250058999285,
                 0.00242545799119398
         ],
+        "runtime_metric": "mean",
         "energy": 1.7244612498570649e-09,
         "iteration_count": null,
         "func_evals": 7,
@@ -601,6 +610,7 @@
                 0.001033583001117222,
                 0.0010147079883608967
         ],
+        "runtime_metric": "mean",
         "energy": 3.2916151735287774e-09,
         "iteration_count": null,
         "func_evals": 7,
@@ -634,6 +644,7 @@
                 0.0014726660010637715,
                 0.0014085419970797375
         ],
+        "runtime_metric": "mean",
         "energy": 8.60251985869134e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -667,6 +678,7 @@
                 0.0025897919986164197,
                 0.0025450419925618917
         ],
+        "runtime_metric": "mean",
         "energy": 8.280805980016723e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -700,6 +712,7 @@
                 0.006456917006289586,
                 0.006186124999658205
         ],
+        "runtime_metric": "mean",
         "energy": 6.108970160573692e-10,
         "iteration_count": null,
         "func_evals": 46,
@@ -733,6 +746,7 @@
                 0.008974416996352375,
                 0.008606709001469426
         ],
+        "runtime_metric": "mean",
         "energy": 8.536801429183745e-10,
         "iteration_count": null,
         "func_evals": 43,
@@ -766,6 +780,7 @@
                 0.006901874992763624,
                 0.006575417006388307
         ],
+        "runtime_metric": "mean",
         "energy": 5.646563791513459e-10,
         "iteration_count": null,
         "func_evals": 19,
@@ -799,6 +814,7 @@
                 0.0030413329950533807,
                 0.0028715410007862374
         ],
+        "runtime_metric": "mean",
         "energy": 2.576362191370682e-10,
         "iteration_count": null,
         "func_evals": 12,
@@ -832,6 +848,7 @@
                 0.003361916998983361,
                 0.003252874987083487
         ],
+        "runtime_metric": "mean",
         "energy": 7.589013978479646e-10,
         "iteration_count": null,
         "func_evals": 12,
@@ -865,6 +882,7 @@
                 0.0050317499990342185,
                 0.004846583993639797
         ],
+        "runtime_metric": "mean",
         "energy": 1.7111646722583704e-09,
         "iteration_count": null,
         "func_evals": 12,
@@ -898,6 +916,7 @@
                 0.0008846660057315603,
                 0.0008856250060489401
         ],
+        "runtime_metric": "mean",
         "energy": 9.8937731040118e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -931,6 +950,7 @@
                 0.0009365419973619282,
                 0.0009327089937869459
         ],
+        "runtime_metric": "mean",
         "energy": 6.019668704512676e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -964,6 +984,7 @@
                 0.0014208329957909882,
                 0.0014115000085439533
         ],
+        "runtime_metric": "mean",
         "energy": 4.2332423896896704e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -997,6 +1018,7 @@
                 0.0006892499950481579,
                 0.0006329169991659
         ],
+        "runtime_metric": "mean",
         "energy": 5.830347392628446e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -1030,6 +1052,7 @@
                 0.00108637499215547,
                 0.00108712499786634
         ],
+        "runtime_metric": "mean",
         "energy": 9.320429498014685e-09,
         "iteration_count": null,
         "func_evals": 7,
@@ -1063,6 +1086,7 @@
                 0.0014177909906720743,
                 0.0014014589978614822
         ],
+        "runtime_metric": "mean",
         "energy": 4.859474739431073e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -1096,6 +1120,7 @@
                 0.004348999995272607,
                 0.004193792003206909
         ],
+        "runtime_metric": "mean",
         "energy": 8.126778213804962e-09,
         "iteration_count": null,
         "func_evals": 109,
@@ -1129,6 +1154,7 @@
                 0.00886558300408069,
                 0.008463791004032828
         ],
+        "runtime_metric": "mean",
         "energy": 9.296314279304775e-09,
         "iteration_count": null,
         "func_evals": 78,
@@ -1162,6 +1188,7 @@
                 0.007023375001153909,
                 0.006706999993184581
         ],
+        "runtime_metric": "mean",
         "energy": 2.157564807081693e-09,
         "iteration_count": null,
         "func_evals": 46,
@@ -1195,6 +1222,7 @@
                 0.000581459011300467,
                 0.0005831250018673018
         ],
+        "runtime_metric": "mean",
         "energy": 8.868550403709075e-09,
         "iteration_count": null,
         "func_evals": 9,
@@ -1228,6 +1256,7 @@
                 0.000915749988052994,
                 0.0008743749931454659
         ],
+        "runtime_metric": "mean",
         "energy": 2.8019978532733784e-09,
         "iteration_count": null,
         "func_evals": 8,
@@ -1261,6 +1290,7 @@
                 0.001157042002887465,
                 0.0011413749889470637
         ],
+        "runtime_metric": "mean",
         "energy": 5.125642598363993e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1294,6 +1324,7 @@
                 0.0041636250098235905,
                 0.003924125005141832
         ],
+        "runtime_metric": "mean",
         "energy": 5.521810400144202e-10,
         "iteration_count": null,
         "func_evals": 104,
@@ -1327,6 +1358,7 @@
                 0.009229000002960674,
                 0.008750916997087188
         ],
+        "runtime_metric": "mean",
         "energy": 9.555251962234794e-10,
         "iteration_count": null,
         "func_evals": 80,
@@ -1360,6 +1392,7 @@
                 0.0034837090061046183,
                 0.0033209169923793525
         ],
+        "runtime_metric": "mean",
         "energy": 5.966152397999034e-10,
         "iteration_count": null,
         "func_evals": 21,
@@ -1393,6 +1426,7 @@
                 0.00047241699940059334,
                 0.0004648750036722049
         ],
+        "runtime_metric": "mean",
         "energy": 2.4271862813605345e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1426,6 +1460,7 @@
                 0.0008997499971883371,
                 0.0008847919962136075
         ],
+        "runtime_metric": "mean",
         "energy": 7.860250502830282e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1459,6 +1494,7 @@
                 0.001240417012013495,
                 0.0011484160058898851
         ],
+        "runtime_metric": "mean",
         "energy": 5.371983379999833e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1492,6 +1528,7 @@
                 0.012521208001999184,
                 0.011987625010078773
         ],
+        "runtime_metric": "mean",
         "energy": 1.2939693758238066e-09,
         "iteration_count": null,
         "func_evals": 500,
@@ -1525,6 +1562,7 @@
                 0.0359477500023786,
                 0.03577004199905787
         ],
+        "runtime_metric": "mean",
         "energy": 1.7021452360580127e-09,
         "iteration_count": null,
         "func_evals": 500,
@@ -1558,6 +1596,7 @@
                 0.0021916670084465295,
                 0.0020567089959513396
         ],
+        "runtime_metric": "mean",
         "energy": 1.0569142303526877e-09,
         "iteration_count": null,
         "func_evals": 12,
@@ -1591,6 +1630,7 @@
                 0.0009503750043222681,
                 0.0008860000089043751
         ],
+        "runtime_metric": "mean",
         "energy": 9.786798992997332e-10,
         "iteration_count": null,
         "func_evals": 18,
@@ -1624,6 +1664,7 @@
                 0.002852624995284714,
                 0.0026370839914307
         ],
+        "runtime_metric": "mean",
         "energy": 1.6698313469441864e-09,
         "iteration_count": null,
         "func_evals": 21,
@@ -1657,6 +1698,7 @@
                 0.001835208007832989,
                 0.0016652920021442696
         ],
+        "runtime_metric": "mean",
         "energy": 4.6083889278081945e-10,
         "iteration_count": null,
         "func_evals": 10,
@@ -1690,6 +1732,7 @@
                 0.0004477079928619787,
                 0.00044249999336898327
         ],
+        "runtime_metric": "mean",
         "energy": 6.577768687625899e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1723,6 +1766,7 @@
                 0.0008331249991897494,
                 0.0008222500036936253
         ],
+        "runtime_metric": "mean",
         "energy": 1.1968909028076634e-09,
         "iteration_count": null,
         "func_evals": 8,
@@ -1756,6 +1800,7 @@
                 0.0006905000045662746,
                 0.0006874999962747097
         ],
+        "runtime_metric": "mean",
         "energy": 5.7793424806871905e-09,
         "iteration_count": null,
         "func_evals": 8,
@@ -1789,6 +1834,7 @@
                 0.00035458301135804504,
                 0.0003522080078255385
         ],
+        "runtime_metric": "mean",
         "energy": 2.351489681001856e-10,
         "iteration_count": null,
         "func_evals": 5,
@@ -1822,6 +1868,7 @@
                 0.000557250008569099,
                 0.0005341669893823564
         ],
+        "runtime_metric": "mean",
         "energy": 1.746530835566806e-10,
         "iteration_count": null,
         "func_evals": 5,
@@ -1855,6 +1902,7 @@
                 0.00042050000047311187,
                 0.0004164580022916198
         ],
+        "runtime_metric": "mean",
         "energy": 2.6862119343104064e-09,
         "iteration_count": null,
         "func_evals": 5,
@@ -1888,6 +1936,7 @@
                 0.0004228750040056184,
                 0.00038312500691972673
         ],
+        "runtime_metric": "mean",
         "energy": 7.393030620861646e-10,
         "iteration_count": null,
         "func_evals": 7,
@@ -1921,6 +1970,7 @@
                 0.0007786670030327514,
                 0.0007822089974069968
         ],
+        "runtime_metric": "mean",
         "energy": 1.3509679499716e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1954,6 +2004,7 @@
                 0.0009373339999001473,
                 0.0008787080005276948
         ],
+        "runtime_metric": "mean",
         "energy": 1.3553344078930256e-10,
         "iteration_count": null,
         "func_evals": 8,
@@ -1987,6 +2038,7 @@
                 0.00031600000511389226,
                 0.0003104999923380092
         ],
+        "runtime_metric": "mean",
         "energy": 2.676123159413175e-10,
         "iteration_count": null,
         "func_evals": 4,
@@ -2020,6 +2072,7 @@
                 0.0004457500035641715,
                 0.0004385419888421893
         ],
+        "runtime_metric": "mean",
         "energy": 2.0421368350661747e-10,
         "iteration_count": null,
         "func_evals": 4,
@@ -2053,6 +2106,7 @@
                 0.0006452079978771508,
                 0.0005689999961759895
         ],
+        "runtime_metric": "mean",
         "energy": 6.233541548181548e-09,
         "iteration_count": null,
         "func_evals": 4,
