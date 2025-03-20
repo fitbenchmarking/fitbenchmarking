@@ -32,7 +32,6 @@ class Plot:
         "width": 4,
         "color": "rgba(0,0,0,0.4)",
     }
-    _SpinW_ax_titles = {"x": "Energy (meV)", "y": "Intensity"}
     _default_ax_titles = {"x": "x", "y": "y"}
 
     def __init__(self, best_result, options, figures_dir):
@@ -46,7 +45,7 @@ class Plot:
             )
         if (
             self.result.problem_format == "horace"
-            and self.result.spinw_plot_info is None
+            and self.result.plot_info is None
         ):
             self.plots_failed = True
             raise PlottingError(
@@ -91,14 +90,14 @@ class Plot:
         :rtype: str
         """
         title = self.result.name
+        n_plots = 1
         subplot_titles = None
         ax_titles = self._default_ax_titles
-        n_plots = 1
 
-        if self.result.spinw_plot_info is not None:
-            n_plots = self.result.spinw_plot_info["n_cuts"]
-            subplot_titles = self._get_subplot_titles_SpinW(self.result)
-            ax_titles = self._SpinW_ax_titles
+        if self.result.plot_info is not None:
+            n_plots = self.result.plot_info["n_plots"]
+            subplot_titles = self.result.plot_info["subplot_titles"]
+            ax_titles = self.result.plot_info["ax_titles"]
 
         fig = make_subplots(
             rows=1,
@@ -164,18 +163,19 @@ class Plot:
         subplot_titles = None
         ax_titles = self._default_ax_titles
 
-        if self.result.spinw_plot_info is not None:
-            n_plots = self.result.spinw_plot_info["n_cuts"]
-            subplot_titles = self._get_subplot_titles_SpinW(self.result)
-            ax_titles = self._SpinW_ax_titles
+        if self.result.plot_info is not None:
+            n_plots = self.result.plot_info["n_plots"]
+            subplot_titles = self.result.plot_info["subplot_titles"]
+            ax_titles = self.result.plot_info["ax_titles"]
             self._check_data_len(x_data, y_data)
 
         data_len = int(
             len(df_fit["y"][df_fit["minimizer"] == "Data"]) / n_plots
         )
-        df_fit = df_fit[~df_fit.minimizer.isin(["Data", "Starting Guess"])]
 
-        for minimizer in df_fit["minimizer"].unique():
+        for minimizer in df_fit[
+            ~df_fit.minimizer.isin(["Data", "Starting Guess"])
+        ]["minimizer"].unique():
             fig = make_subplots(
                 rows=1,
                 cols=n_plots,
@@ -318,13 +318,13 @@ class Plot:
         colours = cls._sample_colours(np.linspace(0, 1, len(categories)))
         first_result = next(iter(categories.values()))[0]
         n_plots = 1
-        ax_titles = cls._default_ax_titles
         subplot_titles = None
+        ax_titles = cls._default_ax_titles
 
-        if first_result.spinw_plot_info is not None:
-            subplot_titles = cls._get_subplot_titles_SpinW(first_result)
-            n_plots = len(subplot_titles)
-            ax_titles = cls._SpinW_ax_titles
+        if first_result.plot_info is not None:
+            n_plots = first_result.plot_info["n_plots"]
+            subplot_titles = first_result.plot_info["subplot_titles"]
+            ax_titles = first_result.plot_info["ax_titles"]
 
         fig = make_subplots(
             rows=1,
@@ -497,14 +497,15 @@ class Plot:
         col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
         colours = cls._sample_colours(col_vals)
         n_plots_per_row = 1
+        subplot_titles = None
 
-        if first_result.spinw_plot_info is not None:
-            subplot_titles = cls._get_subplot_titles_SpinW(first_result)
+        if first_result.plot_info is not None:
+            n_plots_per_row = first_result.plot_info["n_plots"]
+            subplot_titles = first_result.plot_info["subplot_titles"]
             cls._check_data_len(
                 first_result.data_x,
                 first_result.data_y,
             )
-            n_plots_per_row = len(subplot_titles)
 
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
@@ -652,14 +653,6 @@ class Plot:
         """Checks x and y data have same length and raises error if not."""
         if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
-
-    @classmethod
-    def _get_subplot_titles_SpinW(cls, result):
-        """Gets subplot titles for SpinW."""
-        subplot_titles = [
-            f"{i} Å<sup>-1</sup>" for i in result.spinw_plot_info["q_cens"]
-        ]
-        return subplot_titles
 
     @classmethod
     def _update_axes_titles(cls, fig, col_ind, ax_titles):
