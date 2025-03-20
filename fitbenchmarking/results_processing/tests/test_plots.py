@@ -183,13 +183,18 @@ class PlotTests(unittest.TestCase):
     def test__check_data_len_called(self, check_data_len):
         """
         Test that plotly_fit and plots_residuals call _check_data_len
-        when spinw_plot_info is set.
+        when plot_info is set.
         """
-        self.plot.result.spinw_plot_info = {
+        self.plot.result.plot_info = {
             "plot_type": "1d_cuts",
-            "n_cuts": 2,
-            "q_cens": [0.5, 1],
-            "ebin_cens": [0.9, 1.6, 1.1],
+            "n_plots": 3,
+            "subplot_titles": [
+                "0.5 Å<sup>-1</sup>",
+                "1 Å<sup>-1</sup>",
+                "1.5 Å<sup>-1</sup>",
+            ],
+            "ebin_cens": [0.9],
+            "ax_titles": {"x": "x", "y": "y"},
         }
 
         self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
@@ -209,7 +214,7 @@ class PlotTests(unittest.TestCase):
     def test__check_data_len_not_called(self, check_data_len):
         """
         Test that plotly_fit and plots_residuals don't call
-        _check_data_len when spinw_plot_info is not set.
+        _check_data_len when plot_info is not set.
         """
         self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
         check_data_len.assert_not_called()
@@ -311,10 +316,14 @@ class PlotTests(unittest.TestCase):
         number of subplots
         """
         result = next(iter(self.fr.values()))[0]
-        result.spinw_plot_info = {
+        result.plot_info = {
             "plot_type": "1d_cuts",
-            "n_cuts": 3,
-            "q_cens": [0.5, 1, 1.5],
+            "n_plots": 3,
+            "subplot_titles": [
+                "0.5 Å<sup>-1</sup>",
+                "1 Å<sup>-1</sup>",
+                "1.5 Å<sup>-1</sup>",
+            ],
             "ebin_cens": [0.9],
         }
         titles = 3 * ["Q_value"]
@@ -326,9 +335,9 @@ class PlotTests(unittest.TestCase):
         rows, cols = fig._get_subplot_rows_columns()
 
         assert len(rows) == len(self.fr.keys())
-        assert len(cols) == result.spinw_plot_info["n_cuts"]
+        assert len(cols) == result.plot_info["n_plots"]
 
-        result.spinw_plot_info["ebin_cens"] = [2, 4]
+        result.plot_info["ebin_cens"] = [2, 4]
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
@@ -438,91 +447,6 @@ class PlotTests(unittest.TestCase):
         exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
         colours = self.plot._sample_colours([0.4, 0.7])
         self.assertEqual(exp_colours, colours)
-
-    def test__get_subplot_titles_SpinW(self):
-        """
-        Test that _get_subplot_titles_SpinW gets the correct subplot titles.
-        """
-        result = next(iter(self.fr.values()))[0]
-        result.spinw_plot_info = {
-            "plot_type": "1d_cuts",
-            "n_cuts": 3,
-            "q_cens": [0.5, 1],
-            "ebin_cens": [0.9],
-        }
-        exp_titles = ["0.5 Å<sup>-1</sup>", "1 Å<sup>-1</sup>"]
-        titles = self.plot._get_subplot_titles_SpinW(result)
-        self.assertEqual(exp_titles, titles)
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._get_subplot_titles_SpinW"
-    )
-    def test__get_subplot_titles_SpinW_called(self, get_subplot_titles_SpinW):
-        """
-        Test that plot_initial_guess, plotly_fit, plot_summary and
-        plots_residuals call _get_subplot_titles_SpinW when spinw_plot_info
-        is set.
-        """
-        self.plot.result.spinw_plot_info = {
-            "plot_type": "1d_cuts",
-            "n_cuts": 2,
-            "q_cens": [0.5, 1],
-            "ebin_cens": [0.9, 1.6, 1.1],
-        }
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        get_subplot_titles_SpinW.assert_called()
-
-        self.plot.plot_summary(
-            categories=self.fr,
-            title="",
-            options=self.opts,
-            figures_dir=self.figures_dir,
-        )
-        get_subplot_titles_SpinW.assert_called()
-
-        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
-        get_subplot_titles_SpinW.assert_called()
-
-        self.plot.plot_residuals(
-            categories=self.fr,
-            title="",
-            options=self.opts,
-            figures_dir=self.figures_dir,
-        )
-        get_subplot_titles_SpinW.assert_called()
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._get_subplot_titles_SpinW"
-    )
-    def test__get_subplot_titles_SpinW_not_called(
-        self, get_subplot_titles_SpinW
-    ):
-        """
-        Test that plot_initial_guess, plotly_fit, plot_summary and
-        plots_residuals DO NOT call _get_subplot_titles_SpinW when
-        spinw_plot_info is not set.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        get_subplot_titles_SpinW.assert_not_called()
-
-        self.plot.plot_summary(
-            categories=self.fr,
-            title="",
-            options=self.opts,
-            figures_dir=self.figures_dir,
-        )
-        get_subplot_titles_SpinW.assert_not_called()
-
-        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
-        get_subplot_titles_SpinW.assert_not_called()
-
-        self.plot.plot_residuals(
-            categories=self.fr,
-            title="",
-            options=self.opts,
-            figures_dir=self.figures_dir,
-        )
-        get_subplot_titles_SpinW.assert_not_called()
 
 
 if __name__ == "__main__":
