@@ -424,8 +424,10 @@ class PlotTests(unittest.TestCase):
         """
         input_df = self.df[("Fake_Test_Data", "prob_1")]
         self.plot.plotly_fit(input_df)
-        expected = len(input_df["minimizer"].unique()) - 2
-        self.assertEqual(add_data_points.call_count, expected)
+        minimizers = input_df["minimizer"][
+            ~input_df.minimizer.isin(["Data", "Starting Guess"])
+        ].unique()
+        self.assertEqual(add_data_points.call_count, len(minimizers))
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
@@ -446,12 +448,15 @@ class PlotTests(unittest.TestCase):
         self, add_starting_guess
     ):
         """
-        Test that _add_starting_guess gets called by plotly_fit.
+        Test that _add_starting_guess gets called by plotly_fit, the
+        correct number of times.
         """
         input_df = self.df[("Fake_Test_Data", "prob_1")]
         self.plot.plotly_fit(input_df)
-        expected = len(input_df["minimizer"].unique()) - 2
-        self.assertEqual(add_starting_guess.call_count, expected)
+        minimizers = input_df["minimizer"][
+            ~input_df.minimizer.isin(["Data", "Starting Guess"])
+        ].unique()
+        self.assertEqual(add_starting_guess.call_count, len(minimizers))
 
     def test__sample_colours(self):
         """

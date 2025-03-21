@@ -31,7 +31,7 @@ def horace_on():
     ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
-            "that HORACE_LOCATION is specfied as a environment "
+            "that HORACE_LOCATION is specfied as an environment "
             "variable"
         )
     elif (
@@ -39,7 +39,7 @@ def horace_on():
     ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
-            "that SPINW_LOCATION is specfied as a environment "
+            "that SPINW_LOCATION is specfied as an environment "
             "variable"
         )
     else:

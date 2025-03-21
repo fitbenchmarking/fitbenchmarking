@@ -59,7 +59,9 @@ class Plot:
         self.figures_dir = figures_dir
 
     @staticmethod
-    def write_html_with_link_plotlyjs(fig, figures_dir, htmlfile, options):
+    def write_html_with_link_plotlyjs(
+        fig, figures_dir, htmlfile, options
+    ) -> None:
         """
         Writes an html file for the figure passed as input and
         includes link to the relevant plotly.js file.
@@ -72,14 +74,12 @@ class Plot:
         :type htmlfile: str
         :param options: The options for the run
         :type options: utils.options.Options
-
-        :return: None
         """
         plotly_path = get_js(options, figures_dir).get("plotly")
         html_file_name = os.path.join(figures_dir, htmlfile)
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
-    def plot_initial_guess(self, df_fit):
+    def plot_initial_guess(self, df_fit) -> str:
         """
         Plots the initial guess along with the data and stores in a file
 
@@ -126,7 +126,7 @@ class Plot:
         return htmlfile
 
     @staticmethod
-    def best_filename(result):
+    def best_filename(result) -> str:
         """
         Returns the filename of the best fit plot.
 
@@ -142,7 +142,7 @@ class Plot:
         )
         return htmlfile
 
-    def plotly_fit(self, df_fit):
+    def plotly_fit(self, df_fit) -> dict[str, str]:
         """
         Uses plotly to plot the calculated fit, along with the best fit.
         Stores the plot in a file
@@ -238,7 +238,7 @@ class Plot:
 
         return htmlfiles
 
-    def plot_posteriors(self, result):
+    def plot_posteriors(self, result) -> str:
         """
         Use Plotly to plot estimated posterior pdfs.
 
@@ -298,7 +298,7 @@ class Plot:
         return html_fname
 
     @classmethod
-    def plot_summary(cls, categories, title, options, figures_dir):
+    def plot_summary(cls, categories, title, options, figures_dir) -> str:
         """
         Create a comparison plot showing all fits from the results with the
         best for each category highlighted.
@@ -371,7 +371,9 @@ class Plot:
         return html_fname
 
     @classmethod
-    def _add_data_points(cls, fig, data_x, data_y, error_y, n_plots):
+    def _add_data_points(
+        cls, fig, data_x, data_y, error_y, n_plots
+    ) -> go.Figure:
         """
         Adds data points and error bars to given plot.
 
@@ -411,7 +413,7 @@ class Plot:
     @classmethod
     def _plot_minimizer_results(
         cls, fig, result, n_plots, categ, ax_titles, colour
-    ):
+    ) -> go.Figure:
         """
         Plots results for each minimizer.
 
@@ -423,8 +425,8 @@ class Plot:
         :type n_plots_per_row: int
         :param categ: Cost function name
         :type categ: str
-        :param ax_titles: dict with titles for x and y axis
-        :type ax_titles: dict
+        :param ax_titles: Titles for x and y axis
+        :type ax_titles: dict[str, str]
         :param colour: Colour for the minimizer we are plotting
         :type colour: str
 
@@ -476,7 +478,7 @@ class Plot:
         return fig
 
     @classmethod
-    def plot_residuals(cls, categories, title, options, figures_dir):
+    def plot_residuals(cls, categories, title, options, figures_dir) -> str:
         """
         Create a comparison plot showing residuals for all fits,
         while emphasizing the residuals for the best fit .
@@ -533,7 +535,9 @@ class Plot:
         return html_fname
 
     @classmethod
-    def _create_empty_residuals_plots(cls, categories, subplot_titles):
+    def _create_empty_residuals_plots(
+        cls, categories, subplot_titles
+    ) -> go.Figure:
         """
         Creates the initially empty residuals plot for spinw problems.
 
@@ -562,7 +566,9 @@ class Plot:
         )
         return fig
 
-    def _add_starting_guess(self, fig, df_fit, n_plots_per_row, ax_titles):
+    def _add_starting_guess(
+        self, fig, df_fit, n_plots_per_row, ax_titles
+    ) -> go.Figure:
         """
         Adds starting guess to figure.
 
@@ -573,7 +579,7 @@ class Plot:
         :param n_plots_per_row: number of subplots per row
         :type n_plots_per_row: int
         :param ax_titles: Titles for axes
-        :type ax_titles: list
+        :type ax_titles: dict[str, str]
 
         :return: Updated plot
         :rtype: plotly.graph_objects.Figure
@@ -605,7 +611,7 @@ class Plot:
     @classmethod
     def _add_residual_traces(
         cls, fig, result, n_plots_per_row, colour, row_ind
-    ):
+    ) -> go.Figure:
         """
         Adds traces to the empty residuals plot figure.
 
@@ -644,20 +650,40 @@ class Plot:
 
         return fig
 
-    def _check_data_len(self, x_data, y_data):
-        """Checks x and y data have same length and raises error if not."""
+    def _check_data_len(self, x_data, y_data) -> None:
+        """
+        Checks x and y data have same length and raises error if not.
+        """
         if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
 
     @classmethod
-    def _update_axes_titles(cls, fig, col_ind, ax_titles):
+    def _update_axes_titles(cls, fig, col_ind, ax_titles) -> go.Figure:
+        """
+        Sets the titles of x and y axes.
+        For space reasons, only sets the y axis title of the plot on the very
+        left, as this will be the same in the other plots.
+
+        :param fig: The plotly figure to add the traces to
+        :type fig: plotly.graph_objects.Figure
+        :param col_ind: Index of the colum (subplot) we are adding ax titles to
+        :type col_ind: int
+        :param ax_titles: Titles for each axis
+        :type ax_titles: dict[str, str]
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
         if col_ind == 0:
             fig.update_yaxes(title_text=ax_titles["y"], row=1, col=col_ind + 1)
         fig.update_xaxes(title_text=ax_titles["x"], row=1, col=col_ind + 1)
         return fig
 
     @classmethod
-    def _update_to_logscale_if_needed(self, fig, result):
+    def _update_to_logscale_if_needed(self, fig, result) -> go.Figure:
+        """
+        Updates logscale to log if this is specified in result.plot_scale .
+        """
         if result.plot_scale in ["loglog", "logx"]:
             fig.update_xaxes(type="log")
         if result.plot_scale in ["loglog", "logy"]:
@@ -665,7 +691,7 @@ class Plot:
         return fig
 
     @classmethod
-    def _sample_colours(cls, points):
+    def _sample_colours(cls, points) -> list[str]:
         """
         Samples plotly colours based on values passed as input
         """
