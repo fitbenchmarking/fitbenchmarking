@@ -502,10 +502,6 @@ class Plot:
         if first_result.plot_info is not None:
             n_plots_per_row = first_result.plot_info["n_plots"]
             subplot_titles = first_result.plot_info["subplot_titles"]
-            cls._check_data_len(
-                first_result.data_x,
-                first_result.data_y,
-            )
 
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
@@ -648,8 +644,7 @@ class Plot:
 
         return fig
 
-    @classmethod
-    def _check_data_len(cls, x_data, y_data):
+    def _check_data_len(self, x_data, y_data):
         """Checks x and y data have same length and raises error if not."""
         if len(y_data) != len(x_data):
             raise PlottingError("x and y data lengths are not the same")
