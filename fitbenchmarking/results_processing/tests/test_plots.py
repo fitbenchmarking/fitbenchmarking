@@ -177,60 +177,59 @@ class PlotTests(unittest.TestCase):
             self.assertTrue(os.path.exists(path))
             self.assertEqual(find_error_bar_count(path), 2)
 
-    @mock.patch("fitbenchmarking.results_processing.plots.Plot.plotly_spinw")
-    def test_plotly_spinw_called(self, spinw_plot):
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._check_data_len"
+    )
+    def test__check_data_len_called_by_plotly_fit(self, check_data_len):
         """
-        Test that plotly_fit calls plotly_spinw
-        when spinw_plot_info is set.
+        Test that plotly_fit calls _check_data_len
+        when plot_info is set.
         """
-        self.plot.result.spinw_plot_info = {
+        self.plot.result.plot_info = {
             "plot_type": "1d_cuts",
-            "n_cuts": 2,
-            "q_cens": [0.5, 1],
-            "ebin_cens": [0.9, 1.6, 1.1],
-        }
-
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        spinw_plot.assert_called()
-
-        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
-        spinw_plot.assert_called()
-
-    @mock.patch("fitbenchmarking.results_processing.plots.Plot.plotly_spinw")
-    def test_plotly_spinw_fit_not_called(self, spinw_plot):
-        """
-        Test that plotly_fit doesn't call plotly_spinw
-        when spinw_plot_info is not set.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        spinw_plot.assert_not_called()
-
-        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
-        spinw_plot.assert_not_called()
-
-    def test_plotly_spinw(self):
-        """
-        Test that plotly_spinw creates correct number of subplots
-        and raises error if data lengths are unexpected
-        """
-        self.plot.result.spinw_plot_info = {
-            "plot_type": "1d_cuts",
-            "n_cuts": 3,
-            "q_cens": [0.5, 1, 1.5],
+            "n_plots": 3,
+            "subplot_titles": [
+                "0.5 Å<sup>-1</sup>",
+                "1 Å<sup>-1</sup>",
+                "1.5 Å<sup>-1</sup>",
+            ],
             "ebin_cens": [0.9],
+            "ax_titles": {"x": "x", "y": "y"},
         }
+
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        check_data_len.assert_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._check_data_len"
+    )
+    def test__check_data_len_not_called(self, check_data_len):
+        """
+        Test that plotly_fit and plots_residuals don't call
+        _check_data_len when plot_info is not set.
+        """
+        self.plot.plotly_fit(self.df[("Fake_Test_Data", "prob_1")])
+        check_data_len.assert_not_called()
+
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        check_data_len.assert_not_called()
+
+    def test__check_data_len_raises_error(self):
+        """
+        Test _check_data_len raises error if data lengths are
+        unexpected
+        """
         data = self.df[("Fake_Test_Data", "prob_1")]
         y_best = data["y"][data["best"]]
-
-        fig = self.plot.plotly_spinw(data, "m10_[s1]_jj0", y_best)
-        _, cols = fig._get_subplot_rows_columns()
-
-        assert len(cols) == self.plot.result.spinw_plot_info["n_cuts"]
-
-        self.plot.result.spinw_plot_info["ebin_cens"] = [2, 4]
+        x_best = 10 * data["x"][data["best"]].to_list()
 
         with self.assertRaises(PlottingError):
-            self.plot.plotly_spinw(data, "m10_[s1]_jj0", y_best)
+            self.plot._check_data_len(y_best, x_best)
 
     def test_plot_posteriors_create_files(self):
         """
@@ -292,7 +291,6 @@ class PlotTests(unittest.TestCase):
         """
         Test that plot_residuals creates a file
         """
-
         file_name = self.plot.plot_residuals(
             categories=self.fr,
             title="",
@@ -304,35 +302,169 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test_create_empty_residuals_plot_spinw(self):
+    def test__create_empty_residuals_plots(self):
         """
         Test that create_empty_residuals_plot_spinw creates correct
-        number of subplots and raises error if data lengths are unexpected
+        number of subplots
         """
         result = next(iter(self.fr.values()))[0]
-        result.spinw_plot_info = {
+        result.plot_info = {
             "plot_type": "1d_cuts",
-            "n_cuts": 3,
-            "q_cens": [0.5, 1, 1.5],
+            "n_plots": 3,
+            "subplot_titles": [
+                "0.5 Å<sup>-1</sup>",
+                "1 Å<sup>-1</sup>",
+                "1.5 Å<sup>-1</sup>",
+            ],
             "ebin_cens": [0.9],
         }
+        titles = 3 * ["Q_value"]
 
-        fig = self.plot._create_empty_residuals_plot_spinw(
+        fig = self.plot._create_empty_residuals_plots(
             categories=self.fr,
-            n_plots_per_row=result.spinw_plot_info["n_cuts"],
+            subplot_titles=titles,
         )
         rows, cols = fig._get_subplot_rows_columns()
 
         assert len(rows) == len(self.fr.keys())
-        assert len(cols) == result.spinw_plot_info["n_cuts"]
+        assert len(cols) == result.plot_info["n_plots"]
 
-        result.spinw_plot_info["ebin_cens"] = [2, 4]
+        result.plot_info["ebin_cens"] = [2, 4]
 
-        with self.assertRaises(PlottingError):
-            self.plot._create_empty_residuals_plot_spinw(
-                categories=self.fr,
-                n_plots_per_row=result.spinw_plot_info["n_cuts"],
-            )
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
+    )
+    def test__create_empty_residuals_plots_not_called_when_no_subplots(
+        self, create_empty_residuals
+    ):
+        """
+        Test that _create_empty_residuals is not called when there is only
+        one plot (no subplots).
+        """
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        create_empty_residuals.assert_not_called()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
+    )
+    def test__add_residual_traces_called_by_plot_residuals(
+        self, add_residual_traces
+    ):
+        """
+        Test that _add_residual_traces gets called by plot_residuals
+        the right number of times (based on number of categories and results).
+        """
+        self.plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        expected = len(self.fr["Fake_Test_Data"])
+        self.assertEqual(add_residual_traces.call_count, expected)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
+    )
+    def test__plot_minimizer_results_called_by_plot_summary(
+        self, plot_minimizer_results
+    ):
+        """
+        Test that _plot_minimizer_results gets called by plot_summary.
+        """
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        expected = len(self.fr["Fake_Test_Data"])
+        self.assertEqual(plot_minimizer_results.call_count, expected)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
+    )
+    def test__add_data_points_called_by_plot_summary(self, add_data_points):
+        """
+        Test that _add_data_points gets called once by plot_summary.
+        """
+        self.plot.plot_summary(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        add_data_points.assert_called_once()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
+    )
+    def test__add_data_points_called_by_plot_initial_guess(
+        self, add_data_points
+    ):
+        """
+        Test that _add_data_points gets called once by
+        plot_initial_guess.
+        """
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        add_data_points.assert_called_once()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
+    )
+    def test__add_data_points_called_by_plotly_fit(self, add_data_points):
+        """
+        Test that _add_data_points gets called the right number of times
+        by plotly_fit.
+        """
+        input_df = self.df[("Fake_Test_Data", "prob_1")]
+        self.plot.plotly_fit(input_df)
+        minimizers = input_df["minimizer"][
+            ~input_df.minimizer.isin(["Data", "Starting Guess"])
+        ].unique()
+        self.assertEqual(add_data_points.call_count, len(minimizers))
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
+    )
+    def test__add_starting_guess_called_by_plot_initial_guess(
+        self, add_starting_guess
+    ):
+        """
+        Test that _add_starting_guess gets called by plot_initial_guess.
+        """
+        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
+        add_starting_guess.assert_called_once()
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
+    )
+    def test__add_starting_guess_called_by_plotly_fit(
+        self, add_starting_guess
+    ):
+        """
+        Test that _add_starting_guess gets called by plotly_fit, the
+        correct number of times.
+        """
+        input_df = self.df[("Fake_Test_Data", "prob_1")]
+        self.plot.plotly_fit(input_df)
+        minimizers = input_df["minimizer"][
+            ~input_df.minimizer.isin(["Data", "Starting Guess"])
+        ].unique()
+        self.assertEqual(add_starting_guess.call_count, len(minimizers))
+
+    def test__sample_colours(self):
+        """
+        Test that _sample_colours produces the expected output.
+        """
+        exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
+        colours = self.plot._sample_colours([0.4, 0.7])
+        self.assertEqual(exp_colours, colours)
 
 
 if __name__ == "__main__":
