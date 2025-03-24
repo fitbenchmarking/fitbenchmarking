@@ -20,6 +20,17 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
         check-latest: true
-    - name: Pip install fitbenchmarking
+    - name: Pip install fitbenchmarking (Linux/macOS)
+      if: matrix.os != 'windows-latest'
       run: |
+        echo "setuptools<78.0.0" > /tmp/constraints.txt
         pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit]
+      env:
+        PIP_CONSTRAINT: /tmp/constraints.txt
+    - name: Pip install fitbenchmarking (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        powershell -Command "Set-Content -Path 'C:\temp\constraints.txt' -Value 'setuptools<78.0.0'"
+        pip install fitbenchmarking[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit]
+      env:
+        PIP_CONSTRAINT: C:\temp\constraints.txt
