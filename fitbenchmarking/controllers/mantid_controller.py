@@ -7,7 +7,6 @@ from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 
@@ -21,10 +20,10 @@ class MantidController(Controller):
 
     #: A map from fitbenchmarking cost functions to mantid ones.
     COST_FUNCTION_MAP = {
-        "nlls": "Unweighted least squares",
-        "weighted_nlls": "Least squares",
-        "poisson": "Poisson",
-        "loglike_nlls": "Least squares",
+        "NLLSCostFunc": "Unweighted least squares",
+        "WeightedNLLSCostFunc": "Least squares",
+        "PoissonCostFunc": "Poisson",
+        "LoglikeNLLSCostFunc": "Least squares",
     }
 
     algorithm_check = {
@@ -95,18 +94,16 @@ class MantidController(Controller):
         """
         super().__init__(cost_func)
 
-        for fb_cf, mantid_cf in self.COST_FUNCTION_MAP.items():
-            if isinstance(self.cost_func, create_cost_func(fb_cf)):
-                self._cost_function = mantid_cf
-                break
-        else:
+        func_name = type(self.cost_func).__name__
+        if func_name not in self.COST_FUNCTION_MAP:
             raise ControllerAttributeError(
                 "Mantid Controller does not support"
                 " the requested cost function "
                 f"{self.cost_func.__class__}"
             )
+        self._cost_function = self.COST_FUNCTION_MAP[func_name]
 
-        self._param_names = self.problem.param_names
+        self._param_names = self.par_names
         self._status = None
 
         if self.problem.multifit:
@@ -140,7 +137,7 @@ class MantidController(Controller):
 
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
-        try:
+        if "mantid_equation" in self.problem.additional_info:
             function_def = self.problem.additional_info["mantid_equation"]
             if self._multi_fit:
                 # Each function must include '$domains=i'
@@ -186,7 +183,7 @@ class MantidController(Controller):
                 function_def += f"; constraints=({constraints})"
 
             self._mantid_equation = function_def
-        except KeyError:
+        else:
             # This will be completed in setup as it requires initial params
             self._mantid_equation = None
 
