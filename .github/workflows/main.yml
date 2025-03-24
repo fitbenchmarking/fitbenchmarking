@@ -33,11 +33,8 @@ jobs:
         check-latest: true
     - name: Install dependencies
       run: |
-        echo "setuptools<78.0.0" > /tmp/constraints.txt
         pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         pip install --upgrade .[dev]
-      env:
-        PIP_CONSTRAINT: /tmp/constraints.txt
     - name: Run tests
       run: ci/system_tests_default.sh
     - name: Upload test results
@@ -142,11 +139,8 @@ jobs:
         check-latest: true
     - name: Install dependencies
       run: |
-        echo "setuptools<78.0.0" > /tmp/constraints.txt
         pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install --upgrade .[dev]
-      env:
-        PIP_CONSTRAINT: /tmp/constraints.txt
     - name: Run linux tests
       if: runner.os == 'Linux'
       run: ci/unit_tests_default.sh

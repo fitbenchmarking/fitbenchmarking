@@ -23,22 +23,10 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
         check-latest: true
-    - name: Install dependencies (macOS)
-      if: matrix.os == 'macos-13'
+    - name: Install dependencies
       run: |
-        echo "setuptools<78.0.0" > /tmp/constraints.txt
         pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install --upgrade .[dev]
-      env:
-        PIP_CONSTRAINT: /tmp/constraints.txt
-    - name: Install dependencies (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        powershell -Command "Set-Content -Path 'C:\temp\constraints.txt' -Value 'setuptools<78.0.0'"
-        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
-        pip install --upgrade .[dev]
-      env:
-        PIP_CONSTRAINT: C:\temp\constraints.txt
     - name: Run tests (macOS)
       if: matrix.os == 'macos-13'
       run: ci/unit_tests_default.sh
