@@ -292,43 +292,45 @@ class TestFitbenchmarkParser(TestCase):
     @parameterized.expand(
         [
             (
-                "mantid",
+                "mantiddev",
                 "multifit.txt",
                 "['multifit1.txt','multifit2.txt']",
                 [
-                    Path("mantid") / "data_files" / "multifit1.txt",
-                    Path("mantid") / "data_files" / "multifit2.txt",
+                    Path("mantiddev") / "data_files" / "multifit1.txt",
+                    Path("mantiddev") / "data_files" / "multifit2.txt",
                 ],
                 0,
             ),
             (
-                "mantid",
+                "mantiddev",
                 "start_end_x.txt",
                 "mantid_start_end_x.dat",
                 [
-                    Path("mantid") / "data_files" / "mantid_start_end_x.dat",
+                    Path("mantiddev")
+                    / "data_files"
+                    / "mantid_start_end_x.dat",
                 ],
                 0,
             ),
             (
-                "mantid",
+                "mantiddev",
                 "multifit.txt",
                 "['multit.txt','multift2.txt']",
                 [None, None],
                 2,
             ),
             (
-                "mantid",
+                "mantiddev",
                 "multifit.txt",
                 "['multifit1.txt','multift2.txt']",
                 [
-                    Path("mantid") / "data_files" / "multifit1.txt",
+                    Path("mantiddev") / "data_files" / "multifit1.txt",
                     None,
                 ],
                 1,
             ),
             (
-                "mantid",
+                "mantiddev",
                 "start_end_x.txt",
                 "mant_start_end_x.dat",
                 [None],

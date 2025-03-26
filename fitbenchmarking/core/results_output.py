@@ -73,9 +73,6 @@ def save_results(
     """
     group_dir, supp_dir, fig_dir = create_directories(options, group_name)
 
-    for r in results:
-        setattr(r, "runtime_metric", options.runtime_metric)
-
     best_results, results_dict = preprocess_data(results)
 
     pp_locations, pp_dfs = performance_profiler.profile(
@@ -295,13 +292,22 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     :rtype: FittingResult
     """
     best = results[0]
-    fastest = results[0]
+    fastest = {
+        "mean_runtime": results[0],
+        "minimum_runtime": results[0],
+        "maximum_runtime": results[0],
+        "first_runtime": results[0],
+        "median_runtime": results[0],
+        "harmonic_runtime": results[0],
+        "trim_runtime": results[0],
+    }
     lowest = results[0]
     for result in results[1:]:
         if best.accuracy > result.accuracy:
             best = result
-        if fastest.runtime > result.runtime:
-            fastest = result
+        for key in fastest:
+            if getattr(fastest[key], key) > getattr(result, key):
+                fastest[key] = result
         if lowest.energy > result.energy:
             lowest = result
 
@@ -309,7 +315,15 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
 
     for result in results:
         result.min_accuracy = best.accuracy
-        result.min_runtime = fastest.runtime
+        result.min_mean_runtime = fastest["mean_runtime"].mean_runtime
+        result.min_minimum_runtime = fastest["minimum_runtime"].minimum_runtime
+        result.min_maximum_runtime = fastest["maximum_runtime"].maximum_runtime
+        result.min_first_runtime = fastest["first_runtime"].first_runtime
+        result.min_median_runtime = fastest["median_runtime"].median_runtime
+        result.min_harmonic_runtime = fastest[
+            "harmonic_runtime"
+        ].harmonic_runtime
+        result.min_trim_runtime = fastest["trim_runtime"].trim_runtime
         result.min_energy = lowest.energy
 
     return best

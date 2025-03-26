@@ -308,8 +308,6 @@ class HoraceParser(FitbenchmarkParser):
             self._set_plot_type()
             self._set_qcens_and_ncuts()
 
-        return super()._set_additional_info()
-
     def _set_plot_type(self) -> None:
         """
         Add plot_type to fitting_problem.additional_info.

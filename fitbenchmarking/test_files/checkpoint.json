@@ -46,6 +46,7 @@
                 15.0,
                 16.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 20,
@@ -77,6 +78,7 @@
                 14.0,
                 15.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.0001,
         "iteration_count": 5,
         "func_evals": 15,
@@ -108,6 +110,7 @@
                 13.0,
                 14.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 20,
@@ -137,6 +140,7 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,
@@ -168,6 +172,7 @@
                 11.0,
                 12.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 4,
         "func_evals": 20,
@@ -199,6 +204,7 @@
                 10.0,
                 11.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 5,
         "func_evals": 20,
@@ -228,6 +234,7 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 3,
         "func_evals": 20,
@@ -257,6 +264,7 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 10,
         "func_evals": 15,
@@ -286,6 +294,7 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 7,
         "func_evals": 20,
@@ -316,6 +325,7 @@
                 1.0,
                 3.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-06,
         "iteration_count": 5,
         "func_evals": 20,
@@ -345,6 +355,7 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,
@@ -376,6 +387,7 @@
                 1.5,
                 1.5
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 7,
         "func_evals": 20,
@@ -407,6 +419,7 @@
                 3.0,
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 10,
         "func_evals": 20,
@@ -438,6 +451,7 @@
                 15.0,
                 20.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 15,
@@ -467,6 +481,7 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,

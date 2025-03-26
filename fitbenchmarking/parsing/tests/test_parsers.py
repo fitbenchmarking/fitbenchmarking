@@ -85,7 +85,6 @@ def generate_test_cases():
         formats = [
             "cutest",
             "nist",
-            "mantid",
             "ivp",
             "sasview",
             "hogben",

@@ -111,7 +111,7 @@ They can be changed using the arguments in the table below.
        | to create plots during runtime.
    * - *Don't make plots*
      -
-     - ``--don't_make_plots``
+     - ``--dont_make_plots``
      - | Use this option if you have decided
        | not to create plots during runtime.
    * - *Open results browser*
