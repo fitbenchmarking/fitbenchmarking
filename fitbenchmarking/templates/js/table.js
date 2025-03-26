@@ -140,3 +140,22 @@ function load_src(_button) {
     iframewrapper.replaceChildren(...new_iframes);
 }
 
+/**
+* Updates the display value dynamically based on the selected runtime metric.
+*/
+function update_runtime(metric) {
+    let linkElements = document.querySelectorAll("a.dark, a.light");
+
+    linkElements.forEach(link => {
+        let allRuntimeElements = link.querySelectorAll(".runtime");
+        allRuntimeElements.forEach(element => {
+            element.style.display = "none";
+        });
+
+        let selectedElement = link.querySelector(`#${metric}`);
+        if (selectedElement) {
+            selectedElement.style.display = "inline";
+        }
+    });
+}
+
