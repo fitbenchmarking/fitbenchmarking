@@ -12,7 +12,7 @@ import nlopt
 import numpy as np
 from parameterized import parameterized
 from pytest import mark
-from pytest import test_type as TEST_TYPE  # pylint: disable=no-name-in-module
+from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
