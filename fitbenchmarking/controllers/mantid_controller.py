@@ -106,9 +106,7 @@ class MantidController(Controller):
         self._param_names = self.par_names
         self._status = None
         self._dataset_count = (
-            1
-            if self.problem.data_x.ndim == 1
-            else self.problem.data_x.shape[1]
+            len(self.data_x) if isinstance(self.data_x, list) else 1
         )
 
         if self.problem.multifit:
@@ -127,12 +125,16 @@ class MantidController(Controller):
                     zip(self.data_x[1:], self.data_y[1:], self.data_e[1:])
                 )
             ]
+            self._added_args = {
+                f"InputWorkspace_{i + 1}": v
+                for i, v in enumerate(other_inputs)
+            }
         else:
             # Normal Fitting
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
-            other_inputs = []
+            self._added_args = {}
 
         self._mantid_data = data_obj
         self._mantid_function = None
@@ -182,11 +184,6 @@ class MantidController(Controller):
         else:
             # This will be completed in setup as it requires initial params
             self._mantid_equation = None
-
-        # Arguments will change if multi-data
-        self._added_args = {
-            f"InputWorkspace_{i + 1}": v for i, v in enumerate(other_inputs)
-        }
 
     @staticmethod
     def _get_constraint_str(
@@ -398,13 +395,12 @@ class MantidController(Controller):
         :rtype: numpy array
         """
         if self.problem.multifit:
-            num_inps = len(params)
             if x is None:
-                x = [None for _ in range(num_inps)]
+                x = [None for _ in range(len(params))]
             if y is None:
-                y = [None for _ in range(num_inps)]
+                y = [None for _ in range(len(params))]
             if e is None:
-                e = [None for _ in range(num_inps)]
+                e = [None for _ in range(len(params))]
 
             return [
                 super(MantidController, self).eval_chisq(p, xi, yi, ei)
