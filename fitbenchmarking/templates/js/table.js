@@ -144,6 +144,7 @@ function load_src(_button) {
 * Updates the display value dynamically based on the selected runtime metric.
 */
 function update_runtime(metric) {
+    localStorage.setItem("selected_runtime_metric", metric);
     let linkElements = document.querySelectorAll("a.dark, a.light");
 
     linkElements.forEach(link => {

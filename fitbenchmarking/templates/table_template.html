@@ -11,6 +11,14 @@
     <script type="text/javascript" src="{{ dropdown_js }}"></script>
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
     <script type="text/javascript" src="{{ table_js }}"></script>
+    <script>        
+        // When the table page loads, read the selected runtime metric
+        // and update the display of the runtime rows accordingly.
+        document.addEventListener("DOMContentLoaded", () => {
+            const metric = localStorage.getItem("selected_runtime_metric") || "mean";
+            update_runtime(metric);
+        });
+    </script>
     <head>
         <title>{{ run_name }}Fitbenchmark Results Table</title>
     </head>
