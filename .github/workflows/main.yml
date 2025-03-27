@@ -65,7 +65,6 @@ jobs:
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
-        sudo apt-get install libegl-dev libxkbcommon-dev dbus -y
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
     - name: Run tests
@@ -98,7 +97,6 @@ jobs:
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
         sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
-        sudo apt-get install libegl-dev libxkbcommon-dev dbus -y
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
         sudo apt update
