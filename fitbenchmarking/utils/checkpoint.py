@@ -110,7 +110,7 @@ class Checkpoint:
             "func_evals": result.func_evals,
             "flag": result.error_flag,
             "params_pdfs": result.params_pdfs,
-            "spinw_plot_info": result.spinw_plot_info,
+            "plot_info": result.plot_info,
             "software": result.software,
             "minimizer": result.minimizer,
             "jacobian": result.jac,
@@ -333,7 +333,7 @@ class Checkpoint:
                 new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]
                 new_result.params_pdfs = r["params_pdfs"]
-                new_result.spinw_plot_info = r["spinw_plot_info"]
+                new_result.plot_info = r["plot_info"]
                 new_result.software = r["software"]
                 new_result.minimizer = r["minimizer"]
                 new_result.jac = r["jacobian"]

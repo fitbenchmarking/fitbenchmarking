@@ -83,6 +83,13 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
+        # if SpinW, make sure data_x is correct
+        if "ebin_cens" in problem.additional_info:
+            n_plots = problem.additional_info["n_plots"]
+            self.data_x = np.array(
+                n_plots * problem.additional_info["ebin_cens"].tolist()
+            )
+
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
         self.energy = energy
@@ -94,14 +101,14 @@ class FittingResult:
 
         # Additional plotting info for SpinW powder plots
         if "plot_type" in problem.additional_info:
-            self.spinw_plot_info = {
+            self.plot_info = {
                 "plot_type": problem.additional_info["plot_type"],
-                "n_cuts": problem.additional_info["n_cuts"],
-                "q_cens": problem.additional_info["q_cens"],
-                "ebin_cens": problem.additional_info["ebin_cens"].tolist(),
+                "n_plots": problem.additional_info["n_plots"],
+                "subplot_titles": problem.additional_info["subplot_titles"],
+                "ax_titles": problem.additional_info["ax_titles"],
             }
         else:
-            self.spinw_plot_info = None
+            self.plot_info = None
 
         # Details of options used for this run
         self.software = controller.software
