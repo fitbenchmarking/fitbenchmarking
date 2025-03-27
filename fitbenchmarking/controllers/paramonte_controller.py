@@ -61,6 +61,7 @@ class ParamonteController(Controller):
         self.pmpd.spec.variableNameList = self.par_names
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
+        self.pmpd.spec.chainSize = self.chain_length
 
         if self.value_ranges is not None:
             value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)
