@@ -90,14 +90,9 @@ class Plot:
         :rtype: str
         """
         title = self.result.name
-        n_plots = 1
-        subplot_titles = None
-        ax_titles = self._default_ax_titles
-
-        if self.result.plot_info is not None:
-            n_plots = self.result.plot_info["n_plots"]
-            subplot_titles = self.result.plot_info["subplot_titles"]
-            ax_titles = self.result.plot_info["ax_titles"]
+        n_plots, subplot_titles, ax_titles = self._set_n_plots_and_titles(
+            self.result
+        )
 
         fig = make_subplots(
             rows=1,
@@ -159,14 +154,12 @@ class Plot:
         x_data = df_fit["x"][df_fit["minimizer"] == "Data"]
         y_data = df_fit["y"][df_fit["minimizer"] == "Data"]
         self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
-        n_plots = 1
-        subplot_titles = None
-        ax_titles = self._default_ax_titles
+
+        n_plots, subplot_titles, ax_titles = self._set_n_plots_and_titles(
+            self.result
+        )
 
         if self.result.plot_info is not None:
-            n_plots = self.result.plot_info["n_plots"]
-            subplot_titles = self.result.plot_info["subplot_titles"]
-            ax_titles = self.result.plot_info["ax_titles"]
             self._check_data_len(x_data, y_data)
 
         data_len = int(
@@ -317,14 +310,9 @@ class Plot:
         """
         colours = cls._sample_colours(np.linspace(0, 1, len(categories)))
         first_result = next(iter(categories.values()))[0]
-        n_plots = 1
-        subplot_titles = None
-        ax_titles = cls._default_ax_titles
-
-        if first_result.plot_info is not None:
-            n_plots = first_result.plot_info["n_plots"]
-            subplot_titles = first_result.plot_info["subplot_titles"]
-            ax_titles = first_result.plot_info["ax_titles"]
+        n_plots, subplot_titles, ax_titles = cls._set_n_plots_and_titles(
+            first_result
+        )
 
         fig = make_subplots(
             rows=1,
@@ -699,3 +687,19 @@ class Plot:
             ptly_colors.sequential.Rainbow, samplepoints=points
         )
         return plotly_colours
+
+    @classmethod
+    def _set_n_plots_and_titles(cls, result):
+        """
+        Returns n_plots, subplot_titles, ax_titles
+        """
+        n_plots = 1
+        subplot_titles = None
+        ax_titles = cls._default_ax_titles
+
+        if result.plot_info is not None:
+            n_plots = result.plot_info["n_plots"]
+            subplot_titles = result.plot_info["subplot_titles"]
+            ax_titles = result.plot_info["ax_titles"]
+
+        return n_plots, subplot_titles, ax_titles
