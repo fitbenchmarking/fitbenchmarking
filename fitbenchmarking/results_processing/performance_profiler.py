@@ -69,7 +69,7 @@ def prepare_profile_data(results):
                         pp[key] = pp[minimizers[i]].copy()
                     minimizers[i] = key
                 pp_data["acc"][minimizers[i]].append(result.norm_acc)
-                pp_data["runtime"][minimizers[i]].append(result.norm_runtime)
+                pp_data["runtime"][minimizers[i]].append(result.norm_runtime())
                 pp_data["energy_usage"][minimizers[i]].append(
                     result.norm_energy
                 )
