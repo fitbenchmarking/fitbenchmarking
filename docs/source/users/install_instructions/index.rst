@@ -19,3 +19,4 @@ you must install them with the external software instructions.
 
     fitbenchmarking
     externals
+    externals-matlab

@@ -31,7 +31,7 @@ def horace_on():
     ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
-            "that HORACE_LOCATION is specfied as a environment "
+            "that HORACE_LOCATION is specfied as an environment "
             "variable"
         )
     elif (
@@ -39,7 +39,7 @@ def horace_on():
     ):
         raise ParsingError(
             "Could not parse SpinW problem. Please ensure "
-            "that SPINW_LOCATION is specfied as a environment "
+            "that SPINW_LOCATION is specfied as an environment "
             "variable"
         )
     else:
@@ -306,7 +306,7 @@ class HoraceParser(FitbenchmarkParser):
         # This if condition avoids error when "plot_type" not provided
         if "plot_type" in self._entries:
             self._set_plot_type()
-            self._set_qcens_and_ncuts()
+            self._add_plot_info_as_additional_info()
 
     def _set_plot_type(self) -> None:
         """
@@ -324,27 +324,42 @@ class HoraceParser(FitbenchmarkParser):
                 f"options {plot_type_options}"
             )
 
-    def _set_qcens_and_ncuts(self) -> None:
+    def _get_subplot_titles_SpinW(self, qcens) -> list[str]:
+        """Gets subplot titles for SpinW."""
+        subplot_titles = [f"{i} Å<sup>-1</sup>" for i in qcens]
+        return subplot_titles
+
+    def _add_plot_info_as_additional_info(self) -> None:
         """
-        Add q_cens and n_cuts to fitting_problem.additional_info.
+        Add plot info needed for 1d cuts (e.g. n_plots and subplot_titles)
+        to fitting_problem.additional_info.
         """
+
         if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
             self.fitting_problem.additional_info["ebin_cens"] = np.array(
                 eng.workspace["ebin_cens"], dtype=np.float64
             )[0]
+
+            self.fitting_problem.additional_info["ax_titles"] = {
+                "x": "Energy (meV)",
+                "y": "Intensity",
+            }
+
             if "q_cens" in self._entries:
-                self.fitting_problem.additional_info["q_cens"] = self._entries[
-                    "q_cens"
-                ].split(",")
-                self.fitting_problem.additional_info["n_cuts"] = len(
-                    self.fitting_problem.additional_info["q_cens"]
+                qcens = self._entries["q_cens"].split(",")
+                self.fitting_problem.additional_info["n_plots"] = len(qcens)
+                self.fitting_problem.additional_info["subplot_titles"] = (
+                    self._get_subplot_titles_SpinW(qcens)
                 )
             else:
-                raise ParsingError("q_cens are required for plotting 1D cuts")
+                raise ParsingError(
+                    "q_cens are required for plotting 1D cuts of SpinW data"
+                )
+
             if not float(
                 len(self.fitting_problem.data_y)
-                / self.fitting_problem.additional_info["n_cuts"]
+                / self.fitting_problem.additional_info["n_plots"]
             ).is_integer():
                 raise ParsingError(
                     "Number of data points must be divisible "
