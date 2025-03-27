@@ -55,23 +55,20 @@ def create_prob_group(result, support_pages_dir, options):
     file_path = os.path.join(support_pages_dir, file_name)
 
     # Bool for print message/insert image
-    fit_success = init_success = pdf_success = options.make_plots
+    fit_success = pdf_success = options.make_plots
 
     if options.make_plots:
-        fig_fit, fig_start, fig_pdf = get_figure_paths(result)
+        fig_fit, fig_pdf = get_figure_paths(result)
         fit_success = fig_fit != ""
-        init_success = fig_start != ""
         pdf_success = fig_pdf != ""
         if not fit_success:
             fig_fit = result.figure_error
-        if not init_success:
-            fig_start = result.figure_error
         if not pdf_success:
             fig_pdf = result.figure_error
     else:
-        fig_fit = fig_start = fig_pdf = (
-            "Re-run with make_plots set to yes ",
-            "in the ini file to generate plots.",
+        fig_fit = fig_pdf = (
+            "Re-run with make_plots set to yes "
+            "in the ini file to generate plots."
         )
 
     run_name = f"{options.run_name}: " if options.run_name else ""
@@ -114,8 +111,6 @@ def create_prob_group(result, support_pages_dir, options):
                 runtime=f"{result.runtime:.4g}",
                 energy=energy_disp,
                 is_best_fit=result.is_best_fit,
-                initial_plot_available=init_success,
-                initial_plot=fig_start,
                 min_params=result.fin_function_params,
                 fitted_plot_available=fit_success,
                 fitted_plot=fig_fit,
@@ -140,13 +135,12 @@ def get_figure_paths(result):
     :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
 
     :return: the paths to the required figures
-    :rtype: tuple(str, str, str)
+    :rtype: tuple(str, str)
     """
     return tuple(
         os.path.join("figures", link) if link else ""
         for link in [
             result.figure_link,
-            result.start_figure_link,
             result.posterior_plots,
         ]
     )

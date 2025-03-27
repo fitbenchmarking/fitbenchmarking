@@ -111,7 +111,7 @@ They can be changed using the arguments in the table below.
        | to create plots during runtime.
    * - *Don't make plots*
      -
-     - ``--don't_make_plots``
+     - ``--dont_make_plots``
      - | Use this option if you have decided
        | not to create plots during runtime.
    * - *Open results browser*
@@ -192,6 +192,16 @@ They can be changed using the arguments in the table below.
      - ``--dont_run_dash``
      - | Use this option if you have decided
        | not to run the Dash app.
+   * - *Check jacobian*
+     -
+     - ``--check_jacobian``
+     - | Use this option to check the jacobian 
+       | against a finite difference approximation.
+   * - *Don't check jacobian*
+     -
+     - ``--dont_check_jacobian``
+     - | Use this option if you have decided
+       | not to check the jacobian.
 
 **For example, to change the results directory:**
 
