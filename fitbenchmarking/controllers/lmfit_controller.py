@@ -157,6 +157,8 @@ class LmfitController(Controller):
         if self.minimizer == "emcee":
             kwargs["progress"] = False
             kwargs["burn"] = 300
+            kwargs["nwalkers"] = 100
+            kwargs["steps"] = int(self.chain_length / kwargs["nwalkers"])
             minner = Minimizer(self.lmfit_loglike, self.lmfit_params)
         else:
             minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
