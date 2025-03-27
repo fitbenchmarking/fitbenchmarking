@@ -108,6 +108,7 @@ def create_prob_group(result, support_pages_dir, options):
                 initial_guess=result.ini_function_params,
                 minimizer=result.modified_minimizer_name(),
                 accuracy=f"{result.accuracy:.4g}",
+                runtime_metric=result.runtime_metric,
                 mean_runtime=f"{result.mean_runtime:.4g}",
                 minimum_runtime=f"{result.minimum_runtime:.4g}",
                 maximum_runtime=f"{result.maximum_runtime:.4g}",

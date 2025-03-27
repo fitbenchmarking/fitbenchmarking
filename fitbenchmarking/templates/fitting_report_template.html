@@ -9,7 +9,7 @@
         // When the fitting report page loads, read the selected runtime metric
         // and update the display of the runtime rows accordingly.
         document.addEventListener("DOMContentLoaded", () => {
-            const metric = localStorage.getItem("selected_runtime_metric") || "mean";
+            const metric = sessionStorage.getItem("selected_runtime_metric") || "{{ runtime_metric }}";
             let allRuntimeElements = document.querySelectorAll(".runtime_row");
             allRuntimeElements.forEach(el => el.style.display = "none");
         

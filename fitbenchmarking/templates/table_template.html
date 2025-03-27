@@ -15,8 +15,10 @@
         // When the table page loads, read the selected runtime metric
         // and update the display of the runtime rows accordingly.
         document.addEventListener("DOMContentLoaded", () => {
-            const metric = localStorage.getItem("selected_runtime_metric") || "mean";
-            update_runtime(metric);
+            const metric = sessionStorage.getItem("selected_runtime_metric");
+            if (metric) {
+                update_runtime(metric);
+            }
         });
     </script>
     <head>

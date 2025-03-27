@@ -144,7 +144,13 @@ function load_src(_button) {
 * Updates the display value dynamically based on the selected runtime metric.
 */
 function update_runtime(metric) {
-    localStorage.setItem("selected_runtime_metric", metric);
+    sessionStorage.setItem("selected_runtime_metric", metric);
+
+    const radios = document.querySelectorAll("input[name='runtime_selection']");
+    radios.forEach(radio => {
+        radio.checked = (radio.getAttribute("onclick") === `update_runtime('${metric}')`);
+    });
+
     let linkElements = document.querySelectorAll("a.dark, a.light");
 
     linkElements.forEach(link => {
