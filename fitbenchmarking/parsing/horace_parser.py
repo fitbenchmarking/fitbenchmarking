@@ -324,10 +324,7 @@ class HoraceParser(FitbenchmarkParser):
         to fitting_problem.additional_info.
         """
 
-        if (
-            self.fitting_problem.additional_info["plot_type"] == "1d_cuts"
-            and self.fitting_problem.name == "Triangular AFM Powder Spectrum"
-        ):
+        if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
             self.fitting_problem.additional_info["ebin_cens"] = np.array(
                 eng.workspace["ebin_cens"], dtype=np.float64

@@ -84,7 +84,7 @@ class FittingResult:
             self.accuracy = accuracy[dataset]
 
         # if SpinW, make sure data_x is correct
-        if self.name == "Triangular AFM Powder Spectrum":
+        if "ebin_cens" in problem.additional_info:
             n_plots = problem.additional_info["n_plots"]
             self.data_x = np.array(
                 n_plots * problem.additional_info["ebin_cens"].tolist()
