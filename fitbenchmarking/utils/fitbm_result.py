@@ -100,8 +100,8 @@ class FittingResult:
         self.params_pdfs = controller.params_pdfs
 
         # Additional plotting info for SpinW powder plots
-        if "n_cuts" in problem.additional_info:
-            self.spinw_plot_info = {
+        if "n_plots" in problem.additional_info:
+            self.plot_info = {
                 "plot_type": problem.additional_info["plot_type"],
                 "n_plots": problem.additional_info["n_plots"],
                 "subplot_titles": problem.additional_info["subplot_titles"],
