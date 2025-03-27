@@ -49,7 +49,7 @@ RUN sudo apt-get install -y cmake
 
 WORKDIR /
 
-RUN apt-get install -y pkg-config libhdf5-dev libglib2.0-0
+RUN apt-get install -y pkg-config libhdf5-dev libglib2.0-0 libegl-dev libxkbcommon-dev dbus
 
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
