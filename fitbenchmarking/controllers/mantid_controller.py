@@ -7,7 +7,6 @@ from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.exceptions import ControllerAttributeError
 
 
@@ -21,10 +20,10 @@ class MantidController(Controller):
 
     #: A map from fitbenchmarking cost functions to mantid ones.
     COST_FUNCTION_MAP = {
-        "nlls": "Unweighted least squares",
-        "weighted_nlls": "Least squares",
-        "poisson": "Poisson",
-        "loglike_nlls": "Least squares",
+        "NLLSCostFunc": "Unweighted least squares",
+        "WeightedNLLSCostFunc": "Least squares",
+        "PoissonCostFunc": "Poisson",
+        "LoglikeNLLSCostFunc": "Least squares",
     }
 
     algorithm_check = {
@@ -95,19 +94,20 @@ class MantidController(Controller):
         """
         super().__init__(cost_func)
 
-        for fb_cf, mantid_cf in self.COST_FUNCTION_MAP.items():
-            if isinstance(self.cost_func, create_cost_func(fb_cf)):
-                self._cost_function = mantid_cf
-                break
-        else:
+        func_name = type(self.cost_func).__name__
+        if func_name not in self.COST_FUNCTION_MAP:
             raise ControllerAttributeError(
                 "Mantid Controller does not support"
                 " the requested cost function "
                 f"{self.cost_func.__class__}"
             )
 
-        self._param_names = self.problem.param_names
+        self._cost_function = self.COST_FUNCTION_MAP[func_name]
+        self._param_names = self.par_names
         self._status = None
+        self._dataset_count = (
+            len(self.data_x) if isinstance(self.data_x, list) else 1
+        )
 
         if self.problem.multifit:
             # Multi Fit
@@ -125,14 +125,16 @@ class MantidController(Controller):
                     zip(self.data_x[1:], self.data_y[1:], self.data_e[1:])
                 )
             ]
-            self._multi_fit = len(other_inputs) + 1
+            self._added_args = {
+                f"InputWorkspace_{i + 1}": v
+                for i, v in enumerate(other_inputs)
+            }
         else:
             # Normal Fitting
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
-            other_inputs = []
-            self._multi_fit = 0
+            self._added_args = {}
 
         self._mantid_data = data_obj
         self._mantid_function = None
@@ -140,9 +142,9 @@ class MantidController(Controller):
 
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
-        try:
+        if "mantid_equation" in self.problem.additional_info:
             function_def = self.problem.additional_info["mantid_equation"]
-            if self._multi_fit:
+            if self.problem.multifit:
                 # Each function must include '$domains=i'
                 if ";" in function_def:
                     function_def = (
@@ -156,44 +158,81 @@ class MantidController(Controller):
                 # Multi fit must have 'composite=MultiDomainFunction' in the
                 # first function.
                 composite_str = "composite=MultiDomainFunction, NumDeriv=1;"
-                function_def = composite_str + function_def * self._multi_fit
+                function_def = (
+                    composite_str + function_def * self._dataset_count
+                )
                 ties = ",".join(
                     f"f{i}.{p}=f0.{p}"
                     for p in self.problem.additional_info["mantid_ties"]
-                    for i in range(1, self._multi_fit)
+                    for i in range(1, self._dataset_count)
                 )
                 function_def += f"ties=({ties})"
 
             # Add constraints if parameter bounds are set
-            if self.value_ranges is not None and self._multi_fit:
-                constraints = ",".join(
-                    f"{self.value_ranges[i][0]} < f{j}.{p}"
-                    f" < {self.value_ranges[i][1]}"
-                    for i, p in enumerate(self._param_names)
-                    for j in range(self._multi_fit)
-                )
-                function_def += f"; constraints=({constraints})"
-            elif self.value_ranges is not None:
-                if ";" not in function_def:
-                    self._param_names = [
-                        "f0." + name for name in self._param_names
-                    ]
-
-                constraints = ",".join(
-                    f"{vr[0]} < {p} < {vr[1]}"
-                    for vr, p in zip(self.value_ranges, self._param_names)
+            if self.value_ranges is not None:
+                is_composite_function = ";" in function_def
+                constraints = self._get_constraint_str(
+                    self.problem.multifit,
+                    is_composite_function,
+                    self._dataset_count,
+                    self.value_ranges,
+                    self._param_names,
                 )
                 function_def += f"; constraints=({constraints})"
 
             self._mantid_equation = function_def
-        except KeyError:
+        else:
             # This will be completed in setup as it requires initial params
             self._mantid_equation = None
 
-        # Arguments will change if multi-data
-        self._added_args = {
-            f"InputWorkspace_{i + 1}": v for i, v in enumerate(other_inputs)
-        }
+    @staticmethod
+    def _get_constraint_str(
+        is_multifit: bool,
+        is_composite_function: bool,
+        dataset_count: int,
+        value_ranges: list[float],
+        param_names: list[str],
+    ) -> str:
+        """
+        Returns the constraint string for the problem. This is set in
+        the function definition string passed to Mantid.
+
+        :param is_multifit: A parameter to determine if the problem is
+                            multifit.
+        :type is_multifit: boolean
+        :param is_composite_function: A parameter to determine if the
+                                      function is composite. i.e. made up
+                                      of multiple functions.
+        :type is_composite_function: boolean
+        :param dataset_count: The number of datasets. This is determined by
+                              the dims of the data.
+        :type dataset_count: integer
+        :param value_ranges: The value ranges for each parameter. The first
+                             value in the tuple is the minimum value and the
+                             second value is the maximum value of the
+                             parameter.
+        :type value_ranges: a list of tuples of floats.
+        :param param_names: The names of the parameters.
+        :type param_names: list of strings
+
+        :return: The string of constraints to be added to the function
+                 definition string.
+        :rtype: str
+        """
+        if is_multifit:
+            constraints = ",".join(
+                f"{value_ranges[i][0]} < f{j}.{p} < {value_ranges[i][1]}"
+                for i, p in enumerate(param_names)
+                for j in range(dataset_count)
+            )
+        else:
+            if not is_composite_function:
+                param_names = ["f0." + name for name in param_names]
+            constraints = ",".join(
+                f"{min} < {name} < {max}"
+                for (min, max), name in zip(value_ranges, param_names)
+            )
+        return constraints
 
     def setup(self):
         """
@@ -269,8 +308,7 @@ class MantidController(Controller):
         """
         Run problem with Mantid.
         """
-        minimizer_str = self.minimizer
-        if self.minimizer == "FABADA":
+        if (minimizer_str := self.minimizer) == "FABADA":
             # The max iterations needs to be larger for FABADA
             # to work; setting to the value in the mantid docs
             minimizer_str += (
@@ -322,7 +360,7 @@ class MantidController(Controller):
                     self._mantid_results.ConvergedChain.readY(i).tolist()
                 )
 
-        if not self._multi_fit:
+        if not self.problem.multifit:
             self.final_params = [
                 final_params_dict[key] for key in self._param_names
             ]
@@ -332,7 +370,7 @@ class MantidController(Controller):
                     final_params_dict[f"f{i}.{name}"]
                     for name in self._param_names
                 ]
-                for i in range(self._multi_fit)
+                for i in range(self._dataset_count)
             ]
 
     # Override if multi-fit
@@ -356,16 +394,13 @@ class MantidController(Controller):
                  given parameters
         :rtype: numpy array
         """
-        multifit = bool(np.shape(x[0])) if x is not None else self._multi_fit
-
-        if multifit:
-            num_inps = len(params)
+        if self.problem.multifit:
             if x is None:
-                x = [None for _ in range(num_inps)]
+                x = [None for _ in range(len(params))]
             if y is None:
-                y = [None for _ in range(num_inps)]
+                y = [None for _ in range(len(params))]
             if e is None:
-                e = [None for _ in range(num_inps)]
+                e = [None for _ in range(len(params))]
 
             return [
                 super(MantidController, self).eval_chisq(p, xi, yi, ei)
