@@ -99,12 +99,13 @@ class MantidController(Controller):
             raise ControllerAttributeError(
                 "Mantid Controller does not support"
                 " the requested cost function "
-                f"{self.cost_func.__class__}"
+                f"{func_name}"
             )
 
         self._cost_function = self.COST_FUNCTION_MAP[func_name]
         self._param_names = self.par_names
         self._status = None
+        self._added_args = {}
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
@@ -134,7 +135,6 @@ class MantidController(Controller):
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
-            self._added_args = {}
 
         self._mantid_data = data_obj
         self._mantid_function = None
@@ -170,14 +170,8 @@ class MantidController(Controller):
 
             # Add constraints if parameter bounds are set
             if self.value_ranges is not None:
-                is_composite_function = ";" in function_def
-                constraints = self._get_constraint_str(
-                    self.problem.multifit,
-                    is_composite_function,
-                    self._dataset_count,
-                    self.value_ranges,
-                    self._param_names,
-                )
+                is_multi_function = ";" in function_def
+                constraints = self._get_constraint_str(is_multi_function)
                 function_def += f"; constraints=({constraints})"
 
             self._mantid_equation = function_def
@@ -185,52 +179,36 @@ class MantidController(Controller):
             # This will be completed in setup as it requires initial params
             self._mantid_equation = None
 
-    @staticmethod
-    def _get_constraint_str(
-        is_multifit: bool,
-        is_composite_function: bool,
-        dataset_count: int,
-        value_ranges: list[float],
-        param_names: list[str],
-    ) -> str:
+    def _get_constraint_str(self, is_multi_function: bool) -> str:
         """
         Returns the constraint string for the problem. This is set in
         the function definition string passed to Mantid.
 
-        :param is_multifit: A parameter to determine if the problem is
-                            multifit.
-        :type is_multifit: boolean
-        :param is_composite_function: A parameter to determine if the
-                                      function is composite. i.e. made up
-                                      of multiple functions.
-        :type is_composite_function: boolean
-        :param dataset_count: The number of datasets. This is determined by
-                              the dims of the data.
-        :type dataset_count: integer
-        :param value_ranges: The value ranges for each parameter. The first
-                             value in the tuple is the minimum value and the
-                             second value is the maximum value of the
-                             parameter.
-        :type value_ranges: a list of tuples of floats.
-        :param param_names: The names of the parameters.
-        :type param_names: list of strings
+        :param is_multi_function: A parameter to determine if the
+                                  function is composite. i.e. made up
+                                  of multiple functions.
+        :type is_multi_function: boolean
 
         :return: The string of constraints to be added to the function
                  definition string.
         :rtype: str
         """
-        if is_multifit:
+        if self.problem.multifit:
             constraints = ",".join(
-                f"{value_ranges[i][0]} < f{j}.{p} < {value_ranges[i][1]}"
-                for i, p in enumerate(param_names)
-                for j in range(dataset_count)
+                f"{min} < f{j}.{p} < {max}"
+                for (min, max), p in zip(self.value_ranges, self._param_names)
+                for j in range(self._dataset_count)
             )
         else:
-            if not is_composite_function:
-                param_names = ["f0." + name for name in param_names]
+            if not is_multi_function:
+                self._param_names = [
+                    "f0." + name for name in self._param_names
+                ]
             constraints = ",".join(
                 f"{min} < {name} < {max}"
-                for (min, max), name in zip(value_ranges, param_names)
+                for (min, max), name in zip(
+                    self.value_ranges, self._param_names
+                )
             )
         return constraints
 
@@ -395,12 +373,9 @@ class MantidController(Controller):
         :rtype: numpy array
         """
         if self.problem.multifit:
-            if x is None:
-                x = [None for _ in range(len(params))]
-            if y is None:
-                y = [None for _ in range(len(params))]
-            if e is None:
-                e = [None for _ in range(len(params))]
+            x = x or [None for _ in range(len(params))]
+            y = y or [None for _ in range(len(params))]
+            e = e or [None for _ in range(len(params))]
 
             return [
                 super(MantidController, self).eval_chisq(p, xi, yi, ei)
