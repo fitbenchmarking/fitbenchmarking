@@ -157,16 +157,12 @@ class MantidController(Controller):
 
                 # Multi fit must have 'composite=MultiDomainFunction' in the
                 # first function.
-                composite_str = "composite=MultiDomainFunction, NumDeriv=1;"
                 function_def = (
-                    composite_str + function_def * self._dataset_count
+                    "composite=MultiDomainFunction, NumDeriv=1;"
+                    + function_def * self._dataset_count
                 )
-                ties = ",".join(
-                    f"f{i}.{p}=f0.{p}"
-                    for p in self.problem.additional_info["mantid_ties"]
-                    for i in range(1, self._dataset_count)
-                )
-                function_def += f"ties=({ties})"
+                # Add the ties to the function definition
+                function_def += f"ties=({self._get_ties_str()})"
 
             # Add constraints if parameter bounds are set
             if self.value_ranges is not None:
@@ -176,6 +172,21 @@ class MantidController(Controller):
         else:
             # This will be completed in setup as it requires initial params
             self._mantid_equation = None
+
+    def _get_ties_str(self) -> str:
+        """
+        Returns the ties string for the problem. This is set in
+        the function definition string passed to Mantid if the
+        problem is multifit.
+
+        :return: The string of ties.
+        :rtype: str
+        """
+        return ",".join(
+            f"f{i}.{p}=f0.{p}"
+            for p in self.problem.additional_info["mantid_ties"]
+            for i in range(1, self._dataset_count)
+        )
 
     def _get_param_names(self) -> list:
         """
@@ -191,11 +202,12 @@ class MantidController(Controller):
             function_def
             and ";" not in function_def
             and "UserFunction" not in function_def
+            and not self.problem.multifit
         ):
             # When function is defined in the problem defination file as
-            # 'name=LinearBackground,A0=0,A1=0',the param names are
+            # 'name=LinearBackground,A0=0,A1=0', the param names are
             # prepended with f0.
-            # However, the params are not prepended with when variables
+            # However, the params are not prepended when variables
             # are defined as a user function. For example:
             # name=UserFunction, Formula=A1*cos(2*3.141592*x) + A2*x
             return ["f0." + name for name in self.par_names]
@@ -206,17 +218,24 @@ class MantidController(Controller):
         Returns the constraint string for the problem. This is set in
         the function definition string passed to Mantid.
 
-        :return: The string of constraints to be added to the function
-                 definition string.
+        :return: The string of constraints.
         :rtype: str
         """
         if self.problem.multifit:
+            # Creates the constraint string for multifit problems.
+            # For 3 parameters and 2 datasets the string will be:
+            # 0.0 < f0.f0.A0 < 0.2,0.0 < f1.f0.A0 < 0.2,
+            # 0.0 < f0.f1.A < 0.5,0.0 < f1.f1.A < 0.5,
+            # 0.0 < f0.f1.Sigma < 0.05,0.0 < f1.f1.Sigma < 0.05
             return ",".join(
                 f"{min} < f{j}.{p} < {max}"
                 for (min, max), p in zip(self.value_ranges, self._param_names)
                 for j in range(self._dataset_count)
             )
         else:
+            # Creates the constraint string for normal fitting.
+            # For 3 parameters the string will be:
+            # 0.0 < f0.A0 < 0.2,0.0 < f1.A < 0.5,0.0 < f1.Sigma < 0.05
             return ",".join(
                 f"{min} < {name} < {max}"
                 for (min, max), name in zip(

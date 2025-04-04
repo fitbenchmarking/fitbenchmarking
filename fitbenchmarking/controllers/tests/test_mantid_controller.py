@@ -131,4 +131,33 @@ class TestMantidController(TestCase):
             mantid_equation
         )
         self.controller.par_names = par_names
+        self.controller.problem.multifit = False
         assert self.controller._get_param_names() == expected
+
+    @parameterized.expand(
+        [
+            (["A1"], 2, "f1.A1=f0.A1"),
+            (
+                ["f1.Sigma", "f1.Frequency"],
+                4,
+                "f1.f1.Sigma=f0.f1.Sigma,"
+                "f2.f1.Sigma=f0.f1.Sigma,"
+                "f3.f1.Sigma=f0.f1.Sigma,"
+                "f1.f1.Frequency=f0.f1.Frequency,"
+                "f2.f1.Frequency=f0.f1.Frequency,"
+                "f3.f1.Frequency=f0.f1.Frequency",
+            ),
+        ]
+    )
+    def test_get_ties_str(
+        self,
+        ties,
+        dataset_count,
+        expected,
+    ):
+        """
+        Verifies the output of _get_ties_str() method.
+        """
+        self.controller.problem.additional_info["mantid_ties"] = ties
+        self.controller._dataset_count = dataset_count
+        assert self.controller._get_ties_str() == expected
