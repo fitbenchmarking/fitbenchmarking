@@ -127,9 +127,7 @@ class TestMantidController(TestCase):
         """
         Verifies the output of _get_param_names() method.
         """
-        self.controller.problem.additional_info["mantid_equation"] = (
-            mantid_equation
-        )
+        self.controller._mantid_equation = mantid_equation
         self.controller.par_names = par_names
         self.controller.problem.multifit = False
         assert self.controller._get_param_names() == expected
