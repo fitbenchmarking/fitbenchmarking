@@ -943,6 +943,7 @@ class ExternalControllerTests(TestCase):
         evaluating chi_squared (MultiFit).
         """
         m_controller = create_controller("mantid", self.cost_func)
+        m_controller.problem.multifit = True
         b_controller = DummyController(self.cost_func)
         params = [
             np.array([1, 2, 3, 4]),
