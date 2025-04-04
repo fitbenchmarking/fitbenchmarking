@@ -187,10 +187,17 @@ class MantidController(Controller):
         function_def = self.problem.additional_info.get(
             "mantid_equation", None
         )
-        if function_def and ";" not in function_def:
-            # Handles the following case:
-            # function = 'name=LinearBackground,A0=0,A1=0'
-            # in this case the param names are prepended with f0.
+        if (
+            function_def
+            and ";" not in function_def
+            and "UserFunction" not in function_def
+        ):
+            # When function is defined in the problem defination file as
+            # 'name=LinearBackground,A0=0,A1=0',the param names are
+            # prepended with f0.
+            # However, the params are not prepended with when variables
+            # are defined as a user function. For example:
+            # name=UserFunction, Formula=A1*cos(2*3.141592*x) + A2*x
             return ["f0." + name for name in self.par_names]
         return self.par_names
 
@@ -204,19 +211,18 @@ class MantidController(Controller):
         :rtype: str
         """
         if self.problem.multifit:
-            constraints = ",".join(
+            return ",".join(
                 f"{min} < f{j}.{p} < {max}"
                 for (min, max), p in zip(self.value_ranges, self._param_names)
                 for j in range(self._dataset_count)
             )
         else:
-            constraints = ",".join(
+            return ",".join(
                 f"{min} < {name} < {max}"
                 for (min, max), name in zip(
                     self.value_ranges, self._param_names
                 )
             )
-        return constraints
 
     def setup(self):
         """
