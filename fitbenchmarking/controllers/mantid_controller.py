@@ -112,32 +112,38 @@ class MantidController(Controller):
             "mantid_equation", None
         )
 
-        self._param_names = self._get_param_names()
+        self._param_names = self.par_names
         self._status = None
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
 
-        # data_obj will be a list of len > 1 if multifit
-        data_obj = [
-            msapi.CreateWorkspace(
-                DataX=x,
-                DataY=y,
-                DataE=e,
-                OutputWorkspace=f"ws{i}",
+        if self.problem.multifit:
+            # data_obj will be a list of len > 1 if multifit
+            data_obj = [
+                msapi.CreateWorkspace(
+                    DataX=x,
+                    DataY=y,
+                    DataE=e,
+                    OutputWorkspace=f"ws{i}",
+                )
+                for i, (x, y, e) in enumerate(
+                    zip(self.data_x, self.data_y, self.data_e)
+                )
+            ]
+            # _added_args are passed to the mantid function with
+            # additional workspaces created for multifit data
+            self._added_args = {
+                f"InputWorkspace_{i + 1}": v
+                for i, v in enumerate(data_obj[1:])
+            }
+        else:
+            data_obj = msapi.CreateWorkspace(
+                DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
-            for i, (x, y, e) in enumerate(
-                zip(self.data_x, self.data_y, self.data_e)
-            )
-        ]
-        self._mantid_data = data_obj[0]
+            self._added_args = {}
 
-        # _added_args are passed to the mantid function with
-        # additional workspaces created for multifit data
-        self._added_args = {
-            f"InputWorkspace_{i + 1}": v for i, v in enumerate(data_obj[1:])
-        }
-
+        self._mantid_data = data_obj[0] if self.problem.multifit else data_obj
         self._mantid_function = None
         self._mantid_results = None
 
@@ -198,6 +204,13 @@ class MantidController(Controller):
                 for j in range(self._dataset_count)
             )
         else:
+            if ";" not in self._mantid_equation:
+                # When function is defined in the problem defination file as
+                # 'name=LinearBackground,A0=0,A1=0', the param names are
+                # prepended with f0.
+                self._param_names = [
+                    "f0." + name for name in self._param_names
+                ]
             # Creates the constraint string for normal fitting.
             # For 3 parameters the string will be:
             # 0.0 < f0.A0 < 0.2,0.0 < f1.A < 0.5,0.0 < f1.Sigma < 0.05

@@ -92,48 +92,6 @@ class TestMantidController(TestCase):
 
     @parameterized.expand(
         [
-            (
-                "name=LinearBackground,A0=0,A1=0",
-                ["A0", "A1"],
-                ["f0.A0", "f0.A1"],
-            ),
-            (
-                None,
-                [
-                    "f0.A0",
-                    "f0.A1",
-                    "f1.A",
-                    "f1.Sigma",
-                    "f1.Frequency",
-                    "f1.Phi",
-                ],
-                [
-                    "f0.A0",
-                    "f0.A1",
-                    "f1.A",
-                    "f1.Sigma",
-                    "f1.Frequency",
-                    "f1.Phi",
-                ],
-            ),
-        ]
-    )
-    def test_get_param_names(
-        self,
-        mantid_equation,
-        par_names,
-        expected,
-    ):
-        """
-        Verifies the output of _get_param_names() method.
-        """
-        self.controller._mantid_equation = mantid_equation
-        self.controller.par_names = par_names
-        self.controller.problem.multifit = False
-        assert self.controller._get_param_names() == expected
-
-    @parameterized.expand(
-        [
             (["A1"], 2, "f1.A1=f0.A1"),
             (
                 ["f1.Sigma", "f1.Frequency"],
