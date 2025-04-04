@@ -103,75 +103,43 @@ class MantidController(Controller):
             )
 
         self._cost_function = self.COST_FUNCTION_MAP[func_name]
+
+        # In case of mantid:
+        # mantid_equation is set in additional_info
+        # In case of mantid dev:
+        # additional_info does not have the mantid_equation key
+        self._mantid_equation = self.problem.additional_info.get(
+            "mantid_equation", None
+        )
+
         self._param_names = self._get_param_names()
         self._status = None
-        self._added_args = {}
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
 
-        if self.problem.multifit:
-            # Multi Fit
-            data_obj = msapi.CreateWorkspace(
-                DataX=self.data_x[0],
-                DataY=self.data_y[0],
-                DataE=self.data_e[0],
-                OutputWorkspace="ws0",
+        # data_obj will be a list of len > 1 if multifit
+        data_obj = [
+            msapi.CreateWorkspace(
+                DataX=x,
+                DataY=y,
+                DataE=e,
+                OutputWorkspace=f"ws{i}",
             )
-            other_inputs = [
-                msapi.CreateWorkspace(
-                    DataX=x, DataY=y, DataE=e, OutputWorkspace=f"ws{i + 1}"
-                )
-                for i, (x, y, e) in enumerate(
-                    zip(self.data_x[1:], self.data_y[1:], self.data_e[1:])
-                )
-            ]
-            self._added_args = {
-                f"InputWorkspace_{i + 1}": v
-                for i, v in enumerate(other_inputs)
-            }
-        else:
-            # Normal Fitting
-            data_obj = msapi.CreateWorkspace(
-                DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
+            for i, (x, y, e) in enumerate(
+                zip(self.data_x, self.data_y, self.data_e)
             )
+        ]
+        self._mantid_data = data_obj[0]
 
-        self._mantid_data = data_obj
+        # _added_args are passed to the mantid function with
+        # additional workspaces created for multifit data
+        self._added_args = {
+            f"InputWorkspace_{i + 1}": v for i, v in enumerate(data_obj[1:])
+        }
+
         self._mantid_function = None
         self._mantid_results = None
-
-        # Use the raw string format if this is from a Mantid problem.
-        # This enables advanced features such as contraints.
-        if "mantid_equation" in self.problem.additional_info:
-            function_def = self.problem.additional_info["mantid_equation"]
-            if self.problem.multifit:
-                # Each function must include '$domains=i'
-                if ";" in function_def:
-                    function_def = (
-                        " (composite=CompositeFunction, "
-                        + "NumDeriv=false, $domains=i; "
-                        + f"{function_def});"
-                    )
-                else:
-                    function_def += ", $domains=i; "
-
-                # Multi fit must have 'composite=MultiDomainFunction' in the
-                # first function.
-                function_def = (
-                    "composite=MultiDomainFunction, NumDeriv=1;"
-                    + function_def * self._dataset_count
-                )
-                # Add the ties to the function definition
-                function_def += f"ties=({self._get_ties_str()})"
-
-            # Add constraints if parameter bounds are set
-            if self.value_ranges is not None:
-                function_def += f"; constraints=({self._get_constraint_str()})"
-
-            self._mantid_equation = function_def
-        else:
-            # This will be completed in setup as it requires initial params
-            self._mantid_equation = None
 
     def _get_ties_str(self) -> str:
         """
@@ -195,13 +163,10 @@ class MantidController(Controller):
         :return: The updated parameter names for the problem.
         :rtype: list
         """
-        function_def = self.problem.additional_info.get(
-            "mantid_equation", None
-        )
         if (
-            function_def
-            and ";" not in function_def
-            and "UserFunction" not in function_def
+            self._mantid_equation
+            and ";" not in self._mantid_equation
+            and "UserFunction" not in self._mantid_equation
             and not self.problem.multifit
         ):
             # When function is defined in the problem defination file as
@@ -242,6 +207,40 @@ class MantidController(Controller):
                     self.value_ranges, self._param_names
                 )
             )
+
+    def _setup_mantid(self):
+        """
+        Setup problem ready to run with Mantid.
+        """
+        # Use the raw string format if this is from a Mantid problem.
+        # This enables advanced features such as contraints.
+        function_def = self._mantid_equation
+
+        if self.problem.multifit:
+            # Each function must include '$domains=i'
+            if ";" in function_def:
+                function_def = (
+                    " (composite=CompositeFunction, "
+                    + "NumDeriv=false, $domains=i; "
+                    + f"{function_def});"
+                )
+            else:
+                function_def += ", $domains=i; "
+
+            # Multi fit must have 'composite=MultiDomainFunction' in the
+            # first function.
+            function_def = (
+                "composite=MultiDomainFunction, NumDeriv=1;"
+                + function_def * self._dataset_count
+            )
+            # Add the ties to the function definition
+            function_def += f"ties=({self._get_ties_str()})"
+
+        # Add constraints if parameter bounds are set
+        if self.value_ranges is not None:
+            function_def += f"; constraints=({self._get_constraint_str()})"
+
+        return function_def
 
     def setup(self):
         """
@@ -311,7 +310,7 @@ class MantidController(Controller):
 
             self._mantid_function = function_def
         else:
-            self._mantid_function = self._mantid_equation
+            self._mantid_function = self._setup_mantid()
 
     def fit(self):
         """
