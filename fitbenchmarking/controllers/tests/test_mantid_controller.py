@@ -41,7 +41,6 @@ class TestMantidController(TestCase):
         [
             (
                 True,
-                False,
                 4,
                 [(0.0, 0.2), (0.0, 0.5), (0.0, 0.05), (0.0, 5.0), (0.0, 0.05)],
                 ["f0.A0", "f1.A", "f1.Sigma", "f1.Frequency", "f1.Phi"],
@@ -59,7 +58,6 @@ class TestMantidController(TestCase):
             ),
             (
                 False,
-                True,
                 1,
                 [(0.0, 0.5), (0.0, 0.05)],
                 ["f0.A", "f0.Sigma"],
@@ -67,21 +65,16 @@ class TestMantidController(TestCase):
             ),
             (
                 False,
-                False,
                 1,
                 [(0.0, 0.2), (0.0, 0.5), (0.0, 0.05)],
                 ["f0.A0", "f1.A", "f1.Sigma"],
-                (
-                    "0.0 < f0.f0.A0 < 0.2,0.0 < f0.f1.A < 0.5,0.0 < "
-                    "f0.f1.Sigma < 0.05"
-                ),
+                ("0.0 < f0.A0 < 0.2,0.0 < f1.A < 0.5,0.0 < f1.Sigma < 0.05"),
             ),
         ]
     )
     def test_get_constraint_str(
         self,
         is_multifit,
-        is_multi_function,
         dataset_count,
         value_ranges,
         param_names,
@@ -94,5 +87,48 @@ class TestMantidController(TestCase):
         self.controller.value_ranges = value_ranges
         self.controller._param_names = param_names
         self.controller.problem.multifit = is_multifit
-        result = self.controller._get_constraint_str(is_multi_function)
+        result = self.controller._get_constraint_str()
         assert result == expected
+
+    @parameterized.expand(
+        [
+            (
+                "name=LinearBackground,A0=0,A1=0",
+                ["A0", "A1"],
+                ["f0.A0", "f0.A1"],
+            ),
+            (
+                None,
+                [
+                    "f0.A0",
+                    "f0.A1",
+                    "f1.A",
+                    "f1.Sigma",
+                    "f1.Frequency",
+                    "f1.Phi",
+                ],
+                [
+                    "f0.A0",
+                    "f0.A1",
+                    "f1.A",
+                    "f1.Sigma",
+                    "f1.Frequency",
+                    "f1.Phi",
+                ],
+            ),
+        ]
+    )
+    def test_get_param_names(
+        self,
+        mantid_equation,
+        par_names,
+        expected,
+    ):
+        """
+        Verifies the output of _get_param_names() method.
+        """
+        self.controller.problem.additional_info["mantid_equation"] = (
+            mantid_equation
+        )
+        self.controller.par_names = par_names
+        assert self.controller._get_param_names() == expected
