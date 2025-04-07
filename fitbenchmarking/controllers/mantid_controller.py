@@ -2,6 +2,8 @@
 Implements a controller for the Mantid fitting software.
 """
 
+from itertools import repeat
+
 import numpy as np
 from mantid import simpleapi as msapi
 from mantid.fitfunctions import FunctionFactory, IFunction1D
@@ -111,9 +113,14 @@ class MantidController(Controller):
         self._mantid_equation = self.problem.additional_info.get(
             "mantid_equation", None
         )
+        self._is_composite_function = (
+            ";" in self._mantid_equation if self._mantid_equation else False
+        )
 
         self._param_names = self.par_names
         self._status = None
+
+        # dataset count will be greater than 1 if problem is multifit
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
@@ -162,28 +169,6 @@ class MantidController(Controller):
             for i in range(1, self._dataset_count)
         )
 
-    def _get_param_names(self) -> list:
-        """
-        Returns the parameter names for the problem.
-
-        :return: The updated parameter names for the problem.
-        :rtype: list
-        """
-        if (
-            self._mantid_equation
-            and ";" not in self._mantid_equation
-            and "UserFunction" not in self._mantid_equation
-            and not self.problem.multifit
-        ):
-            # When function is defined in the problem defination file as
-            # 'name=LinearBackground,A0=0,A1=0', the param names are
-            # prepended with f0.
-            # However, the params are not prepended when variables
-            # are defined as a user function. For example:
-            # name=UserFunction, Formula=A1*cos(2*3.141592*x) + A2*x
-            return ["f0." + name for name in self.par_names]
-        return self.par_names
-
     def _get_constraint_str(self) -> str:
         """
         Returns the constraint string for the problem. This is set in
@@ -204,7 +189,7 @@ class MantidController(Controller):
                 for j in range(self._dataset_count)
             )
         else:
-            if ";" not in self._mantid_equation:
+            if not self._is_composite_function:
                 # When function is defined in the problem defination file as
                 # 'name=LinearBackground,A0=0,A1=0', the param names are
                 # prepended with f0.
@@ -231,7 +216,7 @@ class MantidController(Controller):
 
         if self.problem.multifit:
             # Each function must include '$domains=i'
-            if ";" in function_def:
+            if self._is_composite_function:
                 function_def = (
                     " (composite=CompositeFunction, "
                     + "NumDeriv=false, $domains=i; "
@@ -247,11 +232,11 @@ class MantidController(Controller):
                 + function_def * self._dataset_count
             )
             # Add the ties to the function definition
-            function_def += f"ties=({self._get_ties_str()})"
+            function_def += f"ties=({self._get_ties_str()}); "
 
         # Add constraints if parameter bounds are set
         if self.value_ranges is not None:
-            function_def += f"; constraints=({self._get_constraint_str()})"
+            function_def += f"constraints=({self._get_constraint_str()})"
 
         return function_def
 
@@ -416,9 +401,9 @@ class MantidController(Controller):
         :rtype: numpy array
         """
         if self.problem.multifit:
-            x = x or [None for _ in range(len(params))]
-            y = y or [None for _ in range(len(params))]
-            e = e or [None for _ in range(len(params))]
+            x = x or list(repeat(None, len(params)))
+            y = y or list(repeat(None, len(params)))
+            e = e or list(repeat(None, len(params)))
 
             return [
                 super(MantidController, self).eval_chisq(p, xi, yi, ei)
