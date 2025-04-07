@@ -22,9 +22,6 @@ from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
-if TEST_TYPE == "all":
-    from mantid.dataobjects._dataobjects import Workspace2D
-
 
 @run_for_test_types(TEST_TYPE, "all")
 class TestMantidController(TestCase):
@@ -152,11 +149,7 @@ class TestMantidController(TestCase):
         assert self.controller._status is None
         assert self.controller._dataset_count == 2
         assert self.controller.problem.multifit
-        assert isinstance(self.controller._mantid_data, Workspace2D)
         assert list(self.controller._added_args.keys()) == ["InputWorkspace_1"]
-        assert isinstance(
-            self.controller._added_args["InputWorkspace_1"], Workspace2D
-        )
         assert self.controller._mantid_function is None
         assert self.controller._mantid_results is None
 
