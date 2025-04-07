@@ -5,6 +5,7 @@ This file contains unit tests for the mantid controller.
 import inspect
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import call, patch
 
 from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
@@ -195,6 +196,8 @@ class TestMantidController(TestCase):
         assert controller.problem.multifit == multifit
         if controller.problem.multifit:
             assert list(controller._added_args.keys()) == ["InputWorkspace_1"]
+        else:
+            assert controller._added_args == {}
         assert controller._mantid_function is None
         assert controller._mantid_results is None
 
@@ -218,3 +221,57 @@ class TestMantidController(TestCase):
             "support the requested cost function "
             "HellingerNLLSCostFunc"
         )
+
+    @parameterized.expand(
+        [
+            (
+                True,
+                ["p1", "p2"],
+                ["x1", "x2"],
+                ["y1", "y2"],
+                ["e1", "e2"],
+                [25, 25],
+            ),
+            (True, ["p1", "p2"], None, None, None, [25, 25]),
+            (
+                False,
+                ["p1"],
+                ["x1"],
+                ["y2"],
+                ["e2"],
+                25,
+            ),
+        ]
+    )
+    @patch("fitbenchmarking.controllers.base_controller.Controller.eval_chisq")
+    def test_eval_chisq(
+        self,
+        multifit,
+        params,
+        x_data,
+        y_data,
+        e_data,
+        expected,
+        mock_eval_chisq,
+    ):
+        """
+        Verifies the call counts and call args of super().eval_chisq.
+        """
+        mock_eval_chisq.return_value = 25
+        self.controller.problem.multifit = multifit
+        assert (
+            self.controller.eval_chisq(params, x_data, y_data, e_data)
+            == expected
+        )
+        assert mock_eval_chisq.call_count == len(params)
+        if multifit:
+            if x_data is None:
+                expected_calls = [call(p, None, None, None) for p in params]
+            else:
+                expected_calls = [
+                    call(p, x, y, e)
+                    for p, x, y, e in zip(params, x_data, y_data, e_data)
+                ]
+        else:
+            expected_calls = [call(params, x_data, y_data, e_data)]
+        assert mock_eval_chisq.call_args_list == expected_calls

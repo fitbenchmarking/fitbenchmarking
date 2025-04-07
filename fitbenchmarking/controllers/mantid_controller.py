@@ -237,73 +237,77 @@ class MantidController(Controller):
 
         return function_def
 
+    def _setup_mantid_dev(self):
+        """
+        Setup problem ready to run with Mantid dev.
+        Adds a custom function to Mantid for calling in fit().
+        """
+        start_val_list = [
+            f"{name}={value}"
+            for name, value in zip(self._param_names, self.initial_params)
+        ]
+
+        start_val_str = ", ".join(start_val_list)
+        function_def = "name=fitFunction, " + start_val_str
+
+        def get_params(ff_self):
+            fit_param = np.zeros(len(self._param_names))
+            fit_param.setflags(write=1)
+            for i, param in enumerate(self._param_names):
+                fit_param[i] = ff_self.getParameterValue(param)
+            return fit_param
+
+        class fitFunction(IFunction1D):
+            """
+            A wrapper to register a custom function in Mantid.
+            """
+
+            def init(ff_self):
+                """
+                Initialiser for the Mantid wrapper.
+                """
+
+                for i, p in enumerate(self._param_names):
+                    ff_self.declareParameter(p)
+                    if self.value_ranges is not None:
+                        ff_self.addConstraints(
+                            f"{self.value_ranges[i][0]}"
+                            f" < {p} < "
+                            f"{self.value_ranges[i][1]}"
+                        )
+
+            def function1D(ff_self, xdata):
+                """
+                Pass through for cost-function evaluation.
+                """
+
+                fit_param = get_params(ff_self)
+
+                return self.problem.eval_model(x=xdata, params=fit_param)
+
+            if not self.cost_func.jacobian.use_default_jac:
+
+                def functionDeriv1D(ff_self, xvals, jacobian):
+                    """
+                    Pass through for jacobian evaluation.
+                    """
+                    fit_param = get_params(ff_self)
+
+                    jac = self.cost_func.jacobian.eval(fit_param)
+                    for i, _ in enumerate(xvals):
+                        for j in range(len(fit_param)):
+                            jacobian.set(i, j, jac[i, j])
+
+        FunctionFactory.subscribe(fitFunction)
+
+        return function_def
+
     def setup(self):
         """
         Setup problem ready to run with Mantid.
-
-        Adds a custom function to Mantid for calling in fit().
         """
-
         if self._mantid_equation is None:
-            start_val_list = [
-                f"{name}={value}"
-                for name, value in zip(self._param_names, self.initial_params)
-            ]
-
-            start_val_str = ", ".join(start_val_list)
-            function_def = "name=fitFunction, " + start_val_str
-
-            def get_params(ff_self):
-                fit_param = np.zeros(len(self._param_names))
-                fit_param.setflags(write=1)
-                for i, param in enumerate(self._param_names):
-                    fit_param[i] = ff_self.getParameterValue(param)
-                return fit_param
-
-            class fitFunction(IFunction1D):
-                """
-                A wrapper to register a custom function in Mantid.
-                """
-
-                def init(ff_self):
-                    """
-                    Initialiser for the Mantid wrapper.
-                    """
-
-                    for i, p in enumerate(self._param_names):
-                        ff_self.declareParameter(p)
-                        if self.value_ranges is not None:
-                            ff_self.addConstraints(
-                                f"{self.value_ranges[i][0]}"
-                                f" < {p} < "
-                                f"{self.value_ranges[i][1]}"
-                            )
-
-                def function1D(ff_self, xdata):
-                    """
-                    Pass through for cost-function evaluation.
-                    """
-
-                    fit_param = get_params(ff_self)
-
-                    return self.problem.eval_model(x=xdata, params=fit_param)
-
-                if not self.cost_func.jacobian.use_default_jac:
-
-                    def functionDeriv1D(ff_self, xvals, jacobian):
-                        """
-                        Pass through for jacobian evaluation.
-                        """
-                        fit_param = get_params(ff_self)
-
-                        jac = self.cost_func.jacobian.eval(fit_param)
-                        for i, _ in enumerate(xvals):
-                            for j in range(len(fit_param)):
-                                jacobian.set(i, j, jac[i, j])
-
-            FunctionFactory.subscribe(fitFunction)
-
-            self._mantid_function = function_def
+            self._mantid_function = self._setup_mantid_dev()
         else:
             self._mantid_function = self._setup_mantid()
 
