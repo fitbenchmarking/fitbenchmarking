@@ -103,13 +103,12 @@ class MantidController(Controller):
                 " the requested cost function "
                 f"{func_name}"
             )
-
         self._cost_function = self.COST_FUNCTION_MAP[func_name]
 
-        # In case of mantid:
-        # mantid_equation is set in additional_info
-        # In case of mantid dev:
-        # additional_info does not have the mantid_equation key
+        # In case of mantid parser:
+        #    mantid_equation is set in additional_info
+        # In case of mantid dev parser:
+        #    additional_info does not have the mantid_equation key
         self._mantid_equation = self.problem.additional_info.get(
             "mantid_equation", None
         )
@@ -120,23 +119,21 @@ class MantidController(Controller):
         self._param_names = self.par_names
         self._status = None
 
-        # dataset count will be greater than 1 if problem is multifit
+        # dataset count > 1 if problem is multifit
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
 
         if self.problem.multifit:
-            # data_obj will be a list of len > 1 if multifit
+            # len(data_obj) will be equal to dataset count
             data_obj = [
                 msapi.CreateWorkspace(
-                    DataX=x,
-                    DataY=y,
-                    DataE=e,
+                    DataX=self.data_x[i],
+                    DataY=self.data_y[i],
+                    DataE=self.data_e[i],
                     OutputWorkspace=f"ws{i}",
                 )
-                for i, (x, y, e) in enumerate(
-                    zip(self.data_x, self.data_y, self.data_e)
-                )
+                for i in range(self._dataset_count)
             ]
             # _added_args are passed to the mantid function with
             # additional workspaces created for multifit data
@@ -232,11 +229,11 @@ class MantidController(Controller):
                 + function_def * self._dataset_count
             )
             # Add the ties to the function definition
-            function_def += f"ties=({self._get_ties_str()}); "
+            function_def += f"ties=({self._get_ties_str()})"
 
         # Add constraints if parameter bounds are set
         if self.value_ranges is not None:
-            function_def += f"constraints=({self._get_constraint_str()})"
+            function_def += f"; constraints=({self._get_constraint_str()})"
 
         return function_def
 

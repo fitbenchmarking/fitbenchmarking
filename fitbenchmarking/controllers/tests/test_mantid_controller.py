@@ -127,31 +127,76 @@ class TestMantidController(TestCase):
         self.controller._dataset_count = dataset_count
         assert self.controller._get_ties_str() == expected
 
-    def test_init(self):
+    @parameterized.expand(
+        [
+            (
+                Path("multifit_set") / "multifit.txt",
+                (
+                    "name=LinearBackground,A0=0,A1=0;"
+                    " name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"
+                ),
+                True,
+                [
+                    "f0.A0",
+                    "f0.A1",
+                    "f1.A",
+                    "f1.Sigma",
+                    "f1.Frequency",
+                    "f1.Phi",
+                ],
+                2,
+                True,
+            ),
+            (
+                Path("all_parsers_set") / "trig_noisy-fba.txt",
+                (
+                    "name=UserFunction, Formula=A1*cos(2*3.141592*x) "
+                    "+ A2*sin(2*3.141592*x) + A3*x, A1=1.01, A2=3.98, A3=3.01"
+                ),
+                False,
+                [
+                    "A1",
+                    "A2",
+                    "A3",
+                ],
+                1,
+                False,
+            ),
+        ]
+    )
+    def test_init(
+        self,
+        file_path,
+        mantid_equation,
+        is_composite_function,
+        param_names,
+        dataset_count,
+        multifit,
+    ):
         """
         Verifies the attributes are set correctly when the
         class is initialized.
         """
-        assert self.controller._cost_function == "Least squares"
-        assert self.controller._mantid_equation == (
-            "name=LinearBackground,A0=0,A1=0;"
-            " name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"
-        )
-        assert self.controller._is_composite_function
-        assert self.controller._param_names == [
-            "f0.A0",
-            "f0.A1",
-            "f1.A",
-            "f1.Sigma",
-            "f1.Frequency",
-            "f1.Phi",
-        ]
-        assert self.controller._status is None
-        assert self.controller._dataset_count == 2
-        assert self.controller.problem.multifit
-        assert list(self.controller._added_args.keys()) == ["InputWorkspace_1"]
-        assert self.controller._mantid_function is None
-        assert self.controller._mantid_results is None
+        # Create the controller
+        bench_prob_dir = Path(inspect.getfile(test_files)).resolve().parent
+        fname = bench_prob_dir / file_path
+        fitting_problem = parse_problem_file(fname, Options())
+        fitting_problem.correct_data()
+        cost_func = WeightedNLLSCostFunc(fitting_problem)
+        controller = ControllerFactory.create_controller("mantid")
+        controller = controller(cost_func)
+        # Verify the attributes
+        assert controller._cost_function == "Least squares"
+        assert controller._mantid_equation == mantid_equation
+        assert controller._is_composite_function == is_composite_function
+        assert controller._param_names == param_names
+        assert controller._status is None
+        assert controller._dataset_count == dataset_count
+        assert controller.problem.multifit == multifit
+        if controller.problem.multifit:
+            assert list(controller._added_args.keys()) == ["InputWorkspace_1"]
+        assert controller._mantid_function is None
+        assert controller._mantid_results is None
 
     def test_init_raises_error(self):
         """
@@ -164,5 +209,12 @@ class TestMantidController(TestCase):
         fitting_problem.correct_data()
         cost_func = HellingerNLLSCostFunc(fitting_problem)
         controller = ControllerFactory.create_controller("mantid")
-        with self.assertRaises(exceptions.ControllerAttributeError):
+        with self.assertRaises(exceptions.ControllerAttributeError) as exp:
             _ = controller(cost_func)
+
+        assert str(exp.exception) == (
+            "Error in the controller attributes.\n"
+            "Details: Mantid Controller does not "
+            "support the requested cost function "
+            "HellingerNLLSCostFunc"
+        )

@@ -618,20 +618,6 @@ class ControllerBoundsTests(TestCase):
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
 
-    def check_bounds(self, controller):
-        """
-        Run bounded problem and check `final_params` respect
-        parameter bounds
-        """
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            self.assertLessEqual(controller.value_ranges[count][0], value)
-            self.assertGreaterEqual(controller.value_ranges[count][1], value)
-
     @parameterized.expand(
         [
             ("scipy", "L-BFGS-B"),
@@ -648,13 +634,20 @@ class ControllerBoundsTests(TestCase):
     )
     def test_controller_bounds(self, controller_name, minimizer):
         """
-        Test that parameter bounds are respected for
-        bounded problems in the controller.
+        Test that runs bounded problem and checks
+        `final_params` respect parameter bounds
         """
         controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
 
-        self.check_bounds(controller)
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
 
 @run_for_test_types(TEST_TYPE, "all")
