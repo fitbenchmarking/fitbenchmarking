@@ -6,7 +6,6 @@ import inspect
 from pathlib import Path
 from unittest import TestCase
 
-from mantid.dataobjects._dataobjects import Workspace2D
 from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 
@@ -22,6 +21,9 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+
+if TEST_TYPE == "all":
+    from mantid.dataobjects._dataobjects import Workspace2D
 
 
 @run_for_test_types(TEST_TYPE, "all")
