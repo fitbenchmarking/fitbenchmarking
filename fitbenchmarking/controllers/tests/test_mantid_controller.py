@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import call, patch
 
+import numpy as np
 from parameterized import parameterized
 from pytest import test_type as TEST_TYPE
 
@@ -226,20 +227,27 @@ class TestMantidController(TestCase):
         [
             (
                 True,
-                ["p1", "p2"],
-                ["x1", "x2"],
-                ["y1", "y2"],
-                ["e1", "e2"],
-                [25, 25],
+                [[1.0], [2.0]],
+                [np.array([3.0]), np.array([4.0])],
+                [np.array([5.0]), np.array([6.0])],
+                [np.array([7.0]), np.array([8.0])],
+                [np.array([25.0]), np.array([25.0])],
             ),
-            (True, ["p1", "p2"], None, None, None, [25, 25]),
+            (
+                True,
+                [[1.0], [2.0]],
+                None,
+                None,
+                None,
+                [np.array([25.0]), np.array([25.0])],
+            ),
             (
                 False,
-                ["p1"],
-                ["x1"],
-                ["y2"],
-                ["e2"],
-                25,
+                [1.0],
+                np.array([2]),
+                np.array([3]),
+                np.array([4]),
+                np.array([25.0]),
             ),
         ]
     )
@@ -255,9 +263,9 @@ class TestMantidController(TestCase):
         mock_eval_chisq,
     ):
         """
-        Verifies the call counts and call args of super().eval_chisq.
+        Verifies the eval_chisq method.
         """
-        mock_eval_chisq.return_value = 25
+        mock_eval_chisq.return_value = np.array([25.0])
         self.controller.problem.multifit = multifit
         assert (
             self.controller.eval_chisq(params, x_data, y_data, e_data)

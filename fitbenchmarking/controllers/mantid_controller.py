@@ -3,6 +3,7 @@ Implements a controller for the Mantid fitting software.
 """
 
 from itertools import repeat
+from typing import Union
 
 import numpy as np
 from mantid import simpleapi as msapi
@@ -203,7 +204,7 @@ class MantidController(Controller):
                 )
             )
 
-    def _setup_mantid(self):
+    def _setup_mantid(self) -> str:
         """
         Setup problem ready to run with Mantid.
         """
@@ -222,7 +223,7 @@ class MantidController(Controller):
             else:
                 function_def += ", $domains=i; "
 
-            # Multi fit must have 'composite=MultiDomainFunction' in the
+            # Multifit must have 'composite=MultiDomainFunction' in the
             # first function.
             function_def = (
                 "composite=MultiDomainFunction, NumDeriv=1;"
@@ -237,7 +238,7 @@ class MantidController(Controller):
 
         return function_def
 
-    def _setup_mantid_dev(self):
+    def _setup_mantid_dev(self) -> str:
         """
         Setup problem ready to run with Mantid dev.
         Adds a custom function to Mantid for calling in fit().
@@ -302,7 +303,7 @@ class MantidController(Controller):
 
         return function_def
 
-    def setup(self):
+    def setup(self) -> None:
         """
         Setup problem ready to run with Mantid.
         """
@@ -311,7 +312,7 @@ class MantidController(Controller):
         else:
             self._mantid_function = self._setup_mantid()
 
-    def fit(self):
+    def fit(self) -> None:
         """
         Run problem with Mantid.
         """
@@ -338,7 +339,7 @@ class MantidController(Controller):
         self._mantid_results = fit_result
         self._status = self._mantid_results.OutputStatus
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         """
         Convert the result to a numpy array and populate the variables results
         will be read from.
@@ -382,7 +383,13 @@ class MantidController(Controller):
 
     # Override if multi-fit
     # =====================
-    def eval_chisq(self, params, x=None, y=None, e=None):
+    def eval_chisq(
+        self,
+        params: Union[float, list[float]],
+        x: Union[np.ndarray, list[np.ndarray], None] = None,
+        y: Union[np.ndarray, list[np.ndarray], None] = None,
+        e: Union[np.ndarray, list[np.ndarray], None] = None,
+    ) -> Union[np.ndarray, list[np.ndarray]]:
         """
         Computes the chisq value.
         If multi-fit inputs will be lists and this will return a list of chi
@@ -399,7 +406,7 @@ class MantidController(Controller):
 
         :return: The sum of squares of residuals for the datapoints at the
                  given parameters
-        :rtype: numpy array
+        :rtype: numpy array or list of numpy arrays
         """
         if self.problem.multifit:
             x = x or list(repeat(None, len(params)))
