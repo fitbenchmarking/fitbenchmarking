@@ -209,6 +209,10 @@ class MantidController(Controller):
 
         :return: The updated function defination string.
         :rtype: str
+
+        References
+        ----------
+        https://docs.mantidproject.org/nightly/fitting/fitfunctions/MultiDomainFunction.html
         """
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
@@ -240,11 +244,15 @@ class MantidController(Controller):
 
         return function_def
 
-    def _setup_mantid_dev(self) -> str:
+    def _setup_mantid_dev(self, return_class: bool = False) -> str:
         """
         Sets up a custom function to Mantid for calling in fit().
         This method is used when the mantid_equation is not set in
         additional_info.
+
+        :param return_class: defaults to False, if True the fitFunction
+                             class is returned for testing.
+        :type return_class: boolean
 
         :return: The updated function defination string.
         :rtype: str
@@ -307,6 +315,9 @@ class MantidController(Controller):
 
         FunctionFactory.subscribe(fitFunction)
 
+        if return_class:
+            # Returning the class for testing purposes
+            return fitFunction
         return function_def
 
     def setup(self) -> None:
