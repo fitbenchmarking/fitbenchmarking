@@ -5,7 +5,7 @@ This file contains unit tests for the mantid controller.
 import inspect
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
 
 import numpy as np
 from parameterized import parameterized
@@ -365,3 +365,45 @@ class TestMantidController(TestCase):
         assert self.controller._setup_mantid() == expected
         assert constraint_mock.call_count == constraint_count
         assert ties_mock.call_count == ties_count
+
+    def test_setup_mantid_dev(self):
+        """
+        Verifies the output of the _setup_mantid_dev method.
+        """
+        self.controller._param_names = ["A", "Sigma"]
+        self.controller.initial_params = [1.0, 2.0]
+        mock_jacobian = MagicMock()
+        mock_jacobian.use_default_jac = False
+        self.controller.cost_func.jacobian = mock_jacobian
+        assert (
+            self.controller._setup_mantid_dev()
+            == "name=fitFunction, A=1.0, Sigma=2.0"
+        )
+
+    @parameterized.expand(
+        [
+            (None, 0, 1),
+            ("test", 1, 0),
+        ]
+    )
+    @patch(
+        "fitbenchmarking.controllers.mantid_controller.MantidController._setup_mantid_dev"
+    )
+    @patch(
+        "fitbenchmarking.controllers.mantid_controller.MantidController._setup_mantid"
+    )
+    def test_setup(
+        self,
+        mantid_equation,
+        mock_setup_mantid_count,
+        mock_setup_mantid_dev_count,
+        mock_setup_mantid,
+        mock_setup_mantid_dev,
+    ):
+        """
+        Verifies the setup method.
+        """
+        self.controller._mantid_equation = mantid_equation
+        self.controller.setup()
+        assert mock_setup_mantid.call_count == mock_setup_mantid_count
+        assert mock_setup_mantid_dev.call_count == mock_setup_mantid_dev_count

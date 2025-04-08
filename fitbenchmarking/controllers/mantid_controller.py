@@ -242,8 +242,12 @@ class MantidController(Controller):
 
     def _setup_mantid_dev(self) -> str:
         """
-        Setup problem ready to run with Mantid dev.
-        Adds a custom function to Mantid for calling in fit().
+        Sets up a custom function to Mantid for calling in fit().
+        This method is used when the mantid_equation is not set in
+        additional_info.
+
+        :return: The updated function defination string.
+        :rtype: str
         """
         start_val_str = ", ".join(
             f"{name}={value}"
@@ -251,12 +255,7 @@ class MantidController(Controller):
         )
         function_def = "name=fitFunction, " + start_val_str
 
-        def get_params(ff_self):
-            return np.array(
-                [ff_self.getParameterValue(p) for p in self._param_names]
-            )
-
-        class FitFunction(IFunction1D):
+        class fitFunction(IFunction1D):
             """
             A wrapper to register a custom function in Mantid.
 
@@ -283,9 +282,9 @@ class MantidController(Controller):
                 """
                 Pass through for cost-function evaluation.
                 """
-
-                fit_param = get_params(ff_self)
-
+                fit_param = np.array(
+                    [ff_self.getParameterValue(p) for p in self._param_names]
+                )
                 return self.problem.eval_model(x=xdata, params=fit_param)
 
             if not self.cost_func.jacobian.use_default_jac:
@@ -294,14 +293,19 @@ class MantidController(Controller):
                     """
                     Pass through for jacobian evaluation.
                     """
-                    fit_param = get_params(ff_self)
+                    fit_param = np.array(
+                        [
+                            ff_self.getParameterValue(p)
+                            for p in self._param_names
+                        ]
+                    )
 
                     jac = self.cost_func.jacobian.eval(fit_param)
                     for i, _ in enumerate(xvals):
                         for j in range(len(fit_param)):
                             jacobian.set(i, j, jac[i, j])
 
-        FunctionFactory.subscribe(FitFunction)
+        FunctionFactory.subscribe(fitFunction)
 
         return function_def
 
