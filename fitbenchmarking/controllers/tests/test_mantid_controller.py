@@ -387,12 +387,15 @@ class TestMantidController(TestCase):
         self.controller._param_names = ["A"]
         self.controller.initial_params = [1.0]
         self.controller.value_ranges = [(0, 2)]
+
         mock_jacobian = MagicMock()
         mock_jacobian.use_default_jac = False
         self.controller.cost_func.jacobian = mock_jacobian
+
         FitFunc = self.controller._setup_mantid_dev(return_class=True)
         mock_ff_self = MagicMock()
         FitFunc.init(mock_ff_self)
+
         mock_ff_self.declareParameter.assert_called_with("A")
         mock_ff_self.addConstraints.assert_called_with("0 < A < 2")
 
@@ -405,6 +408,7 @@ class TestMantidController(TestCase):
         self.controller.problem.eval_model = MagicMock(
             return_value=np.array([42.0])
         )
+
         mock_jacobian = MagicMock()
         mock_jacobian.use_default_jac = False
         self.controller.cost_func.jacobian = mock_jacobian
@@ -419,6 +423,35 @@ class TestMantidController(TestCase):
         np.testing.assert_array_equal(call_arg["x"], np.array([5.0, 6.0]))
         np.testing.assert_array_equal(call_arg["params"], np.array([3.0, 4.0]))
         np.testing.assert_array_equal(result, np.array([42.0]))
+
+    def test_fitfunction_functionDeriv1D(self):
+        """
+        Verifies the fitFunction functionDeriv1D method.
+        """
+        self.controller._param_names = ["A", "B"]
+        self.controller.initial_params = [1.0, 2.0]
+
+        mock_jacobian = MagicMock()
+        mock_jacobian.use_default_jac = False
+        self.controller.cost_func.jacobian = mock_jacobian
+        self.controller.cost_func.jacobian.eval.return_value = np.array(
+            [[1.0, 2.0], [3.0, 4.0]]
+        )
+
+        FitFunc = self.controller._setup_mantid_dev(return_class=True)
+
+        mock_ff_self = MagicMock()
+        mock_ff_self.getParameterValue.side_effect = [5.0, 6.0]
+        jacobian = MagicMock()
+
+        FitFunc.functionDeriv1D(mock_ff_self, np.array([10.0, 20.0]), jacobian)
+
+        call_arg = self.controller.cost_func.jacobian.eval.call_args[0][0]
+        np.testing.assert_array_equal(call_arg, np.array([5.0, 6.0]))
+        jacobian.set.assert_any_call(0, 0, 1.0)
+        jacobian.set.assert_any_call(0, 1, 2.0)
+        jacobian.set.assert_any_call(1, 0, 3.0)
+        jacobian.set.assert_any_call(1, 1, 4.0)
 
     @parameterized.expand(
         [
