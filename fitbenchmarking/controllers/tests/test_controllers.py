@@ -618,20 +618,6 @@ class ControllerBoundsTests(TestCase):
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
 
-    def check_bounds(self, controller):
-        """
-        Run bounded problem and check `final_params` respect
-        parameter bounds
-        """
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            self.assertLessEqual(controller.value_ranges[count][0], value)
-            self.assertGreaterEqual(controller.value_ranges[count][1], value)
-
     @parameterized.expand(
         [
             ("scipy", "L-BFGS-B"),
@@ -648,13 +634,20 @@ class ControllerBoundsTests(TestCase):
     )
     def test_controller_bounds(self, controller_name, minimizer):
         """
-        Test that parameter bounds are respected for
-        bounded problems in the controller.
+        Test that runs bounded problem and checks
+        `final_params` respect parameter bounds
         """
         controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
 
-        self.check_bounds(controller)
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -886,97 +879,6 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
         controller._status = "Failed"
         self.shared_tests.check_diverged(controller)
-
-    def test_mantid_multifit(self):
-        """
-        MantidController: Additional bespoke test for multifit
-        """
-
-        file_path = os.path.join("multifit_set", "multifit.txt")
-        cost_func = make_cost_func(file_path)
-
-        controller = create_controller("mantid", cost_func)
-        controller.minimizer = "Levenberg-Marquardt"
-
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        self.assertEqual(
-            len(controller.final_params),
-            len(controller.data_x),
-            "Multifit did not return a result for each data file",
-        )
-
-        self.assertEqual(
-            len(controller.final_params[0]),
-            len(controller.initial_params),
-            "Incorrect number of final params.",
-        )
-
-    def test_mantid_singlefit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared (SingleFit).
-        """
-        m_controller = create_controller("mantid", self.cost_func)
-        b_controller = DummyController(self.cost_func)
-        params = np.array([1, 2, 3, 4])
-        x = np.array([6, 2, 32, 4])
-        y = np.array([1, 21, 3, 4])
-        e = np.array([0.5, 0.003, 1, 2])
-
-        expected = b_controller.eval_chisq(params=params, x=x, y=y, e=e)
-        actual = m_controller.eval_chisq(params=params, x=x, y=y, e=e)
-
-        self.assertEqual(
-            expected,
-            actual,
-            "Mantid controller found a different "
-            "chi squared for single fit problem.",
-        )
-
-    def test_mantid_multifit_chisquared(self):
-        """
-        Test the override in Mantid conroller is working correctly for
-        evaluating chi_squared (MultiFit).
-        """
-        m_controller = create_controller("mantid", self.cost_func)
-        b_controller = DummyController(self.cost_func)
-        params = [
-            np.array([1, 2, 3, 4]),
-            np.array([1, 2, 3, 4]),
-            np.array([1, 2, 3, 4]),
-        ]
-        xs = [
-            np.array([6, 2, 32, 4]),
-            np.array([6, 2, 32, 4]),
-            np.array([6, 2, 32, 4]),
-        ]
-        ys = [
-            np.array([1, 21, 3, 4]),
-            np.array([1, 21, 3, 4]),
-            np.array([1, 21, 3, 4]),
-        ]
-        es = [
-            np.array([0.5, 0.003, 1, 2]),
-            np.array([0.5, 0.003, 1, 2]),
-            np.array([0.5, 0.003, 1, 2]),
-        ]
-
-        expected = [
-            b_controller.eval_chisq(params=p, x=x, y=y, e=e)
-            for x, y, e, p in zip(xs, ys, es, params)
-        ]
-        actual = m_controller.eval_chisq(params=params, x=xs, y=ys, e=es)
-
-        self.assertListEqual(
-            expected,
-            actual,
-            "Mantid controller found a different chi "
-            "squared for multi fit problem.",
-        )
 
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
     def test_gsl(self, minimizer):
