@@ -496,7 +496,7 @@ class TestMantidController(TestCase):
     @patch("mantid.simpleapi.Fit")
     def test_fit(
         self,
-        minimiizer,
+        minimizer,
         minimizer_arg,
         mock_fit,
     ):
@@ -505,7 +505,7 @@ class TestMantidController(TestCase):
         """
         self.controller._mantid_function = "mantid_function"
         self.controller._cost_function = "cost_function"
-        self.controller.minimizer = minimiizer
+        self.controller.minimizer = minimizer
         self.controller._mantid_data = "mantid_data"
         self.controller._added_args = {}
 
@@ -518,5 +518,69 @@ class TestMantidController(TestCase):
         assert call_args.kwargs["Minimizer"] == minimizer_arg
         assert call_args.kwargs["InputWorkspace"] == "mantid_data"
         assert call_args.kwargs["Output"] == "fit"
-        if minimiizer == "FABADA":
+        if minimizer == "FABADA":
             assert call_args.kwargs["MaxIterations"] == 2000000
+
+    @parameterized.expand(
+        [
+            (
+                "Damped GaussNewton",
+                True,
+                2,
+                False,
+                [
+                    [0.0, 0.0, 0.2, 0.2, 1.0, 0.0],
+                    [0.0, 0.0, 0.2, 0.2, 1.0, 0.0],
+                ],
+            ),
+            (
+                "FABADA",
+                False,
+                0,
+                False,
+                [],
+            ),
+            (
+                "Simplex",
+                False,
+                1,
+                True,
+                [
+                    9.992968384080259,
+                    2.0019412967622623,
+                    -6.498087151207797,
+                    2.432705755554191,
+                    -0.0021839598697108633,
+                    -1.5707513496110153,
+                ],
+            ),
+        ]
+    )
+    def test_cleanup(
+        self,
+        minimizer,
+        multifit,
+        flag,
+        set_status,
+        expected,
+    ):
+        """
+        Verifies the cleanup method.
+        """
+        self.controller.minimizer = minimizer
+        self.controller.problem.multifit = multifit
+        if not multifit:
+            self.controller._added_args = {}
+
+        self.controller.setup()
+        self.controller.fit()
+        if set_status:
+            self.controller._status = "Failed to converge"
+        self.controller.cleanup()
+
+        assert self.controller.flag == flag
+        if minimizer == "FABADA":
+            assert self.controller.params_pdfs is not None
+        else:
+            assert self.controller.final_params == expected
+            assert self.controller.params_pdfs is None

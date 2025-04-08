@@ -880,34 +880,6 @@ class ExternalControllerTests(TestCase):
         controller._status = "Failed"
         self.shared_tests.check_diverged(controller)
 
-    def test_mantid_multifit(self):
-        """
-        MantidController: Additional bespoke test for multifit
-        """
-
-        file_path = os.path.join("multifit_set", "multifit.txt")
-        cost_func = make_cost_func(file_path)
-
-        controller = create_controller("mantid", cost_func)
-        controller.minimizer = "Levenberg-Marquardt"
-
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        self.assertEqual(
-            len(controller.final_params),
-            len(controller.data_x),
-            "Multifit did not return a result for each data file",
-        )
-
-        self.assertEqual(
-            len(controller.final_params[0]),
-            len(controller.initial_params),
-            "Incorrect number of final params.",
-        )
-
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
     def test_gsl(self, minimizer):
         """

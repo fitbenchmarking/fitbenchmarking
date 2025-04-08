@@ -368,12 +368,9 @@ class MantidController(Controller):
         else:
             self.flag = 2
 
-        final_params_dict = dict(
-            zip(
-                self._mantid_results.OutputParameters.column(0),
-                self._mantid_results.OutputParameters.column(1),
-            )
-        )
+        param_names = self._mantid_results.OutputParameters.column(0)
+        param_values = self._mantid_results.OutputParameters.column(1)
+        final_params_dict = dict(zip(param_names, param_values))
 
         if self.minimizer == "FABADA":
             self.params_pdfs = {}
