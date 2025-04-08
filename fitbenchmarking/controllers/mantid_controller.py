@@ -309,9 +309,9 @@ class MantidController(Controller):
                     )
 
                     jac = self.cost_func.jacobian.eval(fit_param)
-                    for i, row in enumerate(jac):
-                        for j, value in enumerate(row):
-                            jacobian.set(i, j, value)
+                    for i, _ in enumerate(xvals):
+                        for j in range(len(fit_param)):
+                            jacobian.set(i, j, jac[i, j])
 
         FunctionFactory.subscribe(fitFunction)
 
