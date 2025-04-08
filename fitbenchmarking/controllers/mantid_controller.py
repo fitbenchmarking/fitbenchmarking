@@ -105,6 +105,7 @@ class MantidController(Controller):
                 f"{func_name}"
             )
         self._cost_function = self.COST_FUNCTION_MAP[func_name]
+        self._param_names = self.par_names
 
         # In case of mantid parser:
         #    mantid_equation is set in additional_info
@@ -116,10 +117,6 @@ class MantidController(Controller):
         self._is_composite_function = (
             ";" in self._mantid_equation if self._mantid_equation else False
         )
-
-        self._param_names = self.par_names
-        self._status = None
-
         # dataset count > 1 if problem is multifit
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
@@ -149,6 +146,7 @@ class MantidController(Controller):
             self._added_args = {}
 
         self._mantid_data = data_obj[0] if self.problem.multifit else data_obj
+        self._status = None
         self._mantid_function = None
         self._mantid_results = None
 
@@ -167,9 +165,9 @@ class MantidController(Controller):
             for i in range(1, self._dataset_count)
         )
 
-    def _get_constraint_str(self) -> str:
+    def _get_constraints_str(self) -> str:
         """
-        Returns the constraint string for the problem. This is set in
+        Returns the constraints string for the problem. This is set in
         the function definition string passed to Mantid.
 
         :return: The string of constraints.
@@ -206,7 +204,11 @@ class MantidController(Controller):
 
     def _setup_mantid(self) -> str:
         """
-        Setup problem ready to run with Mantid.
+        Formats the mantid equation by setting the ties and constraints.
+        This formated string is passed to the mantid fit function.
+
+        :return: The updated function defination string.
+        :rtype: str
         """
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
@@ -234,7 +236,7 @@ class MantidController(Controller):
 
         # Add constraints if parameter bounds are set
         if self.value_ranges is not None:
-            function_def += f"; constraints=({self._get_constraint_str()})"
+            function_def += f"; constraints=({self._get_constraints_str()})"
 
         return function_def
 
@@ -243,24 +245,24 @@ class MantidController(Controller):
         Setup problem ready to run with Mantid dev.
         Adds a custom function to Mantid for calling in fit().
         """
-        start_val_list = [
+        start_val_str = ", ".join(
             f"{name}={value}"
             for name, value in zip(self._param_names, self.initial_params)
-        ]
-
-        start_val_str = ", ".join(start_val_list)
+        )
         function_def = "name=fitFunction, " + start_val_str
 
         def get_params(ff_self):
-            fit_param = np.zeros(len(self._param_names))
-            fit_param.setflags(write=1)
-            for i, param in enumerate(self._param_names):
-                fit_param[i] = ff_self.getParameterValue(param)
-            return fit_param
+            return np.array(
+                [ff_self.getParameterValue(p) for p in self._param_names]
+            )
 
-        class fitFunction(IFunction1D):
+        class FitFunction(IFunction1D):
             """
             A wrapper to register a custom function in Mantid.
+
+            References
+            ----------
+            https://docs.mantidproject.org/v6.9.1/tutorials/extending_mantid_with_python/advanced_fit_behaviours/02_analytical_derivatives.html
             """
 
             def init(ff_self):
@@ -299,7 +301,7 @@ class MantidController(Controller):
                         for j in range(len(fit_param)):
                             jacobian.set(i, j, jac[i, j])
 
-        FunctionFactory.subscribe(fitFunction)
+        FunctionFactory.subscribe(FitFunction)
 
         return function_def
 

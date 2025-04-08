@@ -81,7 +81,7 @@ class TestMantidController(TestCase):
             ),
         ]
     )
-    def test_get_constraint_str(
+    def test_get_constraints_str(
         self,
         is_multifit,
         is_composite_function,
@@ -91,14 +91,14 @@ class TestMantidController(TestCase):
         expected,
     ):
         """
-        Verifies the output of _get_constraint_str() method.
+        Verifies the output of _get_constraints_str() method.
         """
         self.controller._dataset_count = dataset_count
         self.controller.value_ranges = value_ranges
         self.controller._param_names = param_names
         self.controller.problem.multifit = is_multifit
         self.controller._is_composite_function = is_composite_function
-        result = self.controller._get_constraint_str()
+        result = self.controller._get_constraints_str()
         assert result == expected
 
     @parameterized.expand(
@@ -267,10 +267,8 @@ class TestMantidController(TestCase):
         """
         mock_eval_chisq.return_value = np.array([25.0])
         self.controller.problem.multifit = multifit
-        assert (
-            self.controller.eval_chisq(params, x_data, y_data, e_data)
-            == expected
-        )
+        result = self.controller.eval_chisq(params, x_data, y_data, e_data)
+        assert result == expected
         assert mock_eval_chisq.call_count == len(params)
         if multifit:
             if x_data is None:
@@ -283,3 +281,87 @@ class TestMantidController(TestCase):
         else:
             expected_calls = [call(params, x_data, y_data, e_data)]
         assert mock_eval_chisq.call_args_list == expected_calls
+
+    @parameterized.expand(
+        [
+            (
+                "name=LinearBackground,A0=0,A1=0",
+                False,
+                False,
+                [(0, 1), (0, 2)],
+                1,
+                1,
+                0,
+                "name=LinearBackground,A0=0,A1=0; constraints=(constraints)",
+            ),
+            (
+                "name=LinearBackground,A0=0,A1=0",
+                True,
+                False,
+                [(0, 1), (0, 2)],
+                2,
+                1,
+                1,
+                (
+                    "composite=MultiDomainFunction, NumDeriv=1;"
+                    "name=LinearBackground,A0=0,A1=0, $domains=i; "
+                    "name=LinearBackground,A0=0,A1=0, $domains=i; "
+                    "ties=(ties); constraints=(constraints)"
+                ),
+            ),
+            (
+                (
+                    "name=LinearBackground,A0=0,A1=0;"
+                    " name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"
+                ),
+                True,
+                True,
+                None,
+                2,
+                0,
+                1,
+                (
+                    "composite=MultiDomainFunction, NumDeriv=1; "
+                    "(composite=CompositeFunction, NumDeriv=false, $domains=i;"
+                    " name=LinearBackground,A0=0,A1=0; "
+                    "name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0); "
+                    "(composite=CompositeFunction, NumDeriv=false, $domains=i;"
+                    " name=LinearBackground,A0=0,A1=0; "
+                    "name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0);ties=(ties)"
+                ),
+            ),
+        ]
+    )
+    @patch(
+        "fitbenchmarking.controllers.mantid_controller.MantidController._get_ties_str"
+    )
+    @patch(
+        "fitbenchmarking.controllers.mantid_controller.MantidController._get_constraints_str"
+    )
+    def test_setup_mantid(
+        self,
+        mantid_equation,
+        multifit,
+        is_composite_function,
+        value_ranges,
+        dataset_count,
+        constraint_count,
+        ties_count,
+        expected,
+        constraint_mock,
+        ties_mock,
+    ):
+        """
+        Verifies the output of the _setup_mantid method.
+        """
+        constraint_mock.return_value = "constraints"
+        ties_mock.return_value = "ties"
+        self.controller.problem.multifit = multifit
+        self.controller.value_ranges = value_ranges
+        self.controller._mantid_equation = mantid_equation
+        self.controller._is_composite_function = is_composite_function
+        self.controller._dataset_count = dataset_count
+
+        assert self.controller._setup_mantid() == expected
+        assert constraint_mock.call_count == constraint_count
+        assert ties_mock.call_count == ties_count
