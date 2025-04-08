@@ -480,3 +480,43 @@ class TestMantidController(TestCase):
         self.controller.setup()
         assert mock_setup_mantid.call_count == mock_setup_mantid_count
         assert mock_setup_mantid_dev.call_count == mock_setup_mantid_dev_count
+
+    @parameterized.expand(
+        [
+            ("BFGS", "BFGS"),
+            (
+                "FABADA",
+                (
+                    "FABADA,Chain Length=100000,Steps between values=10,"
+                    "Convergence Criteria=0.01,PDF=1,ConvergedChain=chain"
+                ),
+            ),
+        ]
+    )
+    @patch("mantid.simpleapi.Fit")
+    def test_fit(
+        self,
+        minimiizer,
+        minimizer_arg,
+        mock_fit,
+    ):
+        """
+        Verifies the fit method.
+        """
+        self.controller._mantid_function = "mantid_function"
+        self.controller._cost_function = "cost_function"
+        self.controller.minimizer = minimiizer
+        self.controller._mantid_data = "mantid_data"
+        self.controller._added_args = {}
+
+        mock_fit.return_value = MagicMock()
+
+        self.controller.fit()
+        call_args = mock_fit.call_args_list[0]
+        assert call_args.kwargs["Function"] == "mantid_function"
+        assert call_args.kwargs["CostFunction"] == "cost_function"
+        assert call_args.kwargs["Minimizer"] == minimizer_arg
+        assert call_args.kwargs["InputWorkspace"] == "mantid_data"
+        assert call_args.kwargs["Output"] == "fit"
+        if minimiizer == "FABADA":
+            assert call_args.kwargs["MaxIterations"] == 2000000
