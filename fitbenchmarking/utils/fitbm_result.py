@@ -83,12 +83,53 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        # if SpinW, make sure data_x is correct
+        # Needed for spinw 2d case, for plotting
+        self.data_x_cuts = None
+        self.data_y_cuts = None
+        self.data_e_cuts = None
+        self.ini_y_cuts = None
+        self.r_x_cuts = None
+        self.fin_y_cuts = None
+        indexes_cuts = None
+
         if "ebin_cens" in problem.additional_info:
-            n_plots = problem.additional_info["n_plots"]
-            self.data_x = np.array(
-                n_plots * problem.additional_info["ebin_cens"].tolist()
-            )
+            # If SpinW 1d, make sure data_x is correct
+            if problem.additional_info["plot_type"] == "1d_cuts":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+
+            # In the SpinW 2d case, produce cuts of data
+            elif problem.additional_info["plot_type"] == "2d":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x_cuts = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+                modQ_cens = problem.additional_info["modQ_cens"]
+                qcens = problem.additional_info["qcens"]
+                dQ = 0.05
+                qmin = [float(i) - dQ for i in qcens]
+                qmax = [float(i) + dQ for i in qcens]
+
+                indexes_cuts = []
+                for i, (qmin_i, qmax_i) in enumerate(zip(qmin, qmax)):
+                    indexes_cuts.append(
+                        np.where(
+                            np.logical_and(
+                                modQ_cens >= qmin_i, modQ_cens <= qmax_i
+                            )
+                        )
+                    )
+
+                self.data_y_cuts, self.data_y_complete = self._get_1d_cuts(
+                    problem, indexes_cuts, self.data_y
+                )
+
+                if self.data_e is not None:
+                    self.data_e_cuts, _ = self._get_1d_cuts(
+                        problem, indexes_cuts, self.data_e
+                    )
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
@@ -136,6 +177,11 @@ class FittingResult:
         self.jac_x = None
 
         self.ini_y = problem.ini_y(controller.parameter_set)
+        if self.ini_y is not None and indexes_cuts is not None:
+            self.ini_y_cuts, _ = self._get_1d_cuts(
+                problem, indexes_cuts, self.ini_y
+            )
+
         self.fin_y = None
         if self.params is not None:
             cost_func.problem.timer.reset()
@@ -143,12 +189,20 @@ class FittingResult:
                 self.r_x = cost_func.eval_r(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
+                if self.r_x is not None and indexes_cuts is not None:
+                    self.r_x_cuts, _ = self._get_1d_cuts(
+                        problem, indexes_cuts, self.r_x
+                    )
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
             self.fin_y = cost_func.problem.eval_model(
                 self.params, x=self.data_x
             )
+            if self.fin_y is not None and indexes_cuts is not None:
+                self.fin_y_cuts, _ = self._get_1d_cuts(
+                    problem, indexes_cuts, self.fin_y
+                )
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(
@@ -172,6 +226,33 @@ class FittingResult:
         )
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
+
+    def _get_1d_cuts(self, problem, indexes, array_to_cut):
+        """
+        Given a flattened array of spinw y data, this function reshapes it
+        into a 2d array (based on the length of ebin_cens), then takes
+        1d cuts based on the qcens specified by the user.
+        """
+
+        len_single_data_x = len(problem.additional_info["ebin_cens"].tolist())
+        len_y_flattened = len(array_to_cut)
+        new_shape = (
+            int(len_y_flattened / len_single_data_x),
+            len_single_data_x,
+        )
+        reshaped_data = array_to_cut.reshape(new_shape)
+        array_to_cut_as_2d = reshaped_data
+
+        data_cuts = []
+        for ind in indexes:
+            if len(list(ind[0])) == 1:
+                data_cuts = data_cuts + array_to_cut_as_2d[ind, :][0].tolist()
+
+            elif len(list(ind[0])) > 1:
+                mean_y = np.mean(array_to_cut_as_2d[ind, :][0], axis=0)
+                data_cuts = data_cuts + mean_y.tolist()
+
+        return data_cuts, array_to_cut_as_2d
 
     def init_blank(self):
         """

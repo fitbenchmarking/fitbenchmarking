@@ -333,6 +333,12 @@ class Plot:
 
         data_x = first_result.data_x
         data_y = first_result.data_y
+
+        # in the SpinW 2d data case
+        if first_result.data_x_cuts is not None:
+            data_x = first_result.data_x_cuts
+            data_y = first_result.data_y_cuts
+
         cls._add_data_points(fig, data_x, data_y, error_y, n_plots)
 
         # Plot categories (cost functions)
@@ -436,11 +442,14 @@ class Plot:
                 "rgba" + colour[3:-1] + ", 0.5)"  # 0.5 transparency
             )
 
-        data_len = int(len(result.data_y) / n_plots)
-
         for i in range(n_plots):
-            if n_plots > 1:
+            if n_plots > 1 and result.data_x_cuts is not None:
+                x = result.data_x_cuts
+                data_len = int(len(x) / n_plots)
+                y = result.fin_y_cuts[(data_len * i) : (data_len * (i + 1))]
+            elif n_plots > 1:
                 x = result.data_x
+                data_len = int(len(x) / n_plots)
                 y = result.fin_y[(data_len * i) : (data_len * (i + 1))]
             else:
                 x = result.data_x[result.sorted_index]
@@ -619,13 +628,20 @@ class Plot:
         """
         minim = result.minimizer
         label = f" {minim}"
-        data_len = int(len(result.data_y) / n_plots_per_row)
+        data_x = result.data_x
+        r_x = result.r_x
 
+        # in the SpinW 2d data case
+        if result.r_x_cuts is not None:
+            data_x = result.data_x_cuts
+            r_x = result.r_x_cuts
+
+        data_len = int(len(data_x) / n_plots_per_row)
         for i in range(n_plots_per_row):
             fig.add_trace(
                 go.Scatter(
-                    x=result.data_x,
-                    y=result.r_x[(data_len * i) : (data_len * (i + 1))],
+                    x=data_x,
+                    y=r_x[(data_len * i) : (data_len * (i + 1))],
                     mode="markers",
                     name=label,
                     marker={"color": colour},

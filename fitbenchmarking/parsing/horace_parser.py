@@ -326,11 +326,24 @@ class HoraceParser(FitbenchmarkParser):
         to fitting_problem.additional_info.
         """
 
-        if self.fitting_problem.additional_info["plot_type"] == "1d_cuts":
+        if self.fitting_problem.additional_info["plot_type"] in [
+            "1d_cuts",
+            "2d",
+        ]:
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
-            self.fitting_problem.additional_info["ebin_cens"] = np.array(
-                eng.workspace["ebin_cens"], dtype=np.float64
-            )[0]
+
+            if isinstance(eng.workspace["ebin_cens"], list):
+                self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                    eng.workspace["ebin_cens"][0], dtype=np.float64
+                )[0]
+                self.fitting_problem.additional_info["modQ_cens"] = np.array(
+                    eng.workspace["ebin_cens"][1], dtype=np.float64
+                )[0]
+
+            else:
+                self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                    eng.workspace["ebin_cens"], dtype=np.float64
+                )[0]
 
             self.fitting_problem.additional_info["ax_titles"] = {
                 "x": "Energy (meV)",
@@ -339,6 +352,7 @@ class HoraceParser(FitbenchmarkParser):
 
             if "q_cens" in self._entries:
                 qcens = self._entries["q_cens"].split(",")
+                self.fitting_problem.additional_info["qcens"] = qcens
                 self.fitting_problem.additional_info["n_plots"] = len(qcens)
                 self.fitting_problem.additional_info["subplot_titles"] = (
                     self._get_subplot_titles_SpinW(qcens)
