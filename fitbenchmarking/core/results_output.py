@@ -372,9 +372,15 @@ def create_plots(options, results, best_results, figures_dir):
             # first, load with raw data
             data[cf] = pd.DataFrame(
                 {
-                    "x": cat_results[0].data_x,
-                    "y": cat_results[0].data_y,
-                    "e": cat_results[0].data_e,
+                    "x": cat_results[0].data_x
+                    if cat_results[0].data_x_cuts is None
+                    else cat_results[0].data_x_cuts,
+                    "y": cat_results[0].data_y
+                    if cat_results[0].data_y_cuts is None
+                    else cat_results[0].data_y_cuts,
+                    "e": cat_results[0].data_e
+                    if cat_results[0].data_e_cuts is None
+                    else cat_results[0].data_e_cuts,
                     "minimizer": "Data",
                     "cost_function": cf,
                     "best": False,
@@ -383,9 +389,15 @@ def create_plots(options, results, best_results, figures_dir):
             # next the initial data
             tmp_df = pd.DataFrame(
                 {
-                    "x": cat_results[0].data_x,
-                    "y": cat_results[0].ini_y,
-                    "e": cat_results[0].data_e,
+                    "x": cat_results[0].data_x
+                    if cat_results[0].data_x_cuts is None
+                    else cat_results[0].data_x_cuts,
+                    "y": cat_results[0].ini_y
+                    if cat_results[0].ini_y_cuts is None
+                    else cat_results[0].ini_y_cuts,
+                    "e": cat_results[0].data_e
+                    if cat_results[0].data_e_cuts is None
+                    else cat_results[0].data_e_cuts,
                     "minimizer": "Starting Guess",
                     "cost_function": cf,
                     "best": False,
@@ -397,9 +409,15 @@ def create_plots(options, results, best_results, figures_dir):
             for result in cat_results:
                 tmp_df = pd.DataFrame(
                     {
-                        "x": result.data_x,
-                        "y": result.fin_y,
-                        "e": result.data_e,
+                        "x": result.data_x
+                        if result.data_x_cuts is None
+                        else result.data_x_cuts,
+                        "y": result.fin_y
+                        if result.fin_y_cuts is None
+                        else result.fin_y_cuts,
+                        "e": result.data_e
+                        if result.data_e_cuts is None
+                        else result.data_e_cuts,
                         "minimizer": result.sanitised_min_name(True),
                         "cost_function": cf,
                         "best": result.is_best_fit,
