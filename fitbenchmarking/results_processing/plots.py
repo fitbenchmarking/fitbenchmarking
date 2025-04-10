@@ -7,6 +7,7 @@ import os
 
 import numpy as np
 import plotly.colors as ptly_colors
+import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -526,6 +527,122 @@ class Plot:
         fig.update_layout(title=title + ": residuals")
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
+        cls.write_html_with_link_plotlyjs(
+            fig, figures_dir, html_fname, options
+        )
+        return html_fname
+
+    @classmethod
+    def plot_2d_data(cls, categories, title, options, figures_dir) -> str:
+        """
+        Create a comparison plot showing residuals for all fits,
+        while emphasizing the residuals for the best fit .
+
+        :param categories: The results to plot
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+
+        # TODO: Need to decide where to display the figures
+        # in the results pages
+
+        # TODO 2: need to fix values on both axis to match
+        # the ones we want
+
+        # first_result = next(iter(categories.values()))[0]
+        # if first_result.plot_info["plot_type"] == "2d":
+        #     fig = px.imshow(
+        #         np.rot90(first_result.data_y_complete),
+        #         labels={
+        #             'x': '|Q| (Å<sup>-1</sup>)',
+        #             'y': 'Energy (meV)',
+        #         },
+        #         color_continuous_scale='viridis'
+        #     )
+        #     fig.update_layout(title=title + ": 2d plot")
+        #     fig.show()
+
+        #     html_fname = f"2d_plot_for_{first_result.sanitised_name}.html"
+        #     cls.write_html_with_link_plotlyjs(
+        #         fig, figures_dir, html_fname, options
+        #     )
+
+        # file_names = []
+        # for categ_key, results in categories.items():
+        #     for result in results:
+
+        #         if result.plot_info["plot_type"] == "2d" and
+        #            result.is_best_fit:
+        #             minim = result.minimizer
+        #             fig = px.imshow(
+        #                 np.rot90(result.fin_y_complete),
+        #                 labels={
+        #                     'x': '|Q| (Å<sup>-1</sup>)',
+        #                     'y': 'Energy (meV)',
+        #                 },
+        #                 color_continuous_scale='viridis',
+        #                 title = f"{categ_key}, best 2d fit: {minim}"
+        #             )
+        #             # fig.update_layout(title=title + ": 2d plot")
+        #             fig.show()
+
+        #   html_fname = f"2d_plot_for_{minim}_{result.sanitised_name}.html"
+        #             cls.write_html_with_link_plotlyjs(
+        #                 fig, figures_dir, html_fname, options
+        #             )
+        #             file_names.append(html_fname)
+
+        html_fname = ""
+        n_categs = len(categories)
+        titles = []
+
+        for categ_key, results in categories.items():
+            for result in results:
+                if (
+                    result.plot_info["plot_type"] == "2d"
+                    and result.is_best_fit
+                ):
+                    titles.extend(f"{categ_key}: {result.minimizer} (best)")
+
+        fig = make_subplots(
+            rows=1,
+            cols=n_categs,
+            shared_yaxes=True,
+            horizontal_spacing=0.1,
+            subplot_titles=titles,
+        )
+
+        for ind, (categ_key, results) in enumerate(categories.items(), 1):
+            for result in results:
+                if (
+                    result.plot_info["plot_type"] == "2d"
+                    and result.is_best_fit
+                ):
+                    fig.add_trace(
+                        px.imshow(
+                            np.rot90(result.fin_y_complete, k=3),
+                        ).data[0],
+                        row=1,
+                        col=ind,
+                    )
+                    fig.update_yaxes(title_text="Energy (meV)", row=1, col=ind)
+                    fig.update_xaxes(
+                        title_text="|Q| (Å<sup>-1</sup>)", row=1, col=ind
+                    )
+
+        fig.update_layout(title=title + ": 2d plots")
+        fig.update_coloraxes(colorscale="viridis")
+        fig.show()
+
+        html_fname = f"2d_plots_for_best_minims_{result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
         )
