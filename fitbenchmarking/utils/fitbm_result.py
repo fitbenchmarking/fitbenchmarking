@@ -200,7 +200,7 @@ class FittingResult:
                 self.params, x=self.data_x
             )
             if self.fin_y is not None and indexes_cuts is not None:
-                self.fin_y_cuts, _ = self._get_1d_cuts(
+                self.fin_y_cuts, self.fin_y_complete = self._get_1d_cuts(
                     problem, indexes_cuts, self.fin_y
                 )
 
