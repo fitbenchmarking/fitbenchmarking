@@ -95,14 +95,9 @@ class HoraceParser(FitbenchmarkParser):
             f"('{data_file_path}', params_dict, {qcens})"
         )
 
-        # Remove nans
         for var in ["y", "e"]:
-            eng.evalc(f"{var} = fitpow.{var}")
-            eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
-            eng.evalc(f"{var}_final = {var}(sum(isnan({var}),2)==0,:)")
-
+            eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
-        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")
         eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
 
         # Create and fill struct
@@ -164,13 +159,9 @@ class HoraceParser(FitbenchmarkParser):
         error = np.array(eng.workspace["e"], dtype=np.float64)
 
         # check for NaNs in 2D SpinW problems
-        if (
-            "plot_type" in self._entries
-            and self._entries["plot_type"].lower() == "2d"
-            and np.isnan([signal, error]).any()
-        ):
+        if "plot_type" in self._entries and np.isnan([signal, error]).any():
             raise ParsingError(
-                "2D SpinW problems should not contain NaN values, "
+                "SpinW problems should not contain NaN values, "
                 "please ensure these are removed within the wye function "
             )
 
