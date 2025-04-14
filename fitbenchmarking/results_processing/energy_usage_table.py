@@ -13,8 +13,6 @@ class EnergyUsageTable(Table):
     `codecarbon <https://mlco2.github.io/codecarbon/index.html>`_  module.
     num_runs is set in :ref:`options`.
 
-    Configuration for codecarbon is set in ``.codecarbon.config``.
-
     For more information on how energy usage is measured,
     see the Methodology section of the `codecarbon docs
     <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.

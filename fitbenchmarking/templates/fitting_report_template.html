@@ -5,6 +5,20 @@
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <script>        
+        // When the fitting report page loads, read the selected runtime metric
+        // and update the display of the runtime rows accordingly.
+        document.addEventListener("DOMContentLoaded", () => {
+            const metric = sessionStorage.getItem("selected_runtime_metric") || "{{ runtime_metric }}";
+            let allRuntimeElements = document.querySelectorAll(".runtime_row");
+            allRuntimeElements.forEach(el => el.style.display = "none");
+        
+            let selected = document.getElementById(metric);
+            if (selected) {
+                selected.style.display = "table-row";
+            }
+        });
+    </script>
     <head>
         <title>{{ run_name }}FitBenchmarking Fitting Report</title>
     </head>
@@ -54,9 +68,33 @@
                                 <td class="label">Accuracy</td>
                                 <td colspan="3">{{ accuracy }}</td>
                             </tr>
-                            <tr>
-                                <td class="label">Runtime</td>
-                                <td colspan="3">{{ runtime }} seconds</td>
+                            <tr class="runtime_row" id="mean">
+                                <td class="label">Runtime (mean)</td>
+                                <td colspan="3">{{ mean_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="minimum">
+                                <td class="label">Runtime (minimum)</td>
+                                <td colspan="3">{{ minimum_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="maximum">
+                                <td class="label">Runtime (maximum)</td>
+                                <td colspan="3">{{ maximum_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="first">
+                                <td class="label">Runtime (first)</td>
+                                <td colspan="3">{{ first_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="median">
+                                <td class="label">Runtime (median)</td>
+                                <td colspan="3">{{ median_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="harmonic">
+                                <td class="label">Runtime (harmonic)</td>
+                                <td colspan="3">{{ harmonic_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="trim">
+                                <td class="label">Runtime (trim)</td>
+                                <td colspan="3">{{ trim_runtime }} seconds</td>
                             </tr>
                             <tr>
                                 <td class="label">Energy Usage</td>
