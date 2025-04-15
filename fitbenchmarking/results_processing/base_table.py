@@ -435,7 +435,7 @@ class Table:
         minimizer_template = (
             '<a class="minimizer_header" col={0} '
             'title="{1}"'
-            'data-software="{2}"'
+            ' data-software="{2}" '
             'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
             '#{2}" target="_blank">{3}</a>'
@@ -751,7 +751,7 @@ class Table:
         items = [
             f'        <li><label class="noselect"><input '
             f'type="checkbox" checked=true value="{minimizer}"'
-            f"onclick=\"toggle_minimizer('{software}', "
+            f" onclick=\"toggle_minimizer('{software}', "
             f"'{minimizer}')\"/> {minimizer}</label></li>"
             for software, minimizer in minimizers
         ]
