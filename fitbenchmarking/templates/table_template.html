@@ -50,7 +50,17 @@
                         <center>
                             <div>
                                 {{ problem_dropdown }}
-                                {{ minimizer_dropdown }}
+                                {% if has_multiple_costfuncs %}
+                                    {{ costfunc_dropdown }}
+                                {% endif %}  
+                                {% if has_multiple_softwares %}
+                                    {{ software_dropdown }}
+                                {% endif %}
+                                {% if has_multiple_minimizers %}
+                                    {{ minimizer_dropdown }}
+                                {% endif %}
+                            </div>
+                            <div>
                                 {{ runtime_dropdown }}
                                 {{ probsize_checkbox }}
                             </div>

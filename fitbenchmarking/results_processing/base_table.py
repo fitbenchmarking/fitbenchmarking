@@ -435,6 +435,7 @@ class Table:
         minimizer_template = (
             '<a class="minimizer_header" col={0} '
             'title="{1}"'
+            'data-software="{2}"'
             'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
             '#{2}" target="_blank">{3}</a>'
@@ -749,7 +750,7 @@ class Table:
 
         items = [
             f'        <li><label class="noselect"><input '
-            f'type="checkbox" checked=true '
+            f'type="checkbox" checked=true value="{minimizer}"'
             f"onclick=\"toggle_minimizer('{software}', "
             f"'{minimizer}')\"/> {minimizer}</label></li>"
             for software, minimizer in minimizers
@@ -757,6 +758,48 @@ class Table:
 
         return self._dropdown_html(
             "minimizer_dropdown", "Select Minimizers", items
+        )
+
+    def software_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of software.
+
+        :return: HTML for a dropdown checklist of softwares.
+        :rtype: str
+        """
+        label_template = (
+            "        <li><label class='noselect'><input "
+            "type='checkbox' checked=true value='{0}' "
+            "onclick=\"toggle_software('{0}')"
+            '"/>{0}</label></li>'
+        )
+        items = [
+            label_template.format(software.replace("_", "-"))
+            for software in self.options.software
+        ]
+        return self._dropdown_html(
+            "software_dropdown", "Select Softwares", items
+        )
+
+    def costfunc_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of cost functions.
+
+        :return: HTML for a dropdown checklist of cost functions.
+        :rtype: str
+        """
+        label_template = (
+            '        <li><label class="noselect"><input '
+            'type="checkbox" checked=true value="{0}"'
+            "onclick=\"toggle_cost_function('{0}')\"/>"
+            "{0}</label></li>"
+        )
+        items = [
+            label_template.format(cost_func)
+            for cost_func in self.options.cost_func_type
+        ]
+        return self._dropdown_html(
+            "costfunc_dropdown", "Select Cost Functions", items
         )
 
     def runtime_dropdown_html(self) -> str:

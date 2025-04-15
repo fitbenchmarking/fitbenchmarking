@@ -11,14 +11,14 @@ function _find_element_from_text(class_name, search_text) {
 /**
 * Adjusts the span of a column header that encompasses a number of sub-headers.
 * @param   {jQuery Object} header   A collection of DOM elements representing column headers with a span.
-* @param   {bool} increment         True if the column span should be incremented. Otherwise it is decremented.
+* @param   {bool} decrement         True if the column span should be decremented. Otherwise it is incremented.
 */
-function _adjust_colspan(header, increment) {
+function _adjust_colspan(header, decrement) {
     var colspan = parseInt(header.attr('colspan'));
     if (isNaN(colspan)) {
-        var new_colspan = increment ? 1 : 0;
+        var new_colspan = decrement ? 0 : 1;
     } else {
-        var new_colspan = increment ? colspan + 1 : colspan - 1;
+        var new_colspan = decrement ? colspan - 1 : colspan + 1;
         header.attr('colspan', new_colspan);
     }
 
@@ -50,22 +50,74 @@ function toggle_minimizer(software, minimizer) {
     var minimizer_text = _find_element_from_text("a.minimizer_header", minimizer);
     var minimizer_header = minimizer_text.parent();
 
+    const is_minimizer_checked = $(`input[type="checkbox"][value="${minimizer}"]`).is(':checked');
+    const is_software_checked = $(`input[type="checkbox"][value="${software}"]`).is(':checked');
+    const hide = !is_software_checked || !is_minimizer_checked
+
     // Toggle the minimizer header
-    minimizer_header.toggle();
+    if (hide) {
+        minimizer_header.hide();
+    } else {
+        minimizer_header.show();
+    }
 
-    // Decrement or increment the column span of the cost function and software header
-    var is_visible = minimizer_header.is(":visible");
-
-    _adjust_colspan(cost_function_header, is_visible);
-    _adjust_colspan(software_header, is_visible);
+    _adjust_colspan(cost_function_header, hide);
+    _adjust_colspan(software_header, hide);
 
     // Toggle the data cells in a column
     var table_id = software_header.parent().parent().parent().attr("id");
 
     minimizer_text.each(function () {
         var column_num = parseInt($(this).attr('col')) + 3;
-        $("#" + table_id + " tr > td:nth-child(" + column_num + ")").toggle();
+        if (hide) {
+            $("#" + table_id + " tr > td:nth-child(" + column_num + ")").hide();
+        } else {
+            $("#" + table_id + " tr > td:nth-child(" + column_num + ")").show();
+        }
     });
+}
+
+
+function toggle_software(software) {
+    var software_header = _find_element_from_text("a.software_header", software).parent();
+    const is_checked = $(`input[type="checkbox"][value="${software}"]`).is(':checked');
+
+    // Toggle the software header
+    if (is_checked) {
+        software_header.show();
+    } else {
+        software_header.hide();
+    }
+    
+    // Extract the minimizer names associated with the software
+    const minimizer_names = [];
+    $(`a.minimizer_header[data-software="${software}"]`).each(function () {
+        minimizer_names.push($(this).text().trim());
+    });
+    const unique_minimizer_names = [...new Set(minimizer_names)];
+
+    // Call toggle_minimizer for each minimizer name
+    unique_minimizer_names.forEach(function (minimizer) {
+        toggle_minimizer(software, minimizer);
+
+        // Find the <li> that wraps the checkbox
+        const onclickStr = `toggle_minimizer('${software}', '${minimizer}')`;
+        const checkboxLi = $(`input[type="checkbox"][onclick="${onclickStr}"]`).closest('li');
+
+        // Show or hide based on is_checked
+        if (is_checked) {
+            checkboxLi.show();
+        } else {
+            checkboxLi.hide();
+        }
+    });
+}
+
+function toggle_cost_function(cost_func) {
+    var cost_function_header = $("a.cost_function_header").parent();
+
+// pass for now
+
 }
 
 /**
