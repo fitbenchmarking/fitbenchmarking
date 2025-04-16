@@ -699,7 +699,7 @@ def display_page(
     if run_id != plot_id:
         return (
             "404 Page Error! Dash plots are not available for these results."
-            "You can use `fitbenchmarking --load-checkpoint` to fix this."
+            "You can use `fitbenchmarking --load_checkpoint` to fix this."
         )
     if plot != "pp":
         return f"404 Page Error! Plot type '{plot}' not available."
