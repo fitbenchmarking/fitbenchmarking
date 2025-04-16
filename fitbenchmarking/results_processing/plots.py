@@ -638,6 +638,17 @@ class Plot:
                         title_text="|Q| (Å<sup>-1</sup>)", row=1, col=ind
                     )
 
+                    # x goes has len 54 - shouls match the qcenses (0 to 3)
+                    # y goes has len 79 - should match the energy values (0-4)
+                    # fig.update_layout(
+                    #     xaxis = dict(
+                    #         tickmode = 'array',
+                    #         tickvals = [1, 3, 5, 7, 9, 11],
+                    #         ticktext = ['One', 'Three', 'Five', 'Seven',
+                    #                     'Nine', 'Eleven']
+                    #     )
+                    # )
+
         fig.update_layout(title=title + ": 2d plots")
         fig.update_coloraxes(colorscale="viridis")
         fig.show()
