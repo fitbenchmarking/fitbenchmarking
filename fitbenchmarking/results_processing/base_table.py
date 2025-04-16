@@ -8,6 +8,8 @@ from abc import ABCMeta, abstractmethod
 import docutils.core
 import matplotlib as mpl
 
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -794,10 +796,11 @@ class Table:
             "onclick=\"toggle_cost_function('{0}')\"/>"
             "{0}</label></li>"
         )
-        items = [
-            label_template.format(cost_func)
-            for cost_func in self.options.cost_func_type
-        ]
+        items = []
+        for cost_func in self.options.cost_func_type:
+            name = create_cost_func(cost_func).__name__.lower()
+            items.append(label_template.format(name))
+
         return self._dropdown_html(
             "costfunc_dropdown", "Select Cost Functions", items
         )

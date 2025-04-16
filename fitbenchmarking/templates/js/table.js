@@ -175,11 +175,60 @@ function toggle_software(software) {
     });
 }
 
+/**
+* Handles the case when a cost function is hidden or selected from the
+* cost function dropdown menu.
+* @param   {String} cost_func   The name of the cost function.
+*/
 function toggle_cost_function(cost_func) {
-    var cost_function_header = $("a.cost_function_header").parent();
+    var cost_function_header = $('th a.cost_function_header').filter(function () {
+        return $(this).text().trim().toLowerCase() === cost_func;
+    }).parent();
+    
+    const is_checked = $(`input[type="checkbox"][value="${cost_func}"]`).is(':checked');
 
-// pass for now
+    // Get the matching cell ids 
+    const matching_ids = [];
+    const cols = [];
+    $('td').each(function () {
+        const anchor = $(this).find(`a[href*="_${cost_func}"]`);
+        if (anchor.length > 0) {
+            var id = $(this).attr('id');
+            matching_ids.push(id);
+            const match = id.match(/col\d+/);
+            const col_id = match ? match[0] : null;
+            cols.push(col_id)  
+        }
+    });
 
+    // Hide the cost function header names
+    if (is_checked){
+        cost_function_header.show();
+    } else {
+        cost_function_header.hide();
+    }
+
+    // Hide the problem and minimizer names
+    cols.forEach(function (id) {
+        const problem_th = $(`#T_table_level1_${id}`);
+        const minimizer_th = $(`#T_table_level2_${id}`);
+        if (is_checked){
+            problem_th.show();
+            minimizer_th.show();
+        } else {
+            problem_th.hide();
+            minimizer_th.hide();
+        }
+    });
+
+    // Hide the data cells
+    matching_ids.forEach(function (id) {
+        if (is_checked){
+            $('#' + id).show();
+        } else {
+            $('#' + id).hide();
+        }
+    });
 }
 
 /**
