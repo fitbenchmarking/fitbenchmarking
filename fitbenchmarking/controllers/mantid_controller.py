@@ -111,6 +111,8 @@ class MantidController(Controller):
 
         if self.problem.multifit:
             # Multi Fit
+            if self.data_x[0].dtype not in [float, int]:
+                self.data_x = [np.array(range(len(d))) for d in self.data_x]
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x[0],
                 DataY=self.data_y[0],
@@ -128,6 +130,8 @@ class MantidController(Controller):
             self._multi_fit = len(other_inputs) + 1
         else:
             # Normal Fitting
+            if self.data_x.dtype not in [float, int]:
+                self.data_x = np.array(range(len(self.data_x)))
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
