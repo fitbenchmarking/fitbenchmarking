@@ -2,31 +2,33 @@
 * Uses jQuery to find a collection of DOM elements with text equal to the provided search text.
 * @param   {String} class_name    The name of a html element class to find.
 * @param   {String} search_text   The text to search for.
+* @param   {String} process_text  Determines whether to process text to lower case
 * @return  {jQuery Object}        A collection of DOM elements which matched the jQuery search.
 */
-function _find_element_from_text(class_name, search_text) {
-    return $(class_name).filter(function () { return $(this).text() == search_text; });
+function _find_element_from_text(class_name, search_text, process_text = true) {
+    return $(class_name).filter(function () {
+        if (process_text){
+            var text = $(this).text().trim().toLowerCase()
+        } else {
+            var text = $(this).text().trim()
+        }
+        return text == search_text; 
+    }).parent();
 }
 
 /**
-* Adjusts the span of a column header that encompasses a number of sub-headers.
+* Adjusts the span of a header that encompasses a number of sub-headers.
 * @param   {jQuery Object} header   A collection of DOM elements representing column headers with a span.
-* @param   {bool} increment         True if the column span should be incremented. Otherwise it is decremented.
+* @param   {bool} width             The width of the header.
 */
-function _adjust_colspan(header, increment) {
-    var colspan = parseInt(header.attr('colspan'));
-    if (isNaN(colspan)) {
-        var new_colspan = increment ? 1 : 0;
-    } else {
-        var new_colspan = increment ? colspan + 1 : colspan - 1;
-        header.attr('colspan', new_colspan);
-    }
-
-    // Hide the header if the sub-headers are all hidden
-    if (new_colspan == 0) {
+function _adjust_colspan(header, width) {
+    if (width == 0) {
         header.hide();
     } else {
-        header.show();
+        if (width == 1) {
+            header.show();
+        }
+        header.attr('colspan', width);
     }
 }
 
@@ -35,78 +37,200 @@ function _adjust_colspan(header, increment) {
 * @param   {String} problem_name   The name of the problem as it appears in the table row header.
 */
 function toggle_problem(problem_name) {
-    var span_object = _find_element_from_text("a.problem_header", problem_name);
-    span_object.parent().parent().toggle();
+    var span_object = _find_element_from_text("a.problem_header", problem_name, process_text = false);
+    span_object.parent().toggle();
 }
 
 /**
-* Shows or hides the table column containing a specific minimizer.
+* Hides or shows the minimizers based on the checkbox
+* selection from the dropdown menu.
 * @param   {String} software   The name of the software corresponding to the minimizer.
 * @param   {String} minimizer  The name of the minimizer as it appears in the table column header.
-* @param   {Boolean} independent_call  Determines if the function is called independently or from toggle_softwares.
 */
 function toggle_minimizer(software, minimizer) {
-    var software_header = _find_element_from_text("a.software_header", software).parent();
-    var minimizer_text = _find_element_from_text("a.minimizer_header", minimizer);
-    var minimizer_header = minimizer_text.parent();
-
-    // Get the checkbox status
-    var is_checked = $(`input[type="checkbox"][value="${minimizer}"]`).is(':checked');
-
-    // calls helper function if the minimizer is 
-    // toggled from the minimizer dropdown menu. 
-    _handle_disabling_software_checkbox(software)
-
-    // Toggle the minimizer header based on is_checked
-    if (is_checked) {
-        minimizer_header.show();
-    } else {
-        minimizer_header.hide();
-    }
-
+    // Retrive cost functions names used while benchmarking
     const cost_func_names = _get_cost_func_names();
-    cost_func_names.forEach(function(cost_func){
-        // Get the data cell ids for a given cost function 
-        const [_, cols] = _get_all_data_cell_ids(cost_func)
-        var width = _get_cost_func_header_span(cost_func);
 
-        // Adjust the column width of the cost function header
-        var cost_function_header = $('th a.cost_function_header').filter(function () {
-            return $(this).text().trim().toLowerCase() === cost_func;
-        }).parent();
-        cost_function_header.attr('colspan', width);
+    // Retrive minimizer checked status to determine whether to hide or show columns
+    var is_minimizer_checked = $(`input[type="checkbox"][value="${minimizer}"]`).is(':checked');
 
-        // Adjust the column width of the software
-        const software_names = _get_software_names();
-        software_names.forEach(function(name){
-            const header = $('th a.software_header').filter(function () {
-                const name_check = $(this).text().trim() === name;
-                const thId = $(this).parent().attr('id');
-                const colMatch = thId.match(/col\d+$/);
-                const col = colMatch ? colMatch[0] : null;
-                return name_check && cols.includes(col);
+    // Loop over cost functions
+    cost_func_names.forEach(function (cost_func) {
+
+        // Retrive cost function checked status to determine if sub-columns need updating
+        const cost_function_is_checked = $(`input[type="checkbox"][value="${cost_func}"]`).is(':checked');
+
+        if (cost_function_is_checked){
+
+            // Get the data cell ids for a minimizer that is a sub-column of the given cost function
+            const matching_ids = _get_minimizer_data_cell_ids(cost_func, minimizer, software)
+            const column_number = matching_ids[0].split('col')[1].trim();
+
+            // Retrive minimizer header that is a sub-column of the given cost function
+            const minimizer_header = $('th a.minimizer_header').filter(function () {
+                const name = $(this).text().trim() === minimizer;
+                const thId = $(this).parent().attr('id') === `T_table_level2_col${column_number}`;
+                return name && thId;
             }).parent();
-            var width = _get_software_header_span(cost_func, name);
-            if (width == 0) {
-                header.hide();
+
+            // Show/Hide minimizer header        
+            if (is_minimizer_checked){
+                minimizer_header.show();
             } else {
-                header.attr('colspan', width);
+                minimizer_header.hide();
             }
-        })
+
+            // Show/Hide data cells
+            matching_ids.forEach(function (id) {
+                if (is_minimizer_checked){
+                    $('#' + id).show();
+                } else {
+                    $('#' + id).hide();
+                }
+            });
+
+            // Adjust the column width of the cost function cell
+            var cost_function_header = _find_element_from_text('th a.cost_function_header', cost_func);
+            var width = _get_cost_func_header_span(cost_func);
+            _adjust_colspan(cost_function_header, width)
+
+            // Retrive software header that is a sub-column of the given cost function
+            const software_header = $('th a.software_header').filter(function () {
+                name_check = $(this).text().trim().toLowerCase() === software;
+                var col_num = parseInt($(this).parent().attr('id').split('col')[1].trim());
+                var col_span = parseInt($(this).attr('colspan')) || 1;
+                var col_check = col_num <= column_number && column_number <= col_num + col_span;
+                return name_check && col_check;
+            }).parent();
+
+            // Adjust the column width of the sofware cell
+            var width = _get_software_header_span(cost_func, software);
+            _adjust_colspan(software_header, width)
+
+        }         
+    });
+
+    // Call helper function that decides whether to
+    // check/uncheck/disable the software checkboxes
+    _update_software_checkboxes(software)
+
+}
+
+/**
+* Helper function used to update the select software checkboxes.
+* @param {String} software - The name of the software.
+*/
+function _update_software_checkboxes(software){
+    var software_checkboxes = $(`input[type="checkbox"][value="${software}"]`);
+    var software_has_single_minimizer = false;
+    
+    // Get all the unique minimizers names for a software
+    const minimizer_names = _get_minimizer_names(software);
+
+    if (minimizer_names.length === 1){
+        software_has_single_minimizer = true;
+    } 
+
+    // Get the checked status and push them on to the checked list
+    var checked = [];
+    minimizer_names.forEach(function (name) {
+        checked.push($(`input[type="checkbox"][value="${name}"]`).is(':checked'));
+    });
+    // Verify if all minimizers are checked or unchecked
+    const all_checked = checked.every(check => check === true);
+    const all_not_checked = checked.every(check => check === false);
+    
+    // Update the checkboxes
+    if (all_checked){
+        software_checkboxes.prop('disabled', false);
+        software_checkboxes.prop('checked', true);
+    } else {
+        software_checkboxes.prop('checked', false);
+        if (!software_has_single_minimizer){
+            if (all_not_checked) {
+                software_checkboxes.prop('disabled', false)
+            } else {
+                software_checkboxes.prop('disabled', true);
+            }
+        }
+    }
+}
+
+/**
+ * Returns the span of the cost function header. It calculates
+ * the span by counting the visible sub-column minimizers.
+ * @param {String} cost_func - The name of the cost function.
+ */
+function _get_cost_func_header_span(cost_func) {
+    const [_, cols] = _get_all_data_cell_ids(cost_func)
+
+    // Count visible minimizers
+    var width = 0;
+    cols.forEach(function(col) {
+        const th = $(`#T_table_level2_${col}`);
+        if (th.is(':visible')){
+            width += 1
+        }
     })
+    return width;
+}
 
-    // Toggle the data cells in a column
-    var table_id = software_header.parent().parent().parent().attr("id");
-
-    minimizer_text.each(function () {
-        var column_num = parseInt($(this).attr('col')) + 3;
-        // Toggle the table cells based on is_checked
-        if (is_checked) {
-            $("#" + table_id + " tr > td:nth-child(" + column_num + ")").show();
-        } else {
-            $("#" + table_id + " tr > td:nth-child(" + column_num + ")").hide();
+/**
+ * Returns the span of the software header. It calculates
+ * the span by counting the visible sub-column minimizers.
+ * @param {String} cost_func - The name of the cost function.
+ * @param {String} software - The name of the software.
+ */
+function _get_software_header_span(cost_func, software) {
+    const [_, cols] = _get_all_data_cell_ids(cost_func)
+    
+    // Select the minimizer headers associated with the software
+    const updated_cols = []
+    cols.forEach(function(col) {
+        const th = $(`#T_table_level2_${col}`);
+        const link = th.find('a.minimizer_header');
+        if (link.data('software') === software) {
+            updated_cols.push(col)
         }
     });
+
+    // Count visible minimizers
+    var width = 0;
+    updated_cols.forEach(function(col) {
+        const th = $(`#T_table_level2_${col}`);
+        if (th.is(':visible')){
+            width += 1
+        }
+    })
+    return width;
+}
+
+/**
+* Helper function that extracts the names of the
+* cost functions used while benchmarking.
+*/
+function _get_cost_func_names(){
+    var costfunc_names = []
+    var cost_function_headers = $('th a.cost_function_header')
+    cost_function_headers.each(function () {
+        costfunc_names.push($(this).text().trim().toLowerCase());
+    });
+    // Returns the cost function names
+    return costfunc_names
+}
+
+/**
+* Helper function that extracts the names of the
+* softwares used while benchmarking.
+*/
+function _get_software_names(){
+    var software_names = []
+    var software_headers = $('th a.software_header')
+    software_headers.each(function () {
+        software_names.push($(this).text().trim());
+    });
+    // Returns the unique software names
+    return [...new Set(software_names)]
 }
 
 /**
@@ -123,115 +247,8 @@ function _get_minimizer_names(software){
 }
 
 /**
- * Returns the span of the cost function header.
- * @param {String} cost_func - The name of the cost function.
- */
-function _get_cost_func_header_span(cost_func) {
-    const [_, cols] = _get_all_data_cell_ids(cost_func)
-    var width = 0;
-    cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
-        if (th.is(':visible')){
-            width += 1
-        }
-    })
-    return width;
-}
-
-/**
- * Returns the span of the cost function header.
- * @param {String} cost_func - The name of the cost function.
- */
-function _get_software_header_span(cost_func, software) {
-    const [_, cols] = _get_all_data_cell_ids(cost_func)
-    // Select the minimizer headers
-    const updated_cols = []
-    cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
-        const link = th.find('a.minimizer_header');
-        if (link.data('software') === software) {
-            updated_cols.push(col)
-        }
-    });
-    var width = 0;
-    updated_cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
-        if (th.is(':visible')){
-            width += 1
-        }
-    })
-    return width;
-}
-
-/**
-* Helper function that extracts the names of the cost function used while benchmarking.
-*/
-function _get_cost_func_names(){
-    var costfunc_names = []
-    var cost_function_headers = $('th a.cost_function_header')
-    cost_function_headers.each(function () {
-        costfunc_names.push($(this).text().trim().toLowerCase());
-    });
-    return costfunc_names
-}
-
-/**
-* Helper function that extracts the names of the software used while benchmarking.
-*/
-function _get_software_names(){
-    var software_names = []
-    var software_headers = $('th a.software_header')
-    software_headers.each(function () {
-        software_names.push($(this).text().trim());
-    });
-    return [...new Set(software_names)]
-}
-
-/**
-* Handles the case when a minimizer is toggled directly from the
-* minimizer dropdown, rather than through the software dropdown.
-* @param {String} software - The name of the software.
-*/
-function _handle_disabling_software_checkbox(software){
-    var software_checkboxes = $(`input[type="checkbox"][value="${software}"]`);
-    var software_has_single_minimizer = false;
-    
-    // Get all the unique minimizers names for a software
-    const minimizer_names = _get_minimizer_names(software);
-
-    if (minimizer_names.length === 1){
-        software_has_single_minimizer = true;
-    } 
-
-    // Get the checked status and push them on to the all_checked list
-    var checked = [];
-    minimizer_names.forEach(function (name) {
-        checked.push($(`input[type="checkbox"][value="${name}"]`).is(':checked'));
-    });
-    // Verify if all minimizers are checked
-    const all_checked = checked.every(check => check === true);
-    const all_not_checked = checked.every(check => check === false);
-    
-    // Set the checkboxes
-    if (all_checked){
-        software_checkboxes.prop('disabled', false);
-        software_checkboxes.prop('checked', true);
-    } else {
-        software_checkboxes.prop('checked', false);
-        // Enable/Disable checkboxes in the software dropdown menu
-        if (!software_has_single_minimizer){
-            if (all_not_checked) {
-                software_checkboxes.prop('disabled', false)
-            } else {
-                software_checkboxes.prop('disabled', true);
-            }
-        }
-    }
-}
-
-/**
-* Handles the case when a software is hidden or selected from the
-* software dropdown menu.
+* Hides or shows all the minimizers of a software based
+* on the checkbox selection from the dropdown menu.
 * @param   {String} software   The name of the software.
 */
 function toggle_software(software) {
@@ -243,9 +260,7 @@ function toggle_software(software) {
     // Process each cost function
     cost_func_names.forEach(function (cost_func) {
 
-        var cost_function_header = $('th a.cost_function_header').filter(function () {
-            return $(this).text().trim().toLowerCase() === cost_func;
-        }).parent();
+        var cost_function_header = _find_element_from_text('th a.cost_function_header', cost_func);
         const cost_function_is_checked = $(`input[type="checkbox"][value="${cost_func}"]`).is(':checked');
 
         if (cost_function_is_checked){
@@ -308,12 +323,12 @@ function toggle_software(software) {
 
             // Adjust the column width of the cost function cell
             var width = _get_cost_func_header_span(cost_func);
-            cost_function_header.attr('colspan', width);
+            _adjust_colspan(cost_function_header, width)
             
         }         
     });
 
-    // Get all the minimizers names for a software
+    // Get all the minimizers names for the software
     const minimizer_names = _get_minimizer_names(software);
     minimizer_names.forEach(function (minimizer) {
         // Set the minimizer checkboxes
@@ -327,8 +342,8 @@ function toggle_software(software) {
 }
 
 /**
-* Handles the case when a cost function is hidden or selected from the
-* cost function dropdown menu.
+* Retrives the ids and column numbers of the data cell for
+* a given cost function.
 * @param   {String} cost_func   The name of the cost function.
 */
 function _get_all_data_cell_ids(cost_func) {
@@ -349,8 +364,8 @@ function _get_all_data_cell_ids(cost_func) {
 }
 
 /**
-* Handles the case when a cost function is hidden or selected from the
-* cost function dropdown menu.
+* Retrives the ids of the data cell for a given cost function,
+* minimizer and software.
 * @param   {String} cost_func   The name of the cost function.
 * @param   {String} minimizer   The name of the minimizer.
 * @param   {String} software    The name of the software.
@@ -362,7 +377,7 @@ function _get_minimizer_data_cell_ids(cost_func, minimizer, software) {
     }
     software = software.replace('-', '_');
     var search_text = `a[href*="_${cost_func}_${minimizer}_[${software}"]`;
-    // Get the matching cell ids and the column numbers
+    // Get the matching cell ids
     const matching_ids = [];
     $('td').each(function () {
         const anchor = $(this).find(search_text);
@@ -375,31 +390,31 @@ function _get_minimizer_data_cell_ids(cost_func, minimizer, software) {
 }
 
 /**
-* Handles the case when a cost function is hidden or selected from the
-* cost function dropdown menu.
+* Hides or shows all the minimizers and softwares of a cost function
+* based on the checkbox selection from the dropdown menu.
 * @param   {String} cost_func   The name of the cost function.
 */
 function toggle_cost_function(cost_func) {
-    var cost_function_header = $('th a.cost_function_header').filter(function () {
-        return $(this).text().trim().toLowerCase() === cost_func;
-    }).parent();
+    var cost_function_header = _find_element_from_text('th a.cost_function_header', cost_func);
     const [matching_ids, cols] = _get_all_data_cell_ids(cost_func)
     
-    // Hide the cost function header names
+    // Retrieve the checkbox status
     const is_checked = $(`input[type="checkbox"][value="${cost_func}"]`).is(':checked');
+
     if (is_checked){
         // Show cost function header
         cost_function_header.show();
     
         // Get software names
         const software_names = _get_software_names()
-        // Iterate over the softwares
+        // Iterate over softwares
         software_names.forEach(function (software) {
 
+            // Retrieve software checked status
             const is_software_checked = $(`input[type="checkbox"][value="${software}"]`).is(':checked') || $(`input[type="checkbox"][value="${software}"]`).is(':disabled');
 
             if (is_software_checked){
-                // Show software header
+                // Retrieve software header
                 const software_header = $('th a.software_header').filter(function () {
                     const name = $(this).text().trim() === software;
                     const thId = $(this).parent().attr('id');
@@ -407,16 +422,19 @@ function toggle_cost_function(cost_func) {
                     const col = colMatch ? colMatch[0] : null;
                     return name && cols.includes(col);
                 }).parent();
+                // Show software header
                 software_header.show();
 
                 // Get minimizer names
                 const minimizer_names = _get_minimizer_names(software)
-                // Iterate over the minimizers
+                // Iterate over minimizers
                 minimizer_names.forEach(function (minimizer){
+
+                    // Retrieve minimizer checked status
                     var is_minimizer_checked = $(`input[type="checkbox"][value="${minimizer}"]`).is(':checked');
 
                     if (is_minimizer_checked){
-                        // Show minimizer header
+                        // Retrieve minimizer header
                         const minimizer_header = $('th a.minimizer_header').filter(function () {
                             const name = $(this).text().trim() === minimizer;
                             const thId = $(this).parent().attr('id');
@@ -424,6 +442,7 @@ function toggle_cost_function(cost_func) {
                             const col = colMatch ? colMatch[0] : null;
                             return name && cols.includes(col);
                         }).parent();
+                        // Show minimizer header
                         minimizer_header.show();
 
                         // Get the data cell ids of the minimizer
@@ -454,7 +473,7 @@ function toggle_cost_function(cost_func) {
 
     // Adjust the column width of the cost function cell
     var width = _get_cost_func_header_span(cost_func);
-    cost_function_header.attr('colspan', width);
+    _adjust_colspan(cost_function_header, width)
 
 }
 

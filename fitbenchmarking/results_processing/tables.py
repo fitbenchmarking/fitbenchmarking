@@ -124,9 +124,6 @@ def create_results_tables(
             key11 = list(results[key1].keys())[0]
             n_solvers = len(results[key1][key11])
             n_solvers_large = n_solvers > 15
-            has_multiple_softwares = len(options.software) > 1
-            has_multiple_costfuncs = len(options.cost_func_type) > 1
-            has_multiple_minimizers = len(options.minimizers) > 1
 
             with open(f"{table.file_path}html", "w", encoding="utf-8") as f:
                 f.write(
@@ -141,11 +138,8 @@ def create_results_tables(
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
                         costfunc_dropdown=html["costfunc_dropdown"],
-                        has_multiple_costfuncs=has_multiple_costfuncs,
                         software_dropdown=html["software_dropdown"],
-                        has_multiple_softwares=has_multiple_softwares,
                         minimizer_dropdown=html["minim_dropdown"],
-                        has_multiple_minimizers=has_multiple_minimizers,
                         probsize_checkbox=html["probsize_checkbox"],
                         runtime_dropdown=html["runtime_dropdown"],
                         table_description=description[suffix],

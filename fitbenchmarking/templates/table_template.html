@@ -50,15 +50,9 @@
                         <center>
                             <div>
                                 {{ problem_dropdown }}
-                                {% if has_multiple_costfuncs %}
-                                    {{ costfunc_dropdown }}
-                                {% endif %}  
-                                {% if has_multiple_softwares %}
-                                    {{ software_dropdown }}
-                                {% endif %}
-                                {% if has_multiple_minimizers %}
-                                    {{ minimizer_dropdown }}
-                                {% endif %}
+                                {{ costfunc_dropdown }}
+                                {{ software_dropdown }}
+                                {{ minimizer_dropdown }}
                             </div>
                             <div class="checkbox-row">
                                 {{ runtime_dropdown }}
