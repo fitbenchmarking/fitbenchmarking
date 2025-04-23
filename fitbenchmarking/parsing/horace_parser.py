@@ -67,7 +67,7 @@ class HoraceParser(FitbenchmarkParser):
         self._horace_msk: typing.Optional[str] = None
         self._horace_path: typing.Optional[str] = None
 
-    def _process_spinw_data(self, data_file_path):
+    def _process_spinw_data(self, data_file_path, creating_cuts=False):
         """
         Cut SpinW data based on qcens.
 
@@ -95,21 +95,36 @@ class HoraceParser(FitbenchmarkParser):
             f"('{data_file_path}', params_dict, {qcens})"
         )
 
-        for var in ["y", "e"]:
-            eng.evalc(f"{var}_final = fitpow.{var}")
-        eng.evalc("x = fitpow.ebin_cens")
-        eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
-
-        # Create and fill struct
-        eng.evalc(
-            "data = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
-        )
-        for i in np.arange(1, len(qcens) + 1):
-            for var in ["x", "y", "e", "qmax", "qmin"]:
-                eng.evalc(f"data({i}).{var}={var}_final(:, {i})'")
-
         # Save cuts
-        new_path = str(data_file_path).split(".mat")[0] + "_cuts.mat"
+        if creating_cuts:
+            for var in ["y", "e"]:
+                eng.evalc(f"{var}_final = fitpow.{var}")
+            eng.evalc("x = fitpow.ebin_cens")
+            eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
+
+            # Create and fill struct
+            eng.evalc(
+                "data = struct('x', {}, 'y', {}, 'e', {},"
+                " 'qmax', {}, 'qmin', {})"
+            )
+            for i in np.arange(1, len(qcens) + 1):
+                for var in ["x", "y", "e", "qmax", "qmin"]:
+                    eng.evalc(f"data({i}).{var}={var}_final(:, {i})'")
+
+        else:
+            for var in ["y", "e"]:
+                eng.evalc(f"{var}_final = fitpow.{var}")
+            eng.evalc("x_final = {fitpow.ebin_cens; fitpow.modQ_cens}")
+
+            # Create and fill struct
+            eng.evalc(
+                "data = struct('x', {}, 'y', {}, 'e', {},"
+                " 'qmax', {}, 'qmin', {})"
+            )
+            for var in ["x", "y", "e"]:
+                eng.evalc(f"data(1).{var}={var}_final'")
+
+        new_path = str(data_file_path).split(".mat")[0] + "_processed.mat"
         eng.evalc(f"save('{new_path}', 'data')")
         return new_path
 
@@ -128,9 +143,13 @@ class HoraceParser(FitbenchmarkParser):
             "plot_type" in self._entries
             and self._entries["plot_type"].lower() == "1d_cuts"
         ):
-            new_data_path = self._process_spinw_data(data_file_path)
+            new_data_path = self._process_spinw_data(
+                data_file_path, creating_cuts=True
+            )
         else:
-            new_data_path = data_file_path
+            new_data_path = self._process_spinw_data(
+                data_file_path, creating_cuts=False
+            )
 
         wye_data_f = self._parse_function(self._entries["wye_function"])
         script = pathlib.Path(wye_data_f[0]["matlab_script"])
