@@ -148,6 +148,10 @@ class FittingResult:
                 "subplot_titles": problem.additional_info["subplot_titles"],
                 "ax_titles": problem.additional_info["ax_titles"],
             }
+
+            for key in ["modQ_cens", "ebin_cens"]:
+                if key in problem.additional_info:
+                    self.plot_info[key] = problem.additional_info[key].tolist()
         else:
             self.plot_info = None
 

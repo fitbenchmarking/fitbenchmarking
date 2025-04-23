@@ -551,55 +551,6 @@ class Plot:
         :rtype: str
         """
 
-        # TODO: Need to decide where to display the figures
-        # in the results pages
-
-        # TODO 2: need to fix values on both axis to match
-        # the ones we want
-
-        # first_result = next(iter(categories.values()))[0]
-        # if first_result.plot_info["plot_type"] == "2d":
-        #     fig = px.imshow(
-        #         np.rot90(first_result.data_y_complete),
-        #         labels={
-        #             'x': '|Q| (Å<sup>-1</sup>)',
-        #             'y': 'Energy (meV)',
-        #         },
-        #         color_continuous_scale='viridis'
-        #     )
-        #     fig.update_layout(title=title + ": 2d plot")
-        #     fig.show()
-
-        #     html_fname = f"2d_plot_for_{first_result.sanitised_name}.html"
-        #     cls.write_html_with_link_plotlyjs(
-        #         fig, figures_dir, html_fname, options
-        #     )
-
-        # file_names = []
-        # for categ_key, results in categories.items():
-        #     for result in results:
-
-        #         if result.plot_info["plot_type"] == "2d" and
-        #            result.is_best_fit:
-        #             minim = result.minimizer
-        #             fig = px.imshow(
-        #                 np.rot90(result.fin_y_complete),
-        #                 labels={
-        #                     'x': '|Q| (Å<sup>-1</sup>)',
-        #                     'y': 'Energy (meV)',
-        #                 },
-        #                 color_continuous_scale='viridis',
-        #                 title = f"{categ_key}, best 2d fit: {minim}"
-        #             )
-        #             # fig.update_layout(title=title + ": 2d plot")
-        #             fig.show()
-
-        #   html_fname = f"2d_plot_for_{minim}_{result.sanitised_name}.html"
-        #             cls.write_html_with_link_plotlyjs(
-        #                 fig, figures_dir, html_fname, options
-        #             )
-        #             file_names.append(html_fname)
-
         html_fname = ""
         n_categs = len(categories)
         titles = []
@@ -610,7 +561,11 @@ class Plot:
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
                 ):
-                    titles.extend(f"{categ_key}: {result.minimizer} (best)")
+                    titles.extend([f"{categ_key}: {result.minimizer} (best)"])
+
+        width = None
+        if n_categs < 2:
+            width = 600
 
         fig = make_subplots(
             rows=1,
@@ -626,30 +581,49 @@ class Plot:
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
                 ):
+                    img = np.rot90(result.fin_y_complete.T, k=4)
                     fig.add_trace(
                         px.imshow(
-                            np.rot90(result.fin_y_complete, k=3),
+                            img,
                         ).data[0],
                         row=1,
                         col=ind,
                     )
-                    fig.update_yaxes(title_text="Energy (meV)", row=1, col=ind)
-                    fig.update_xaxes(
-                        title_text="|Q| (Å<sup>-1</sup>)", row=1, col=ind
+                    fig.add_trace(
+                        go.Contour(
+                            z=img, contours_coloring="lines", line_width=2
+                        ),
+                    )
+                    step = 6
+                    ebin_cens = result.plot_info["ebin_cens"]
+                    y_ticktext = np.round(
+                        np.linspace(ebin_cens[0], ebin_cens[-1], step), 2
+                    )
+                    y_tickvals = np.linspace(0, np.shape(img)[0], step)
+                    fig.update_yaxes(
+                        title_text="Energy (meV)",
+                        tickmode="array",
+                        tickvals=y_tickvals,
+                        ticktext=y_ticktext,
+                        row=1,
+                        col=ind,
                     )
 
-                    # x goes has len 54 - shouls match the qcenses (0 to 3)
-                    # y goes has len 79 - should match the energy values (0-4)
-                    # fig.update_layout(
-                    #     xaxis = dict(
-                    #         tickmode = 'array',
-                    #         tickvals = [1, 3, 5, 7, 9, 11],
-                    #         ticktext = ['One', 'Three', 'Five', 'Seven',
-                    #                     'Nine', 'Eleven']
-                    #     )
-                    # )
+                    modQ_cens = result.plot_info["modQ_cens"]
+                    x_ticktext = np.round(
+                        np.linspace(modQ_cens[0], modQ_cens[-1], step), 2
+                    )
+                    x_tickvals = np.linspace(0, np.shape(img)[1], step)
+                    fig.update_xaxes(
+                        title_text="|Q| (Å<sup>-1</sup>)",
+                        tickmode="array",
+                        tickvals=x_tickvals,
+                        ticktext=x_ticktext,
+                        row=1,
+                        col=ind,
+                    )
 
-        fig.update_layout(title=title + ": 2d plots")
+        fig.update_layout(title=title + ": 2d plots", width=width)
         fig.update_coloraxes(colorscale="viridis")
         fig.show()
 
