@@ -540,11 +540,17 @@ class Table:
         html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
-            if self.name in ["compare", "acc"] and name in ["rel", "both"]:
+            if name in ["rel", "both"]:
                 descrip += (
-                    " Incase of a perfect fit on"
-                    " a problem ``rel = abs / 1e-10``."
+                    " The relative values are calculated by comparing"
+                    " all minimizer results. Unselecting software(s) or"
+                    " minimizer(s) will not update the relative values."
                 )
+                if self.name in ["compare", "acc"]:
+                    descrip += (
+                        " Incase of a perfect fit on"
+                        " a problem ``rel = abs / 1e-10``."
+                    )
             descrip = descrip.replace(":ref:", "")
             js = get_js(self.options, self.group_dir)
             docsettings = {"math_output": "MathJax " + js["mathjax"]}
