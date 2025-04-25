@@ -82,8 +82,7 @@ function toggle_minimizer(software, minimizer) {
 function _process_minimizer_column(minimizer, is_minimizer_checked, software, cost_func){
 
     // Get the data cell ids for a minimizer that is a sub-column of the given cost function
-    const matching_ids = _get_minimizer_data_cell_ids(cost_func, minimizer, software)
-    const column_number = matching_ids[0].split('col')[1].trim();
+    const [matching_ids, column_number] = _get_minimizer_data_cell_ids(cost_func, minimizer)
 
     // Retrive minimizer header that is a sub-column of the given cost function
     const minimizer_header = $('th a.minimizer_header').filter(function () {
@@ -187,12 +186,12 @@ function _update_software_checkboxes(software){
  * @param {Boolean} visible - The bool to determine whether to count visible or all headers.
  */
 function _get_cost_func_header_span(cost_func, visible = true) {
-    const [_, cols] = _get_all_data_cell_ids(cost_func)
+    const cols = _get_column_numbers(cost_func)
 
     // Count visible minimizers
     var width = 0;
     cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
+        const th = $(`#T_table_level2_col${col}`);
         if (visible) {
             if (th.is(':visible')){
                 width += 1
@@ -200,7 +199,6 @@ function _get_cost_func_header_span(cost_func, visible = true) {
         } else {
             width += 1
         }
-        
     })
     return width;
 }
@@ -212,12 +210,12 @@ function _get_cost_func_header_span(cost_func, visible = true) {
  * @param {String} software - The name of the software.
  */
 function _get_software_header_span(cost_func, software) {
-    const [_, cols] = _get_all_data_cell_ids(cost_func)
+    const cols = _get_column_numbers(cost_func)
     
     // Select the minimizer headers associated with the software
     const updated_cols = []
     cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
+        const th = $(`#T_table_level2_col${col}`);
         const link = th.find('a.minimizer_header');
         if (link.data('software') === software) {
             updated_cols.push(col)
@@ -227,7 +225,7 @@ function _get_software_header_span(cost_func, software) {
     // Count visible minimizers
     var width = 0;
     updated_cols.forEach(function(col) {
-        const th = $(`#T_table_level2_${col}`);
+        const th = $(`#T_table_level2_col${col}`);
         if (th.is(':visible')){
             width += 1
         }
@@ -316,25 +314,47 @@ function toggle_software(software) {
 }
 
 /**
+* Retrives the column numbers of a given cost function.
+* @param   {String} cost_func   The name of the cost function.
+*/
+function _get_column_numbers(cost_func) {
+    
+    // Retrive cost function header and column number
+    const cost_function_header = _find_element_from_text('th a.cost_function_header', cost_func);
+    const col_num = parseInt(cost_function_header.attr('id').split('col')[1].trim());
+
+     // Get the software names
+    softwares = _get_software_names();
+
+    // Calculate the span
+    let span = 0;
+    softwares.forEach(function (name) {
+        span += _get_minimizer_names(name).length;
+    });
+
+    // Create an array of column numbers
+    const cols = Array.from({ length: span }, (_, i) => col_num + i); 
+    return cols
+}
+
+/**
 * Retrives the ids and column numbers of the data cell for
 * a given cost function.
 * @param   {String} cost_func   The name of the cost function.
 */
 function _get_all_data_cell_ids(cost_func) {
-    // Get the matching cell ids and the column numbers
+    
+    // Retrive column numbers of the cost function
+    const cols = _get_column_numbers(cost_func);
+
+    // Get the matching cell ids
     const matching_ids = [];
-    const cols = [];
-    $('td').each(function () {
-        const anchor = $(this).find(`a[href*="_${cost_func}"]`);
-        if (anchor.length > 0) {
-            var id = $(this).attr('id');
-            matching_ids.push(id);
-            const match = id.match(/col\d+/);
-            const col_id = match ? match[0] : null;
-            cols.push(col_id)  
-        }
+    cols.forEach(function (col) {
+        $('td[id^="T_table_row"][id$="_col' + col + '"]').each(function () {
+            matching_ids.push($(this).attr('id'));
+        });
     });
-    return [matching_ids, [...new Set(cols)]]
+    return [matching_ids, cols]
 }
 
 /**
@@ -342,25 +362,34 @@ function _get_all_data_cell_ids(cost_func) {
 * minimizer and software.
 * @param   {String} cost_func   The name of the cost function.
 * @param   {String} minimizer   The name of the minimizer.
-* @param   {String} software    The name of the software.
 */
-function _get_minimizer_data_cell_ids(cost_func, minimizer, software) {
-    if (minimizer.includes(':')) {
-        // minimizer name will be shortened from 'lm-scipy: j:best_available' to 'lm-scipy'
-        minimizer = minimizer.split(':')[0].trim();
-    }
-    software = software.replace('-', '_');
-    var search_text = `a[href*="_${cost_func}_${minimizer.toLowerCase()}_[${software}"]`;
+function _get_minimizer_data_cell_ids(cost_func, minimizer) {
+
+    // Retrive minimizer header that is a sub-column of the given cost function
+    const minimizer_header = $('th a.minimizer_header').filter(function () {
+        name_check = $(this).text().trim() === minimizer;
+
+        // Retrive cost function header
+        const cost_function_header = _find_element_from_text('th a.cost_function_header', cost_func);
+
+        // The minimizer column check
+        const cf_col_num = parseInt(cost_function_header.attr('id').split('col')[1].trim());
+        const cf_col_span = _get_cost_func_header_span(cost_func, visible = false);
+        const col_num = parseInt($(this).parent().attr('id').split('col')[1].trim());
+        const col_check = cf_col_num <= col_num && col_num < cf_col_num + cf_col_span;
+
+        return name_check && col_check;
+    }).parent();
+
+    // Retrive column of the minimizer
+    const minimizer_col_num = parseInt(minimizer_header.attr('id').split('col')[1].trim());
+
     // Get the matching cell ids
     const matching_ids = [];
-    $('td').each(function () {
-        const anchor = $(this).find(search_text);
-        if (anchor.length > 0) {
-            var id = $(this).attr('id');
-            matching_ids.push(id);  
-        }
+    $('td[id^="T_table_row"][id$="_col' + minimizer_col_num + '"]').each(function () {
+        matching_ids.push($(this).attr('id'));
     });
-    return matching_ids
+    return [matching_ids, minimizer_col_num]
 }
 
 /**
@@ -404,10 +433,10 @@ function toggle_cost_function(cost_func) {
         // Hide cost function header
         cost_function_header.hide();
         cols.forEach(function (id) {
-            // Hide problem headers
-            $(`#T_table_level1_${id}`).hide(); 
+            // Hide software headers
+            $(`#T_table_level1_col${id}`).hide(); 
             // Hide minimizer headers
-            $(`#T_table_level2_${id}`).hide(); 
+            $(`#T_table_level2_col${id}`).hide(); 
         });
         matching_ids.forEach(function (id) {
             // Hide data cells
