@@ -8,6 +8,8 @@ from abc import ABCMeta, abstractmethod
 import docutils.core
 import matplotlib as mpl
 
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -435,6 +437,7 @@ class Table:
         minimizer_template = (
             '<a class="minimizer_header" col={0} '
             'title="{1}"'
+            ' data-software="{2}" '
             'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
             '#{2}" target="_blank">{3}</a>'
@@ -537,11 +540,17 @@ class Table:
         html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
-            if self.name in ["compare", "acc"] and name in ["rel", "both"]:
+            if name in ["rel", "both"]:
                 descrip += (
-                    " Incase of a perfect fit on"
-                    " a problem ``rel = abs / 1e-10``."
+                    " The relative values are calculated by comparing"
+                    " all minimizer results. Unselecting software(s) or"
+                    " minimizer(s) will not update the relative values."
                 )
+                if self.name in ["compare", "acc"]:
+                    descrip += (
+                        " Incase of a perfect fit on"
+                        " a problem ``rel = abs / 1e-10``."
+                    )
             descrip = descrip.replace(":ref:", "")
             js = get_js(self.options, self.group_dir)
             docsettings = {"math_output": "MathJax " + js["mathjax"]}
@@ -749,14 +758,57 @@ class Table:
 
         items = [
             f'        <li><label class="noselect"><input '
-            f'type="checkbox" checked=true '
-            f"onclick=\"toggle_minimizer('{software}', "
+            f'type="checkbox" checked=true value="{minimizer}"'
+            f" onclick=\"toggle_minimizer('{software}', "
             f"'{minimizer}')\"/> {minimizer}</label></li>"
             for software, minimizer in minimizers
         ]
 
         return self._dropdown_html(
             "minimizer_dropdown", "Select Minimizers", items
+        )
+
+    def software_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of software.
+
+        :return: HTML for a dropdown checklist of softwares.
+        :rtype: str
+        """
+        label_template = (
+            "        <li><label class='noselect'><input "
+            "type='checkbox' checked=true value='{0}' "
+            "onclick=\"toggle_software('{0}')"
+            '"/>{0}</label></li>'
+        )
+        items = [
+            label_template.format(software.replace("_", "-"))
+            for software in self.options.software
+        ]
+        return self._dropdown_html(
+            "software_dropdown", "Select Softwares", items
+        )
+
+    def costfunc_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of cost functions.
+
+        :return: HTML for a dropdown checklist of cost functions.
+        :rtype: str
+        """
+        label_template = (
+            '        <li><label class="noselect"><input '
+            'type="checkbox" checked=true value="{0}"'
+            "onclick=\"toggle_cost_function('{0}')\"/>"
+            "{0}</label></li>"
+        )
+        items = []
+        for cost_func in self.options.cost_func_type:
+            name = create_cost_func(cost_func).__name__.lower()
+            items.append(label_template.format(name))
+
+        return self._dropdown_html(
+            "costfunc_dropdown", "Select Cost Functions", items
         )
 
     def runtime_dropdown_html(self) -> str:

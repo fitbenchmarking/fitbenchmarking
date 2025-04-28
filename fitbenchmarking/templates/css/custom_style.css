@@ -78,6 +78,11 @@ a {
   zoom: 0.99;
 }
 
+.checkbox-row {
+  margin-top: 10px;
+  display: block;
+}
+
 .pill {
   display: inline-block;
   padding: 5px 10px;
