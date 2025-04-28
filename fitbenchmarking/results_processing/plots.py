@@ -563,6 +563,10 @@ class Plot:
                 ):
                     titles.extend([f"{categ_key}: {result.minimizer} (best)"])
 
+        # If data is not 2d, don't create plot
+        if len(titles) == 0:
+            return ""
+
         width = None
         if n_categs < 2:
             width = 600
@@ -625,7 +629,6 @@ class Plot:
 
         fig.update_layout(title=title + ": 2d plots", width=width)
         fig.update_coloraxes(colorscale="viridis")
-        fig.show()
 
         html_fname = f"2d_plots_for_best_minims_{result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
