@@ -444,10 +444,12 @@ class Plot:
             )
 
         for i in range(n_plots):
+            # if the fit was on 2d data
             if n_plots > 1 and result.data_x_cuts is not None:
                 x = result.data_x_cuts
                 data_len = int(len(x) / n_plots)
                 y = result.fin_y_cuts[(data_len * i) : (data_len * (i + 1))]
+            # if the fit was on 1d cuts of 2d data
             elif n_plots > 1:
                 x = result.data_x
                 data_len = int(len(x) / n_plots)
