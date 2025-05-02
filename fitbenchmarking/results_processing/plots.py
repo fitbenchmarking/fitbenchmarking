@@ -561,7 +561,7 @@ class Plot:
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
                 ):
-                    titles.extend([f"{categ_key}: {result.minimizer} (best)"])
+                    titles.extend([f"{categ_key}: {result.minimizer} "])
 
         # If data is not 2d, don't create plot
         if len(titles) == 0:
@@ -587,23 +587,31 @@ class Plot:
                 ):
                     img = np.rot90(result.fin_y_complete.T, k=4)
                     fig.add_trace(
-                        px.imshow(
-                            img,
-                        ).data[0],
+                        px.imshow(img).data[0],
                         row=1,
                         col=ind,
                     )
                     fig.add_trace(
                         go.Contour(
-                            z=img, contours_coloring="lines", line_width=2
+                            z=img,
+                            contours_coloring="lines",
+                            line_width=2,
+                            visible="legendonly",
+                            showscale=False,
+                            showlegend=True,
+                            name=f"{categ_key} contour",
                         ),
+                        row=1,
+                        col=ind,
                     )
-                    step = 6
+
+                    n_ticks = 6
                     ebin_cens = result.plot_info["ebin_cens"]
                     y_ticktext = np.round(
-                        np.linspace(ebin_cens[0], ebin_cens[-1], step), 2
+                        np.linspace(ebin_cens[0], ebin_cens[-1], n_ticks), 2
                     )
-                    y_tickvals = np.linspace(0, np.shape(img)[0], step)
+                    y_tickvals = np.linspace(0, np.shape(img)[0], n_ticks)
+
                     fig.update_yaxes(
                         title_text="Energy (meV)",
                         tickmode="array",
@@ -615,9 +623,9 @@ class Plot:
 
                     modQ_cens = result.plot_info["modQ_cens"]
                     x_ticktext = np.round(
-                        np.linspace(modQ_cens[0], modQ_cens[-1], step), 2
+                        np.linspace(modQ_cens[0], modQ_cens[-1], n_ticks), 2
                     )
-                    x_tickvals = np.linspace(0, np.shape(img)[1], step)
+                    x_tickvals = np.linspace(0, np.shape(img)[1], n_ticks)
                     fig.update_xaxes(
                         title_text="|Q| (Å<sup>-1</sup>)",
                         tickmode="array",
@@ -627,7 +635,17 @@ class Plot:
                         col=ind,
                     )
 
-        fig.update_layout(title=title + ": 2d plots", width=width)
+        fig.update_layout(
+            title=title + ": 2d plots",
+            width=width,
+            legend={
+                "orientation": "v",
+                "yanchor": "bottom",
+                "y": -0.3,
+                "xanchor": "center",
+                "x": 0.5,
+            },
+        )
         fig.update_coloraxes(colorscale="viridis")
 
         html_fname = f"2d_plots_for_best_minims_{result.sanitised_name}.html"
