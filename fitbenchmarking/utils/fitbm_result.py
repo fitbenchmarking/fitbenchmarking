@@ -251,9 +251,9 @@ class FittingResult:
 
         modQ_cens = problem.additional_info["modQ_cens"]
         qcens = problem.additional_info["qcens"]
-        dQ = 0.05
-        qmin = [float(i) - dQ for i in qcens]
-        qmax = [float(i) + dQ for i in qcens]
+        dq = problem.additional_info["dq"]
+        qmin = [float(i) - dq for i in qcens]
+        qmax = [float(i) + dq for i in qcens]
 
         indexes_cuts = []
         for i, (qmin_i, qmax_i) in enumerate(zip(qmin, qmax)):

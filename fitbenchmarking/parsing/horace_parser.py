@@ -362,6 +362,14 @@ class HoraceParser(FitbenchmarkParser):
                     "q_cens are required for plotting 1D cuts of SpinW data"
                 )
 
+            if "dq" in self._entries:
+                dq = float(self._entries["dq"])
+                self.fitting_problem.additional_info["dq"] = dq
+            else:
+                raise ParsingError(
+                    "dq is required for plotting 1D cuts of"
+                    " (2D fitted) SpinW data"
+                )
             if not float(
                 len(self.fitting_problem.data_y)
                 / self.fitting_problem.additional_info["n_plots"]
