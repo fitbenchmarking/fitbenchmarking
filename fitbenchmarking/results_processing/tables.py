@@ -137,6 +137,8 @@ def create_results_tables(
                         table_js=js["table"],
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
+                        costfunc_dropdown=html["costfunc_dropdown"],
+                        software_dropdown=html["software_dropdown"],
                         minimizer_dropdown=html["minim_dropdown"],
                         probsize_checkbox=html["probsize_checkbox"],
                         runtime_dropdown=html["runtime_dropdown"],
@@ -248,6 +250,8 @@ def generate_table(
         "problem_dropdown": table.problem_dropdown_html(),
         "minim_dropdown": table.minimizer_dropdown_html(),
         "probsize_checkbox": table.probsize_checkbox_html(),
+        "software_dropdown": table.software_dropdown_html(),
+        "costfunc_dropdown": table.costfunc_dropdown_html(),
         "runtime_dropdown": "",
     }
 
