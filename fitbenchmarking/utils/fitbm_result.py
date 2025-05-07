@@ -106,13 +106,13 @@ class FittingResult:
                 self.data_x_cuts = np.array(
                     n_plots * problem.additional_info["ebin_cens"].tolist()
                 )
-                indexes_cuts = self._get_indexes_1d_cuts_spinw(problem)
+                indexes_cuts = self.get_indexes_1d_cuts_spinw(problem)
                 self.data_y_cuts, self.data_y_complete = (
-                    self._get_1d_cuts_spinw(problem, indexes_cuts, self.data_y)
+                    self.get_1d_cuts_spinw(problem, indexes_cuts, self.data_y)
                 )
 
                 if self.data_e is not None:
-                    self.data_e_cuts, _ = self._get_1d_cuts_spinw(
+                    self.data_e_cuts, _ = self.get_1d_cuts_spinw(
                         problem, indexes_cuts, self.data_e
                     )
 
@@ -167,7 +167,7 @@ class FittingResult:
 
         self.ini_y = problem.ini_y(controller.parameter_set)
         if self.ini_y is not None and indexes_cuts is not None:
-            self.ini_y_cuts, _ = self._get_1d_cuts_spinw(
+            self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
                 problem, indexes_cuts, self.ini_y
             )
 
@@ -179,7 +179,7 @@ class FittingResult:
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if self.r_x is not None and indexes_cuts is not None:
-                    self.r_x_cuts, _ = self._get_1d_cuts_spinw(
+                    self.r_x_cuts, _ = self.get_1d_cuts_spinw(
                         problem, indexes_cuts, self.r_x
                     )
                 self.jac_x = cost_func.jac_res(
@@ -189,7 +189,7 @@ class FittingResult:
                 self.params, x=self.data_x
             )
             if self.fin_y is not None and indexes_cuts is not None:
-                self.fin_y_cuts, self.fin_y_complete = self._get_1d_cuts_spinw(
+                self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
                     problem, indexes_cuts, self.fin_y
                 )
 
@@ -216,7 +216,7 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
-    def _get_1d_cuts_spinw(self, problem, indexes, array_to_cut):
+    def get_1d_cuts_spinw(self, problem, indexes, array_to_cut):
         """
         Given a flattened array of spinw y data, this function reshapes it
         into a 2d array (based on the length of ebin_cens), then takes
@@ -243,12 +243,11 @@ class FittingResult:
 
         return data_cuts, array_to_cut_as_2d
 
-    def _get_indexes_1d_cuts_spinw(self, problem):
+    def get_indexes_1d_cuts_spinw(self, problem):
         """
         Get indexes of 1d cuts for SpinW data, based on the qcens
         specified by the user.
         """
-
         modQ_cens = problem.additional_info["modQ_cens"]
         qcens = problem.additional_info["qcens"]
         dq = problem.additional_info["dq"]
@@ -256,13 +255,12 @@ class FittingResult:
         qmax = [float(i) + dq for i in qcens]
 
         indexes_cuts = []
-        for i, (qmin_i, qmax_i) in enumerate(zip(qmin, qmax)):
+        for qmin_i, qmax_i in zip(qmin, qmax):
             indexes_cuts.append(
                 np.where(
                     np.logical_and(modQ_cens >= qmin_i, modQ_cens <= qmax_i)
                 )
             )
-
         return indexes_cuts
 
     def init_blank(self):
@@ -559,3 +557,8 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
+
+
+def write(text):
+    with open("demofile.txt", "a") as f:
+        f.write(text + "\n")
