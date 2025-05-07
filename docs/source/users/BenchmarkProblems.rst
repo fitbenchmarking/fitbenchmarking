@@ -385,7 +385,7 @@ or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_p
 This problem (also found in the folder `examples/benchmark_problems/SpinW_powder_data`)
 contains 2D powder data simulated using SpinW, approach outlined in
 `this tutorial <https://spinw.org/tutorials/39tutorial>`_ . In this case 1D cuts of the 
-data are taken at user-specified Q values which are then fitted simultaneously. It is asssumed that
+data are taken at user-specified Q values which are then fitted simultaneously. It is assumed that
 data has been cropped before being parsed into FitBenchmarking.
 
 2D example
