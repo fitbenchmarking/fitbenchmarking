@@ -95,27 +95,22 @@ class HoraceParser(FitbenchmarkParser):
             f"('{data_file_path}', params_dict, {qcens})"
         )
 
-        # Remove nans
         for var in ["y", "e"]:
-            eng.evalc(f"{var} = fitpow.{var}")
-            eng.evalc(f"NaN_rows_{var} = find(any(isnan({var}),2))")
-            eng.evalc(f"{var}_final = {var}(sum(isnan({var}),2)==0,:)")
-
+            eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
-        eng.evalc("x([NaN_rows_y, NaN_rows_e]) = []")
         eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
 
         # Create and fill struct
         eng.evalc(
-            "w = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
+            "data = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
         )
         for i in np.arange(1, len(qcens) + 1):
             for var in ["x", "y", "e", "qmax", "qmin"]:
-                eng.evalc(f"w({i}).{var}={var}_final(:, {i})'")
+                eng.evalc(f"data({i}).{var}={var}_final(:, {i})'")
 
         # Save cuts
         new_path = str(data_file_path).split(".mat")[0] + "_cuts.mat"
-        eng.evalc(f"save('{new_path}', 'w')")
+        eng.evalc(f"save('{new_path}', 'data')")
         return new_path
 
     def _get_data_points(self, data_file_path):
@@ -162,6 +157,13 @@ class HoraceParser(FitbenchmarkParser):
 
         signal = np.array(eng.workspace["y"], dtype=np.float64)
         error = np.array(eng.workspace["e"], dtype=np.float64)
+
+        # check for NaNs in 2D SpinW problems
+        if "plot_type" in self._entries and np.isnan([signal, error]).any():
+            raise ParsingError(
+                "SpinW problems should not contain NaN values, "
+                "please ensure these are removed within the wye function "
+            )
 
         add_persistent_matlab_var(self._horace_msk)
         add_persistent_matlab_var(self._horace_w)
@@ -301,7 +303,7 @@ class HoraceParser(FitbenchmarkParser):
         """
         Add plot_type to fitting_problem.additional_info.
         """
-        plot_type_options = ["1d_cuts"]
+        plot_type_options = ["1d_cuts", "2d"]
 
         if self._entries["plot_type"].lower() in plot_type_options:
             self.fitting_problem.additional_info["plot_type"] = self._entries[
