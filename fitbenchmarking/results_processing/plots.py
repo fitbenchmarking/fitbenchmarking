@@ -537,8 +537,8 @@ class Plot:
     @classmethod
     def plot_2d_data(cls, categories, title, options, figures_dir) -> str:
         """
-        Create a comparison plot showing residuals for all fits,
-        while emphasizing the residuals for the best fit .
+        Show 2d plots for 2d data fitting, with contour plots.
+        One plot is shown for the best minimizer for each cost function.
 
         :param categories: The results to plot
         :type categories: dict[str, list[FittingResults]]
@@ -555,7 +555,7 @@ class Plot:
 
         html_fname = ""
         n_categs = len(categories)
-        titles = []
+        subp_titles = []
 
         for categ_key, results in categories.items():
             for result in results:
@@ -563,12 +563,13 @@ class Plot:
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
                 ):
-                    titles.extend([f"{categ_key}: {result.minimizer} "])
+                    subp_titles.extend([f"{categ_key}: {result.minimizer} "])
 
-        # If data is not 2d, don't create plot
-        if len(titles) == 0:
+        # If no 2d result has been found in the above loop, don't create plot
+        if len(subp_titles) == 0:
             return ""
 
+        # Limit width of plot if only 1 subplot
         width = None
         if n_categs < 2:
             width = 600
@@ -578,7 +579,7 @@ class Plot:
             cols=n_categs,
             shared_yaxes=True,
             horizontal_spacing=0.1,
-            subplot_titles=titles,
+            subplot_titles=subp_titles,
         )
 
         for ind, (categ_key, results) in enumerate(categories.items(), 1):
@@ -614,6 +615,8 @@ class Plot:
                     )
                     y_tickvals = np.linspace(0, np.shape(img)[0], n_ticks)
 
+                    # TODO: this way of setting axis titles will need to
+                    # change if we use 2d plots for problems other than SpinW
                     fig.update_yaxes(
                         title_text="Energy (meV)",
                         tickmode="array",

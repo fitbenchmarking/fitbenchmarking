@@ -220,7 +220,7 @@ class FittingResult:
         """
         Given a flattened array of spinw y data, this function reshapes it
         into a 2d array (based on the length of ebin_cens), then takes
-        1d cuts based on the qcens specified by the user.
+        1d cuts based on the q_cens specified by the user.
         """
 
         len_single_data_x = len(problem.additional_info["ebin_cens"].tolist())
@@ -245,14 +245,14 @@ class FittingResult:
 
     def get_indexes_1d_cuts_spinw(self, problem):
         """
-        Get indexes of 1d cuts for SpinW data, based on the qcens
+        Get indexes of 1d cuts for SpinW data, based on the q_cens
         specified by the user.
         """
         modQ_cens = problem.additional_info["modQ_cens"]
-        qcens = problem.additional_info["qcens"]
+        q_cens = problem.additional_info["q_cens"]
         dq = problem.additional_info["dq"]
-        qmin = [float(i) - dq for i in qcens]
-        qmax = [float(i) + dq for i in qcens]
+        qmin = [float(i) - dq for i in q_cens]
+        qmax = [float(i) + dq for i in q_cens]
 
         indexes_cuts = []
         for qmin_i, qmax_i in zip(qmin, qmax):

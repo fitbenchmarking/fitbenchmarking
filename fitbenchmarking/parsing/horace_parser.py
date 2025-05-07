@@ -69,7 +69,7 @@ class HoraceParser(FitbenchmarkParser):
 
     def _process_spinw_data(self, data_file_path):
         """
-        Cut SpinW data based on qcens.
+        Cut SpinW data based on q_cens.
 
         :param data_file_path: The path to the file to load the points from
         :type data_file_path: str
@@ -77,7 +77,7 @@ class HoraceParser(FitbenchmarkParser):
         :return: The path to the new file with 1d cuts
         :rtype: str
         """
-        qcens = [float(i) for i in self._entries["q_cens"].split(",")]
+        q_cens = [float(i) for i in self._entries["q_cens"].split(",")]
         foreground_dict = self._parsed_func[0]
         params_dict = {
             k: v for k, v in foreground_dict.items() if k not in {"foreground"}
@@ -92,19 +92,19 @@ class HoraceParser(FitbenchmarkParser):
         eng.workspace["params_dict"] = params_dict
         eng.evalc(
             f"[fitpow, qmax_final, qmin_final] = {process_f_name}"
-            f"('{data_file_path}', params_dict, {qcens})"
+            f"('{data_file_path}', params_dict, {q_cens})"
         )
 
         for var in ["y", "e"]:
             eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
-        eng.evalc(f"x_final = repelem(x,{len(qcens)},1)'")
+        eng.evalc(f"x_final = repelem(x,{len(q_cens)},1)'")
 
         # Create and fill struct
         eng.evalc(
             "data = struct('x', {}, 'y', {}, 'e', {}, 'qmax', {}, 'qmin', {})"
         )
-        for i in np.arange(1, len(qcens) + 1):
+        for i in np.arange(1, len(q_cens) + 1):
             for var in ["x", "y", "e", "qmax", "qmin"]:
                 eng.evalc(f"data({i}).{var}={var}_final(:, {i})'")
 
@@ -315,9 +315,9 @@ class HoraceParser(FitbenchmarkParser):
                 f"options {plot_type_options}"
             )
 
-    def _get_subplot_titles_SpinW(self, qcens) -> list[str]:
+    def _get_subplot_titles_SpinW(self, q_cens) -> list[str]:
         """Gets subplot titles for SpinW."""
-        subplot_titles = [f"{i} Å<sup>-1</sup>" for i in qcens]
+        subplot_titles = [f"{i} Å<sup>-1</sup>" for i in q_cens]
         return subplot_titles
 
     def _add_plot_info_as_additional_info(self) -> None:
@@ -332,7 +332,7 @@ class HoraceParser(FitbenchmarkParser):
         ]:
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
 
-            if isinstance(eng.workspace["ebin_cens"], list):
+            if self.fitting_problem.additional_info["plot_type"] == "2d":
                 self.fitting_problem.additional_info["ebin_cens"] = np.array(
                     eng.workspace["ebin_cens"][0], dtype=np.float64
                 )[0]
@@ -340,6 +340,14 @@ class HoraceParser(FitbenchmarkParser):
                     eng.workspace["ebin_cens"][1], dtype=np.float64
                 )[0]
 
+                if "dq" in self._entries:
+                    dq = float(self._entries["dq"])
+                    self.fitting_problem.additional_info["dq"] = dq
+                else:
+                    raise ParsingError(
+                        "dq is required for plotting 1D cuts of"
+                        " (2D fitted) SpinW data"
+                    )
             else:
                 self.fitting_problem.additional_info["ebin_cens"] = np.array(
                     eng.workspace["ebin_cens"], dtype=np.float64
@@ -351,25 +359,17 @@ class HoraceParser(FitbenchmarkParser):
             }
 
             if "q_cens" in self._entries:
-                qcens = self._entries["q_cens"].split(",")
-                self.fitting_problem.additional_info["qcens"] = qcens
-                self.fitting_problem.additional_info["n_plots"] = len(qcens)
+                q_cens = self._entries["q_cens"].split(",")
+                self.fitting_problem.additional_info["q_cens"] = q_cens
+                self.fitting_problem.additional_info["n_plots"] = len(q_cens)
                 self.fitting_problem.additional_info["subplot_titles"] = (
-                    self._get_subplot_titles_SpinW(qcens)
+                    self._get_subplot_titles_SpinW(q_cens)
                 )
             else:
                 raise ParsingError(
                     "q_cens are required for plotting 1D cuts of SpinW data"
                 )
 
-            if "dq" in self._entries:
-                dq = float(self._entries["dq"])
-                self.fitting_problem.additional_info["dq"] = dq
-            else:
-                raise ParsingError(
-                    "dq is required for plotting 1D cuts of"
-                    " (2D fitted) SpinW data"
-                )
             if not float(
                 len(self.fitting_problem.data_y)
                 / self.fitting_problem.additional_info["n_plots"]
