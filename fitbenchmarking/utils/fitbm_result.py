@@ -557,8 +557,3 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
-
-
-def write(text):
-    with open("demofile.txt", "a") as f:
-        f.write(text + "\n")
