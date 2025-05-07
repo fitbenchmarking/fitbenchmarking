@@ -92,7 +92,8 @@ def _create_summary_page(
     :type summary_plot_path: str
     :param residuals_plot_path: Path to the residuals plot
     :type residuals_plot_path: str
-    :param plot_2d_data_path: Path to a potential 2d data plot
+    :param plot_2d_data_path: Path to the 2d data plot, if available, or
+                              empty string otherwise
     :type plot_2d_data_path: str
     :param support_pages_dir: Directory to save suport page to
     :type support_pages_dir: str

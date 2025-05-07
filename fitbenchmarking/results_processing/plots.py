@@ -594,6 +594,7 @@ class Plot:
                         row=1,
                         col=ind,
                     )
+                    # Add contour plots on top
                     fig.add_trace(
                         go.Contour(
                             z=img,
@@ -608,31 +609,45 @@ class Plot:
                         col=ind,
                     )
 
-                    n_ticks = 6
-                    ebin_cens = result.plot_info["ebin_cens"]
-                    y_ticktext = np.round(
-                        np.linspace(ebin_cens[0], ebin_cens[-1], n_ticks), 2
-                    )
-                    y_tickvals = np.linspace(0, np.shape(img)[0], n_ticks)
+                    # check if problem if it's SpinW data
+                    if "ebin_cens" in result.plot_info:
+                        # set y tick vals and text
+                        n_ticks = 6
+                        ebin_cens = result.plot_info["ebin_cens"]
+                        y_ticktext = np.round(
+                            np.linspace(ebin_cens[0], ebin_cens[-1], n_ticks),
+                            2,
+                        )
+                        y_tickvals = np.linspace(0, np.shape(img)[0], n_ticks)
+                        y_axis_title = "Energy (meV)"
 
-                    # TODO: this way of setting axis titles will need to
-                    # change if we use 2d plots for problems other than SpinW
+                        # set x tick vals and text
+                        modQ_cens = result.plot_info["modQ_cens"]
+                        x_ticktext = np.round(
+                            np.linspace(modQ_cens[0], modQ_cens[-1], n_ticks),
+                            2,
+                        )
+                        x_tickvals = np.linspace(0, np.shape(img)[1], n_ticks)
+                        x_axis_title = "|Q| (Å<sup>-1</sup>)"
+
+                    else:
+                        y_tickvals = None
+                        y_ticktext = None
+                        y_axis_title = None
+                        x_tickvals = None
+                        x_ticktext = None
+                        x_axis_title = None
+
                     fig.update_yaxes(
-                        title_text="Energy (meV)",
+                        title_text=y_axis_title,
                         tickmode="array",
                         tickvals=y_tickvals,
                         ticktext=y_ticktext,
                         row=1,
                         col=ind,
                     )
-
-                    modQ_cens = result.plot_info["modQ_cens"]
-                    x_ticktext = np.round(
-                        np.linspace(modQ_cens[0], modQ_cens[-1], n_ticks), 2
-                    )
-                    x_tickvals = np.linspace(0, np.shape(img)[1], n_ticks)
                     fig.update_xaxes(
-                        title_text="|Q| (Å<sup>-1</sup>)",
+                        title_text=x_axis_title,
                         tickmode="array",
                         tickvals=x_tickvals,
                         ticktext=x_ticktext,
