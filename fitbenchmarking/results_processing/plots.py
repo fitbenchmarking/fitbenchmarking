@@ -336,7 +336,7 @@ class Plot:
         data_y = first_result.data_y
 
         # in the SpinW 2d data case
-        if first_result.data_x_cuts is not None:
+        if hasattr(first_result, "data_x_cuts"):
             data_x = first_result.data_x_cuts
             data_y = first_result.data_y_cuts
 
@@ -445,7 +445,7 @@ class Plot:
 
         for i in range(n_plots):
             # if the fit was on 2d data
-            if n_plots > 1 and result.data_x_cuts is not None:
+            if n_plots > 1 and hasattr(result, "data_x_cuts"):
                 x = result.data_x_cuts
                 data_len = int(len(x) / n_plots)
                 y = result.fin_y_cuts[(data_len * i) : (data_len * (i + 1))]
@@ -775,7 +775,7 @@ class Plot:
         r_x = result.r_x
 
         # in the SpinW 2d data case
-        if result.r_x_cuts is not None:
+        if hasattr(result, "r_x_cuts"):
             data_x = result.data_x_cuts
             r_x = result.r_x_cuts
 

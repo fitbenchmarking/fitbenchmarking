@@ -373,13 +373,13 @@ def create_plots(options, results, best_results, figures_dir):
             data[cf] = pd.DataFrame(
                 {
                     "x": cat_results[0].data_x
-                    if cat_results[0].data_x_cuts is None
+                    if not hasattr(cat_results[0], "data_x_cuts")
                     else cat_results[0].data_x_cuts,
                     "y": cat_results[0].data_y
-                    if cat_results[0].data_y_cuts is None
+                    if not hasattr(cat_results[0], "data_y_cuts")
                     else cat_results[0].data_y_cuts,
                     "e": cat_results[0].data_e
-                    if cat_results[0].data_e_cuts is None
+                    if not hasattr(cat_results[0], "data_e_cuts")
                     else cat_results[0].data_e_cuts,
                     "minimizer": "Data",
                     "cost_function": cf,
@@ -390,13 +390,13 @@ def create_plots(options, results, best_results, figures_dir):
             tmp_df = pd.DataFrame(
                 {
                     "x": cat_results[0].data_x
-                    if cat_results[0].data_x_cuts is None
+                    if not hasattr(cat_results[0], "data_x_cuts")
                     else cat_results[0].data_x_cuts,
                     "y": cat_results[0].ini_y
-                    if cat_results[0].ini_y_cuts is None
+                    if not hasattr(cat_results[0], "ini_y_cuts")
                     else cat_results[0].ini_y_cuts,
                     "e": cat_results[0].data_e
-                    if cat_results[0].data_e_cuts is None
+                    if not hasattr(cat_results[0], "data_e_cuts")
                     else cat_results[0].data_e_cuts,
                     "minimizer": "Starting Guess",
                     "cost_function": cf,
@@ -410,13 +410,13 @@ def create_plots(options, results, best_results, figures_dir):
                 tmp_df = pd.DataFrame(
                     {
                         "x": result.data_x
-                        if result.data_x_cuts is None
+                        if not hasattr(result, "data_x_cuts")
                         else result.data_x_cuts,
                         "y": result.fin_y
-                        if result.fin_y_cuts is None
+                        if not hasattr(result, "fin_y_cuts")
                         else result.fin_y_cuts,
                         "e": result.data_e
-                        if result.data_e_cuts is None
+                        if not hasattr(result, "data_e_cuts")
                         else result.data_e_cuts,
                         "minimizer": result.sanitised_min_name(True),
                         "cost_function": cf,

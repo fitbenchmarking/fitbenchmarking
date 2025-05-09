@@ -84,12 +84,6 @@ class FittingResult:
             self.accuracy = accuracy[dataset]
 
         # Needed for spinw 2d case, for plotting
-        self.data_x_cuts = None
-        self.data_y_cuts = None
-        self.data_e_cuts = None
-        self.ini_y_cuts = None
-        self.r_x_cuts = None
-        self.fin_y_cuts = None
         indexes_cuts = None
 
         if "ebin_cens" in problem.additional_info:
@@ -166,7 +160,7 @@ class FittingResult:
         self.jac_x = None
 
         self.ini_y = problem.ini_y(controller.parameter_set)
-        if self.ini_y is not None and indexes_cuts is not None:
+        if hasattr(self, "ini_y") and indexes_cuts is not None:
             self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
                 problem, indexes_cuts, self.ini_y
             )
@@ -178,7 +172,7 @@ class FittingResult:
                 self.r_x = cost_func.eval_r(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
-                if self.r_x is not None and indexes_cuts is not None:
+                if hasattr(self, "r_x") and indexes_cuts is not None:
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
                         problem, indexes_cuts, self.r_x
                     )
@@ -188,7 +182,7 @@ class FittingResult:
             self.fin_y = cost_func.problem.eval_model(
                 self.params, x=self.data_x
             )
-            if self.fin_y is not None and indexes_cuts is not None:
+            if hasattr(self, "fin_y") and indexes_cuts is not None:
                 self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
                     problem, indexes_cuts, self.fin_y
                 )
