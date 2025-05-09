@@ -522,9 +522,7 @@ class Plot:
             if row_ind == 1:
                 fig.update_traces(row=row_ind)
 
-        fig.update_layout(
-            title=title + ": residuals", legend=cls._legend_style
-        )
+        fig.update_layout(title=title + ": residuals")
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
