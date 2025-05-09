@@ -375,7 +375,7 @@ class FitbmResultTests(unittest.TestCase):
             ]
         )
 
-        problem.additional_info["qcens"] = np.array(["0.8", "1.2"])
+        problem.additional_info["q_cens"] = np.array(["0.8", "1.2"])
         problem.additional_info["dq"] = 0.05
         expected_ind = [
             (np.array([8, 9]),),
