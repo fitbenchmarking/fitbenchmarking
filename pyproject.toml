@@ -148,6 +148,7 @@ ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 "fitbenchmarking/controllers/tests/test_controllers.py" = ["SLF001"]
 "fitbenchmarking/results_processing/tests/test_plots.py" = ["SLF001"]
 "fitbenchmarking/parsing/tests/test_mantid_parsers.py" = ["SLF001"]
+"fitbenchmarking/controllers/tests/test_mantid_controller.py" = ["SLF001"]
 
 [tool.ruff.format]
 quote-style = "double"

@@ -153,7 +153,7 @@ class RALFitController(Controller):
                   be passed for hessian evaluation
         :type r: numpy array
         :return: hessian 2nd order term
-                 :math:`\sum_{i=1}^m r_i \\nabla^2 r_i`
+                 :math:`\\sum_{i=1}^m r_i \\nabla^2 r_i`
         :rtype: numpy array
         """
         H, _ = self.cost_func.hes_res(params)
