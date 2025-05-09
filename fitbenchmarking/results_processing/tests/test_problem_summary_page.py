@@ -141,6 +141,7 @@ class CreateSummaryPageTests(TestCase):
         ]
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
+            plot_2d_data_path="",
             summary_plot_path="plot_path",
             residuals_plot_path="residuals_plot_path",
             support_pages_dir=self.supp_dir,

@@ -189,7 +189,9 @@ q_cens
   For SpinW 2D powder fitting problems, the values of Q at which the 1D cuts have been taken.
   These values should be provided as a comma-separated string.
 
-
+dq 
+  For SpinW 2D powder fitting problems, dq is needed for taking the 1D cuts.
+  For any given Q value provided by the user (through q_cens), a range going from Q-dq to Q+dq will be considered for taking the 1D cuts.
 
 .. note::
    All the functions needed in the fitting must be in the subdirectory of the benchmark problem.
