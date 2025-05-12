@@ -560,6 +560,11 @@ class Plot:
         for categ_key, results in categories.items():
             for result in results:
                 if (
+                    result.plot_info is None
+                    or "plot_type" not in result.plot_info
+                ):
+                    pass
+                elif (
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
                 ):
