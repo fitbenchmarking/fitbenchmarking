@@ -147,7 +147,7 @@ RUN tar --no-same-owner --no-same-permissions -xzf nexus.tar.gz
 RUN mv code-4.4.3 nexus
 RUN mkdir nexus/build
 WORKDIR /nexus-build
-RUN cmake -G Ninja /nexus -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON
+RUN cmake -G Ninja /nexus -DCMAKE_BUILD_TYPE=Release -DENABLE_CXX=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 RUN cmake --build .
 RUN cmake --install .
 RUN rm -rf /nexus
@@ -163,7 +163,7 @@ RUN mv /mantid /mantid-$MANTID_VERSION
 
 RUN mkdir -p /opt/Mantid
 WORKDIR /opt/Mantid
-RUN cmake -G Ninja /mantid-$MANTID_VERSION -DENABLE_MANTIDQT=OFF -DENABLE_WORKBENCH=OFF -DENABLE_DOCS=OFF -DENABLE_PRECOMMIT=OFF
+RUN cmake -G Ninja /mantid-$MANTID_VERSION -DENABLE_MANTIDQT=OFF -DENABLE_WORKBENCH=OFF -DENABLE_DOCS=OFF -DENABLE_PRECOMMIT=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 RUN cmake --build .
 
 ENV PYTHONPATH=$PYTHONPATH:/opt/Mantid/lib:/opt/Mantid/bin
@@ -210,7 +210,7 @@ RUN tar --no-same-owner --no-same-permissions -xzf ceres-solver-2.2.0.tar.gz
 RUN mkdir -p ceres-bin 
 # Change working directory to ceres-bin
 WORKDIR /ceres/ceres-bin
-RUN cmake -G Ninja ../ceres-solver-2.2.0
+RUN cmake -G Ninja ../ceres-solver-2.2.0 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 RUN cmake --build .
 RUN cmake --install .
 RUN rm -rf ../ceres-solver-2.2.0
