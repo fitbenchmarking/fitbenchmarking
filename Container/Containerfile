@@ -152,7 +152,7 @@ RUN cmake --build .
 RUN cmake --install .
 RUN rm -rf /nexus
 
-ARG MANTID_VERSION=6.10.0
+ARG MANTID_VERSION=6.12.0
 
 WORKDIR /
 RUN git clone -b "v$MANTID_VERSION" --depth 1 https://github.com/mantidproject/mantid.git 
