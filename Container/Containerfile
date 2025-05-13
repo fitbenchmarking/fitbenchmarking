@@ -122,7 +122,7 @@ RUN printf "1\n1\nn" > sifdecode.input && \
 
 # Install cutest
 WORKDIR $CUTEST
-RUN meson setup builddir
+RUN meson setup builddir -Dtests=false
 RUN meson compile -C builddir
 RUN meson install -C builddir
 RUN mkdir -p objects/pc64.lnx.gfo/single
