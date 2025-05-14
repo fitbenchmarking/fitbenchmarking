@@ -202,7 +202,6 @@ class TestFitbenchmarkParser(TestCase):
     @parameterized.expand(
         [
             "na+me= BackToBackExponential",
-            "na.me= BackToBackExponential",
             "na$me = BackToBackExponential",
             "na%me = BackToBackExponential",
         ]

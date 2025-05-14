@@ -201,7 +201,8 @@ class Fit:
             self._start_values_index = index
 
             if num_start_vals > 1:
-                problem.name = f"{name}, Start {index + 1}"
+                prefix = (len(str(num_start_vals)) - len(str(index + 1))) * "0"
+                problem.name = f"{name}, Start {prefix}{index + 1}"
 
             #############################
             # Loops over cost functions #
@@ -418,6 +419,7 @@ class Fit:
                     if (
                         self._options.check_jacobian
                         and not controller.problem.multifit
+                        and not controller.problem.multistart
                     ):
                         params = list(
                             controller.starting_values[
