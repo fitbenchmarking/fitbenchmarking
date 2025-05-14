@@ -335,6 +335,151 @@ class FitbmResultTests(unittest.TestCase):
             self.result.sanitised_min_name(True), "m1_[s1]_jj1_hh1"
         )
 
+    def test_get_indexes_1d_cuts_spinw(self):
+        """
+        Test that get_indexes_1d_cuts_spinw returns expected output.
+        """
+        problem = self.controller.problem
+        problem.additional_info["modQ_cens"] = np.array(
+            [
+                0.39491525,
+                0.4440678,
+                0.49322034,
+                0.54237288,
+                0.59152542,
+                0.64067797,
+                0.68983051,
+                0.73898305,
+                0.78813559,
+                0.83728814,
+                0.88644068,
+                0.93559322,
+                0.98474576,
+                1.03389831,
+                1.08305085,
+                1.13220339,
+                1.18135593,
+                1.23050847,
+                1.27966102,
+                1.32881356,
+                1.3779661,
+                1.42711864,
+                1.47627119,
+                1.52542373,
+                1.57457627,
+                1.62372881,
+                1.67288136,
+                1.7220339,
+                1.77118644,
+                1.82033898,
+            ]
+        )
+
+        problem.additional_info["q_cens"] = np.array(["0.8", "1.2"])
+        problem.additional_info["dq"] = 0.05
+        expected_ind = [
+            (np.array([8, 9]),),
+            (np.array([16, 17]),),
+        ]
+        obtained_ind = self.result.get_indexes_1d_cuts_spinw(problem)
+
+        expected_ind_list = [tuple_i[0].tolist() for tuple_i in expected_ind]
+        obtained_ind_list = [tuple_i[0].tolist() for tuple_i in obtained_ind]
+
+        self.assertEqual(expected_ind_list, obtained_ind_list)
+
+    def test_get_1d_cuts_spinw(self):
+        """
+        Test that get_1d_cuts_spinw returns expected output.
+        """
+        problem = self.controller.problem
+        problem.additional_info["ebin_cens"] = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+                0.2278481,
+            ]
+        )
+        array_to_cut = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+                0.2278481,
+                0.27848101,
+                0.32911392,
+                0.37974684,
+                0.43037975,
+                0.48101266,
+                0.53164557,
+                0.58227848,
+                0.63291139,
+                0.6835443,
+                0.73417722,
+                0.78481013,
+                0.83544304,
+                0.88607595,
+                0.93670886,
+                0.98734177,
+                1.03797468,
+                1.08860759,
+                1.13924051,
+                1.18987342,
+                1.24050633,
+            ]
+        )
+        indexes = [(np.array([3, 4]),)]
+        obtained = self.result.get_1d_cuts_spinw(
+            problem, indexes, array_to_cut
+        )
+        expected = (
+            [0.911392405, 0.962025315, 1.01265823, 1.06329114, 1.11392405],
+            np.array(
+                [
+                    [
+                        0.02531646,
+                        0.07594937,
+                        0.12658228,
+                        0.17721519,
+                        0.2278481,
+                    ],
+                    [
+                        0.27848101,
+                        0.32911392,
+                        0.37974684,
+                        0.43037975,
+                        0.48101266,
+                    ],
+                    [
+                        0.53164557,
+                        0.58227848,
+                        0.63291139,
+                        0.6835443,
+                        0.73417722,
+                    ],
+                    [
+                        0.78481013,
+                        0.83544304,
+                        0.88607595,
+                        0.93670886,
+                        0.98734177,
+                    ],
+                    [
+                        1.03797468,
+                        1.08860759,
+                        1.13924051,
+                        1.18987342,
+                        1.24050633,
+                    ],
+                ]
+            ),
+        )
+        self.assertEqual(obtained[0], expected[0])
+        self.assertTrue((obtained[1] == expected[1]).all())
+
 
 if __name__ == "__main__":
     unittest.main()
