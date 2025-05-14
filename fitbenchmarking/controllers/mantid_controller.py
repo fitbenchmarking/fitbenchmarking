@@ -109,6 +109,8 @@ class MantidController(Controller):
 
         # In case of mantid parser:
         #    mantid_equation is set in additional_info
+        #      In case of multistart, mantid_equation is a list of strings.
+        #      Otherwise, it is a string.
         # In case of mantid dev parser:
         #    additional_info does not have the mantid_equation key
         self._mantid_equation = self.problem.additional_info.get(
@@ -216,7 +218,11 @@ class MantidController(Controller):
         """
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
-        function_def = self._mantid_equation
+        function_def = (
+            self._mantid_equation[self.parameter_set]
+            if self.problem.multistart
+            else self._mantid_equation
+        )
 
         if self.problem.multifit:
             # Each function must include '$domains=i'

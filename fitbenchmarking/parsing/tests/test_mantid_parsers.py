@@ -135,6 +135,7 @@ class TestMantidDevParser(TestCase):
         Verifies the output of _create_function() method.
         """
         self.parser._entries = entries
+        self.parser.fitting_problem = FittingProblem(Options())
         func = self.parser._create_function()
         assert callable(func)
         assert self.parser._equation == equation
@@ -152,6 +153,7 @@ class TestMantidDevParser(TestCase):
         and _get_equation() methods.
         """
         self.parser._entries = {"function": "name=LinearBackground,A0=0,A1=0"}
+        self.parser.fitting_problem = FittingProblem(Options())
         _ = self.parser._create_function()
         assert (
             self.parser._starting_values == self.parser._get_starting_values()
@@ -186,6 +188,7 @@ class TestMantidDevParser(TestCase):
             "input_file": "['basic1.txt','basic2.txt']",
         }
         self.parser.fitting_problem = FittingProblem(Options())
+        self.parser.fitting_problem.multifit = True
         data_points = [
             self.parser._get_data_points(p)
             for p in self.parser._get_data_file()
