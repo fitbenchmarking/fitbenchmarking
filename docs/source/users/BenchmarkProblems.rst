@@ -400,3 +400,6 @@ contains 2D powder data simulated using SpinW, using the approach outlined in
 data has been cropped before being parsed into FitBenchmarking.
 
 This problem has 8 unknown parameters and 186 data points.
+
+In this case, as the fitting is done on the whole 2D data, the problem summary page (:ref:`problem_summary_page`) 
+presents 2D plots showing the fit for the best minimizer for each cost function.

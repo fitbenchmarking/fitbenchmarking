@@ -7,3 +7,5 @@ function = 'foreground=m_scripts/functions/tri_AFM_powder.m,J1=0.85,slope_en=-0.
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_tri_AFM.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_tri_AFM_2d.m'
 plot_type = '2d'
+q_cens = '0.8,1.2,1.6'
+dq = '0.05'

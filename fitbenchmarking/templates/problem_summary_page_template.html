@@ -114,6 +114,24 @@
                         <div align="center" class="figure align-center">
                             <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
                         </div>
+                        {% if plot_2d_available %}
+                            <p>
+                                The plot below shows the fit on the 2D data. For each cost
+                                function used, only the best fit is shown, that is the fit
+                                produced by the best minimizer in each case. A contour plot 
+                                can be added on top of the 2D image (or hidden) by clicking 
+                                on the corresponding name in the legend shown below
+                                the plot.
+                                When more than one plot is shown, i.e. for multiple cost 
+                                functions, the plots share the same colour range, so the 
+                                same colorbar applies to both.
+
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ plot_2d_data }}"></iframe>
+                            </div>  
+                        {% endif %}                      
+
                     {% else %}
                         <div align="center" class="figure align-center">
                             <h3>{{ rerun_make_plots_msg }}</h3>
