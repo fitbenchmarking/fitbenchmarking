@@ -34,6 +34,12 @@ class Plot:
         "color": "rgba(0,0,0,0.4)",
     }
     _default_ax_titles = {"x": "x", "y": "y"}
+    _legend_style = {
+        "yanchor": "top",
+        "y": -0.3,
+        "xanchor": "center",
+        "x": 0.5,
+    }
 
     def __init__(self, best_result, options, figures_dir):
         self.result = best_result
@@ -112,7 +118,7 @@ class Plot:
         )
         self._add_starting_guess(fig, df_fit, n_plots, ax_titles)
 
-        fig.update_layout(title=title)
+        fig.update_layout(title=title, legend=self._legend_style)
         self._update_to_logscale_if_needed(fig, self.result)
 
         htmlfile = f"start_for_{self.result.sanitised_name}.html"
@@ -218,7 +224,9 @@ class Plot:
                         col=i + 1,
                     )
 
-            fig.update_layout(title=self.result.name)
+            fig.update_layout(
+                title=self.result.name, legend=self._legend_style
+            )
             self._update_to_logscale_if_needed(fig, self.result)
 
             htmlfile = (
@@ -357,7 +365,7 @@ class Plot:
 
                 cls._update_to_logscale_if_needed(fig, result)
 
-        fig.update_layout(title=title)
+        fig.update_layout(title=title, legend=cls._legend_style)
 
         html_fname = f"summary_plot_for_{first_result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
