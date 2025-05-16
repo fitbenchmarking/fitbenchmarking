@@ -80,6 +80,7 @@ class IVPParser(FitbenchmarkParser):
     def _get_starting_values(self) -> list:
         """
         Returns the starting values for the problem.
+
         :return: The starting values for the problem.
         :rtype: list
         """
