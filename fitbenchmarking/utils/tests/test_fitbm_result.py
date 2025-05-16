@@ -504,10 +504,7 @@ class FitbmResultTests(unittest.TestCase):
         cost_func.hessian = hess
 
         controller = ScipyController(cost_func=cost_func)
-        controller.flag = 0
         controller.minimizer = "Newton-CG"
-        controller.initial_params = np.array([0, 0, 0, 0])
-        controller.final_params = np.array([1, 3, 4, 4])
         controller.parameter_set = 0
 
         result = FittingResult(
@@ -524,7 +521,9 @@ class FitbmResultTests(unittest.TestCase):
 
     @patch(
         "fitbenchmarking.utils.fitbm_result.FittingResult.get_indexes_1d_cuts_spinw",
-        return_value=None,
+        return_value=[
+            (np.array([8, 9]),),
+        ],
     )
     @patch(
         "fitbenchmarking.utils.fitbm_result.FittingResult.get_1d_cuts_spinw",
@@ -558,10 +557,7 @@ class FitbmResultTests(unittest.TestCase):
         cost_func.hessian = hess
 
         controller = ScipyController(cost_func=cost_func)
-        controller.flag = 0
         controller.minimizer = "Newton-CG"
-        controller.initial_params = np.array([0, 0, 0, 0])
-        controller.final_params = np.array([1, 3, 4, 4])
         controller.parameter_set = 0
 
         result = FittingResult(
