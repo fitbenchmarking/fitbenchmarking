@@ -11,6 +11,7 @@ from unittest import mock
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (
@@ -386,6 +387,74 @@ class PlotTests(unittest.TestCase):
         )
         expected = len(self.fr["Fake_Test_Data"])
         self.assertEqual(plot_minimizer_results.call_count, expected)
+
+    def test__plot_summary_when_data_x_cuts(self):
+        """
+        Test that plot_summary raises no exception
+        when data_x_cuts is set.
+        """
+        categs = self.fr
+        categ1_key, categ1_results = next(iter(categs.items()))
+        new_results = []
+
+        for result in categ1_results:
+            result.data_x_cuts = np.arange(10)
+            result.data_y_cuts = np.arange(10)
+            new_results.append(result)
+
+        modif_categs = {categ1_key: new_results}
+
+        self.plot.plot_summary(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+    def test__plot_minimizer_results_when_data_x_cuts(self):
+        """
+        Test _plot_minimizer_results raises no exception
+        when data_x_cuts is set.
+        """
+        fig = make_subplots(rows=1, cols=2)
+
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+
+        result.data_x_cuts = np.arange(10)
+        result.data_y_cuts = np.arange(10)
+        result.fin_y_cuts = np.arange(10)
+
+        self.plot._plot_minimizer_results(
+            fig=fig,
+            result=result,
+            categ=categ1_name,
+            n_plots=2,
+            ax_titles={"x": "x", "y": "y"},
+            colour="rgb(255,0,0)",
+        )
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
+    )
+    def test_plot_residuals_calls__create_empty_residuals_plots(
+        self, create_empty_residuals_plots
+    ):
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+        result.plot_info = {"n_plots": 2, "subplot_titles": ["plot1", "plot2"]}
+        modif_categs = {categ1_name: [result]}
+
+        self.plot.plot_residuals(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(create_empty_residuals_plots.call_count, 1)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
