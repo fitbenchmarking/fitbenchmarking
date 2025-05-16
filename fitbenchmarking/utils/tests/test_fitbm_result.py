@@ -45,10 +45,12 @@ class FitbmResultTests(unittest.TestCase):
         test_files_dir = os.path.dirname(inspect.getfile(test_files))
         problem_dir = os.path.join(test_files_dir, "cubic.dat")
 
-        problem: FittingProblem = parse_problem_file(problem_dir, self.options)
-        problem.correct_data()
+        self.problem: FittingProblem = parse_problem_file(
+            problem_dir, self.options
+        )
+        self.problem.correct_data()
 
-        cost_func = NLLSCostFunc(problem)
+        cost_func = NLLSCostFunc(self.problem)
 
         controller = ScipyController(cost_func=cost_func)
         controller.flag = 0
@@ -57,11 +59,11 @@ class FitbmResultTests(unittest.TestCase):
         controller.final_params = np.array([1, 3, 4, 4])
         controller.parameter_set = 0
 
-        jac = Scipy(problem=problem)
+        jac = Scipy(problem=self.problem)
         jac.method = "2-point"
         cost_func.jacobian = jac
 
-        hess = AnalyticHessian(problem, jac)
+        hess = AnalyticHessian(self.problem, jac)
         cost_func.hessian = hess
         self.controller = controller
 
@@ -479,6 +481,101 @@ class FitbmResultTests(unittest.TestCase):
         )
         self.assertEqual(obtained[0], expected[0])
         self.assertTrue((obtained[1] == expected[1]).all())
+
+    def test_data_x_when_plot_type_1d_cuts(self):
+        """
+        Test data_x is correct when plot_type is "1d_cuts".
+        """
+        problem = self.problem
+        problem.additional_info["plot_type"] = "1d_cuts"
+        problem.additional_info["n_plots"] = 2
+        problem.additional_info["subplot_titles"] = []
+        problem.additional_info["ax_titles"] = []
+        problem.data_y = np.arange(10)
+        problem.additional_info["ebin_cens"] = np.array(
+            [0.02, 0.075, 0.126, 0.177, 0.22]
+        )
+
+        cost_func = NLLSCostFunc(problem)
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
+
+        controller = ScipyController(cost_func=cost_func)
+        controller.flag = 0
+        controller.minimizer = "Newton-CG"
+        controller.initial_params = np.array([0, 0, 0, 0])
+        controller.final_params = np.array([1, 3, 4, 4])
+        controller.parameter_set = 0
+
+        result = FittingResult(
+            controller=controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            energy=self.energy,
+        )
+        obtained = result.data_x
+        expected = np.array(
+            [0.02, 0.075, 0.126, 0.177, 0.22, 0.02, 0.075, 0.126, 0.177, 0.22]
+        )
+        self.assertTrue((obtained == expected).all())
+
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.FittingResult.get_indexes_1d_cuts_spinw",
+        return_value=None,
+    )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.FittingResult.get_1d_cuts_spinw",
+        return_value=(None, None),
+    )
+    def test_data_x_cuts_when_plot_type_2d(
+        self, mock_get_cuts, mock_get_indexes
+    ):
+        """
+        Test data_x_cuts is correct when plot_type is "2d".
+        Also test that get_indexes_1d_cuts_spinw and get_1d_cuts_spinw
+        get called.
+        """
+        problem = self.problem
+        problem.additional_info["plot_type"] = "2d"
+        problem.additional_info["n_plots"] = 2
+        problem.additional_info["subplot_titles"] = []
+        problem.additional_info["ax_titles"] = []
+        problem.additional_info["q_cens"] = np.array(["0.8", "1.2"])
+        problem.additional_info["dq"] = 0.05
+        problem.additional_info["ebin_cens"] = np.array([0.075, 0.126, 0.177])
+        problem.additional_info["modQ_cens"] = np.array(
+            [0.837, 0.886, 0.935, 0.984]
+        )
+
+        cost_func = NLLSCostFunc(problem)
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
+
+        controller = ScipyController(cost_func=cost_func)
+        controller.flag = 0
+        controller.minimizer = "Newton-CG"
+        controller.initial_params = np.array([0, 0, 0, 0])
+        controller.final_params = np.array([1, 3, 4, 4])
+        controller.parameter_set = 0
+
+        result = FittingResult(
+            controller=controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            energy=self.energy,
+        )
+        obtained = result.data_x_cuts
+        expected = np.array([0.075, 0.126, 0.177, 0.075, 0.126, 0.177])
+
+        self.assertTrue((obtained == expected).all())
+        mock_get_indexes.assert_called()
+        mock_get_cuts.assert_called()
 
 
 if __name__ == "__main__":
