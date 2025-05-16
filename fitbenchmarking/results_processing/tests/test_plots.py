@@ -8,6 +8,7 @@ import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -457,6 +458,38 @@ class PlotTests(unittest.TestCase):
             ~input_df.minimizer.isin(["Data", "Starting Guess"])
         ].unique()
         self.assertEqual(add_starting_guess.call_count, len(minimizers))
+
+    def test_plot_2d_data_creates_files(self):
+        """
+        Test that plot_2d_data creates a file
+        """
+        categs = self.fr
+        modif_categs = {}
+
+        categ1_key, categ1_results = next(iter(categs.items()))
+        new_results = []
+
+        for k, result in enumerate(categ1_results):
+            result.plot_info = {}
+            result.plot_info["plot_type"] = "2d"
+            result.fin_y_complete = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+            if k == 0:
+                result.plot_info["ebin_cens"] = np.arange(3)
+            result.plot_info["modQ_cens"] = np.arange(40)
+            new_results.append(result)
+
+        modif_categs[categ1_key] = new_results
+
+        file_name = self.plot.plot_2d_data(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(file_name, "2d_plots_for_best_minims_prob_1.html")
+        path = os.path.join(self.figures_dir, file_name)
+        self.assertTrue(os.path.exists(path))
 
     def test__sample_colours(self):
         """
