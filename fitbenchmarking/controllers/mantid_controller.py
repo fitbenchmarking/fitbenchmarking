@@ -109,8 +109,8 @@ class MantidController(Controller):
 
         # In case of mantid parser:
         #    mantid_equation is set in additional_info
-        #      In case of multistart, mantid_equation is a list of strings.
-        #      Otherwise, it is a string.
+        #      In case of multistart analysis, mantid_equation
+        #      is a list of strings. Otherwise, it is a string.
         # In case of mantid dev parser:
         #    additional_info does not have the mantid_equation key
         self._mantid_equation = self.problem.additional_info.get(

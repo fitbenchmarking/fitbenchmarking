@@ -81,7 +81,7 @@ class MantidParser(MantidDevParser):
             self._entries["parameter_sigmas"]
         )
 
-        # Process names
+        # Process parameter names
         all_names = list(re.findall(r"\{(.*?)\}", self._entries["function"]))
 
         # Check if parameter_means and parameter_sigmas are
