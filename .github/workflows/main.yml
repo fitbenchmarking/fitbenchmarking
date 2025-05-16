@@ -9,6 +9,7 @@ on:
     branches:
       - 'master'
       - 'release-**'
+      - 'supprt_2d_fitting'
   release:
     types: [published]
   schedule:

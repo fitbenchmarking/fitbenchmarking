@@ -622,6 +622,13 @@ class Plot:
                         col=ind,
                     )
 
+                    y_tickvals = None
+                    y_ticktext = None
+                    y_axis_title = None
+                    x_tickvals = None
+                    x_ticktext = None
+                    x_axis_title = None
+
                     # check if problem if it's SpinW data
                     if "ebin_cens" in result.plot_info:
                         # set y tick vals and text
@@ -642,14 +649,6 @@ class Plot:
                         )
                         x_tickvals = np.linspace(0, np.shape(img)[1], n_ticks)
                         x_axis_title = "|Q| (Å<sup>-1</sup>)"
-
-                    else:
-                        y_tickvals = None
-                        y_ticktext = None
-                        y_axis_title = None
-                        x_tickvals = None
-                        x_ticktext = None
-                        x_axis_title = None
 
                     fig.update_yaxes(
                         title_text=y_axis_title,
