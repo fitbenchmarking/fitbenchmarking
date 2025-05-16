@@ -473,8 +473,7 @@ class PlotTests(unittest.TestCase):
             result.plot_info = {}
             result.plot_info["plot_type"] = "2d"
             result.fin_y_complete = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
-            if k == 0:
-                result.plot_info["ebin_cens"] = np.arange(3)
+            result.plot_info["ebin_cens"] = np.arange(3)
             result.plot_info["modQ_cens"] = np.arange(40)
             new_results.append(result)
 
