@@ -34,6 +34,7 @@ class TestFittingProblem(TestCase):
         fitting_problem.equation = "b1*x"
         fitting_problem.start_x = 0.5
         fitting_problem.end_x = 2.5
+        fitting_problem.multifit = False
 
         self.assertEqual(
             str(fitting_problem),
