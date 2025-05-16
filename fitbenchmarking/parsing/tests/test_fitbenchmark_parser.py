@@ -291,6 +291,53 @@ class TestFitbenchmarkParser(TestCase):
     @parameterized.expand(
         [
             (
+                [{"x": np.array([[1], [2]]), "y": np.array([3])}],
+                True,
+            ),
+            (
+                [{"x": np.array([[1], [2]]), "y": np.array([[3], [4]])}],
+                True,
+            ),
+            (
+                [{"x": np.array([1]), "y": np.array([[3], [4]])}],
+                True,
+            ),
+        ]
+    )
+    def test_is_multivariate(self, data_points, expected):
+        """
+        Verifies the output of _is_multivariate method.
+        """
+        assert self.parser._is_multivariate(data_points) == expected
+
+    @parameterized.expand(
+        [
+            (
+                {},
+                False,
+                False,
+            ),
+            (
+                {"n_fits": 1},
+                True,
+                True,
+            ),
+        ]
+    )
+    def test_is_multistart(self, entries, is_error, expected):
+        """
+        Verifies the _is_multistart method.
+        """
+        self.parser._entries = entries
+        if is_error:
+            with self.assertRaises(exceptions.ParsingError):
+                _ = self.parser._is_multistart()
+        else:
+            assert self.parser._is_multistart() == expected
+
+    @parameterized.expand(
+        [
+            (
                 "mantiddev",
                 "multifit.txt",
                 "['multifit1.txt','multifit2.txt']",

@@ -119,7 +119,7 @@ class MantidDevParser(FitbenchmarkParser):
         """
         function = self._entries["function"]
         if self.fitting_problem.multistart:
-            # Replace the  parameter placeholders with the means
+            # Replace the parameter placeholders with the parameter means
             parameter_means = self._parse_single_function(
                 self._entries["parameter_means"]
             )
