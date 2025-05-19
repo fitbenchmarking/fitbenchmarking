@@ -388,33 +388,13 @@ class PlotTests(unittest.TestCase):
         expected = len(self.fr["Fake_Test_Data"])
         self.assertEqual(plot_minimizer_results.call_count, expected)
 
-    def test__plot_summary_when_data_x_cuts(self):
+    @mock.patch("fitbenchmarking.results_processing.plots.len")
+    def test__plot_minimizer_results_calls_len_when_data_x_cuts(
+        self, len_func
+    ):
         """
-        Test that plot_summary raises no exception
-        when data_x_cuts is set.
-        """
-        categs = self.fr
-        categ1_key, categ1_results = next(iter(categs.items()))
-        new_results = []
-
-        for result in categ1_results:
-            result.data_x_cuts = np.arange(10)
-            result.data_y_cuts = np.arange(10)
-            new_results.append(result)
-
-        modif_categs = {categ1_key: new_results}
-
-        self.plot.plot_summary(
-            categories=modif_categs,
-            title="",
-            options=self.opts,
-            figures_dir=self.figures_dir,
-        )
-
-    def test__plot_minimizer_results_when_data_x_cuts(self):
-        """
-        Test _plot_minimizer_results raises no exception
-        when data_x_cuts is set.
+        Test _plot_minimizer_results calls the len built-in function
+        a number of times equal to n_plots when data_x_cuts is set.
         """
         fig = make_subplots(rows=1, cols=2)
 
@@ -425,15 +405,42 @@ class PlotTests(unittest.TestCase):
         result.data_x_cuts = np.arange(10)
         result.data_y_cuts = np.arange(10)
         result.fin_y_cuts = np.arange(10)
+        n_plots = 2
 
         self.plot._plot_minimizer_results(
             fig=fig,
             result=result,
             categ=categ1_name,
-            n_plots=2,
+            n_plots=n_plots,
             ax_titles={"x": "x", "y": "y"},
             colour="rgb(255,0,0)",
         )
+        self.assertEqual(len_func.call_count, n_plots)
+
+    @mock.patch("fitbenchmarking.results_processing.plots.len")
+    def test__plot_minimizer_results_calls_len_when_subplots_present(
+        self, len_func
+    ):
+        """
+        Test _plot_minimizer_results calls the len built-in function
+        a number of times equal to n_plots even when data_x_cuts is not set.
+        """
+        fig = make_subplots(rows=1, cols=2)
+
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+        n_plots = 2
+
+        self.plot._plot_minimizer_results(
+            fig=fig,
+            result=result,
+            categ=categ1_name,
+            n_plots=n_plots,
+            ax_titles={"x": "x", "y": "y"},
+            colour="rgb(255,0,0)",
+        )
+        self.assertEqual(len_func.call_count, n_plots)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
@@ -556,6 +563,33 @@ class PlotTests(unittest.TestCase):
         )
 
         self.assertEqual(file_name, "2d_plots_for_best_minims_prob_1.html")
+        path = os.path.join(self.figures_dir, file_name)
+        self.assertTrue(os.path.exists(path))
+
+    def test_plot_summary_created_files_when_data_x_cuts(self):
+        """
+        Test that plot_summary creates a file when data_x_cuts is set.
+        """
+        categs = self.fr
+        modif_categs = {}
+        categ1_key, categ1_results = next(iter(categs.items()))
+        new_results = []
+
+        for k, result in enumerate(categ1_results):
+            result.data_x_cuts = np.arange(10)
+            result.data_y_cuts = np.arange(10)
+            new_results.append(result)
+
+        modif_categs[categ1_key] = new_results
+
+        file_name = self.plot.plot_summary(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(file_name, "summary_plot_for_prob_0.html")
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
