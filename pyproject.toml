@@ -1,0 +1,157 @@
+[build-system]
+requires = ["hatchling", "versioningit"]
+build-backend = "hatchling.build"
+
+[project]
+name = "FitBenchmarking"
+dynamic = ["version"]
+authors = [{ name = "FitBenchmarking Team" }]
+description = "FitBenchmarking: A tool for comparing fitting software"
+readme = "README.md"
+requires-python = ">=3.9.1"
+keywords = [
+    "benchmark",
+    "fitting",
+    "optimisation",
+    "least squares",
+    "comparison",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    'docutils',
+    'tqdm>=4.60',
+    'numpy',
+    'matplotlib>=2.0',
+    'plotly>=5.0.0',
+    'scipy>=0.18',
+    'lxml',
+    'pandas>=1.3',
+    'jinja2',
+    'configparser',
+    'codecarbon>=2.5.1,<2.7',
+    'dash',
+]
+
+[project.optional-dependencies]
+bumps = ['bumps>=0.9.0']
+DFO = ['DFO-LS']
+gofit = ['gofit']
+gradient-free = ['gradient-free-optimizers']
+hogben = ['HOGBEN']
+levmar = ['levmar']
+lmfit = ['lmfit', 'emcee>=3.1.0']
+mantid = ['h5py>=2.10.0,<3', 'pyyaml>=5.4.1']
+matlab = ['dill']
+minuit = ['iminuit>=2.0']
+nlopt = ['nlopt']
+numdifftools = ['numdifftools']
+paramonte = ['paramonte']
+SAS = ['sasmodels', "tinycc;platform_system=='Windows'"]
+dev = [
+    'pytest',
+    'pytest-cov>=4.0.0',
+    'coveralls',
+    'coverage[toml]>=6.3',
+    'ruff',
+    'pandas',
+    'iminuit>=2.25.2',
+    'pre-commit',
+    'parameterized',
+]
+
+[project.scripts]
+fitbenchmarking = "fitbenchmarking.cli.main:main"
+fitbenchmarking-cp = "fitbenchmarking.cli.checkpoint_handler:main"
+
+[project.urls]
+Homepage = "https://fitbenchmarking.github.io"
+Documentation = "https://fitbenchmarking.readthedocs.io/en/stable"
+Repository = "https://github.com/fitbenchmarking/fitbenchmarking"
+"Release Notes" = "https://github.com/fitbenchmarking/fitbenchmarking/releases"
+Issues = "https://github.com/fitbenchmarking/fitbenchmarking/issues"
+
+[tool.coverage.run]
+omit = ['*/tests/*', '/fitbenchmarking/cli/main.py']
+
+[tool.coverage.paths]
+source = ['fitbenchmarking/', '/home/fitbenchmarking/fitbenchmarking/']
+
+[tool.coverage.report]
+omit = [
+    '*__init__*',
+    '*/test_*',
+    '/fitbenchmarking/cli/main.py',
+    '*/matlab_mixin.py',
+    '*/matlab*_controller.py',
+    '*/horace_controller.py',
+    '*/horace_parser.py',
+    '*/matlab_engine.py',
+]
+
+[tool.hatch.build]
+packages = ['fitbenchmarking']
+include = [
+    'fonts/FiraSans/*/*',
+    'fonts/FontAwesome/*',
+    'templates/*',
+    'templates/css/*',
+    'templates/js/*',
+    'templates/js/output/chtml/fonts/woff-v2/*',
+]
+exclude = ['*mock*', '*test*']
+
+[tool.hatch.version]
+source = "versioningit"
+
+[tool.ruff]
+output-format = "grouped"
+exclude = [
+    "benchmark_problems",
+    "fonts",
+    "test_files",
+    "templates"
+]
+line-length = 79
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "UP", # pyupgrade
+    "I", # isort
+    "NPY", # numpy
+    "PERF", # perflint
+    "LOG", # flake8-logging
+    "ICN", # flake8-import-conventions
+    "SIM", # flake8-simplify
+    "C4", # flake8-comprehensions
+    "TCH", # flake8-type-checking
+    "G", # flake8-logging-format
+    "PIE", # flake8-pie
+    "SLF", # flake8-self
+    "RUF", # ruff-specific-rules
+    "FURB", # refurb
+    "FLY", # flynt
+    "PD", # pandas-vet
+    ]
+ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
+
+[tool.ruff.lint.per-file-ignores]
+"fitbenchmarking/core/tests/test_fitting_benchmarking.py" = ["SLF001"]
+"fitbenchmarking/parsing/tests/test_fitbenchmark_parser.py" = ["SLF001"]
+"fitbenchmarking/utils/tests/test_options_generic.py" = ["SLF001"]
+"fitbenchmarking/results_processing/tests/test_problem_summary_page.py" = ["SLF001"]
+"fitbenchmarking/controllers/tests/test_controllers.py" = ["SLF001"]
+"fitbenchmarking/results_processing/tests/test_plots.py" = ["SLF001"]
+"fitbenchmarking/parsing/tests/test_mantid_parsers.py" = ["SLF001"]
+"fitbenchmarking/controllers/tests/test_mantid_controller.py" = ["SLF001"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.versioningit]
+default-version = '0.0.0dev1'

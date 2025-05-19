@@ -3,23 +3,23 @@ Implements the FittingProblem class, this will be the object that inputs are
 parsed into before being passed to the controllers
 """
 
-
 try:
     from itertools import izip_longest
 except ImportError:
     # python3
     from itertools import zip_longest as izip_longest
+import contextlib
+
 import numpy as np
 
 from fitbenchmarking.utils.debug import get_printable_table
-from fitbenchmarking.utils.exceptions import FittingProblemError, \
-    IncorrectBoundsError
+from fitbenchmarking.utils.exceptions import (
+    FittingProblemError,
+    IncorrectBoundsError,
+)
 from fitbenchmarking.utils.timer import TimerWithMaxTime
 
 
-# Using property getters and setters means that the setter does not always use
-# self
-# pylint: disable=no-self-use
 class FittingProblem:
     r"""
     Definition of a fitting problem, which will be populated by a parser from a
@@ -50,7 +50,7 @@ class FittingProblem:
         self.equation = None
 
         #: *string* Description of the fitting problem
-        self.description = ''
+        self.description = ""
 
         #: *float* The start of the range to fit model data over
         #: (if different from entire range)
@@ -103,6 +103,8 @@ class FittingProblem:
         #: Callable function for the Jacobian
         self.jacobian = None
 
+        self.sparse_jacobian = None
+
         #: *bool*
         #: Whether the function has been wrapped to reduce the dimension of x
         #: on function calls
@@ -118,13 +120,15 @@ class FittingProblem:
         self._ini_y = {}
 
     def __str__(self):
-        info = {"Name": self.name,
-                "Format": self.format,
-                "Equation": self.equation,
-                "Params": self._param_names,
-                "Start X": self.start_x,
-                "End X": self.end_x,
-                "MultiFit": self.multifit}
+        info = {
+            "Name": self.name,
+            "Format": self.format,
+            "Equation": self.equation,
+            "Params": self._param_names,
+            "Start X": self.start_x,
+            "End X": self.end_x,
+            "MultiFit": self.multifit,
+        }
 
         return get_printable_table("FittingProblem", info)
 
@@ -139,13 +143,14 @@ class FittingProblem:
         :rtype: numpy array
         """
         if self.function is None:
-            raise FittingProblemError('Cannot call function before setting '
-                                      'function.')
+            raise FittingProblemError(
+                "Cannot call function before setting function."
+            )
 
         self.timer.check_elapsed_time()
 
         x = kwargs.get("x", self.data_x)
-        return self.function(x, *params)  # pylint: disable=not-callable
+        return self.function(x, *params)
 
     @property
     def param_names(self):
@@ -161,7 +166,7 @@ class FittingProblem:
 
     @param_names.setter
     def param_names(self, value):
-        raise FittingProblemError('param_names should not be edited')
+        raise FittingProblemError("param_names should not be edited")
 
     def get_function_params(self, params):
         """
@@ -174,10 +179,13 @@ class FittingProblem:
                  example format: 'b1 * (b2+x) | b1=-2.0, b2=50.0'
         :rtype: string
         """
-        params = [f'{n}={p}' for n, p
-                  in izip_longest(self.param_names,
-                                  params if params is not None else [])]
-        param_string = ', '.join(params)
+        params = [
+            f"{n}={p}"
+            for n, p in izip_longest(
+                self.param_names, params if params is not None else []
+            )
+        ]
+        param_string = ", ".join(params)
 
         return param_string
 
@@ -187,21 +195,22 @@ class FittingProblem:
 
         Raise FittingProblemError if object is not properly initialised.
         """
-        values = {'data_x': np.ndarray,
-                  'data_y': np.ndarray,
-                  'starting_values': list}
+        values = {
+            "data_x": np.ndarray,
+            "data_y": np.ndarray,
+            "starting_values": list,
+        }
 
         for attr_name, attr_type in values.items():
             attr = getattr(self, attr_name)
             type_match = isinstance(attr, attr_type)
-            try:
-                type_match = type_match or isinstance(attr[0], attr_type)  # NOQA; pylint: disable=unsubscriptable-object
-            except (TypeError, IndexError):
-                pass
+            with contextlib.suppress(TypeError, IndexError):
+                type_match = type_match or isinstance(attr[0], attr_type)
             if not type_match:
                 raise FittingProblemError(
                     f'Attribute "{attr_name}" is not the expected type.'
-                    f' Expected "{attr_type}", got "{type(attr)}".')
+                    f' Expected "{attr_type}", got "{type(attr)}".'
+                )
         if self.function is None:
             raise FittingProblemError('Attribute "function" has not been set.')
 
@@ -211,15 +220,19 @@ class FittingProblem:
         and approximate errors if not given.
         Modifications happen on member variables.
         """
-        use_errors = "weighted_nlls" in self.options.cost_func_type\
+        use_errors = (
+            "weighted_nlls" in self.options.cost_func_type
             or "loglike_nlls" in self.options.cost_func_type
+        )
         if not self.multifit:
-            correct_vals = correct_data(x=self.data_x,
-                                        y=self.data_y,
-                                        e=self.data_e,
-                                        startx=self.start_x,
-                                        endx=self.end_x,
-                                        use_errors=use_errors)
+            correct_vals = correct_data(
+                x=self.data_x,
+                y=self.data_y,
+                e=self.data_e,
+                startx=self.start_x,
+                endx=self.end_x,
+                use_errors=use_errors,
+            )
             self.data_x = correct_vals[0]
             self.data_y = correct_vals[1]
             self.data_e = correct_vals[2]
@@ -229,13 +242,14 @@ class FittingProblem:
             self.sorted_index = []
             num_data = len(self.data_x)
             for i in range(num_data):
-                # pylint: disable=unsubscriptable-object
-                correct_vals = correct_data(x=self.data_x[i],
-                                            y=self.data_y[i],
-                                            e=self.data_e[i],
-                                            startx=self.start_x[i],
-                                            endx=self.end_x[i],
-                                            use_errors=use_errors)
+                correct_vals = correct_data(
+                    x=self.data_x[i],
+                    y=self.data_y[i],
+                    e=self.data_e[i],
+                    startx=self.start_x[i],
+                    endx=self.end_x[i],
+                    use_errors=use_errors,
+                )
                 self.data_x[i] = correct_vals[0]
                 self.data_y[i] = correct_vals[1]
                 self.data_e[i] = correct_vals[2]
@@ -249,22 +263,24 @@ class FittingProblem:
 
         :param value_ranges: dictionary of bounded parameter names with
                              lower and upper bound values e.g.
-                            :code:`{p1_name: [p1_min, p1_max], ...}`
+                             :code:`{p1_name: [p1_min, p1_max], ...}`
         :type value_ranges: dict
         """
-        lower_param_names = [name.lower()
-                             for name in self.starting_values[0].keys()]
+        lower_param_names = [name.lower() for name in self.starting_values[0]]
         if not all(name in lower_param_names for name in value_ranges):
-            raise IncorrectBoundsError('One or more of the parameter names in '
-                                       'the `parameter_ranges` dictionary is '
-                                       'incorrect, please check the problem '
-                                       'definiton file for this problem.')
+            raise IncorrectBoundsError(
+                "One or more of the parameter names in "
+                "the `parameter_ranges` dictionary is "
+                "incorrect, please check the problem "
+                "definiton file for this problem."
+            )
 
         self.value_ranges = []
         for name in lower_param_names:
             if name in value_ranges:
                 self.value_ranges.append(
-                    (value_ranges[name][0], value_ranges[name][1]))
+                    (value_ranges[name][0], value_ranges[name][1])
+                )
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 
@@ -280,13 +296,11 @@ class FittingProblem:
         """
         if parameter_set not in self._ini_y:
             params = self.starting_values[parameter_set].values()
-            if self.multifit:
-                self._ini_y[parameter_set] = [
-                    self.eval_model(params=params, x=x)
-                    for x in self.data_x
-                ]
-            else:
-                self._ini_y[parameter_set] = self.eval_model(params=params)
+            self._ini_y[parameter_set] = (
+                self.eval_model(params=params, x=self.data_x[0])
+                if self.multifit
+                else self.eval_model(params=params)
+            )
         return self._ini_y[parameter_set]
 
 
@@ -325,10 +339,8 @@ def correct_data(x, y, e, startx, endx, use_errors):
         e = None
 
     # impose x ranges
-    # pylint: disable=no-member, assignment-from-no-return
     if startx is not None and endx is not None:
-        mask = np.logical_and(x >= startx,
-                              x <= endx)
+        mask = np.logical_and(x >= startx, x <= endx)
         x = x[mask]
         y = y[mask]
         if e is not None:

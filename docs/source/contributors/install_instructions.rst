@@ -1,4 +1,4 @@
-.. _install_instructions:
+.. _install_instructions_for_contributors:
 
 #####################################
 Install Instructions for Contributors
@@ -34,6 +34,6 @@ for new contributors:
         fitting software, so please ensure tests are run locally before submitting
         code.
 
-4. You should check that the versions of packages such as pylint are up to date with
-   those used listed in requirements.txt. This can be done by running the command
-   ``pip install -r requirements.txt`` from  within the ``fitbenchmarking`` directory.
+4. You should check that the dev requirements are installed.
+   This can be done by running the command
+   ``pip install -e .[dev]`` from within the ``fitbenchmarking`` directory.

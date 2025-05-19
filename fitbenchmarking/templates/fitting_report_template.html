@@ -5,6 +5,20 @@
     <link rel="stylesheet" type="text/css" href="{{ css_style_sheet }}" />
     <link rel="stylesheet" type="text/css" href="{{ table_style }}" />
     <link rel="stylesheet" type="text/css" href="{{ custom_style }}" />
+    <script>        
+        // When the fitting report page loads, read the selected runtime metric
+        // and update the display of the runtime rows accordingly.
+        document.addEventListener("DOMContentLoaded", () => {
+            const metric = sessionStorage.getItem("selected_runtime_metric") || "{{ runtime_metric }}";
+            let allRuntimeElements = document.querySelectorAll(".runtime_row");
+            allRuntimeElements.forEach(el => el.style.display = "none");
+        
+            let selected = document.getElementById(metric);
+            if (selected) {
+                selected.style.display = "table-row";
+            }
+        });
+    </script>
     <head>
         <title>{{ run_name }}FitBenchmarking Fitting Report</title>
     </head>
@@ -17,70 +31,122 @@
                 </div>
                 <p>{{ description }}</p>
                 <hr>
-                <section class="accordion">
-                    <input type="checkbox" name="collapse" id="start-accordion" checked="checked">
-                    <h2 class="handle">
-                        <label for="start-accordion">Problem Outline</label>
-                    </h2>
-                    <div class="content">
-                        <p><em>Number of parameters</em>: {{ n_params }}</p>
-                        <p><em>Number of data points</em>: {{ n_data_points }}</p>
-                        <p><em>Functions</em>:</p>
-                        <table>
-                            <colgroup>
-                                <col width="45%" />
-                                <col width="55%" />
-                            </colgroup>
-                            <thead valign="bottom">
-                                <tr>
-                                    <th class="head">Form</th>
-                                    <th class="head">Parameters</th>
-                                </tr>
-                            </thead>
-                            <tbody valign="top">
-                                <tr>
-                                    <td>{{ equation }}</td>
-                                    <td>{{ initial_guess }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            {% if initial_plot_available %}
-                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ initial_plot }}"></iframe>
-                            {% else %}
-                                <h3>{{ initial_plot }}</h3>
-                            {% endif %}
-                        </div>
-                    </div>
-                </section>
-            <section class="accordion">
-                <input type="checkbox" name="collapse" id="fitting-results-accordion" checked="checked">
-                <h2 class="handle">
-                    <label for="fitting-results-accordion">Fitting Results</label>
-                </h2>
                 <div class="content">
                     {% if is_best_fit %}
-                        <p><b>This is the best fit of the minimizers used.</b></p>
+                        <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
                     {% endif %}
-                    <p><em>Minimizer</em>: {{ minimizer }}</p>
-                    <p><em>Accuracy</em>: {{ accuracy }}</p>
-                    <p><em>Runtime</em>: {{ runtime }} seconds</p>
-                    <p><em>Emissions</em>: {{ emissions }} kg CO<sub>2</sub>eq</p>
-                    <p><em>Functions</em>:</p>
-                    <table>
+                    <br>
+                    <table class="simple-table">
                         <colgroup>
-                            <col width="36%" />
-                            <col width="64%" />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="25%" />
                         </colgroup>
-                        <thead valign="bottom">
-                            <tr><th class="head">Form</th>
-                            <th class="head">Parameters</th>
-                        </thead>
                         <tbody valign="top">
+                            <!-- Problem Outline Section -->
                             <tr>
-                                <td>{{ equation }}</td>
-                                <td>{{ min_params }}</td>
+                                <td class="heading" colspan="4">Problem Outline</td>
                             </tr>
+                            <tr>
+                                <td class="label">Number of parameters</td>
+                                <td colspan="3">{{ n_params }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of data points</td>
+                                <td colspan="3">{{ n_data_points }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Minimizer</td>
+                                <td colspan="3">{{ minimizer }}</td>
+                            </tr>
+                            <!-- Summary Section -->
+                            <tr>
+                                <td class="heading" colspan="4">Fitting Metrics</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Accuracy</td>
+                                <td colspan="3">{{ accuracy }}</td>
+                            </tr>
+                            <tr class="runtime_row" id="mean">
+                                <td class="label">Runtime (mean)</td>
+                                <td colspan="3">{{ mean_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="minimum">
+                                <td class="label">Runtime (minimum)</td>
+                                <td colspan="3">{{ minimum_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="maximum">
+                                <td class="label">Runtime (maximum)</td>
+                                <td colspan="3">{{ maximum_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="first">
+                                <td class="label">Runtime (first)</td>
+                                <td colspan="3">{{ first_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="median">
+                                <td class="label">Runtime (median)</td>
+                                <td colspan="3">{{ median_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="harmonic">
+                                <td class="label">Runtime (harmonic)</td>
+                                <td colspan="3">{{ harmonic_runtime }} seconds</td>
+                            </tr>
+                            <tr class="runtime_row" id="trim">
+                                <td class="label">Runtime (trim)</td>
+                                <td colspan="3">{{ trim_runtime }} seconds</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Energy Usage</td>
+                                <td colspan="3">{{ energy }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of iterations</td>
+                                <td colspan="3">{{ iteration_count }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of function evaluations</td>
+                                <td colspan="3">{{ func_evals }}</td>
+                            </tr>
+                            <!-- Functions Section -->
+                            <tr>
+                                <td class="heading" colspan="4">Function</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Form</td>
+                                <td colspan="3">{{ equation }}</td>
+                            </tr>
+                            <!-- Parameters Section -->
+                            <tr>
+                                <td class="heading" colspan="4">Parameters</td>
+                            </tr>
+                            <tr>
+                                <td class="subheading">Name</td>
+                                <td class="subheading">Initial value</td>
+                                <td class="subheading">Fitted value</td>
+                                <td class="subheading">Change (Δ)</td>
+                            </tr>
+
+                            {% if list_params %}
+                                {% set initial_list = initial_guess.split(", ") %}
+                                {% set fitted_list = min_params.split(", ") %}
+
+                                {% for init in initial_list %}
+                                    {% set fit = fitted_list[loop.index0] %}
+                                    {% set init_key, init_value = init.split("=") %}
+                                    {% set fit_key, fit_value = fit.split("=") %}
+                                    <tr>
+                                        <td class="label">{{ init_key.strip() }}</td>
+                                        <td>{{ init_value.strip() }}</td>
+                                        <td>{{ fit_value.strip() }}</td>
+                                        <td>{{ fit_value.strip()|float - init_value.strip()|float }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="4">Too many parameters to display</td>
+                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                     <div align="center" class="figure align-center">
@@ -104,7 +170,6 @@
                         </button>
                     </div>
                 </div>
-            </section>
         </div>
     </body>
 </html>

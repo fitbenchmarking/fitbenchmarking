@@ -11,9 +11,11 @@ from inspect import getfile
 import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
-from fitbenchmarking.results_processing.tables import (SORTED_TABLE_NAMES,
-                                                       create_results_tables,
-                                                       generate_table)
+from fitbenchmarking.results_processing.tables import (
+    SORTED_TABLE_NAMES,
+    create_results_tables,
+    generate_table,
+)
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
@@ -27,14 +29,14 @@ def load_mock_results():
     """
     options = Options()
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    options.checkpoint_filename = os.path.join(cp_dir, 'checkpoint.json')
+    options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
 
     cp = Checkpoint(options)
-    results, _, _ = cp.load()
-    results = results['Fake_Test_Data']
+    results, _, _, _ = cp.load()
+    results = results["Fake_Test_Data"]
     for i, r in enumerate(results):
-        r.fitting_report_link = f'link{i}'
-        r.problem_summary_page_link = 'link0'
+        r.fitting_report_link = f"link{i}"
+        r.problem_summary_page_link = "link0"
 
     return results
 
@@ -55,11 +57,13 @@ class GenerateTableTests(unittest.TestCase):
         self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
 
-        self.expected_results_dir = os.path.join(root, 'results_processing',
-                                                 'tests', 'expected_results')
+        self.expected_results_dir = os.path.join(
+            root, "results_processing", "tests", "expected_results"
+        )
 
-        self.fig_dir = os.path.join(root, 'results_processing',
-                                    'tests', 'figures')
+        self.fig_dir = os.path.join(
+            root, "results_processing", "tests", "figures"
+        )
         if not os.path.exists(self.fig_dir):
             os.mkdir(self.fig_dir)
 
@@ -82,18 +86,24 @@ class GenerateTableTests(unittest.TestCase):
                 options=self.options,
                 group_dir="group_dir",
                 fig_dir=self.fig_dir,
-                pp_locations={'acc': "pp_1",
-                              'emissions': 'pp_3',
-                              'runtime': "pp_2"},
+                pp_locations={
+                    "acc": "pp_1",
+                    "energy_usage": "pp_3",
+                    "runtime": "pp_2",
+                },
                 table_name="table_name",
-                suffix=suffix)
+                suffix=suffix,
+            )
 
-            html_table_name = os.path.join(self.expected_results_dir,
-                                           f"{suffix}.html")
-            csv_table_name = os.path.join(self.expected_results_dir,
-                                          f"{suffix}.csv")
-            for f, t in zip([html_table_name, csv_table_name],
-                            [html["table"], csv_table]):
+            html_table_name = os.path.join(
+                self.expected_results_dir, f"{suffix}.html"
+            )
+            csv_table_name = os.path.join(
+                self.expected_results_dir, f"{suffix}.csv"
+            )
+            for f, t in zip(
+                [html_table_name, csv_table_name], [html["table"], csv_table]
+            ):
                 self.compare_files(f, t)
 
     def test_dropdown_html_correct(self):
@@ -107,20 +117,26 @@ class GenerateTableTests(unittest.TestCase):
             options=self.options,
             group_dir="group_dir",
             fig_dir=self.fig_dir,
-            pp_locations={'acc': "pp_1",
-                          'emissions': 'pp_3',
-                          'runtime': "pp_2"},
+            pp_locations={
+                "acc": "pp_1",
+                "energy_usage": "pp_3",
+                "runtime": "pp_2",
+            },
             table_name="table_name",
-            suffix="compare")
+            suffix="compare",
+        )
 
-        expected_problem_dropdown = os.path.join(self.expected_results_dir,
-                                                 "problem_dropdown.html")
-        expected_minimizer_dropdown = os.path.join(self.expected_results_dir,
-                                                   "minimizer_dropdown.html")
+        expected_problem_dropdown = os.path.join(
+            self.expected_results_dir, "problem_dropdown.html"
+        )
+        expected_minimizer_dropdown = os.path.join(
+            self.expected_results_dir, "minimizer_dropdown.html"
+        )
 
         for expected_file, dropdown_name in zip(
-                [expected_problem_dropdown, expected_minimizer_dropdown],
-                ["problem_dropdown", "minim_dropdown"]):
+            [expected_problem_dropdown, expected_minimizer_dropdown],
+            ["problem_dropdown", "minim_dropdown"],
+        ):
             self.compare_files(expected_file, html[dropdown_name])
 
     def compare_files(self, expected, achieved):
@@ -135,28 +151,35 @@ class GenerateTableTests(unittest.TestCase):
                          fitbenchmarking.results_processing.tables
         :type achieved: str
         """
-        with open(expected, 'r', encoding='utf-8') as f:
+        with open(expected, encoding="utf-8") as f:
             exp_lines = f.readlines()
 
         diff = []
         for i, (act_line, exp_line) in enumerate(
-                zip(achieved.splitlines(), exp_lines)):
-            exp_line = '' if exp_line is None else exp_line.strip('\n')
-            act_line = '' if act_line is None else act_line.strip('\n')
+            zip(achieved.splitlines(), exp_lines)
+        ):
+            exp_line = "" if exp_line is None else exp_line.strip("\n")
+            act_line = "" if act_line is None else act_line.strip("\n")
             # to pass on windows need to first do this before comparing
-            act_line = act_line.replace('href=\"..\\', 'href=\"../')
+            act_line = act_line.replace('href="..\\', 'href="../')
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
-        if diff != []:
-            print(f"Comparing against {expected}\n"
-                  + "\n".join([f'== Line {change[0]} ==\n'
-                               f'Expected :{change[1]}\n'
-                               f'Actual   :{change[2]}'
-                               for change in diff]))
+        if diff:
+            print(
+                f"Comparing against {expected}\n"
+                + "\n".join(
+                    [
+                        f"== Line {change[0]} ==\n"
+                        f"Expected :{change[1]}\n"
+                        f"Actual   :{change[2]}"
+                        for change in diff
+                    ]
+                )
+            )
             print("\n==\n")
             print("Output generated (also saved as actual.out):")
             print(achieved)
-            with open("actual.out", "w") as outfile:
+            with open("actual.out", "w", encoding="utf-8") as outfile:
                 outfile.write(achieved)
         self.assertListEqual([], diff)
 
@@ -177,17 +200,19 @@ class CreateResultsTableTests(unittest.TestCase):
         self.options = Options()
         root = os.path.dirname(getfile(fitbenchmarking))
 
-        self.group_dir = os.path.join(root, 'results_processing',
-                                      'tests', 'results')
+        self.group_dir = os.path.join(
+            root, "results_processing", "tests", "results"
+        )
 
         if not os.path.exists(self.group_dir):
             os.mkdir(self.group_dir)
 
-        self.fig_dir = os.path.join(root, 'results_processing',
-                                    'tests', 'figures')
+        self.fig_dir = os.path.join(
+            root, "results_processing", "tests", "figures"
+        )
         os.mkdir(self.fig_dir)
 
-        self.group_name = 'test_name'
+        self.group_name = "test_name"
 
     def tearDown(self):
         """
@@ -203,23 +228,27 @@ class CreateResultsTableTests(unittest.TestCase):
         """
         Checks to see whether files with the correct name are produced.
         """
-        create_results_tables(options=self.options,
-                              results=self.results,
-                              best_results=self.best_results,
-                              group_dir=self.group_dir,
-                              fig_dir=self.fig_dir,
-                              pp_locations={'acc': "pp_1",
-                                            'emissions': 'pp_3',
-                                            'runtime': "pp_2"},
-                              failed_problems=[],
-                              unselected_minimzers={'min1': []})
+        create_results_tables(
+            options=self.options,
+            results=self.results,
+            best_results=self.best_results,
+            group_dir=self.group_dir,
+            fig_dir=self.fig_dir,
+            pp_locations={
+                "acc": "pp_1",
+                "energy_usage": "pp_3",
+                "runtime": "pp_2",
+            },
+            failed_problems=[],
+            unselected_minimzers={"min1": []},
+        )
         for suffix in SORTED_TABLE_NAMES:
-
-            for table_type in ['html', 'csv']:
-                table_name = f'{suffix}_table.{table_type}'
+            for table_type in ["html", "csv"]:
+                table_name = f"{suffix}_table.{table_type}"
                 file_name = os.path.join(self.group_dir, table_name)
-                self.assertTrue(os.path.isfile(file_name),
-                                f"Could not find {file_name}")
+                self.assertTrue(
+                    os.path.isfile(file_name), f"Could not find {file_name}"
+                )
 
 
 if __name__ == "__main__":

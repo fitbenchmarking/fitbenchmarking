@@ -68,7 +68,7 @@ The Bumps minimizers are set as follows:
 .. _ceres:
 
 Ceres Solver (``ceres``)
-=============
+========================
 
 
 `Ceres Solver <http://ceres-solver.org/>`__ is an open source C++ library for modeling and solving large, complicated optimization problems. 
@@ -116,33 +116,56 @@ The Ceres Solver minimizers are set as follows:
 DFO (``dfo``)
 =============
 
-There are two Derivative-Free Optimization packages, `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ and
-`DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__.
-They are derivative free optimization solvers that were developed by Lindon Roberts at the University
-of Oxford, in conjunction with NAG.  They are particularly well suited for solving noisy problems.
+`DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`__ is a 
+derivative free optimization solver developed by Lindon Roberts at the University
+of Oxford, in conjunction with NAG.  It is particularly well suited for solving noisy problems.
 
-FitBenchmarking currently supports the DFO minimizers:
+FitBenchmarking currently supports the DFO minimizer:
 
-* `Derivative-Free Optimizer for Least Squares <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`__ (:code:`dfols`)
+* `Derivative-Free Optimizer for Least Squares <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`__ (:code:`dfols`)
 
-* `Derivative-Free Gauss-Newton Solver <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`__ (:code:`dfogn`)
+**Licence** `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ is available under the GPL-3 licence. A proprietary licence is also available from `NAG <https://nag.com/worldwide-contact-information/>`__ .
 
-**Licence** Both `DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn/blob/master/LICENSE.txt>`__ and `DFO-LS <https://github.com/numericalalgorithmsgroup/dfols/blob/master/LICENSE.txt>`__ are available under the GPL-3 licence.  A proprietary licence is also available from `NAG <https://www.nag.com/content/worldwide-contact-information>`__ .
+**Links** `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
 
-**Links** `GitHub - DFO-GN <https://github.com/numericalalgorithmsgroup/dfogn>`__ `GitHub - DFO-LS <https://github.com/numericalalgorithmsgroup/dfols>`__
-
-The DFO minimizers are set as follows:
+The DFO minimizer is set as follows:
 
 .. code-block:: rst
 
     [MINIMIZERS]
     dfo: dfols
-         dfogn
 
 .. warning::
-   Additional dependencies `DFO-GN` and `DFO-LS` must be installed for
+   Additional dependencies `DFO-LS` must be installed for
    these to be available;
    See :ref:`extra_dependencies`.
+
+.. _galahad:
+
+GALAHAD (``galahad``)
+=====================
+
+`GALAHAD <https://github.com/ralna/GALAHAD>`__ is a library of modern Fortran
+packages for nonlinear optimization with C, Python, Julia and MATLAB interfaces.
+It contains packages for general constrained and unconstrained optimization,
+linear and quadratic programming, nonlinear least-squares fitting and global
+optimization, as well as those for solving a large variety of basic
+optimization subproblems.
+
+GALAHAD is highly tunable though FitBenchmarking currently only supports its
+use with default arguments.
+
+FitBenchmarking currently supports the following GALAHAD minimizers:
+
+* ARC - An adaptive cubic regularization method (:code:`arc`)
+* NLS - A regularisation method for nonlinear least squars problems (:code:`nls`)
+* TRU - An unconstrained trust region method (:code:`tru`)
+.. * TRB - A constrained trust region method (:code:`trb`)
+.. * BGO - Stochastic global optimisation (:code:`bgo`)
+.. * DGO - Deterministic global optimisation (:code:`dgo`)
+
+.. note::
+   Due to dependency issues, we are unable to install this on our testing machine.
 
 .. _gofit:
 
@@ -299,7 +322,7 @@ The GSL minimizers are set as follows:
 .. warning::
    The external packages GSL and pygsl must be installed to use these minimizers.
 
-.. _horace:
+.. _horace_minimizer:
 
 Horace (``horace``)
 ===================
@@ -847,6 +870,26 @@ The SciPy least squares minimizers are set as follows:
     scipy_ls: lm-scipy
               trf
               dogbox
+
+.. _scipy-leastsq:
+
+SciPy LeastSq (``scipy_leastsq``)
+=================================
+
+`SciPy <https://www.scipy.org>`__ is the standard python package for mathematical
+software.  In particular, we use the `leastsq <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.leastsq.html>`__
+wrapper around MINPACK’s *lmdif* and *lmder* algorithms to minimize the sum of squares of a set of equations.
+
+**Links** `Github - SciPy leastsq <https://github.com/scipy/scipy/blob/v1.14.0/scipy/optimize/_minpack_py.py#L292-L508>`__
+
+**Licence** Scipy is available under a `3-clause BSD Licence <https://github.com/scipy/scipy/blob/master/LICENSE.txt>`__.  Individual packages many have their own (compatible) licences, as listed `here <https://github.com/scipy/scipy/blob/master/LICENSES_bundled.txt>`__.
+
+The SciPy leastsq minimizer is set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    scipy_leastsq: lm-leastsq
 
 .. _scipy-go:
 

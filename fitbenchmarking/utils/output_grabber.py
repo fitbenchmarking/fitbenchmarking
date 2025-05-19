@@ -1,10 +1,10 @@
-'''
+"""
 This file will capture output that would be printed to the terminal
-'''
+"""
 
 import os
-import sys
 import platform
+import sys
 
 from fitbenchmarking.utils.log import get_logger
 
@@ -21,6 +21,7 @@ class OutputGrabber:
     """
     Class used to grab outputs for stdout and stderr
     """
+
     def __init__(self, options):
         self.stdout_grabber = StreamGrabber(sys.stdout)
         self.stderr_grabber = StreamGrabber(sys.stderr)
@@ -31,9 +32,9 @@ class OutputGrabber:
         self.system = platform.system() != "Windows"
 
         self.external_output = options.external_output
-        self.active = (self.system
-                       and self.external_output != 'debug'
-                       and not IPYTHON)
+        self.active = (
+            self.system and self.external_output != "debug" and not IPYTHON
+        )
 
     def __enter__(self):
         if self.active:
@@ -46,15 +47,17 @@ class OutputGrabber:
             self.stdout_grabber.stop()
             self.stderr_grabber.stop()
             if self.stdout_grabber.capturedtext:
-                self._log('Captured output: \n%s',
-                          self.stdout_grabber.capturedtext)
+                self._log(
+                    "Captured output: \n%s", self.stdout_grabber.capturedtext
+                )
 
             if self.stderr_grabber.capturedtext:
-                self._log('Captured error: \n%s',
-                          self.stderr_grabber.capturedtext)
+                self._log(
+                    "Captured error: \n%s", self.stderr_grabber.capturedtext
+                )
 
     def _log(self, str_log, *args):
-        if self.external_output == 'log_only':
+        if self.external_output == "log_only":
             LOGGER.debug(str_log, *args)
         else:
             LOGGER.info(str_log, *args)
@@ -64,10 +67,10 @@ class StreamGrabber:
     """
     Class used to grab an output stream.
     """
+
     escape_char = "\b"
 
     def __init__(self, stream):
-
         self.origstream = stream
         self.origstreamfd = stream.fileno()
         self.encoding = stream.encoding

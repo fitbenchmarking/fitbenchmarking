@@ -5,7 +5,6 @@ examples.
 import numpy as np
 
 
-# pylint: disable=unused-argument
 def simplified_anac(t, x, gamma, mu):
     """
     Calculates the rhs of the system defined by:
@@ -19,7 +18,7 @@ def simplified_anac(t, x, gamma, mu):
         gamma (float): The value in the above equations
         mu (float): The value in the above equations
     """
-    if len(x.shape) == 1:
+    if x.ndim == 1:
         return np.array([
             x[1],
             gamma * x[0] + 2 * mu * x[0]**3

@@ -1,7 +1,9 @@
 """
 Implements the base non-linear least squares cost function
 """
+
 from abc import abstractmethod
+
 from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -39,7 +41,7 @@ class BaseNLLSCostFunc(CostFunc):
         # Problem: The problem object from parsing
         super().__init__(problem)
 
-        self.invalid_algorithm_types = []
+        self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod
     def eval_r(self, params, **kwargs):
@@ -83,7 +85,7 @@ class BaseNLLSCostFunc(CostFunc):
         r = self.eval_r(params, **kwargs)
         J = self.jac_res(params, **kwargs)
 
-        return 2.0 * matmul(J.T, r)
+        return 2.0 * J.T.dot(r)
 
     def hes_cost(self, params, **kwargs):
         """

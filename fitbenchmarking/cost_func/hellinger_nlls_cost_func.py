@@ -1,11 +1,14 @@
 """
 Implements the root non-linear least squares cost function
 """
-from numpy import array, matmul, ravel, sqrt
+
+from numpy import array, ravel, sqrt
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.utils.exceptions import (CostFuncError,
-                                              IncompatibleCostFunctionError)
+from fitbenchmarking.utils.exceptions import (
+    CostFuncError,
+    IncompatibleCostFunctionError,
+)
 
 
 class HellingerNLLSCostFunc(BaseNLLSCostFunc):
@@ -40,8 +43,10 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         if len(x) != len(y):
-            raise CostFuncError('The length of the x and y are not the same, '
-                                f'len(x)={len(x)} and len(y)= {len(y)}.')
+            raise CostFuncError(
+                "The length of the x and y are not the same, "
+                f"len(x)={len(x)} and len(y)= {len(y)}."
+            )
         result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
 
         # Flatten in case of a vector function
@@ -62,7 +67,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
 
         j = self.jacobian.eval(params, **kwargs)
-        return - j / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+        return -j / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
 
     def hes_res(self, params, **kwargs):
         """
@@ -85,8 +90,9 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
         for i in range(len(x)):
             jac_i = array([jac[i]])
-            hes[:, :, i] = matmul(jac_i.T, jac_i) / (4 * f[i] ** (3/2)) \
-                - hes[:, :, i] / (2 * f[i] ** (1/2))
+            hes[:, :, i] = jac_i.T.dot(jac_i) / (4 * f[i] ** (3 / 2)) - hes[
+                :, :, i
+            ] / (2 * f[i] ** (1 / 2))
         return hes, self.jac_res(params, **kwargs)
 
     def validate_problem(self):
@@ -100,4 +106,5 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         """
         if (self.problem.data_y < 0).any():
             raise IncompatibleCostFunctionError(
-                "Problem has a negative y value.")
+                "Problem has a negative y value."
+            )

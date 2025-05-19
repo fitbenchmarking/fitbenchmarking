@@ -1,14 +1,17 @@
 """
 compare table
 """
+
 import matplotlib.colors as clrs
 import numpy as np
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.results_processing.base_table import (Table,
-                                                           CONTRAST_RATIO_AAA,
-                                                           background_to_text)
+from fitbenchmarking.results_processing.base_table import (
+    CONTRAST_RATIO_AAA,
+    Table,
+    background_to_text,
+)
 from fitbenchmarking.utils.exceptions import IncompatibleTableError
 
 GRAD_TOL = 1e-1
@@ -33,11 +36,19 @@ class LocalMinTable(Table):
     object.
 
     """
-    name = 'local_min'
+
+    name = "local_min"
     cbar_title = "Cell Shading: Minimum Found"
 
-    def __init__(self, results, best_results, options, group_dir, pp_locations,
-                 table_name):
+    def __init__(
+        self,
+        results,
+        best_results,
+        options,
+        group_dir,
+        pp_locations,
+        table_name,
+    ):
         """
         Initialise the local minimizer table which shows given the
         conditioners stated in the doc string whether the final parameters
@@ -59,9 +70,10 @@ class LocalMinTable(Table):
         :param table_name: Name of the table
         :type table_name: str
         """
-        super().__init__(results, best_results, options, group_dir,
-                         pp_locations, table_name)
-        self.pps = ['acc', 'runtime']
+        super().__init__(
+            results, best_results, options, group_dir, pp_locations, table_name
+        )
+        self.pps = ["acc", "runtime"]
 
         # Check whether any selected cost function is not a least squares
         # problem - if non least squares are present then local min table is
@@ -71,7 +83,8 @@ class LocalMinTable(Table):
                 raise IncompatibleTableError(
                     "The local_min table cannot be produced with the "
                     f"{cf} cost function. As a result, "
-                    "this table will not be produced.")
+                    "this table will not be produced."
+                )
 
         self.cbar_left_label = "True"
         self.cbar_right_label = "False"
@@ -90,35 +103,34 @@ class LocalMinTable(Table):
                  specified above) and :math:`\\frac{|| J^T r||}{||r||}`
         :rtype: bool, float
         """
-
-        res = result.r_x
-
-        jac = result.jac_x
-
-        if res is None:
+        if np.isinf(result.accuracy):
             return None, None
-
+        if result.r_x is None:
+            return None, None
         if result.params is None:
             return False, np.inf
 
-        min_test = np.matmul(res, jac)
+        res = result.r_x
+        jac = result.jac_x
+
+        min_test = jac.transpose().dot(res)
         norm_r = np.linalg.norm(res)
         norm_min_test = np.linalg.norm(min_test)
 
-        if result.error_flag != 5:
-            norm_rel = norm_min_test / norm_r
-        else:
-            norm_rel = np.inf
+        norm_rel = norm_min_test / norm_r if result.error_flag != 5 else np.inf
 
-        local_min = any([norm_r <= RES_TOL,
-                         norm_min_test <= GRAD_TOL,
-                         norm_rel <= GRAD_TOL])
+        local_min = any(
+            [
+                norm_r <= RES_TOL,
+                norm_min_test <= GRAD_TOL,
+                norm_rel <= GRAD_TOL,
+            ]
+        )
 
         return local_min, norm_rel
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
-        # pylint: disable=unused-argument
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Converts an array of values to a list of hexadecimal colour strings
         using sampling from a matplotlib colourmap according to whether a
@@ -129,6 +141,8 @@ class LocalMinTable(Table):
 
         :param vals: values in the range [0, 1] to convert to colour strings
         :type vals: list[float]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping
@@ -141,11 +155,20 @@ class LocalMinTable(Table):
                  e.g. 'rgb(255, 255, 255)'
         :rtype: tuple[list[str], list[str]]
         """
-        rgba = cmap([cmap_range[0] if local_min else cmap_range[1]
-                     for local_min in vals])
-        hex_strs = [clrs.rgb2hex(colour) for colour in rgba]
-        text_str = [background_to_text(colour[:3], CONTRAST_RATIO_AAA)
-                    for colour in rgba]
+        rgba = cmap(
+            [
+                cmap_range[0] if local_min else cmap_range[1]
+                for local_min in vals
+            ]
+        )
+        hex_strs = [
+            clrs.to_hex("whitesmoke") if v is None else clrs.rgb2hex(colour)
+            for colour, v in zip(rgba, vals)
+        ]
+        text_str = [
+            background_to_text(colour[:3], CONTRAST_RATIO_AAA)
+            for colour in rgba
+        ]
         return hex_strs, text_str
 
     def display_str(self, value):
@@ -162,12 +185,11 @@ class LocalMinTable(Table):
         """
         local_min, norm_rel = value
         if local_min is None:
-            return 'N/A'
-        template = self.output_string_type['abs']
-        return f'{str(local_min)} ({template.format(norm_rel)})'
+            return "N/A"
+        template = self.output_string_type["abs"]
+        return f"{local_min!s} ({template.format(norm_rel)})"
 
     def save_colourbar(self, fig_dir, n_divs=2, sz_in=None) -> str:
-        # pylint: disable=unused-argument
         """
         Override default save_colourbar as there are only 2 possible divisions
         of the colour map (true or false).
@@ -199,7 +221,7 @@ class LocalMinTable(Table):
         :rtype: str
         """
         if result.r_x is None:
-            return ''
+            return ""
         return super().get_error_str(result, *args, **kwargs)
 
     def get_description(self):
@@ -211,7 +233,9 @@ class LocalMinTable(Table):
         :rtype: dict
         """
         html = super().get_description()
-        html['local_min_mode'] = '"N/A" in the table indicates that the ' \
-            'cost function does not provide residuals.'
+        html["local_min_mode"] = (
+            "'N/A' in the table indicates that the "
+            "cost function does not provide residuals."
+        )
 
         return html

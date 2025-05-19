@@ -2,6 +2,7 @@
 Implements the base Parser as a Context Manager.
 """
 
+import contextlib
 from abc import ABCMeta, abstractmethod
 
 
@@ -11,6 +12,7 @@ class Parser:
     Further parsers should inherit from this and override the abstract parse()
     method.
     """
+
     __metaclass__ = ABCMeta
 
     def __init__(self, filename, options):
@@ -32,7 +34,7 @@ class Parser:
         Called when used as a context manager.
         Opens the file ready for parsing.
         """
-        self.file = open(self._filename, 'r', encoding="utf-8")
+        self.file = open(self._filename, encoding="utf-8")
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -50,10 +52,8 @@ class Parser:
                           traceback.
         :type traceback: traceback
         """
-        try:
+        with contextlib.suppress(AttributeError):
             self.file.close()
-        except AttributeError:
-            pass
 
     @abstractmethod
     def parse(self):

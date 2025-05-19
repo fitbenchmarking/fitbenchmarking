@@ -25,25 +25,50 @@
                     <label for="start-accordion">Problem Outline</label>
                 </h2>
                 <div class="content">
-                    <p><em>Number of parameters</em>: {{ n_params }}</p>
-                    <p><em>Number of data points</em>: {{ n_data_points }}</p>
-                    <p><em>Functions</em>:</p>
-                    <table>
+                    <br>
+                    <table class="simple-table">
                         <colgroup>
-                            <col width="45%" />
-                            <col width="55%" />
+                            <col width="30%" />
+                            <col width="70%" />
                         </colgroup>
-                        <thead valign="bottom">
-                            <tr>
-                                <th class="head">Form</th>
-                                <th class="head">Parameters</th>
-                            </tr>
-                        </thead>
                         <tbody valign="top">
+                            <!-- Summary Section -->
                             <tr>
-                                <td>{{ equation }}</td>
-                                <td>{{ initial_guess }}</td>
+                                <td class="heading" colspan="2">Summary</td>
                             </tr>
+                            <tr>
+                                <td class="label">Number of parameters</td>
+                                <td>{{ n_params }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Number of data points</td>
+                                <td>{{ n_data_points }}</td>
+                            </tr>
+                            <!-- Functions Section -->
+                            <tr>
+                                <td class="heading" colspan="2">Function</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Form</td>
+                                <td>{{ equation }}</td>
+                            </tr>
+                            <!-- Initial Parameters Section -->
+                            <tr>
+                                <td class="heading" colspan="2">Initial Parameters</td>
+                            </tr>
+                            {% if list_params %}
+                                {% for param in initial_guess.split(", ") %}
+                                    {% set key, value = param.split("=") %}
+                                    <tr>
+                                        <td class="label">{{ key.strip() }}</td>
+                                        <td>{{ value.strip() }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="2">Too many parameters to display</td>
+                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                     <div class="row">
@@ -61,30 +86,39 @@
                     <label for="comparison-accordion">Comparison</label>
                 </h2>
                 <div class="content">
-                    <p>
-                        {% if best_results|length == 1 %}
-                        This plot shows a comparison of the runs. The minimizer
-                        which produced closest fit is in bold, with the other
-                        minimizers shown as thinner lines for context.
-                        {% else %}
-                        This plot shows a comparison of the runs across cost
-                        functions. Colours are used to distinguish between fits
-                        obtained using each cost function. Within a cost function,
-                        the minimizer which produced closest fit is in bold and
-                        the other minimizers are shown as thinner lines for context.
+                    {% if summary_plot_available %}
+                        {% if best_results|length > 1 %}
+                            <p>
+                                This plot shows a comparison of the runs across cost
+                                functions. Colours are used to distinguish between fits
+                                obtained using each cost function. Within a cost function,
+                                the minimizer which produced closest fit is in bold and
+                                the other minimizers are shown as thinner dashed lines for context.
+                                <br>Please note that this plot is intended for use as an
+                                indication of the variety of the fits that were obtained
+                                for specific details, please consult the individual support
+                                pages.
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
+                            </div>
                         {% endif %}
-                        <br>Please note that this plot is intended for use as an
-                        indication of the variety of the fits that were obtained
-                        for specific details, please consult the individual support
-                        pages.
-                    </p>
-                    <div align="center" class="figure align-center">
-                        {% if summary_plot_available %}
-		            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
-                        {% else %}
-                            <h3>{{ summary_plot }}</h3>
-                        {% endif %}
-                    </div>
+                        <p>
+                            Below, you can see a plot for each cost function used (one or multiple),
+                            showing the residuals for each fit. Different colours correspond to 
+                            different minimizers. The minimizer that produced the best fit is marked 
+                            in the legend. To be able to compare this to the residuals for other 
+                            minimizers, it might be necessary to click on their names in the legend to 
+                            hide/show the respective data. 
+                        </p>
+                        <div align="center" class="figure align-center">
+                            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
+                        </div>
+                    {% else %}
+                        <div align="center" class="figure align-center">
+                            <h3>{{ rerun_make_plots_msg }}</h3>
+                        </div>
+                    {% endif %}
                 </div>
             </section>
 
@@ -95,33 +129,54 @@
                         <label for="best-accordion">{{ categories[0] }}: {{ best_results[0].modified_minimizer_name(True) }}</label>
                     </h2>
                     <div class="content">
-                        <p>This is the best fit of the minimizers used.</p>
-
-                        <p><em>Minimizer</em>: {{ best_results[0].modified_minimizer_name(True) }}</p>
-                        <p><em>Functions</em>:</p>
-                        <table>
+                        <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
+                        <br>
+                        <table class="simple-table">
                             <colgroup>
-                                <col width="36%" />
-                                <col width="64%" />
+                                <col width="30%" />
+                                <col width="70%" />
                             </colgroup>
-                            <thead valign="bottom">
-                                <tr>
-                                    <th class="head">Form</th>
-                                    <th class="head">Parameters</th>
-                                </tr>
-                            </thead>
                             <tbody valign="top">
+                                <!-- Summary Section -->
                                 <tr>
-                                    <td>{{ equation }}</td>
-                                    <td>{{ best_results[0].fin_function_params }}</td>
+                                    <td class="heading" colspan="2">Summary</td>
                                 </tr>
+                                <tr>
+                                    <td class="label">Minimizer</td>
+                                    <td>{{ best_results[0].modified_minimizer_name(True) }}</td>
+                                </tr>
+                                <!-- Functions Section -->
+                                <tr>
+                                    <td class="heading" colspan="2">Function</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Form</td>
+                                    <td>{{ equation }}</td>
+                                </tr>
+                                <!-- Best Parameters Section -->
+                                <tr>
+                                    <td class="heading" colspan="2">Best Parameters</td>
+                                </tr>
+                                {% if list_params %}                                    
+                                    {% for param in min_params.split(", ") %}
+                                        {% set key, value = param.split("=") %}
+                                        <tr>
+                                            <td class="label">{{ key.strip() }}</td>
+                                            <td>{{ value.strip() }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="2">Too many parameters to display</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                         <div align="center" class="figure align-center">
                             {% if best_plots_available[0] %}
 			        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[0] }}"></iframe>
                             {% else %}
-                                <h3>{{ best_plots[0] }}</h3>
+                                <h3>{{ rerun_make_plots_msg }}</h3>
                             {% endif %}
                         </div>
                     </div>
@@ -136,32 +191,53 @@
                         </h2>
                         <div class="content">
                             <p>{{ plot_descriptions[loop.index0] }}</p>
-
-                            <p><em>Minimizer</em>: {{ best_results[loop.index0].modified_minimizer_name(True) }}</p>
-                            <p><em>Functions</em>:</p>
-                            <table>
+                            <br>
+                            <table class="simple-table">
                                 <colgroup>
-                                    <col width="36%" />
-                                    <col width="64%" />
+                                    <col width="30%" />
+                                    <col width="70%" />
                                 </colgroup>
-                                <thead valign="bottom">
-                                    <tr>
-                                        <th class="head">Form</th>
-                                        <th class="head">Parameters</th>
-                                    </tr>
-                                </thead>
                                 <tbody valign="top">
+                                    <!-- Summary Section -->
                                     <tr>
-                                        <td>{{ equation }}</td>
-                                        <td>{{ best_results[loop.index0].fin_function_params }}</td>
+                                        <td class="heading" colspan="2">Summary</td>
                                     </tr>
+                                    <tr>
+                                        <td class="label">Minimizer</td>
+                                        <td>{{ best_results[loop.index0].modified_minimizer_name(True)}}</td>
+                                    </tr>
+                                    <!-- Functions Section -->
+                                    <tr>
+                                        <td class="heading" colspan="2">Function</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Form</td>
+                                        <td>{{ equation }}</td>
+                                    </tr>
+                                    <!-- Best Parameters Section -->
+                                    <tr>
+                                        <td class="heading" colspan="2">Best Parameters</td>
+                                    </tr>
+                                    {% if list_params %}
+                                        {% for param in min_params.split(", ") %}
+                                            {% set key, value = param.split("=") %}
+                                            <tr>
+                                                <td class="label">{{ key.strip() }}</td>
+                                                <td>{{ value.strip() }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="2">Too many parameters to display</td>
+                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                             <div align="center" class="figure align-center">
                                 {% if best_plots_available[loop.index0] %}
 				    <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[loop.index0] }}"></iframe>
                                 {% else %}
-                                    <h3>{{ best_plots[loop.index0] }}</h3>
+                                    <h3>{{ rerun_make_plots_msg }}</h3>
                                 {% endif %}
                             </div>
                         </div>
