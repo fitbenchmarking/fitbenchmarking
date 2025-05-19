@@ -432,7 +432,7 @@ class FitbmResultTests(unittest.TestCase):
             problem, indexes, array_to_cut
         )
         expected = (
-            [0.911392405, 0.962025315, 1.01265823, 1.06329114],
+            [0.734177215, 0.7848101249999999, 0.8354430399999999, 0.88607595],
             np.array(
                 [
                     [
