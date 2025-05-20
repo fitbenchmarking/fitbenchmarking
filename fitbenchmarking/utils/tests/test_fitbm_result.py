@@ -15,6 +15,7 @@ from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import (
     Analytic as AnalyticHessian,
@@ -599,8 +600,16 @@ class FitbmResultTests(unittest.TestCase):
         "fitbenchmarking.utils.fitbm_result.FittingResult.get_1d_cuts_spinw",
         return_value=(None, None),
     )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc.jac_res",
+        return_value=np.arange(10),
+    )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc.eval_r",
+        return_value=np.arange(10),
+    )
     def test_data_x_cuts_when_plot_type_2d(
-        self, mock_get_cuts, mock_get_indexes
+        self, mock_eval_r, mock_jac_res, mock_get_cuts, mock_get_indexes
     ):
         """
         Test data_x_cuts is correct when plot_type is "2d".
@@ -619,7 +628,7 @@ class FitbmResultTests(unittest.TestCase):
             [0.837, 0.886, 0.935, 0.984]
         )
 
-        cost_func = NLLSCostFunc(problem)
+        cost_func = BaseNLLSCostFunc(problem)
         jac = Scipy(problem=problem)
         jac.method = "2-point"
         cost_func.jacobian = jac
@@ -629,6 +638,8 @@ class FitbmResultTests(unittest.TestCase):
         controller = ScipyController(cost_func=cost_func)
         controller.minimizer = "Newton-CG"
         controller.parameter_set = 0
+        controller.initial_params = np.array([0, 0, 0, 0])
+        controller.final_params = np.array([1, 3, 4, 4])
 
         result = FittingResult(
             controller=controller,
