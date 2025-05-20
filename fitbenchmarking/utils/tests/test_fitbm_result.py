@@ -393,7 +393,8 @@ class FitbmResultTests(unittest.TestCase):
 
     def test_get_1d_cuts_spinw(self):
         """
-        Test that get_1d_cuts_spinw returns expected output.
+        Test that get_1d_cuts_spinw returns expected output,
+        when indexes come in tuples.
         """
         problem = self.controller.problem
         problem.additional_info["ebin_cens"] = np.array(
@@ -474,7 +475,8 @@ class FitbmResultTests(unittest.TestCase):
 
     def test_get_1d_cuts_spinw_when_indexes_are_not_tuples(self):
         """
-        Test that get_1d_cuts_spinw returns expected output.
+        Test that get_1d_cuts_spinw returns expected output,
+        when indexes are not tuples, but a single index per cut.
         """
         problem = self.controller.problem
         problem.additional_info["ebin_cens"] = np.array(

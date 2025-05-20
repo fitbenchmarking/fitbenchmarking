@@ -566,7 +566,7 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test_plot_summary_created_files_when_data_x_cuts(self):
+    def test_plot_summary_creates_files_when_data_x_cuts(self):
         """
         Test that plot_summary creates a file when data_x_cuts is set.
         """
