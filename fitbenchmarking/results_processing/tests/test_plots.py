@@ -541,16 +541,16 @@ class PlotTests(unittest.TestCase):
         """
         categs = self.fr
         modif_categs = {}
-
         categ1_key, categ1_results = next(iter(categs.items()))
         new_results = []
 
-        for k, result in enumerate(categ1_results):
-            result.plot_info = {}
-            result.plot_info["plot_type"] = "2d"
+        for result in categ1_results:
+            result.plot_info = {
+                "plot_type": "2d",
+                "ebin_cens": np.arange(3),
+                "modQ_cens": np.arange(40),
+            }
             result.fin_y_complete = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
-            result.plot_info["ebin_cens"] = np.arange(3)
-            result.plot_info["modQ_cens"] = np.arange(40)
             new_results.append(result)
 
         modif_categs[categ1_key] = new_results
@@ -575,7 +575,7 @@ class PlotTests(unittest.TestCase):
         categ1_key, categ1_results = next(iter(categs.items()))
         new_results = []
 
-        for k, result in enumerate(categ1_results):
+        for result in categ1_results:
             result.data_x_cuts = np.arange(10)
             result.data_y_cuts = np.arange(10)
             new_results.append(result)
