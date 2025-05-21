@@ -530,15 +530,15 @@ class FitbmResultTests(unittest.TestCase):
         Test data_x is correct when plot_type is "1d_cuts".
         """
         problem = self.problem
-        problem.additional_info["plot_type"] = "1d_cuts"
-        problem.additional_info["n_plots"] = 2
-        problem.additional_info["subplot_titles"] = []
-        problem.additional_info["ax_titles"] = []
-        problem.data_y = np.arange(10)
-        problem.additional_info["ebin_cens"] = np.array(
-            [0.02, 0.075, 0.126, 0.177, 0.22]
-        )
+        problem.additional_info = {
+            "plot_type": "1d_cuts",
+            "n_plots": 2,
+            "subplot_titles": [],
+            "ax_titles": [],
+            "ebin_cens": np.array([0.02, 0.075, 0.126, 0.177, 0.22]),
+        }
 
+        problem.data_y = np.arange(10)
         cost_func = NLLSCostFunc(problem)
         jac = Scipy(problem=problem)
         jac.method = "2-point"
@@ -586,19 +586,19 @@ class FitbmResultTests(unittest.TestCase):
         """
         Test data_x_cuts is correct when plot_type is "2d".
         Also test that get_indexes_1d_cuts_spinw and get_1d_cuts_spinw
-        get called.
+        get called the right amount of times.
         """
         problem = self.problem
-        problem.additional_info["plot_type"] = "2d"
-        problem.additional_info["n_plots"] = 2
-        problem.additional_info["subplot_titles"] = []
-        problem.additional_info["ax_titles"] = []
-        problem.additional_info["q_cens"] = np.array(["0.8", "1.2"])
-        problem.additional_info["dq"] = 0.05
-        problem.additional_info["ebin_cens"] = np.array([0.075, 0.126, 0.177])
-        problem.additional_info["modQ_cens"] = np.array(
-            [0.837, 0.886, 0.935, 0.984]
-        )
+        problem.additional_info = {
+            "plot_type": "2d",
+            "n_plots": 2,
+            "subplot_titles": [],
+            "ax_titles": [],
+            "q_cens": np.array(["0.8", "1.2"]),
+            "dq": 0.05,
+            "ebin_cens": np.array([0.075, 0.126, 0.177]),
+            "modQ_cens": np.array([0.837, 0.886, 0.935, 0.984]),
+        }
 
         cost_func = BaseNLLSCostFunc(problem)
         jac = Scipy(problem=problem)
@@ -623,8 +623,8 @@ class FitbmResultTests(unittest.TestCase):
         expected = np.array([0.075, 0.126, 0.177, 0.075, 0.126, 0.177])
 
         self.assertTrue((obtained == expected).all())
-        mock_get_indexes.assert_called()
-        mock_get_cuts.assert_called()
+        self.assertEqual(mock_get_indexes.call_count, 1)
+        self.assertEqual(mock_get_cuts.call_count, 5)
 
 
 if __name__ == "__main__":
