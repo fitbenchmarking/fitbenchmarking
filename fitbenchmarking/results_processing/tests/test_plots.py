@@ -448,6 +448,10 @@ class PlotTests(unittest.TestCase):
     def test_plot_residuals_calls__create_empty_residuals_plots(
         self, create_empty_residuals_plots
     ):
+        """
+        Test that plot_residuals calls _create_empty_residuals_plots
+        when plot_info is set.
+        """
         categs = self.fr
         categ1_name, categ1_results = next(iter(categs.items()))
         result = categ1_results[0]
@@ -537,7 +541,7 @@ class PlotTests(unittest.TestCase):
 
     def test_plot_2d_data_creates_files(self):
         """
-        Test that plot_2d_data creates a file
+        Test that plot_2d_data creates a file.
         """
         categs = self.fr
         modif_categs = {}
