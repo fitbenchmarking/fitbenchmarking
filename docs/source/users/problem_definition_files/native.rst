@@ -4,7 +4,7 @@
 Native File Format
 ******************
 
-In FitBenchmarking, the native file format is used to read IVP and
+In FitBenchmarking, the native file format is used to read IVP, Horace, and
 SASView problems.
 
 In this format, data is separated from the function. This allows running the

@@ -135,7 +135,7 @@ An example of multi-start problem defination is:
 Below we outline the differences between this format and the **native** :ref:`mantid_file`.
 
 n_fits
-  This is defined as an interger. It detemines the number of
+  This is defined as an integer. It determines the number of
   datasets that will be created with varying starting values (see above example).
 
 function
@@ -151,7 +151,7 @@ function
 
 parameter_means
   This is defined as a string of parameter names and their mean values.
-  These are used as the mean values of the Gaussian distribution from with the
+  These are used as the mean values of the Gaussian distribution from which the
   starting values are sampled.
 
   For example, a valid syntax is::
@@ -161,7 +161,7 @@ parameter_means
 parameter_sigmas
   This is defined as a string of parameter names and their sigma values.
   These are used as the standard deviations of the Gaussian distribution
-  from with the starting values are sampled.
+  from which the starting values are sampled.
 
   For example, a valid syntax is::
 
