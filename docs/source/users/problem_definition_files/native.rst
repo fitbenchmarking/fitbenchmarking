@@ -4,7 +4,7 @@
 Native File Format
 ******************
 
-In FitBenchmarking, the native file format is used to read IVP, Mantid, and
+In FitBenchmarking, the native file format is used to read IVP, Horace, and
 SASView problems.
 
 In this format, data is separated from the function. This allows running the
@@ -15,8 +15,6 @@ Examples of native problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Data_Assimilation/lorentz.txt
 
-.. literalinclude:: ../../../../examples/benchmark_problems/Muon/Muon_HIFI_113856.txt
-
 .. literalinclude:: ../../../../examples/benchmark_problems/SAS_modelling/SASView_Simple_Shapes_1D/1D_cylinder_neutron_def0.txt
 
 These examples show the basic structure in which the file starts with a comment
@@ -24,17 +22,12 @@ indicating it is a FitBenchmark problem followed by key-value pairs. Available
 keys are described below:
 
 software
-  Either 'IVP', 'Mantid', 'SasView', or 'Horace' (case insensitive).
+  Either 'IVP', 'SasView', or 'Horace' (case insensitive).
 
-  This defines whether to use an IVP format, Mantid, or SasView to generate the model.
-  The 'Mantid' software also supports Mantid's MultiFit functionality, which
-  requires the parameters listed here to be defined slightly differently.
-  More information can be found in :ref:`multifit`.
+  This defines whether to use an IVP format or SasView to generate the model.
 
   For information on the 'Horace' format, see :ref:`horace_format`.
 
-  **Licence** Mantid is available under a
-  `GPL-3 Licence <https://github.com/mantidproject/mantid/blob/master/LICENSE.txt>`_.
   The component of SasView we use is SasModels, which is available under a
   `BSD 3-clause <https://github.com/SasView/sasmodels/blob/master/LICENSE.txt>`_ licence.
 
@@ -62,7 +55,7 @@ input_file
      x21 [x22 [x23 ...]] y21 [y22 [y23 ...]] [e21 [e22 ...]]
      ...
 
-  Mantid uses the convention of ``# X Y E`` as the header and SASView uses
+  Most softwares uses the convention of ``# X Y E`` as the header and SASView uses
   the convention ``<X>   <Y>   <E>``, although neither of these are enforced.
   The error column is optional in this format.
 
@@ -103,19 +96,6 @@ function
     (currently only fixed steps are supported - if you need
     varying time steps please raise an issue on our GitHub)
   - *\*args*: Starting values for the parameters
-
-  **Mantid**
-
-  A Mantid function consists of one or more base functions separated by a semicolon.
-  This allows for a powerful way of describing problems, which may have multiple
-  components such as more than one Gaussian and a linear background.
-
-  To use one of the base functions in Mantid, please see the list available
-  `here <https://docs.mantidproject.org/nightly/fitting/fitfunctions/categories/FitFunctions.html>`__.
-
-  *Note: Any non-standard arguments (e.g. ties, constraints, fixes, ...) will
-  only work with Mantid fitting software. Using other minimizers to fit these
-  problems will result in the non-standard arguments being ignored.*
 
   **SASView**
 
@@ -161,9 +141,10 @@ parameter_ranges
   Similarly to ``fit_ranges``, it takes the form where the first number
   is the minimum in the range and the second is the maximum.
 
-  Currently in Fitbenchmarking, problems with `parameter_ranges` can
-  be handled by SciPy, Bumps, Minuit, Mantid, Matlab Optimization Toolbox,
-  DFO, Levmar and RALFit fitting software. Please note that the following
-  Mantid minimizers currently throw an exception when `parameter_ranges`
-  are used: BFGS, Conjugate gradient (Fletcher-Reeves imp.),
-  Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.
+  .. note::
+    Currently in Fitbenchmarking, problems with `parameter_ranges` can
+    be handled by SciPy, Bumps, Minuit, Mantid, Matlab Optimization Toolbox,
+    DFO, Levmar and RALFit fitting software. Please note that the following
+    Mantid minimizers currently throw an exception when `parameter_ranges`
+    are used: BFGS, Conjugate gradient (Fletcher-Reeves imp.),
+    Conjugate gradient (Polak-Ribiere imp.) and SteepestDescent.
