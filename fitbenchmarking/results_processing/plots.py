@@ -7,6 +7,7 @@ import os
 
 import numpy as np
 import plotly.colors as ptly_colors
+import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -341,6 +342,12 @@ class Plot:
 
         data_x = first_result.data_x
         data_y = first_result.data_y
+
+        # in the SpinW 2d data case
+        if hasattr(first_result, "data_x_cuts"):
+            data_x = first_result.data_x_cuts
+            data_y = first_result.data_y_cuts
+
         cls._add_data_points(fig, data_x, data_y, error_y, n_plots)
 
         # Plot categories (cost functions)
@@ -444,11 +451,16 @@ class Plot:
                 "rgba" + colour[3:-1] + ", 0.5)"  # 0.5 transparency
             )
 
-        data_len = int(len(result.data_y) / n_plots)
-
         for i in range(n_plots):
-            if n_plots > 1:
+            # if the fit was on 2d data
+            if n_plots > 1 and hasattr(result, "data_x_cuts"):
+                x = result.data_x_cuts
+                data_len = int(len(x) / n_plots)
+                y = result.fin_y_cuts[(data_len * i) : (data_len * (i + 1))]
+            # if the fit was on 1d cuts of 2d data
+            elif n_plots > 1:
                 x = result.data_x
+                data_len = int(len(x) / n_plots)
                 y = result.fin_y[(data_len * i) : (data_len * (i + 1))]
             else:
                 x = result.data_x[result.sorted_index]
@@ -525,6 +537,150 @@ class Plot:
         fig.update_layout(title=title + ": residuals")
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
+        cls.write_html_with_link_plotlyjs(
+            fig, figures_dir, html_fname, options
+        )
+        return html_fname
+
+    @classmethod
+    def plot_2d_data(cls, categories, title, options, figures_dir) -> str:
+        """
+        Show 2d plots for 2d data fitting, with contour plots.
+        One plot is shown for the best minimizer for each cost function.
+
+        :param categories: The results to plot
+        :type categories: dict[str, list[FittingResults]]
+        :param title: A title for the graph
+        :type title: str
+        :param options: The options for the run
+        :type options: utils.options.Options
+        :param figures_dir: The directory to save the figures in
+        :type figures_dir: str
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+
+        html_fname = ""
+        n_categs = len(categories)
+        subp_titles = []
+
+        for categ_key, results in categories.items():
+            for result in results:
+                if (
+                    result.plot_info is None
+                    or "plot_type" not in result.plot_info
+                ):
+                    pass
+                elif (
+                    result.plot_info["plot_type"] == "2d"
+                    and result.is_best_fit
+                ):
+                    subp_titles.extend([f"{categ_key}: {result.minimizer} "])
+
+        # If no 2d result has been found in the above loop, don't create plot
+        if len(subp_titles) == 0:
+            return ""
+
+        # Limit width of plot if only 1 subplot
+        width = None
+        if n_categs < 2:
+            width = 600
+
+        fig = make_subplots(
+            rows=1,
+            cols=n_categs,
+            shared_yaxes=True,
+            horizontal_spacing=0.1,
+            subplot_titles=subp_titles,
+        )
+
+        for ind, (categ_key, results) in enumerate(categories.items(), 1):
+            for result in results:
+                if (
+                    result.plot_info["plot_type"] == "2d"
+                    and result.is_best_fit
+                ):
+                    img = np.rot90(result.fin_y_complete.T, k=4)
+                    fig.add_trace(
+                        px.imshow(img).data[0],
+                        row=1,
+                        col=ind,
+                    )
+                    # Add contour plots on top
+                    fig.add_trace(
+                        go.Contour(
+                            z=img,
+                            contours_coloring="lines",
+                            line_width=2,
+                            visible="legendonly",
+                            showscale=False,
+                            showlegend=True,
+                            name=f"{categ_key} contour",
+                        ),
+                        row=1,
+                        col=ind,
+                    )
+
+                    y_tickvals = None
+                    y_ticktext = None
+                    y_axis_title = None
+                    x_tickvals = None
+                    x_ticktext = None
+                    x_axis_title = None
+
+                    # check if problem if it's SpinW data
+                    if "ebin_cens" in result.plot_info:
+                        # set y tick vals and text
+                        n_ticks = 6
+                        ebin_cens = result.plot_info["ebin_cens"]
+                        y_ticktext = np.round(
+                            np.linspace(ebin_cens[0], ebin_cens[-1], n_ticks),
+                            2,
+                        )
+                        y_tickvals = np.linspace(0, np.shape(img)[0], n_ticks)
+                        y_axis_title = "Energy (meV)"
+
+                        # set x tick vals and text
+                        modQ_cens = result.plot_info["modQ_cens"]
+                        x_ticktext = np.round(
+                            np.linspace(modQ_cens[0], modQ_cens[-1], n_ticks),
+                            2,
+                        )
+                        x_tickvals = np.linspace(0, np.shape(img)[1], n_ticks)
+                        x_axis_title = "|Q| (Å<sup>-1</sup>)"
+
+                    fig.update_yaxes(
+                        title_text=y_axis_title,
+                        tickmode="array",
+                        tickvals=y_tickvals,
+                        ticktext=y_ticktext,
+                        row=1,
+                        col=ind,
+                    )
+                    fig.update_xaxes(
+                        title_text=x_axis_title,
+                        tickmode="array",
+                        tickvals=x_tickvals,
+                        ticktext=x_ticktext,
+                        row=1,
+                        col=ind,
+                    )
+
+        fig.update_layout(
+            title=title + ": 2d plots",
+            width=width,
+            legend={
+                "orientation": "v",
+                "yanchor": "bottom",
+                "y": -0.3,
+                "xanchor": "center",
+                "x": 0.5,
+            },
+        )
+        fig.update_coloraxes(colorscale="viridis")
+
+        html_fname = f"2d_plots_for_best_minims_{result.sanitised_name}.html"
         cls.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
         )
@@ -627,13 +783,20 @@ class Plot:
         """
         minim = result.minimizer
         label = f" {minim}"
-        data_len = int(len(result.data_y) / n_plots_per_row)
+        data_x = result.data_x
+        r_x = result.r_x
 
+        # in the SpinW 2d data case
+        if hasattr(result, "r_x_cuts"):
+            data_x = result.data_x_cuts
+            r_x = result.r_x_cuts
+
+        data_len = int(len(data_x) / n_plots_per_row)
         for i in range(n_plots_per_row):
             fig.add_trace(
                 go.Scatter(
-                    x=result.data_x,
-                    y=result.r_x[(data_len * i) : (data_len * (i + 1))],
+                    x=data_x,
+                    y=r_x[(data_len * i) : (data_len * (i + 1))],
                     mode="markers",
                     name=label,
                     marker={"color": colour},

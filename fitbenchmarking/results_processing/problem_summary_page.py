@@ -43,6 +43,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
 
         summary_plot_path = ""
         residuals_plot_path = ""
+        plot_2d_data_path = ""
         if options.make_plots:
             summary_plot_path = Plot.plot_summary(
                 categories=problem_results,
@@ -56,11 +57,18 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
                 options=options,
                 figures_dir=figures_dir,
             )
+            plot_2d_data_path = Plot.plot_2d_data(
+                categories=problem_results,
+                title=categorised[0][1].name,
+                options=options,
+                figures_dir=figures_dir,
+            )
 
         _create_summary_page(
             categorised_best_results=categorised,
             summary_plot_path=summary_plot_path,
             residuals_plot_path=residuals_plot_path,
+            plot_2d_data_path=plot_2d_data_path,
             support_pages_dir=support_pages_dir,
             options=options,
         )
@@ -70,6 +78,7 @@ def _create_summary_page(
     categorised_best_results,
     summary_plot_path,
     residuals_plot_path,
+    plot_2d_data_path,
     support_pages_dir,
     options,
 ):
@@ -83,6 +92,9 @@ def _create_summary_page(
     :type summary_plot_path: str
     :param residuals_plot_path: Path to the residuals plot
     :type residuals_plot_path: str
+    :param plot_2d_data_path: Path to the 2d data plot, if available, or
+                              empty string otherwise
+    :type plot_2d_data_path: str
     :param support_pages_dir: Directory to save suport page to
     :type support_pages_dir: str
     :param options: The chosen fitbenchmaring options
@@ -104,7 +116,13 @@ def _create_summary_page(
     summary_plot_available = True
     summary_plot_path = os.path.join("figures", summary_plot_path)
     residuals_plot_path = os.path.join("figures", residuals_plot_path)
+
     rerun_make_plots_msg = ""
+
+    plot_2d_available = False
+    if plot_2d_data_path != "":
+        plot_2d_available = True
+        plot_2d_data_path = os.path.join("figures", plot_2d_data_path)
 
     if options.make_plots:
         for result in results:
@@ -146,6 +164,8 @@ def _create_summary_page(
                 summary_plot_available=summary_plot_available,
                 summary_plot=summary_plot_path,
                 residuals_plot=residuals_plot_path,
+                plot_2d_available=plot_2d_available,
+                plot_2d_data=plot_2d_data_path,
                 title=results[0].name,
                 description=results[0].problem_desc,
                 equation=results[0].equation,

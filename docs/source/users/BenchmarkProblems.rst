@@ -376,11 +376,30 @@ conditions for the parameters.
 SpinW 2D Powder Data
 ====================
 
+1D cuts example
+---------------
+
 **Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data.zip>`
 or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data.tar.gz>`
 
 This problem (also found in the folder `examples/benchmark_problems/SpinW_powder_data`)
-contains 2D powder data simulated using SpinW, using the approach outlined
-in `this tutorial <https://spinw.org/tutorials/39tutorial>`_ .
+contains 2D powder data simulated using SpinW, approach outlined in
+`this tutorial <https://spinw.org/tutorials/39tutorial>`_ . In this case 1D cuts of the 
+data are taken at user-specified Q values which are then fitted simultaneously. It is assumed that
+data has been cropped before being parsed into FitBenchmarking.
+
+2D example
+----------
+
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data_2d.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data_2d.tar.gz>`
+
+This problem (also found in the folder `examples/benchmark_problems/SpinW_powder_data_2d`)
+contains 2D powder data simulated using SpinW, using the approach outlined in 
+`this tutorial <https://spinw.org/tutorials/39tutorial>`_ . It is assumed that
+data has been cropped before being parsed into FitBenchmarking.
 
 This problem has 8 unknown parameters and 186 data points.
+
+In this case, as the fitting is done on the whole 2D data, the problem summary page (:ref:`problem_summary_page`) 
+presents 2D plots showing the fit for the best minimizer for each cost function.
