@@ -129,7 +129,7 @@ for testing the MultiFit functionality of Mantid.  This contains
 a simple data set, on which two fits are done, and a calibration
 dataset from the `MuSR <https://www.isis.stfc.ac.uk/Pages/musr.aspx>`_
 spectrometer at ISIS, on which there are four fits available.
-See :ref:`The MultiFit documentation<multifit>` for more details.
+See :ref:`The MultiFit documentation<mantid_file>` for more details.
 
 Basic Multifit has 3 unknown parameters, and fits 40 data points.
 MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
