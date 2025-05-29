@@ -98,6 +98,12 @@ class HoraceParser(FitbenchmarkParser):
         for var in ["y", "e"]:
             eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
+
+        eng.evalc("x_size = size(x)")
+        x_size = [int(x) for x in list(eng.workspace["x_size"][0])]
+        rows, cols = x_size
+        if rows > 1 and cols == 1:
+            eng.evalc("x=x'")  # need x to be a row vector
         eng.evalc(f"x_final = repelem(x,{len(q_cens)},1)'")
 
         # Create and fill struct
@@ -152,7 +158,7 @@ class HoraceParser(FitbenchmarkParser):
             )
         except Exception as e:
             raise ParsingError(
-                f"Failed to evaluate wye_function: {script}"
+                f"Failed to evaluate wye_function: {script}: {e}"
             ) from e
 
         signal = np.array(eng.workspace["y"], dtype=np.float64)
