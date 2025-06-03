@@ -339,12 +339,31 @@ class HoraceParser(FitbenchmarkParser):
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
 
             if self.fitting_problem.additional_info["plot_type"] == "2d":
-                self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                # Calculate ebin_cens
+                ebin_cens = np.array(
                     eng.workspace["ebin_cens"][0], dtype=np.float64
-                )[0]
-                self.fitting_problem.additional_info["modQ_cens"] = np.array(
+                )
+                if len(ebin_cens) == 1:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        ebin_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        np.array([i[0] for i in ebin_cens], dtype=np.float64)
+                    )
+
+                # Calculate modQ_cens
+                modQ_cens = np.array(
                     eng.workspace["ebin_cens"][1], dtype=np.float64
-                )[0]
+                )
+                if len(modQ_cens) == 1:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        modQ_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        np.array([i[0] for i in modQ_cens], dtype=np.float64)
+                    )
 
                 if "dq" in self._entries:
                     dq = float(self._entries["dq"])
