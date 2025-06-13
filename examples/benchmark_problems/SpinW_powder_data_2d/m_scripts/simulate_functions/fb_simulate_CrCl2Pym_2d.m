@@ -69,7 +69,7 @@ function y = fb_simulate_tri_AFM_2d(w,fitpars,msk)
 
     % set parameters passed to powspec
     fitpow.powspec_args.dE = eres; % emergy resolution
-    fitpow.powspec_args.fastmode = true;
+    fitpow.powspec_args.fastmode = false;
     fitpow.powspec_args.neutron_output = true;
     fitpow.powspec_args.nRand = 5e2;
     fitpow.powspec_args.hermit = false;
