@@ -600,6 +600,7 @@ class Plot:
                 if (
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
+                    and hasattr(result, "fin_y_complete")
                 ):
                     img = np.rot90(result.fin_y_complete.T, k=4)
                     fig.add_trace(

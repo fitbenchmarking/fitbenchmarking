@@ -98,6 +98,12 @@ class HoraceParser(FitbenchmarkParser):
         for var in ["y", "e"]:
             eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
+
+        eng.evalc("x_size = size(x)")
+        x_size = [int(x) for x in list(eng.workspace["x_size"][0])]
+        rows, cols = x_size
+        if rows > 1 and cols == 1:
+            eng.evalc("x=x'")  # need x to be a row vector
         eng.evalc(f"x_final = repelem(x,{len(q_cens)},1)'")
 
         # Create and fill struct
@@ -152,7 +158,7 @@ class HoraceParser(FitbenchmarkParser):
             )
         except Exception as e:
             raise ParsingError(
-                f"Failed to evaluate wye_function: {script}"
+                f"Failed to evaluate wye_function: {script}: {e}"
             ) from e
 
         signal = np.array(eng.workspace["y"], dtype=np.float64)
@@ -333,12 +339,31 @@ class HoraceParser(FitbenchmarkParser):
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
 
             if self.fitting_problem.additional_info["plot_type"] == "2d":
-                self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                # Calculate ebin_cens
+                ebin_cens = np.array(
                     eng.workspace["ebin_cens"][0], dtype=np.float64
-                )[0]
-                self.fitting_problem.additional_info["modQ_cens"] = np.array(
+                )
+                if len(ebin_cens) == 1:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        ebin_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        np.array([i[0] for i in ebin_cens], dtype=np.float64)
+                    )
+
+                # Calculate modQ_cens
+                modQ_cens = np.array(
                     eng.workspace["ebin_cens"][1], dtype=np.float64
-                )[0]
+                )
+                if len(modQ_cens) == 1:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        modQ_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        np.array([i[0] for i in modQ_cens], dtype=np.float64)
+                    )
 
                 if "dq" in self._entries:
                     dq = float(self._entries["dq"])
