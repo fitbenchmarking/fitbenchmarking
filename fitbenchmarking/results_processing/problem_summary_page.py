@@ -3,7 +3,7 @@ Create the summary pages for the best minimizers.
 """
 
 import inspect
-import os
+from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -105,7 +105,7 @@ def _create_summary_page(
     prob_name = results[0].sanitised_name
 
     file_name = f"{prob_name}_summary.html".lower()
-    file_path = os.path.join(support_pages_dir, file_name)
+    file_path = Path(support_pages_dir) / file_name
 
     # Bool for print message/insert image
     init_success = options.make_plots
@@ -114,15 +114,13 @@ def _create_summary_page(
     best_fits = []
     fig_start = None
     summary_plot_available = True
-    summary_plot_path = os.path.join("figures", summary_plot_path)
-    residuals_plot_path = os.path.join("figures", residuals_plot_path)
+    summary_plot_path = Path("figures") / summary_plot_path
+    residuals_plot_path = Path("figures") / residuals_plot_path
 
     rerun_make_plots_msg = ""
 
-    plot_2d_available = False
-    if plot_2d_data_path != "":
-        plot_2d_available = True
-        plot_2d_data_path = os.path.join("figures", plot_2d_data_path)
+    if plot_2d_available := bool(plot_2d_data_path):
+        plot_2d_data_path = Path("figures") / plot_2d_data_path
 
     if options.make_plots:
         for result in results:
@@ -144,8 +142,8 @@ def _create_summary_page(
         )
         best_fits = [rerun_make_plots_msg] * len(results)
 
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, "templates")
+    root = Path(inspect.getfile(fitbenchmarking)).parent
+    template_dir = root / "templates"
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options, support_pages_dir)
     template = env.get_template("problem_summary_page_template.html")
@@ -201,9 +199,6 @@ def _get_figure_paths(result):
     :rtype: tuple(str, str)
     """
     return tuple(
-        os.path.join("figures", link) if link else ""
-        for link in [
-            result.figure_link,
-            result.start_figure_link,
-        ]
+        str(Path("figures") / link) if link else ""
+        for link in [result.figure_link, result.start_figure_link]
     )
