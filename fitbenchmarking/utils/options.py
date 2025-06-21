@@ -47,6 +47,11 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
+        "fitit": [
+            "GradientDescent",
+            "GaussNewton",
+            "LevenbergMarquardt",
+        ],
         "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["alternating", "multistart", "regularisation"],
         "gradient_free": [
@@ -206,6 +211,7 @@ class Options:
             "bumps",
             "ceres",
             "dfo",
+            "fitit",
             "galahad",
             "gofit",
             "gradient_free",
@@ -335,6 +341,11 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
+        "fitit": [
+            "GradientDescent",
+            "GaussNewton",
+            "LevenbergMarquardt",
+        ],
         "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["multistart"],
         "gradient_free": [
