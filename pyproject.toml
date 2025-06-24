@@ -27,7 +27,7 @@ dependencies = [
     'numpy',
     'matplotlib>=2.0',
     'plotly>=5.0.0',
-    'scipy>=0.18',
+    'scipy>=0.18,<1.16.0',
     'lxml',
     'pandas>=1.3',
     'jinja2',
@@ -37,7 +37,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-bumps = ['bumps>=0.9.0']
+bumps = ['bumps<1.0.0']
 DFO = ['DFO-LS']
 gofit = ['gofit']
 gradient-free = ['gradient-free-optimizers']
