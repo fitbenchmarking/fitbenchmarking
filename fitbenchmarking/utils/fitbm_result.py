@@ -280,7 +280,6 @@ class FittingResult:
         # Paths to various output files
         self.problem_summary_page_link = ""
         self.fitting_report_link = ""
-        self.start_figure_link = ""
         self.figure_link = ""
         self.figure_error = ""
         self.posterior_plots = ""

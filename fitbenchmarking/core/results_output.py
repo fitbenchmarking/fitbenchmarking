@@ -363,7 +363,6 @@ def create_plots(options, results, best_results, figures_dir):
     """
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
-        initial_guess_path = {}
         data = {}
 
         # Create a dataframe for each problem
@@ -439,9 +438,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = str(e)
                 continue
 
-            # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess(data[cf])
-
             # Get filenames of best plot first
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
@@ -452,7 +448,6 @@ def create_plots(options, results, best_results, figures_dir):
                 best_dict[
                     cf
                 ].figure_error = "Minimizer failed to produce any parameters"
-            best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
             plot_paths = plot.plotly_fit(data[cf])
@@ -469,7 +464,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = (
                         "Minimizer failed to produce any parameters"
                     )
-                result.start_figure_link = initial_guess_path[cf]
 
         # For each result, if it succeeded and produced posterior pdf estimates
         # for each parameter, create histogram plots and add plot links to the
