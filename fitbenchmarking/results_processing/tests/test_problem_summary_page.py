@@ -172,39 +172,5 @@ class CreateSummaryPageTests(TestCase):
             self.assertNotEqual(result.problem_summary_page_link, "")
 
 
-class GetFigurePathsTests(TestCase):
-    """
-    Tests the very simple get_figure_paths function
-    """
-
-    def setUp(self):
-        results, self.options = load_mock_results()
-        self.result = results[0]
-
-    def test_with_links(self):
-        """
-        Tests that the returned links are correct when links are passed in.
-        """
-        self.result.figure_link = "some_link"
-        self.result.start_figure_link = "other_link"
-        figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result
-        )
-        self.assertEqual(figure_link, os.path.join("figures", "some_link"))
-        self.assertEqual(start_link, os.path.join("figures", "other_link"))
-
-    def test_no_links(self):
-        """
-        Tests that links are not changed if an empty string is given.
-        """
-        self.result.figure_link = ""
-        self.result.start_figure_link = ""
-        figure_link, start_link = problem_summary_page._get_figure_paths(
-            self.result
-        )
-        self.assertEqual(figure_link, "")
-        self.assertEqual(start_link, "")
-
-
 if __name__ == "__main__":
     main()
