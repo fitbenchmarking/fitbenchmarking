@@ -225,7 +225,6 @@ class CreatePlotsTests(unittest.TestCase):
         """
         Tests for create_plots where the results object params are not None
         """
-        expected_plot_initial_guess = "initial_guess"
         expected_plot_best = {"prob_0": "plotly_fit4", "prob_1": "plotly_fit3"}
         expected_plotly_fit = {
             "m00_[s0]": "plotly_fit1",
@@ -239,9 +238,6 @@ class CreatePlotsTests(unittest.TestCase):
             "m00_[s0]_jj1": "plotly_fit9",
         }
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
         plot_instance.plot_best.return_value = expected_plot_best
         plot_instance.plotly_fit.return_value = expected_plotly_fit
 
@@ -256,17 +252,6 @@ class CreatePlotsTests(unittest.TestCase):
             for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
-
-                # Check initial guess is correctly set in results
-                self.assertEqual(
-                    best_in_cat.start_figure_link, expected_plot_initial_guess
-                )
-                self.assertTrue(
-                    all(
-                        r.start_figure_link == expected_plot_initial_guess
-                        for r in results
-                    )
-                )
 
                 # Check plot is correctly set in results
                 self.assertEqual(
@@ -296,11 +281,7 @@ class CreatePlotsTests(unittest.TestCase):
                 for r in results:
                     r.params = None
 
-        expected_plot_initial_guess = "initial_guess"
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(
@@ -313,17 +294,6 @@ class CreatePlotsTests(unittest.TestCase):
             for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
-
-                # Check initial guess is correctly set in results
-                self.assertEqual(
-                    best_in_cat.start_figure_link, expected_plot_initial_guess
-                )
-                self.assertTrue(
-                    all(
-                        r.start_figure_link == expected_plot_initial_guess
-                        for r in results
-                    )
-                )
 
                 # Check plot is correctly set in results
                 self.assertEqual(best_in_cat.figure_link, "")
