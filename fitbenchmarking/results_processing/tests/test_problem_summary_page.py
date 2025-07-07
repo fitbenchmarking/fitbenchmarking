@@ -141,9 +141,10 @@ class CreateSummaryPageTests(TestCase):
         ]
         problem_summary_page._create_summary_page(
             categorised_best_results=cat_results,
-            plot_2d_data_path="2d_plots_path",
-            summary_plot_path="plot_path",
-            residuals_plot_path="residuals_plot_path",
+            two_d_plot="2d_plots_path",
+            summary_plot="plot_path",
+            residuals_plot="residuals_plot_path",
+            multistart_plot="multistart_plot_path",
             support_pages_dir=self.supp_dir,
             options=self.options,
         )
