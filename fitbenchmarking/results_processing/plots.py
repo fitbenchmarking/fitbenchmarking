@@ -83,47 +83,6 @@ class Plot:
         html_file_name = Path(figures_dir) / htmlfile
         fig.write_html(html_file_name, include_plotlyjs=plotly_path)
 
-    def plot_initial_guess(self, df_fit) -> str:
-        """
-        Plots the initial guess along with the data and stores in a file
-
-        :param df_fit: A dataframe holding the data
-        :type df_fit: Pandas dataframe
-
-        :return: path to the saved file
-        :rtype: str
-        """
-        title = self.result.name
-        n_plots, subplot_titles, ax_titles = self._get_n_plots_and_titles(
-            self.result
-        )
-
-        fig = make_subplots(
-            rows=1,
-            cols=n_plots,
-            subplot_titles=subplot_titles,
-        )
-
-        self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
-
-        self._add_data_points(
-            fig,
-            df_fit["x"][df_fit["minimizer"] == "Data"],
-            df_fit["y"][df_fit["minimizer"] == "Data"],
-            self._error_dict,
-            n_plots,
-        )
-        self._add_starting_guess(fig, df_fit, n_plots, ax_titles)
-
-        fig.update_layout(title=title, legend=self._legend_style)
-        self._update_to_logscale_if_needed(fig, self.result)
-
-        htmlfile = f"start_for_{self.result.sanitised_name}.html"
-        self.write_html_with_link_plotlyjs(
-            fig, self.figures_dir, htmlfile, self.options
-        )
-        return htmlfile
-
     @staticmethod
     def best_filename(result) -> str:
         """

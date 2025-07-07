@@ -135,20 +135,6 @@ class PlotTests(unittest.TestCase):
                     ignore_index=True,
                 )
 
-    def test_plot_initial_guess_create_files(self):
-        """
-        Test that initial plot creates a file and errorbars are
-        added to the plot.
-        """
-        file_name = self.plot.plot_initial_guess(
-            self.df[("Fake_Test_Data", "prob_1")]
-        )
-
-        self.assertEqual(file_name, "start_for_prob_1.html")
-        path = os.path.join(self.figures_dir, file_name)
-        self.assertTrue(os.path.exists(path))
-        self.assertEqual(find_error_bar_count(path), 2)
-
     def test_best_filename_return(self):
         """
         Test that best_filename returns the correct filename
@@ -485,19 +471,6 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
-    def test__add_data_points_called_by_plot_initial_guess(
-        self, add_data_points
-    ):
-        """
-        Test that _add_data_points gets called once by
-        plot_initial_guess.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        add_data_points.assert_called_once()
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
-    )
     def test__add_data_points_called_by_plotly_fit(self, add_data_points):
         """
         Test that _add_data_points gets called the right number of times
@@ -509,18 +482,6 @@ class PlotTests(unittest.TestCase):
             ~input_df.minimizer.isin(["Data", "Starting Guess"])
         ].unique()
         self.assertEqual(add_data_points.call_count, len(minimizers))
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
-    )
-    def test__add_starting_guess_called_by_plot_initial_guess(
-        self, add_starting_guess
-    ):
-        """
-        Test that _add_starting_guess gets called by plot_initial_guess.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        add_starting_guess.assert_called_once()
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
