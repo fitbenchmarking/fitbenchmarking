@@ -7,5 +7,6 @@ function = 'foreground=m_scripts/functions/tri_AFM_powder.m,J1=0.85,slope_energy
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_spinw.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_tri_AFM.m'
 process_function = 'matlab_script=m_scripts/process_functions/process_tri_AFM.m'
+parameter_ranges = {'J1': (0.0, 5.0)}
 plot_type = '1D_cuts'
 q_cens = '0.8,1.2,1.6'

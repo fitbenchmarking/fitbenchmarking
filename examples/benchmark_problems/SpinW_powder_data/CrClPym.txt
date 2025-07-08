@@ -7,6 +7,7 @@ function = 'foreground=m_scripts/functions/CrCl2Pym.m, J1=1.0, J2=-0.1, J3=-0.05
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_spinw.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_CrCl2Pym.m'
 process_function = 'matlab_script=m_scripts/process_functions/process_CrCl2Pym.m'
+parameter_ranges = {'J1': (0.0, 5.0), 'J2': (-5.0, 0.5), 'J3': (-5.0, 0.5), 'D1': (-2.0, 0.0)}
 plot_type = '1D_cuts'
 q_cens = '0.9,1.0,1.1,1.25,1.35'
 dq = '0.025'
