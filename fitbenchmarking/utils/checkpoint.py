@@ -109,6 +109,7 @@ class Checkpoint:
             "iteration_count": result.iteration_count,
             "func_evals": result.func_evals,
             "flag": result.error_flag,
+            "multistart": result.multistart,
             "params_pdfs": result.params_pdfs,
             "plot_info": result.plot_info,
             "software": result.software,
@@ -332,6 +333,7 @@ class Checkpoint:
                 new_result.iteration_count = r["iteration_count"]
                 new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]
+                new_result.multistart = r["multistart"]
                 new_result.params_pdfs = r["params_pdfs"]
                 new_result.plot_info = r["plot_info"]
                 new_result.software = r["software"]
