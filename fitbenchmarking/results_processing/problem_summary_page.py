@@ -27,10 +27,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     """
-    problem = next(iter(results))
-    cost_function = next(iter(results[problem]))
-    if results[problem][cost_function][0].multistart:
-        multistart = create_multistart_plots(results, options, figures_dir)
+    multistart = create_multistart_plots(results, options, figures_dir)
     for problem_key in results:
         categorised = []
         problem_results = results[problem_key]
@@ -80,7 +77,16 @@ def create_multistart_plots(results, options, figures_dir):
     :type options: fitbenchmarking.utils.options.Options
     :param figures_dir: The directory where figures are stored.
     :type figures_dir: str
+
+    :return: The path to the multistart plot
+    :rtype: str
     """
+    # Verify that the benchmarking results contain multistart data
+    first_cost_function = next(iter(results.values()))
+    first_result = next(iter(first_cost_function.values()))[0]
+    if not first_result.multistart:
+        return ""
+
     # Sort the result based on the cost function,
     # software and minimizers for plotting
     sorted_results = {}
@@ -90,10 +96,11 @@ def create_multistart_plots(results, options, figures_dir):
                 sorted_results.setdefault(result.costfun_tag, {}).setdefault(
                     result.software, {}
                 ).setdefault(result.minimizer, []).append(result)
-    multistart = Plot.plot_multistart(
+
+    # Create the multistart plot
+    return Plot.plot_multistart(
         results=sorted_results, options=options, figures_dir=figures_dir
     )
-    return multistart
 
 
 def _create_summary_page(
