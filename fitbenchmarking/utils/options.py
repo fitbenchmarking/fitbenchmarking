@@ -480,6 +480,7 @@ class Options:
         ],
         "run_name": "",
         "checkpoint_filename": "checkpoint.json",
+        "multistart_success_threshold": 1.5,
     }
     DEFAULT_LOGGING = {
         "file_name": "fitbenchmarking.log",
@@ -650,6 +651,9 @@ class Options:
         self.colour_ulim = self.read_value(
             output.getfloat, "colour_ulim", additional_options
         )
+        self.multistart_success_threshold = self.read_value(
+            output.getfloat, "multistart_success_threshold", additional_options
+        )
         self.cmap_range = self.read_value(
             output.getrng, "cmap_range", additional_options
         )
@@ -810,6 +814,7 @@ class Options:
             "colour_map": self.colour_map,
             "cmap_range": self.cmap_range,
             "colour_ulim": self.colour_ulim,
+            "multistart_success_threshold": self.multistart_success_threshold,
             "comparison_mode": self.comparison_mode,
             "make_plots": self.make_plots,
             "results_browser": self.results_browser,

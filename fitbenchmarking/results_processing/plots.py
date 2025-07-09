@@ -528,10 +528,6 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-        # The variable is used to set the threshold used to identify
-        # successful and unsuccessful fits.
-        norm_accuracy_acceptability_threshold = 1.5
-
         # Determine the number of plots and set the loop variables
         minimizer_count = sum(
             len(mins) for mins in options.minimizers.values()
@@ -592,7 +588,7 @@ class Plot:
                         line_style = (
                             Plot._multistart_successful_fit_line
                             if result.norm_acc
-                            <= norm_accuracy_acceptability_threshold
+                            <= options.multistart_success_threshold
                             else Plot._multistart_unsuccessful_fit_line
                         )
 
@@ -618,10 +614,39 @@ class Plot:
                         ax_titles=Plot._default_ax_titles,
                     )
 
-                    # Update the loop variable
+                    # Update the loop variables
                     plot_ix += 1
                     row_ix = int(np.ceil(plot_ix / max_plots_per_row))
                     col_ix = next(cyclic_column_iter)
+
+        # Create the custom legend
+        for style, name in zip(
+            [
+                Plot._multistart_successful_fit_line,
+                Plot._multistart_unsuccessful_fit_line,
+            ],
+            ["Success", "Fail"],
+        ):
+            fig.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="lines",
+                    line=style,
+                    name=name,
+                    showlegend=True,
+                )
+            )
+        fig.add_trace(
+            go.Scatter(
+                x=[None],
+                y=[None],
+                mode="markers",
+                marker=Plot._data_marker,
+                name="data",
+                showlegend=True,
+            )
+        )
 
         html_fname = f"multistart_plot_for_{result.sanitised_name}.html"
         Plot.write_html_with_link_plotlyjs(
