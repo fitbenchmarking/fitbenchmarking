@@ -3,6 +3,7 @@ Higher level functions that are used for plotting the fit plot and a starting
 guess plot.
 """
 
+from itertools import cycle
 from pathlib import Path
 from typing import Optional
 
@@ -26,6 +27,14 @@ class Plot:
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1, "dash": "dash"}
     _starting_guess_plot_line = {"width": 1, "color": "#5F8575"}
+    _multistart_successful_fit_line = {
+        "width": 2,
+        "color": "rgba(0, 0, 255, 0.2)",
+    }
+    _multistart_unsuccessful_fit_line = {
+        "width": 2,
+        "color": "rgba(255, 0, 0, 0.2)",
+    }
     _subplots_line = {"width": 1, "color": "red"}
     _error_dict = {
         "type": "data",
@@ -439,7 +448,7 @@ class Plot:
                 row=1,
                 col=i + 1,
             )
-            Plot._update_axes_titles(fig, i, ax_titles)
+            Plot._update_axes_titles(fig=fig, col_ind=i, ax_titles=ax_titles)
 
         return fig
 
@@ -447,7 +456,7 @@ class Plot:
     def plot_residuals(categories, title, options, figures_dir) -> str:
         """
         Create a comparison plot showing residuals for all fits,
-        while emphasizing the residuals for the best fit .
+        while emphasizing the residuals for the best fit.
 
         :param categories: The results to plot
         :type categories: dict[str, list[FittingResults]]
@@ -497,6 +506,124 @@ class Plot:
         fig.update_layout(title=title + ": residuals")
 
         html_fname = f"residuals_plot_for_{first_result.sanitised_name}.html"
+        Plot.write_html_with_link_plotlyjs(
+            fig, figures_dir, html_fname, options
+        )
+        return html_fname
+
+    @staticmethod
+    def plot_multistart(results, options, figures_dir) -> str:
+        """
+        Creates a plot showing the results categorized by
+        cost function, software and minimizer. The plots
+        summarize the performance of different minimizers
+        with multiple starting conditions. The plots generated
+        are color coded. The blue traces are the ones that achieved
+        a good fit while the red traces are the ones that did not.
+
+        :param results: All the results sorted by cost function,
+                        software and minimizer.
+        :type results: dict[str, list[FittingResults]]
+
+        :return: The path to the new plot
+        :rtype: str
+        """
+        # The variable is used to set the threshold used to identify
+        # successful and unsuccessful fits.
+        norm_accuracy_acceptability_threshold = 1.5
+
+        # Determine the number of plots and set the loop variables
+        minimizer_count = sum(
+            len(mins) for mins in options.minimizers.values()
+        )
+        n_plots = len(results) * minimizer_count
+        max_plots_per_row = 3
+        n_rows = int(np.ceil(n_plots / max_plots_per_row))
+        cyclic_column_iter = cycle(range(1, max_plots_per_row + 1))
+        row_ix, col_ix, plot_ix = 1, next(cyclic_column_iter), 1
+
+        # Generate the plot titles
+        titles = [
+            f"<b>{software} - {minimizer} ({cost_function})</b>"
+            for cost_function in results
+            for software in results[cost_function]
+            for minimizer in results[cost_function][software]
+        ]
+
+        # Create the figure with subplots
+        fig = make_subplots(
+            rows=n_rows,
+            cols=max_plots_per_row,
+            subplot_titles=titles,
+        )
+
+        # Update the font size of the titles
+        for annotation in fig.layout.annotations:
+            annotation.font.size = 9
+
+        # Add the data and traces to the subplots in the figure
+        for cost_function in results:
+            for software in results[cost_function]:
+                for minimizer in results[cost_function][software]:
+                    data_points_added = False
+                    for result in results[cost_function][software][minimizer]:
+                        # Add the data points to the plot
+                        if not data_points_added:
+                            fig.add_trace(
+                                go.Scatter(
+                                    x=result.data_x,
+                                    y=result.data_y,
+                                    error_y={
+                                        "type": "data",
+                                        "array": result.data_e,
+                                    },
+                                    name="Data",
+                                    mode="markers",
+                                    marker=Plot._data_marker,
+                                    showlegend=False,
+                                ),
+                                row=row_ix,
+                                col=col_ix,
+                            )
+                            data_points_added = True
+
+                        # Determine the line style. The traces are blue if the
+                        # fit was successful and red if it was not.
+                        line_style = (
+                            Plot._multistart_successful_fit_line
+                            if result.norm_acc
+                            <= norm_accuracy_acceptability_threshold
+                            else Plot._multistart_unsuccessful_fit_line
+                        )
+
+                        # Add the starting guess trace
+                        fig.add_trace(
+                            go.Scatter(
+                                x=result.data_x,
+                                y=result.ini_y,
+                                mode="lines",
+                                line=line_style,
+                                name=result.name.split(", ")[-1],
+                                showlegend=False,
+                            ),
+                            row=row_ix,
+                            col=col_ix,
+                        )
+
+                    # Set the axis titles of the subplots
+                    Plot._update_axes_titles(
+                        fig=fig,
+                        col_ind=col_ix - 1,
+                        row_ind=row_ix,
+                        ax_titles=Plot._default_ax_titles,
+                    )
+
+                    # Update the loop variable
+                    plot_ix += 1
+                    row_ix = int(np.ceil(plot_ix / max_plots_per_row))
+                    col_ix = next(cyclic_column_iter)
+
+        html_fname = f"multistart_plot_for_{result.sanitised_name}.html"
         Plot.write_html_with_link_plotlyjs(
             fig, figures_dir, html_fname, options
         )
@@ -714,7 +841,7 @@ class Plot:
                 row=1,
                 col=i + 1,
             )
-            self._update_axes_titles(fig, i, ax_titles)
+            self._update_axes_titles(fig=fig, col_ind=i, ax_titles=ax_titles)
 
         return fig
 
@@ -782,7 +909,7 @@ class Plot:
 
     @staticmethod
     def _update_axes_titles(
-        fig: go.Figure, col_ind: int, ax_titles: dict
+        fig: go.Figure, col_ind: int, ax_titles: dict, row_ind: int = 1
     ) -> go.Figure:
         """
         Sets the titles of x and y axes.
@@ -791,17 +918,25 @@ class Plot:
 
         :param fig: The plotly figure to add the traces to
         :type fig: plotly.graph_objects.Figure
-        :param col_ind: Index of the colum (subplot) we are adding ax titles to
+        :param col_ind: Index of the column (subplot) we are
+                        adding ax titles to
         :type col_ind: int
         :param ax_titles: Titles for each axis
         :type ax_titles: dict[str, str]
+        :param row_ind: Index of the row (subplot) we are
+                        adding ax titles to
+        :type row_ind: int
 
         :return: Updated plot
         :rtype: plotly.graph_objects.Figure
         """
         if col_ind == 0:
-            fig.update_yaxes(title_text=ax_titles["y"], row=1, col=col_ind + 1)
-        fig.update_xaxes(title_text=ax_titles["x"], row=1, col=col_ind + 1)
+            fig.update_yaxes(
+                title_text=ax_titles["y"], row=row_ind, col=col_ind + 1
+            )
+        fig.update_xaxes(
+            title_text=ax_titles["x"], row=row_ind, col=col_ind + 1
+        )
         return fig
 
     @staticmethod
