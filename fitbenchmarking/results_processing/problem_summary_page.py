@@ -42,7 +42,6 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
                 )
             )
 
-        # Create the plots and set the paths
         if options.make_plots:
             common_args = {
                 "categories": problem_results,
