@@ -27,7 +27,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     """
-    multistart = create_multistart_plots(results, options, figures_dir)
+    multistart = _create_multistart_plots(results, options, figures_dir)
     for problem_key in results:
         categorised = []
         problem_results = results[problem_key]
@@ -66,7 +66,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
         )
 
 
-def create_multistart_plots(results, options, figures_dir):
+def _create_multistart_plots(results, options, figures_dir):
     """
     Create the plots for different starting conditions.
 
