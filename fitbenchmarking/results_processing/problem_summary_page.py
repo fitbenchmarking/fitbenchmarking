@@ -80,7 +80,11 @@ def create_multistart_plots(results, options, figures_dir):
     :return: The path to the multistart plot
     :rtype: str
     """
-    # Verify that the benchmarking results contain multistart data
+    # Check if the user has requested to make plots
+    if not options.make_plots:
+        return ""
+
+    # Verify that the results contain multistart data
     first_cost_function = next(iter(results.values()))
     first_result = next(iter(first_cost_function.values()))[0]
     if not first_result.multistart:
@@ -122,13 +126,13 @@ def _create_summary_page(
     :param residuals_plot: Path to the residuals plot
     :type residuals_plot: str
     :param two_d_plot: Path to the 2d data plot, if available, or
-                         empty string otherwise
+                       empty string otherwise.
     :type two_d_plot: str
-    :param multistart_plot: Path to the multistart comparison plot.
+    :param multistart_plot: Path to the multistart plot.
     :type multistart_plot: str
-    :param support_pages_dir: Directory to save suport page to
+    :param support_pages_dir: Directory to save support page to
     :type support_pages_dir: str
-    :param options: The chosen fitbenchmaring options
+    :param options: The chosen fitbenchmarking options
     :type options: utils.optons.Options
     """
     categories, results, descriptions = zip(*categorised_best_results)

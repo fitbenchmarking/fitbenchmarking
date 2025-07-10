@@ -533,7 +533,7 @@ class Plot:
             len(mins) for mins in options.minimizers.values()
         )
         n_plots = len(results) * minimizer_count
-        max_plots_per_row = 3
+        max_plots_per_row = min(n_plots, 3)
         n_rows = int(np.ceil(n_plots / max_plots_per_row))
         cyclic_column_iter = cycle(range(1, max_plots_per_row + 1))
         row_ix, col_ix, plot_ix = 1, next(cyclic_column_iter), 1
@@ -643,7 +643,7 @@ class Plot:
                 y=[None],
                 mode="markers",
                 marker=Plot._data_marker,
-                name="data",
+                name="Data",
                 showlegend=True,
             )
         )
