@@ -6,7 +6,9 @@ import inspect
 import os
 import shutil
 from tempfile import TemporaryDirectory
-from unittest import TestCase, main
+from unittest import TestCase, main, mock
+
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
@@ -112,6 +114,89 @@ class CreateTests(TestCase):
             self.assertTrue(
                 os.path.exists(example_result.problem_summary_page_link)
             )
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.problem_summary_page._create_multistart_plots"
+    )
+    def test_create_calls_create_multistart_plots_once(self, mock):
+        """
+        Check that _create_multistart_plots is called. It should
+        be called exactly once because the plots will be the
+        same across all problem rows.
+        """
+        problem_summary_page.create(
+            results=self.results,
+            best_results=self.best_results,
+            support_pages_dir=self.supp_dir,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
+        assert mock.call_count == 1
+
+
+class CreateMultistartPlotsTests(TestCase):
+    """
+    Tests for the _create_multistart_plots function.
+    """
+
+    def setUp(self):
+        """
+        Setup for the class tests
+        """
+        self.fig_dir = "temp_figures_dir"
+        results, self.options = load_mock_results()
+        _, self.results = preprocess_data(results)
+
+    @parameterized.expand([True, False])
+    def test_function_returns_empty_str(self, make_plots):
+        """
+        Check that a _create_multistart_plots returns an empty string
+        when results are not multistart and when make_plots is false.
+        """
+        self.options.make_plots = make_plots
+        multistart = problem_summary_page._create_multistart_plots(
+            results=self.results,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
+        assert multistart == ""
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot.plot_multistart"
+    )
+    def test_function_sorts_results_and_calls_plot_multistart(self, mock):
+        """
+        Check that a _create_multistart_plots sorts the results and
+        calls the plotting method.
+        """
+        self.results["prob_0"]["cf1"][0].multistart = True
+        results = {
+            "prob_0": {
+                "cf1": [
+                    self.results["prob_0"]["cf1"][0],
+                    self.results["prob_0"]["cf1"][1],
+                ]
+            },
+            "prob_1": {
+                "cf1": [
+                    self.results["prob_1"]["cf1"][0],
+                    self.results["prob_1"]["cf1"][1],
+                ]
+            },
+        }
+        problem_summary_page._create_multistart_plots(
+            results=results,
+            figures_dir=self.fig_dir,
+            options=self.options,
+        )
+        results_arg = mock.call_args[1]["results"]
+        cf_arg = next(iter(results_arg.keys()))
+        s_arg = next(iter(results_arg[cf_arg].keys()))
+        m_arg = next(iter(results_arg[cf_arg][s_arg].keys()))
+        assert cf_arg == "cf1"
+        assert s_arg == "s0"
+        assert m_arg == "m00"
+        assert mock.call_count == 1
 
 
 class CreateSummaryPageTests(TestCase):
