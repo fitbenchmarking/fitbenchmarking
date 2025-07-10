@@ -60,6 +60,7 @@ class FittingResult:
         # Problem definition + scores
         self.name: str = problem.name
         self.multivariate: bool = problem.multivariate
+        self.multistart: bool = problem.multistart
         self.problem_format: str = problem.format
         self.problem_desc: str = problem.description
         self.initial_params: list[float] = controller.initial_params
@@ -280,7 +281,6 @@ class FittingResult:
         # Paths to various output files
         self.problem_summary_page_link = ""
         self.fitting_report_link = ""
-        self.start_figure_link = ""
         self.figure_link = ""
         self.figure_error = ""
         self.posterior_plots = ""

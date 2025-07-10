@@ -3,7 +3,7 @@ Create the summary pages for the best minimizers.
 """
 
 import inspect
-import os
+from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -27,6 +27,7 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
     :param options: The options used in the fitting problem and plotting
     :type options: fitbenchmarking.utils.options.Options
     """
+    multistart = _create_multistart_plots(results, options, figures_dir)
     for problem_key in results:
         categorised = []
         problem_results = results[problem_key]
@@ -41,44 +42,76 @@ def create(results, best_results, support_pages_dir, figures_dir, options):
                 )
             )
 
-        summary_plot_path = ""
-        residuals_plot_path = ""
-        plot_2d_data_path = ""
         if options.make_plots:
-            summary_plot_path = Plot.plot_summary(
-                categories=problem_results,
-                title=categorised[0][1].name,
-                options=options,
-                figures_dir=figures_dir,
-            )
-            residuals_plot_path = Plot.plot_residuals(
-                categories=problem_results,
-                title=categorised[0][1].name,
-                options=options,
-                figures_dir=figures_dir,
-            )
-            plot_2d_data_path = Plot.plot_2d_data(
-                categories=problem_results,
-                title=categorised[0][1].name,
-                options=options,
-                figures_dir=figures_dir,
-            )
+            common_args = {
+                "categories": problem_results,
+                "title": categorised[0][1].name,
+                "options": options,
+                "figures_dir": figures_dir,
+            }
+            summary = Plot.plot_summary(**common_args)
+            residuals = Plot.plot_residuals(**common_args)
+            two_d = Plot.plot_2d_data(**common_args)
+        else:
+            summary = residuals = two_d = ""
 
         _create_summary_page(
             categorised_best_results=categorised,
-            summary_plot_path=summary_plot_path,
-            residuals_plot_path=residuals_plot_path,
-            plot_2d_data_path=plot_2d_data_path,
+            summary_plot=summary,
+            residuals_plot=residuals,
+            two_d_plot=two_d,
+            multistart_plot=multistart,
             support_pages_dir=support_pages_dir,
             options=options,
         )
 
 
+def _create_multistart_plots(results, options, figures_dir):
+    """
+    Create the plots for different starting conditions.
+
+    :param results: The results to create summary pages for
+    :type results: dict[str, dict[str, list[FittingResult]]]
+    :param options: The options used in the fitting problem and plotting
+    :type options: fitbenchmarking.utils.options.Options
+    :param figures_dir: The directory where figures are stored.
+    :type figures_dir: str
+
+    :return: The path to the multistart plot
+    :rtype: str
+    """
+    # Check if the user has requested to make plots
+    if not options.make_plots:
+        return ""
+
+    # Verify that the results contain multistart data
+    first_cost_function = next(iter(results.values()))
+    first_result = next(iter(first_cost_function.values()))[0]
+    if not first_result.multistart:
+        return ""
+
+    # Sort the result based on the cost function,
+    # software and minimizers for plotting
+    sorted_results = {}
+    for problem in results:
+        for cost_function in results[problem]:
+            for result in results[problem][cost_function]:
+                sorted_results.setdefault(result.costfun_tag, {}).setdefault(
+                    result.software, {}
+                ).setdefault(result.minimizer, []).append(result)
+
+    # Create the multistart plot
+    return Plot.plot_multistart(
+        results=sorted_results, options=options, figures_dir=figures_dir
+    )
+
+
 def _create_summary_page(
     categorised_best_results,
-    summary_plot_path,
-    residuals_plot_path,
-    plot_2d_data_path,
+    summary_plot,
+    residuals_plot,
+    two_d_plot,
+    multistart_plot,
     support_pages_dir,
     options,
 ):
@@ -88,16 +121,18 @@ def _create_summary_page(
     :param categorised_best_results: A tag, best result, and description for
                                      each category
     :type categorised_best_results: list[tuple[str, FittingResult, str]]
-    :param summary_plot_path: Path to the summary plot
-    :type summary_plot_path: str
-    :param residuals_plot_path: Path to the residuals plot
-    :type residuals_plot_path: str
-    :param plot_2d_data_path: Path to the 2d data plot, if available, or
-                              empty string otherwise
-    :type plot_2d_data_path: str
-    :param support_pages_dir: Directory to save suport page to
+    :param summary_plot: Path to the summary plot
+    :type summary_plot: str
+    :param residuals_plot: Path to the residuals plot
+    :type residuals_plot: str
+    :param two_d_plot: Path to the 2d data plot, if available, or
+                       empty string otherwise.
+    :type two_d_plot: str
+    :param multistart_plot: Path to the multistart plot.
+    :type multistart_plot: str
+    :param support_pages_dir: Directory to save support page to
     :type support_pages_dir: str
-    :param options: The chosen fitbenchmaring options
+    :param options: The chosen fitbenchmarking options
     :type options: utils.optons.Options
     """
     categories, results, descriptions = zip(*categorised_best_results)
@@ -105,7 +140,7 @@ def _create_summary_page(
     prob_name = results[0].sanitised_name
 
     file_name = f"{prob_name}_summary.html".lower()
-    file_path = os.path.join(support_pages_dir, file_name)
+    file_path = Path(support_pages_dir) / file_name
 
     # Bool for print message/insert image
     init_success = options.make_plots
@@ -113,21 +148,25 @@ def _create_summary_page(
     best_plot_available = []
     best_fits = []
     fig_start = None
-    summary_plot_available = True
-    summary_plot_path = os.path.join("figures", summary_plot_path)
-    residuals_plot_path = os.path.join("figures", residuals_plot_path)
+    summary_plot = Path("figures") / summary_plot
+    residuals_plot = Path("figures") / residuals_plot
 
     rerun_make_plots_msg = ""
 
-    plot_2d_available = False
-    if plot_2d_data_path != "":
-        plot_2d_available = True
-        plot_2d_data_path = os.path.join("figures", plot_2d_data_path)
+    if two_d_plot_available := bool(two_d_plot):
+        two_d_plot = Path("figures") / two_d_plot
+    if multistart_plot_avaliable := bool(multistart_plot):
+        multistart_plot = Path("figures") / multistart_plot
 
     if options.make_plots:
+        summary_plot_available = True
         for result in results:
-            fig_fit, fig_start = _get_figure_paths(result)
-            best_plot_available.append(fig_fit != "")
+            fig_fit = (
+                str(Path("figures") / result.figure_link)
+                if result.figure_link
+                else ""
+            )
+            best_plot_available.append(bool(fig_fit))
             if not best_plot_available[-1]:
                 fig_fit = result.figure_error
 
@@ -144,8 +183,8 @@ def _create_summary_page(
         )
         best_fits = [rerun_make_plots_msg] * len(results)
 
-    root = os.path.dirname(inspect.getfile(fitbenchmarking))
-    template_dir = os.path.join(root, "templates")
+    root = Path(inspect.getfile(fitbenchmarking)).parent
+    template_dir = root / "templates"
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options, support_pages_dir)
     template = env.get_template("problem_summary_page_template.html")
@@ -162,17 +201,17 @@ def _create_summary_page(
                 table_style=css["table"],
                 custom_style=css["custom"],
                 summary_plot_available=summary_plot_available,
-                summary_plot=summary_plot_path,
-                residuals_plot=residuals_plot_path,
-                plot_2d_available=plot_2d_available,
-                plot_2d_data=plot_2d_data_path,
+                summary_plot=summary_plot,
+                residuals_plot=residuals_plot,
+                two_d_plot_available=two_d_plot_available,
+                two_d_plot=two_d_plot,
+                multistart_plot_avaliable=multistart_plot_avaliable,
+                multistart_plot=multistart_plot,
                 title=results[0].name,
                 description=results[0].problem_desc,
                 equation=results[0].equation,
                 initial_guess=results[0].ini_function_params,
-                initial_plot_available=init_success,
                 min_params=results[0].fin_function_params,
-                initial_plot=fig_start,
                 categories=categories,
                 best_results=results,
                 best_plots_available=best_plot_available,
@@ -188,22 +227,3 @@ def _create_summary_page(
 
     for r in results:
         r.problem_summary_page_link = file_path
-
-
-def _get_figure_paths(result):
-    """
-    Get the paths to the figures used in the support page.
-
-    :param result: The result to get the figures for
-    :type result: fitbenchmarking.utils.fitbm_result.FittingProblem
-
-    :return: the paths to the required figures
-    :rtype: tuple(str, str)
-    """
-    return tuple(
-        os.path.join("figures", link) if link else ""
-        for link in [
-            result.figure_link,
-            result.start_figure_link,
-        ]
-    )
