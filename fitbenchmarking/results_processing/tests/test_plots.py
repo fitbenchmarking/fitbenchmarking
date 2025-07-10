@@ -24,7 +24,7 @@ from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.options import Options
 
 
-def load_mock_result():
+def load_mock_result(filename="checkpoint.json"):
     """
     Load a predictable result.
 
@@ -33,7 +33,7 @@ def load_mock_result():
     """
     options = Options()
     cp_dir = os.path.dirname(inspect.getfile(test_files))
-    options.checkpoint_filename = os.path.join(cp_dir, "checkpoint.json")
+    options.checkpoint_filename = os.path.join(cp_dir, filename)
 
     cp = Checkpoint(options)
     results, _, _, _ = cp.load()
@@ -168,7 +168,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_data_len_called_by_plotly_fit(self, check_data_len):
+    def test_check_data_len_called_by_plotly_fit(self, check_data_len):
         """
         Test that plotly_fit calls _check_data_len
         when plot_info is set.
@@ -191,7 +191,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_data_len_not_called(self, check_data_len):
+    def test_check_data_len_not_called(self, check_data_len):
         """
         Test that plotly_fit and plots_residuals don't call
         _check_data_len when plot_info is not set.
@@ -207,7 +207,7 @@ class PlotTests(unittest.TestCase):
         )
         check_data_len.assert_not_called()
 
-    def test__check_data_len_raises_error(self):
+    def test_check_data_len_raises_error(self):
         """
         Test _check_data_len raises error if data lengths are
         unexpected
@@ -290,7 +290,7 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test__create_empty_residuals_plots(self):
+    def test_create_empty_residuals_plots(self):
         """
         Test that create_empty_residuals_plot_spinw creates correct
         number of subplots
@@ -322,7 +322,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
     )
-    def test__create_empty_residuals_plots_not_called_when_no_subplots(
+    def test_create_empty_residuals_plots_not_called_when_no_subplots(
         self, create_empty_residuals
     ):
         """
@@ -340,7 +340,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
     )
-    def test__add_residual_traces_called_by_plot_residuals(
+    def test_add_residual_traces_called_by_plot_residuals(
         self, add_residual_traces
     ):
         """
@@ -359,7 +359,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
     )
-    def test__plot_minimizer_results_called_by_plot_summary(
+    def test_plot_minimizer_results_called_by_plot_summary(
         self, plot_minimizer_results
     ):
         """
@@ -375,9 +375,7 @@ class PlotTests(unittest.TestCase):
         self.assertEqual(plot_minimizer_results.call_count, expected)
 
     @mock.patch("fitbenchmarking.results_processing.plots.len")
-    def test__plot_minimizer_results_calls_len_when_data_x_cuts(
-        self, len_func
-    ):
+    def test_plot_minimizer_results_calls_len_when_data_x_cuts(self, len_func):
         """
         Test _plot_minimizer_results calls the len built-in function
         a number of times equal to n_plots when data_x_cuts is set.
@@ -404,7 +402,7 @@ class PlotTests(unittest.TestCase):
         self.assertEqual(len_func.call_count, n_plots)
 
     @mock.patch("fitbenchmarking.results_processing.plots.len")
-    def test__plot_minimizer_results_calls_len_when_subplots_present(
+    def test_plot_minimizer_results_calls_len_when_subplots_present(
         self, len_func
     ):
         """
@@ -456,7 +454,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
-    def test__add_data_points_called_by_plot_summary(self, add_data_points):
+    def test_add_data_points_called_by_plot_summary(self, add_data_points):
         """
         Test that _add_data_points gets called once by plot_summary.
         """
@@ -471,7 +469,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
-    def test__add_data_points_called_by_plotly_fit(self, add_data_points):
+    def test_add_data_points_called_by_plotly_fit(self, add_data_points):
         """
         Test that _add_data_points gets called the right number of times
         by plotly_fit.
@@ -486,9 +484,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
     )
-    def test__add_starting_guess_called_by_plotly_fit(
-        self, add_starting_guess
-    ):
+    def test_add_starting_guess_called_by_plotly_fit(self, add_starting_guess):
         """
         Test that _add_starting_guess gets called by plotly_fit, the
         correct number of times.
@@ -558,13 +554,47 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test__sample_colours(self):
+    def test_sample_colours(self):
         """
         Test that _sample_colours produces the expected output.
         """
         exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
         colours = self.plot._sample_colours([0.4, 0.7])
         self.assertEqual(exp_colours, colours)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot.write_html_with_link_plotlyjs"
+    )
+    @mock.patch("plotly.graph_objects.Figure.add_trace")
+    def test_plot_multistart(self, mock_add_trace, mock_write_html):
+        """
+        Test that the loops in the _plot_multistart method run as expected.
+        """
+        results = {
+            "cf1": {
+                "s1": {
+                    "m1": [
+                        self.fr["Fake_Test_Data"][0],
+                        self.fr["Fake_Test_Data"][1],
+                    ]
+                }
+            },
+            "cf2": {
+                "s2": {
+                    "m2": [
+                        self.fr["Fake_Test_Data"][2],
+                        self.fr["Fake_Test_Data"][3],
+                    ]
+                }
+            },
+        }
+        self.plot.plot_multistart(
+            results=results,
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        assert mock_add_trace.call_count == 9
+        assert mock_write_html.call_count == 1
 
 
 if __name__ == "__main__":
