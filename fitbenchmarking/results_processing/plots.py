@@ -540,7 +540,7 @@ class Plot:
 
         # Generate the plot titles
         titles = [
-            f"<b>{software} - {minimizer} ({cost_function})</b>"
+            f"<b>{software} - {minimizer}<br>({cost_function})<b>"
             for cost_function in results
             for software in results[cost_function]
             for minimizer in results[cost_function][software]
@@ -565,14 +565,14 @@ class Plot:
                     for result in results[cost_function][software][minimizer]:
                         # Add the data points to the plot
                         if not data_points_added:
+                            error_y = Plot._error_dict | {
+                                "array": result.data_e
+                            }
                             fig.add_trace(
                                 go.Scatter(
                                     x=result.data_x,
                                     y=result.data_y,
-                                    error_y={
-                                        "type": "data",
-                                        "array": result.data_e,
-                                    },
+                                    error_y=error_y,
                                     name="Data",
                                     mode="markers",
                                     marker=Plot._data_marker,
