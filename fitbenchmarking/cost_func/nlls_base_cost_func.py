@@ -40,7 +40,7 @@ class BaseNLLSCostFunc(CostFunc):
         """
         # Problem: The problem object from parsing
         super().__init__(problem)
-
+        self.problem = problem
         self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod
@@ -85,6 +85,15 @@ class BaseNLLSCostFunc(CostFunc):
         r = self.eval_r(params, **kwargs)
         J = self.jac_res(params, **kwargs)
 
+        # mask = ravel(self.problem.mask)
+        # all_rows = []
+
+        # for k in range(np.shape(J)[1]):
+        #     masked_row = np.ma.MaskedArray(J[:, k], mask=mask)
+        #     row_k = masked_row.compressed()
+        #     all_rows.append(row_k)
+
+        # J = np.vstack(all_rows).T
         return 2.0 * J.T.dot(r)
 
     def hes_cost(self, params, **kwargs):

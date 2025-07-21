@@ -2,6 +2,7 @@
 Implements the weighted non-linear least squares cost function
 """
 
+import numpy as np
 from numpy import ravel
 from scipy.sparse import issparse
 
@@ -44,7 +45,35 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                 f"the same, len(x)={len(x)}, len(y)={len(y)}"
                 f" and len(e)={len(e)}"
             )
-        result = (y - self.problem.eval_model(params=params, x=x)) / e
+
+        mask = ravel(self.problem.mask)
+        # recon_y = np.full(np.shape(mask), np.nan)
+        # recon_y[~mask] = y
+        # recon_x = np.full(np.shape(mask), np.nan)
+        # recon_x[~mask] = x
+        # recon_e = np.full(np.shape(mask), np.nan)
+        # recon_e[~mask] = e
+        # result = (
+        # ravel(recon_y) - self.problem.eval_model(params=params,
+        # x=ravel(recon_x))) / ravel(recon_e)
+
+        # y = np.ma.MaskedArray(y, mask=mask).compressed()
+        # eval_y = self.problem.eval_model(params=params, x=x)
+        # eval_y = np.ma.MaskedArray(eval_y, mask=mask).compressed()
+        # e = np.ma.MaskedArray(e, mask=mask).compressed()
+        # print(np.shape(y))
+        # print(np.shape(eval_y))
+        # print(np.shape(e))
+        # result = (y - eval_y) / e
+
+        ####################
+        y[mask] = 0
+        eval_y = self.problem.eval_model(params=params, x=x)
+        eval_y[mask] = 0
+        # e[mask] = 1
+        result = (y - eval_y) / e
+
+        result = np.nan_to_num(result, nan=0)
 
         # Flatten in case of a vector function
         return ravel(result)

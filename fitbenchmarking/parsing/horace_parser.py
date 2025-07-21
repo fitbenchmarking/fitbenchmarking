@@ -161,6 +161,8 @@ class HoraceParser(FitbenchmarkParser):
                 f"Failed to evaluate wye_function: {script}: {e}"
             ) from e
 
+        mask = np.array(eng.workspace[f"{self._horace_msk}"])
+
         signal = np.array(eng.workspace["y"], dtype=np.float64)
         error = np.array(eng.workspace["e"], dtype=np.float64)
 
@@ -181,7 +183,7 @@ class HoraceParser(FitbenchmarkParser):
         x = np.ones(len(y))
 
         self._horace_x = x
-        return {"x": x, "y": y, "e": e}
+        return {"x": x, "y": y, "e": e, "mask": mask}
 
     def _create_function(self) -> typing.Callable:
         """

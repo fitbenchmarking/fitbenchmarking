@@ -173,6 +173,9 @@ class FittingResult:
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
+                    # self.r_x_recon= np.full(np.shape(problem.mask), np.nan)
+                    # self.r_x_recon[~problem.mask] = self.r_x
+
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
                         problem, indexes_cuts, self.r_x
                     )
