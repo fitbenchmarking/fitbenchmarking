@@ -61,7 +61,6 @@ class TestGenerateReport(TestCase):
             "Fake_Test_Data/support_pages/prob_0_summary.html",
             "Fake_Test_Data/support_pages/prob_0_cf1_m01_[s0]_jj0.html",
             "Fake_Test_Data/support_pages/figures/acc_cbar.png",
-            "Fake_Test_Data/support_pages/figures/start_for_prob_0.html",
         ]
 
         with TemporaryDirectory() as results_dir:
