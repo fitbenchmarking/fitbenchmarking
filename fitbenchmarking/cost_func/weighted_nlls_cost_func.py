@@ -68,9 +68,10 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
 
         ####################
         y[mask] = 0
+
         eval_y = self.problem.eval_model(params=params, x=x)
         eval_y[mask] = 0
-        # e[mask] = 1
+
         result = (y - eval_y) / e
 
         result = np.nan_to_num(result, nan=0)
