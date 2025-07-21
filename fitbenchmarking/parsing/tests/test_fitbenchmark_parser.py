@@ -839,6 +839,7 @@ class TestFitbenchmarkParser(TestCase):
         assert not result.jacobian
         assert result.multifit
         assert result.multivariate
+        assert not result.multistart
         assert result.name == "Basic MultiFit"
         assert result.param_names == ["A0", "A1"]
         assert result.plot_scale == "linear"
