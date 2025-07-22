@@ -5,6 +5,9 @@ Implements the base class for the cost function class.
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
+import numpy as np
+from scipy.interpolate import NearestNDInterpolator
+
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
 if TYPE_CHECKING:
@@ -144,3 +147,20 @@ class CostFunc:
 
         By default do not raise an error.
         """
+
+    def subtitute_nans(self, data):
+        """
+        Given a certain matrix, find and substitute nans.
+        """
+
+        if len(np.shape(data)) == 1:
+            mask = np.isnan(data)
+            data[mask] = np.interp(
+                np.flatnonzero(mask), np.flatnonzero(~mask), data[~mask]
+            )
+        elif len(np.shape(data)) == 2:
+            mask = np.where(~np.isnan(data))
+            interp = NearestNDInterpolator(np.transpose(mask), data[mask])
+            data = interp(*np.indices(data.shape))
+
+        return data

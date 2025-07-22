@@ -66,6 +66,7 @@ class FittingResult:
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
+        self.mask = problem.mask
 
         if dataset is None:
             self.data_x = problem.data_x
@@ -228,6 +229,7 @@ class FittingResult:
         )
         reshaped_data = array_to_cut.reshape(new_shape)
         array_to_cut_as_2d = reshaped_data
+        array_to_cut_as_2d[self.mask] = np.nan
 
         data_cuts = []
         for ind in indexes:
