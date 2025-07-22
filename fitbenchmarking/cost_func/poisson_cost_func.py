@@ -67,6 +67,7 @@ class PoissonCostFunc(CostFunc):
         f_xp[f_xp <= 0.0] = np.finfo(float).max
 
         residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
+        residuals = self.subtitute_nans(residuals)
 
         # Flatten in case of a vector function
         return sum(np.ravel(residuals))
@@ -87,6 +88,7 @@ class PoissonCostFunc(CostFunc):
         y = kwargs.get("y", self.problem.data_y)
 
         jac = self.jacobian.eval(params, **kwargs)
+        jac = self.subtitute_nans(jac)
         return jac * (1 - y / self.problem.eval_model(params, x=x))[:, None]
 
     def jac_cost(self, params, **kwargs):
@@ -100,6 +102,7 @@ class PoissonCostFunc(CostFunc):
         :rtype: 1D numpy array
         """
         J = self.jac_res(params, **kwargs)
+        J = self.subtitute_nans(J)
         return np.sum(J, 0)
 
     def hes_res(self, params, **kwargs):
@@ -127,6 +130,7 @@ class PoissonCostFunc(CostFunc):
             hes[:, :, i] = hes[:, :, i] - y[i] / f[i] * (
                 hes[:, :, i] - jac_i.T.dot(jac_i) / f[i]
             )
+        hes = self.subtitute_nans(hes)
         return hes, self.jac_res(params, **kwargs)
 
     def hes_cost(self, params, **kwargs):
@@ -142,6 +146,7 @@ class PoissonCostFunc(CostFunc):
         :rtype: 2D numpy array
         """
         H, _ = self.hes_res(params, **kwargs)
+        H = self.subtitute_nans(H)
         return np.sum(H, 2)
 
     def validate_problem(self):
