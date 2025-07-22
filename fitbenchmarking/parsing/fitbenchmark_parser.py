@@ -182,6 +182,7 @@ class FitbenchmarkParser(Parser):
         """
         self.fitting_problem.data_x = data_points[0]["x"]
         self.fitting_problem.data_y = data_points[0]["y"]
+        self.fitting_problem.mask = data_points[0]["mask"]
         self.fitting_problem.data_e = data_points[0].get("e", None)
 
         if fit_ranges and "x" in fit_ranges[0]:
