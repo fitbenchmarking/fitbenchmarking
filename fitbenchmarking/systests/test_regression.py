@@ -233,6 +233,7 @@ def setup_options(
     # - 'gradient_free' and 'scipy_go' are left out as they require bounds.
     software = {
         "all": [
+            "aoclda",
             "bumps",
             "dfo",
             "ceres",
@@ -260,6 +261,7 @@ def setup_options(
 
     # The minimizers to test for each software
     minimizers = {
+        "aoclda": "hybrid",
         "bumps": "lm-bumps",
         "dfo": "dfols",
         "ceres": "Levenberg_Marquardt",
