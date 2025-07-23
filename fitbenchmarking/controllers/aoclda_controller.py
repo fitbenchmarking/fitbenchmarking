@@ -24,12 +24,11 @@ Implements a controller for AMD AOCL Data Analytics NLLS solver
 https://github.com/amd/aocl-data-analytics
 """
 
-import numpy as np
-import traceback
-
 from aoclda.nonlinear_model import nlls
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
+import numpy as np
+import traceback
 
 
 class AOCLDAController(Controller):
@@ -283,7 +282,7 @@ class AOCLDAController(Controller):
         # fd_ttol=fd_ttol)
 
         except RuntimeWarning:  # FIXME this is not caught
-            #    2: Software run but didn’t converge to solution
+            #    2: Software run but didn't converge to solution
             #    6: Solver has exceeded maximum allowed runtime
             self._status = 2
         except Exception as e:
@@ -294,7 +293,7 @@ class AOCLDAController(Controller):
         else:
             #    0: Successfully converged
             #    1: Software reported maximum number of iterations exceeded
-            #    5: Solution doesn’t respect parameter bounds
+            #    5: Solution doesn't respect parameter bounds
             ok = True
             if self._lb is not None:
                 ok = ok and all(self._lb <= self._x)
@@ -321,9 +320,7 @@ class AOCLDAController(Controller):
             or self._status == 5
         ):
             self.iteration_count = self._handle.n_iter
-            self.func_evals = self._handle.n_eval[
-                "f"
-            ]  # "fd_f" also available
+            self.func_evals = self._handle.n_eval["f"]  # "fd_f" also available
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = self._x.tolist()
