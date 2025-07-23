@@ -898,7 +898,8 @@ class ExternalControllerTests(TestCase):
         controller.flag = 2
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand(["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"])
+    @parameterized.expand(["gn", "gn_reg", "hybrid", "hybrid_reg",
+                           "newton", "newton_reg"])
     def test_aoclda(self, minimizer):
         """
         AOCLDAController: Tests for output shape
@@ -913,7 +914,8 @@ class ExternalControllerTests(TestCase):
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand(["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"])
+    @parameterized.expand(["gn", "gn_reg", "hybrid", "hybrid_reg",
+                           "newton", "newton_reg"])
     def test_ralfit(self, minimizer):
         """
         RALFitController: Tests for output shape

@@ -25,13 +25,9 @@ https://github.com/amd/aocl-data-analytics
 """
 
 import numpy as np
-import copy  # deepcopy
-from aoclda.nonlinear_model import nlls
-
 import traceback
-# from fitbenchmarking.utils.log import get_logger
-# LOGGER = get_logger()
 
+from aoclda.nonlinear_model import nlls
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
 
@@ -250,25 +246,19 @@ class AOCLDAController(Controller):
         """
 
         maxit = 500  # Same as RALFit
-        ftol = 1e-8  # TODO how to pass this option?
-        abs_ftol = 1e-8  # TODO how to pass this option?
-        gtol = 1e-8  # TODO how to pass this option?
-        abs_gtol = 1e-5  # TODO how to pass this option?
-        xtol = 2.22e-16  # TODO how to pass this option?
+        # ftol = 1e-8  # TODO how to pass this option?
+        # abs_ftol = 1e-8  # TODO how to pass this option?
+        # gtol = 1e-8  # TODO how to pass this option?
+        # abs_gtol = 1e-5  # TODO how to pass this option?
+        # xtol = 2.22e-16  # TODO how to pass this option?
 
         use_fd = False  # TODO how to pass this option?
-        fd_step = 1e-7  # TODO how to pass this option?
-        fd_ttol = 1e-4  # TODO how to pass this option?
+        # fd_step = 1e-7  # TODO how to pass this option?
+        # fd_ttol = 1e-4  # TODO how to pass this option?
 
-        if self.cost_func.jacobian and not use_fd:
-            jac = self.jac_eval  # AOCLDA wrapper to self.cost_func.jac_res
-        else:
-            jac = None  # Request finite-differences
+        jac = self.jac_eval if self.cost_func.jacobian and not use_fd else None
 
-        if self.cost_func.hessian:
-            hes = self.hes_eval  # AOCLDA wrapper to self.cost_func.hessian
-        else:
-            hes = None
+        hes = self.hes_eval if self.cost_func.hessian else None
 
         self._x = np.array(
             self.initial_params
@@ -307,9 +297,9 @@ class AOCLDAController(Controller):
             #    5: Solution doesn’t respect parameter bounds
             ok = True
             if self._lb is not None:
-                ok = ok and all(self._lb <= x)
+                ok = ok and all(self._lb <= self._x)
             if self._ub is not None:
-                ok = ok and all(self._ub >= x)
+                ok = ok and all(self._ub >= self._x)
 
             if maxit <= self._handle.n_iter:
                 self._status = 1
@@ -333,7 +323,7 @@ class AOCLDAController(Controller):
             self.iteration_count = self._handle.n_iter
             self.func_evals = self._handle.n_eval[
                 "f"
-            ]  # 'j', 'h', 'hp', 'fd_f' as well available
+            ]  # "fd_f" also available
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = self._x.tolist()
