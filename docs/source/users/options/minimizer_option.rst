@@ -22,7 +22,7 @@ AMD AOCL Data Analytics NLLS Solver (``aoclda``)
 ================================================
 
 The `AMD Optimizing CPU Libraries (AOCL) <https://www.amd.com/en/developer/aocl.html>`__ is a compendium of
-numerical libraries tuned for AMD processors. The AOCL Data Analytics
+numerical libraries tuned for AMD CPU processors. The AOCL Data Analytics
 Library's nonlinear least-squares solver (NLLS) is an adapted version of
 the :ref:`RALFit solver <ralfit>` 
 (See also `RALFit documentation <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__).
