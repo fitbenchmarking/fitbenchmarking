@@ -24,11 +24,13 @@ Implements a controller for AMD AOCL Data Analytics NLLS solver
 https://github.com/amd/aocl-data-analytics
 """
 
+import traceback
+
+import numpy as np
 from aoclda.nonlinear_model import nlls
+
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import UnknownMinimizerError
-import numpy as np
-import traceback
 
 
 class AOCLDAController(Controller):
