@@ -32,6 +32,7 @@ pyceres_mock_name = "/mock_pyceres_location"
 os.environ["PYCERES_LOCATION"] = pyceres_mock_name
 # set mock imports
 autodoc_mock_imports = [
+    "aoclda",
     "backports",
     "bumps.fitters",
     "bumps",
