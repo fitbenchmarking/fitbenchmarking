@@ -21,10 +21,10 @@ the default list of minimizers unless otherwise stated.
 AMD AOCL Data Analytics NLLS Solver (``aoclda``)
 ================================================
 
-The `AMD Optimizing CPU Libraries (AOCL) <https://www.amd.com/en/developer/aocl.html>` is a compendium of
+The `AMD Optimizing CPU Libraries (AOCL) <https://www.amd.com/en/developer/aocl.html>`__ is a compendium of
  numerical libraries tuned for AMD Epyc processors. The AOCL Data Analytics
- Library's nonlinear least-squares solver, NLLS, is an optimized version of
- the RALFit solver (`RALFit <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__).
+ Library's nonlinear least-squares solver (NLLS) is an optimized version of
+ the :ref:`RALFit solver <ralfit>` (See also `RALFit documentation <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__).
 
 This solver supports the same capabilites as RALFit:
 
@@ -37,7 +37,7 @@ This solver supports the same capabilites as RALFit:
 * Newton, regularization (:code:`newton_reg`)
 * Newton-tensor, regularization (:code:`newton-tensor_reg`)
 
-**Links** `Github - RALFit <https://github.com/amd/aocl-data-analytics/>`__.
+**Links** `Github - AOCL Data Analytics <https://github.com/amd/aocl-data-analytics/>`__.
 
 **Licence** AOCL Data Analytics is available under a `3-clause BSD Licence <https://github.com/ralna/RALFit/blob/master/LICENCE>`__.
 
