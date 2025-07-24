@@ -47,7 +47,7 @@ The AOCLDA minimizers are set as follows:
 .. code-block:: rst
 
     [MINIMIZERS]
-    ralfit: gn
+    aoclda: gn
             gn_reg
             hybrid
             hybrid_reg
