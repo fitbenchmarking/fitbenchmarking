@@ -55,7 +55,7 @@ The AOCLDA minimizers are set as follows:
             newton_reg
 
 .. warning::
-   The external package `aoclda`` must be installed to use these minimizers.
+   The external package `aoclda` must be installed to use these minimizers.
 
 .. _bumps:
 
