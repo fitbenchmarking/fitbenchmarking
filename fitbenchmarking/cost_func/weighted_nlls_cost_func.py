@@ -44,9 +44,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                 f"the same, len(x)={len(x)}, len(y)={len(y)}"
                 f" and len(e)={len(e)}"
             )
-        mask = ravel(self.problem.mask)
         result = (y - self.problem.eval_model(params=params, x=x)) / e
-        result[mask] = 0
         result = self.subtitute_nans(result)
         # Flatten in case of a vector function
         return ravel(result)

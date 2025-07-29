@@ -389,12 +389,3 @@ class HoraceParser(FitbenchmarkParser):
                 raise ParsingError(
                     "q_cens are required for plotting 1D cuts of SpinW data"
                 )
-
-            if not float(
-                len(self.fitting_problem.data_y)
-                / self.fitting_problem.additional_info["n_plots"]
-            ).is_integer():
-                raise ParsingError(
-                    "Number of data points must be divisible "
-                    "by number of q_cens"
-                )

@@ -76,7 +76,8 @@ function y = fb_simulate_tri_AFM_2d(w,fitpars,msk)
     % set parameters passsed to sw_instrument
     fitpow.sw_instrument_args = struct('dQ', dQ, 'ThetaMin', 3.5, 'Ei', Ei);
 
-    [y, bg] = fitpow.calc_spinwave_spec(fitpars)
-    y = y'
+    [y, bg] = fitpow.calc_spinwave_spec(fitpars);
+    y = y';
+    y = y(~msk);
 
 end

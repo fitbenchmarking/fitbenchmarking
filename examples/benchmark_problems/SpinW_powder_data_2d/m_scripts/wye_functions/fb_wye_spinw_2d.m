@@ -4,7 +4,7 @@ function [w, y, e, msk] = fb_wye_spinw_2d(datafile, path)
 w = load(datafile).data;
 msk = isnan(w.y);
 
-y = vertcat(w.y);
-e = vertcat(w.e);
+y = w.y(~msk);
+e = w.e(~msk);
 
 end
