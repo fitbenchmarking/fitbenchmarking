@@ -42,7 +42,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
                 f"len(x)={len(x)} and len(y)={len(y)}."
             )
         result = y - self.problem.eval_model(params=params, x=x)
-
+        result = self.subtitute_nans(result)
         # Flatten in case of a vector function
         return ravel(result)
 
@@ -58,7 +58,9 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
-        return -self.jacobian.eval(params, **kwargs)
+        result = -self.jacobian.eval(params, **kwargs)
+        result = self.subtitute_nans(result)
+        return result
 
     def hes_res(self, params, **kwargs):
         """
@@ -74,4 +76,5 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :rtype: tuple (list of 2D numpy arrays, list of 1D numpy arrays)
         """
         J = self.jac_res(params, **kwargs)
+        J = self.subtitute_nans(J)
         return -self.hessian.eval(params, **kwargs), J
