@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
-from scipy.interpolate import NearestNDInterpolator
+from scipy.interpolate import NearestNDInterpolator, interp1d
 
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
@@ -154,10 +154,18 @@ class CostFunc:
         """
 
         if len(np.shape(data)) == 1:
-            mask = np.isnan(data)
-            data[mask] = np.interp(
-                np.flatnonzero(mask), np.flatnonzero(~mask), data[~mask]
+            # Identify valid (non-NaN) values
+            valid = ~np.isnan(data)
+
+            # Create interpolator with extrapolation enabled
+            x = np.arange(len(data))
+            interpolator = interp1d(
+                x[valid], data[valid], kind="linear", fill_value="extrapolate"
             )
+
+            # Apply interpolation
+            data = interpolator(x)
+
         elif len(np.shape(data)) == 2:
             mask = np.where(~np.isnan(data))
             interp = NearestNDInterpolator(np.transpose(mask), data[mask])
