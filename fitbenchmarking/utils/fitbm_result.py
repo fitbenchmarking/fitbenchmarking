@@ -66,7 +66,8 @@ class FittingResult:
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
-        self.mask = problem.mask
+        if hasattr(problem, "mask"):
+            self.mask = problem.mask
 
         if dataset is None:
             self.data_x = problem.data_x
