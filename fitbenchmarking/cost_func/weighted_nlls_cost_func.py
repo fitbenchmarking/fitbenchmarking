@@ -69,7 +69,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
             return -jac.transpose().multiply(1 / e).transpose()
 
         result = -jac / e[:, None]
-        result = self.subtitute_nans(result)
 
         return result
 
@@ -91,7 +90,5 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         hes = self.hessian.eval(params, **kwargs)
         for i, e_i in enumerate(e):
             hes[:, :, i] = -hes[:, :, i] / e_i
-
-        hes = self.subtitute_nans(hes)
 
         return hes, self.jac_res(params, **kwargs)

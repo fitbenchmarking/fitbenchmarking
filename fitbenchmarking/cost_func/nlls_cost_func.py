@@ -58,9 +58,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
-        result = -self.jacobian.eval(params, **kwargs)
-        result = self.subtitute_nans(result)
-        return result
+        return -self.jacobian.eval(params, **kwargs)
 
     def hes_res(self, params, **kwargs):
         """
@@ -76,5 +74,4 @@ class NLLSCostFunc(BaseNLLSCostFunc):
         :rtype: tuple (list of 2D numpy arrays, list of 1D numpy arrays)
         """
         J = self.jac_res(params, **kwargs)
-        J = self.subtitute_nans(J)
         return -self.hessian.eval(params, **kwargs), J
