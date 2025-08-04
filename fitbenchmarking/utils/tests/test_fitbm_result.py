@@ -405,9 +405,10 @@ class FitbmResultTests(unittest.TestCase):
                 0.17721519,
             ]
         )
+        self.result.mask = np.full((5, 4), False, dtype=bool)
+        self.result.mask[0, 0] = np.nan
         array_to_cut = np.array(
             [
-                0.02531646,
                 0.07594937,
                 0.12658228,
                 0.17721519,
@@ -434,44 +435,46 @@ class FitbmResultTests(unittest.TestCase):
             problem, indexes, array_to_cut
         )
         expected = (
-            [0.734177215, 0.7848101249999999, 0.8354430399999999, 0.88607595],
+            [
+                0.20253164499999998,
+                0.45569620499999997,
+                0.70886076,
+                0.962025315,
+            ],
             np.array(
                 [
                     [
-                        0.02531646,
-                        0.07594937,
-                        0.12658228,
-                        0.17721519,
-                    ],
-                    [
-                        0.2278481,
+                        np.nan,
                         0.27848101,
-                        0.32911392,
-                        0.37974684,
-                    ],
-                    [
-                        0.43037975,
-                        0.48101266,
                         0.53164557,
-                        0.58227848,
-                    ],
-                    [
-                        0.63291139,
-                        0.6835443,
-                        0.73417722,
                         0.78481013,
                     ],
                     [
+                        0.07594937,
+                        0.32911392,
+                        0.58227848,
                         0.83544304,
-                        0.88607595,
-                        0.93670886,
-                        0.98734177,
                     ],
+                    [
+                        0.12658228,
+                        0.37974684,
+                        0.63291139,
+                        0.88607595,
+                    ],
+                    [
+                        0.17721519,
+                        0.43037975,
+                        0.6835443,
+                        0.93670886,
+                    ],
+                    [0.2278481, 0.48101266, 0.73417722, 0.98734177],
                 ]
             ),
         )
         self.assertEqual(obtained[0], expected[0])
-        self.assertTrue((obtained[1] == expected[1]).all())
+        self.assertTrue(
+            np.array_equal(obtained[1], expected[1], equal_nan="False")
+        )
 
     def test_get_1d_cuts_spinw_when_indexes_are_not_tuples(self):
         """
@@ -479,6 +482,7 @@ class FitbmResultTests(unittest.TestCase):
         when indexes are not tuples, but a single index per cut.
         """
         problem = self.controller.problem
+        self.result.mask = np.full((2, 4), False, dtype=bool)
         problem.additional_info["ebin_cens"] = np.array(
             [
                 0.02531646,
@@ -504,26 +508,20 @@ class FitbmResultTests(unittest.TestCase):
             problem, indexes, array_to_cut
         )
         expected = (
-            [[0.2278481, 0.27848101, 0.32911392, 0.37974684]],
+            [[0.07594937, 0.17721519, 0.27848101, 0.37974684]],
             np.array(
                 [
-                    [
-                        0.02531646,
-                        0.07594937,
-                        0.12658228,
-                        0.17721519,
-                    ],
-                    [
-                        0.2278481,
-                        0.27848101,
-                        0.32911392,
-                        0.37974684,
-                    ],
+                    [0.02531646, 0.12658228, 0.2278481, 0.32911392],
+                    [0.07594937, 0.17721519, 0.27848101, 0.37974684],
                 ]
             ),
         )
+        print(obtained[1])
+        print(expected[1])
         self.assertEqual(obtained[0], expected[0])
-        self.assertTrue((obtained[1] == expected[1]).all())
+        self.assertTrue(
+            np.array_equal(obtained[1], expected[1], equal_nan="False")
+        )
 
     def test_data_x_when_plot_type_1d_cuts(self):
         """

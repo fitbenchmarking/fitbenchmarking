@@ -45,7 +45,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                 f" and len(e)={len(e)}"
             )
         result = (y - self.problem.eval_model(params=params, x=x)) / e
-
+        result = self.subtitute_nans(result)
         # Flatten in case of a vector function
         return ravel(result)
 
@@ -68,7 +68,9 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         if issparse(jac):
             return -jac.transpose().multiply(1 / e).transpose()
 
-        return -jac / e[:, None]
+        result = -jac / e[:, None]
+
+        return result
 
     def hes_res(self, params, **kwargs):
         """

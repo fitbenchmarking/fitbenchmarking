@@ -66,6 +66,8 @@ class FittingResult:
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
+        if hasattr(problem, "mask"):
+            self.mask = problem.mask
 
         if dataset is None:
             self.data_x = problem.data_x
@@ -217,14 +219,10 @@ class FittingResult:
         1d cuts based on the q_cens specified by the user.
         """
 
-        len_single_data_x = len(problem.additional_info["ebin_cens"].tolist())
-        len_y_flattened = len(array_to_cut)
-        new_shape = (
-            int(len_y_flattened / len_single_data_x),
-            len_single_data_x,
-        )
-        reshaped_data = array_to_cut.reshape(new_shape)
-        array_to_cut_as_2d = reshaped_data
+        flattened_mask = self.mask.transpose().flatten()
+        full_array = np.full(flattened_mask.shape, np.nan)
+        full_array[~flattened_mask] = array_to_cut
+        array_to_cut_as_2d = full_array.reshape(self.mask.shape, order="F")
 
         data_cuts = []
         for ind in indexes:
