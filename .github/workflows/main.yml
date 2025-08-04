@@ -9,6 +9,7 @@ on:
     branches:
       - 'master'
       - 'release-**'
+      - 'add_more_spinw_data'
   release:
     types: [published]
   schedule:
