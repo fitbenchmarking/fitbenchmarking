@@ -104,12 +104,12 @@ class FittingResult:
                 )
                 indexes_cuts = self.get_indexes_1d_cuts_spinw(problem)
                 self.data_y_cuts, self.data_y_complete = (
-                    self.get_1d_cuts_spinw(problem, indexes_cuts, self.data_y)
+                    self.get_1d_cuts_spinw(indexes_cuts, self.data_y)
                 )
 
                 if self.data_e is not None:
                     self.data_e_cuts, _ = self.get_1d_cuts_spinw(
-                        problem, indexes_cuts, self.data_e
+                        indexes_cuts, self.data_e
                     )
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
@@ -164,7 +164,7 @@ class FittingResult:
         self.ini_y = problem.ini_y(controller.parameter_set)
         if hasattr(self, "ini_y") and indexes_cuts is not None:
             self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
-                problem, indexes_cuts, self.ini_y
+                indexes_cuts, self.ini_y
             )
 
         self.fin_y = None
@@ -176,7 +176,7 @@ class FittingResult:
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
-                        problem, indexes_cuts, self.r_x
+                        indexes_cuts, self.r_x
                     )
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
@@ -186,7 +186,7 @@ class FittingResult:
             )
             if hasattr(self, "fin_y") and indexes_cuts is not None:
                 self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
-                    problem, indexes_cuts, self.fin_y
+                    indexes_cuts, self.fin_y
                 )
 
         # String interpretations of the params
@@ -212,7 +212,7 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
-    def get_1d_cuts_spinw(self, problem, indexes, array_to_cut):
+    def get_1d_cuts_spinw(self, indexes, array_to_cut):
         """
         Given a flattened array of spinw y data, this function reshapes it
         into a 2d array (based on the length of ebin_cens), then takes
