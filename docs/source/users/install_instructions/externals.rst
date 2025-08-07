@@ -11,14 +11,22 @@ they need to be installed and available on your machine.  We give
 pointers outlining how to do this below, and you can find install scripts
 for Ubuntu 18.04 in the directory `/build/<software>/`
 
+AMD AOCL Data Analytics NLLS Solver
+-----------------------------------
+
+The AOCLDA NLLS is available to use as fitting software.
+
+Instructions on how to build and install the python wheel are at the
+`AOCL-DA Github repository <https://github.com/amd/aocl-data-analytics/blob/main/README.md>`_.
+
 Ceres Solver
 ------------
 
 Ceres Solver is used as a fitting software in FitBenchmarking, and is called via the
 pyceres interface.
 
-Install instructions can be found on the `pyceres <https://github.com/cvg/pyceres#installation>`__ Github page and 
-`Ceres Solver documentation <http://ceres-solver.org/installation.html>`__ 
+Install instructions can be found on the `pyceres <https://github.com/cvg/pyceres#installation>`__ Github page and
+`Ceres Solver documentation <http://ceres-solver.org/installation.html>`__
 
 
 CUTEst
@@ -91,15 +99,15 @@ at `<https://download.mantidproject.org/>`_.
 MATLAB
 ------
 
-MATLAB is available to use as fitting software in FitBenchmarking, and is called via the MATLAB Engine API for Python. Therefore, 
-to use MATLAB within Fitbenchmarking, both MATLAB and the MATLAB engine must be installed. Official installation instructions 
-for MATLAB are available at `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. For more 
-information on how to install MATLAB through WSL, please refer to :ref:`external-instructions-matlab`. 
+MATLAB is available to use as fitting software in FitBenchmarking, and is called via the MATLAB Engine API for Python. Therefore,
+to use MATLAB within Fitbenchmarking, both MATLAB and the MATLAB engine must be installed. Official installation instructions
+for MATLAB are available at `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. For more
+information on how to install MATLAB through WSL, please refer to :ref:`external-instructions-matlab`.
 
 Instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_. 
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
 
-Furthermore, MATLAB requires additional Python packages to be installed. You can find the instructions on how 
+Furthermore, MATLAB requires additional Python packages to be installed. You can find the instructions on how
 to install these packages by following the link provided: :ref:`here <extra_dependencies>`.
 
 

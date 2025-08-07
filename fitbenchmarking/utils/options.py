@@ -28,6 +28,16 @@ class Options:
         "DASH",
     ]
     VALID_MINIMIZERS = {
+        "aoclda": [
+            "gn",
+            "gn_reg",
+            "hybrid",
+            "hybrid_reg",
+            "newton",
+            "newton_reg",
+            "newton-tensor",
+            "newton-tensor_reg",
+        ],
         "bumps": [
             "amoeba",
             "lm-bumps",
@@ -203,6 +213,7 @@ class Options:
             "MCMC",
         ],
         "software": [
+            "aoclda",
             "bumps",
             "ceres",
             "dfo",
@@ -323,6 +334,14 @@ class Options:
     }
 
     DEFAULT_MINIMZERS = {
+        "aoclda": [
+            "gn",
+            "gn_reg",
+            "hybrid",
+            "hybrid_reg",
+            "newton",
+            "newton_reg",
+        ],
         "bumps": ["amoeba", "lm-bumps", "newton", "scipy-leastsq"],
         "ceres": [
             "Levenberg_Marquardt",
