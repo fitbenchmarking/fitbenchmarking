@@ -18,9 +18,26 @@ class PyParser(FitbenchmarkParser):
     """
 
     def _parse_fixed_args(self) -> list[dict]:
+        """parses the problem definition file for a dictionary
+        of fixed arguments to the objective function given by the
+        keyword \"fixed_arguments\"
+
+        Returns:
+            list[dict]: a list of a dictionary containing keys
+            and fixed values of the selected fixed arguments"
+        """
         return self._parse_string("fixed_arguments")
 
     def _parse_variables(self) -> list[dict]:
+        """parses the problem definition file for a dictionary
+        of variable arguments to the objective function given by the
+        keyword \"variable_arguments\". The objective function will
+        be minimised over these arguments.
+
+        Returns:
+            list[dict]: a list of a dictionary containing keys
+            and starting values of the selected variable arguments"
+        """
         return self._parse_string("variable_arguments")
 
     def _create_function(self) -> typing.Callable:
