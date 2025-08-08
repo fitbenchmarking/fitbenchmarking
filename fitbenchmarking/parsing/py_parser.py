@@ -1,11 +1,10 @@
 """
 This file implements a parser for python problem sets.
 """
-import inspect
 import os
-from functools import partial
 import sys
 import typing
+from functools import partial
 from importlib import import_module
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -15,7 +14,7 @@ class PyParser(FitbenchmarkParser):
     """
     Parser for a python problem definition file.
     The python function should be formatted as
-      f(x, fixed_parameters: dict, var1, var2, var3 ...)
+      f(x, var1, var2, var3 ... fixed_parameters: dict)
     """
 
     def _parse_fixed_args(self) -> list[dict]:
@@ -27,28 +26,26 @@ class PyParser(FitbenchmarkParser):
     def _create_function(self) -> typing.Callable:
         """
         Process the import into a callable.
-
         Expected function format:
         function='module=functions/py_funcs,func=model'
-
         :return: A callable function
         :rtype: callable
         """
-        # import the function
+        # import the objective function
         pf: dict = self._parsed_func[0]
         path = os.path.join(os.path.dirname(self._filename), pf['module'])
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
         fun = getattr(module, pf['func'])
-        print(fun.__name__)
+
         # get the fixed and variable function arguments
-        self.fixed_args = self._parse_fixed_args()[0]
-        print(self.fixed_args)
+        self.fixed_args: dict = self._parse_fixed_args()[0]
+
         # define function which fixes variables
         reduced_fun = partial(fun, fixed_parameters=self.fixed_args)
+        self._equation = fun.__name__
 
-        # pylint: disable=attribute-defined-outside-init
-        self._equation = "parse_test"
+        # set variable parameters starting values
         self._starting_values = self._parse_variables()
         print(self._starting_values)
         return reduced_fun
