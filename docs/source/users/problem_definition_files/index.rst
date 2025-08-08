@@ -17,10 +17,11 @@ More information on the supported formats can be found on the following pages.
 
     cutest
     native
-    multifit
+    mantid
     nist
     horace
     hogben
+    bal
 
 Detecting problem file type
 ===========================

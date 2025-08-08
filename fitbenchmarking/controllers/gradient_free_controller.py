@@ -15,65 +15,76 @@ class GradientFreeController(Controller):
     """
 
     algorithm_check = {
-        'all': ['HillClimbingOptimizer',
-                'RepulsingHillClimbingOptimizer',
-                'SimulatedAnnealingOptimizer',
-                'RandomSearchOptimizer',
-                'RandomRestartHillClimbingOptimizer',
-                'RandomAnnealingOptimizer',
-                'ParallelTemperingOptimizer',
-                'ParticleSwarmOptimizer',
-                'EvolutionStrategyOptimizer',
-                'BayesianOptimizer',
-                'TreeStructuredParzenEstimators',
-                'DecisionTreeOptimizer'],
-        'ls': [],
-        'deriv_free': ['HillClimbingOptimizer',
-                       'RepulsingHillClimbingOptimizer',
-                       'SimulatedAnnealingOptimizer',
-                       'RandomSearchOptimizer',
-                       'RandomRestartHillClimbingOptimizer',
-                       'RandomAnnealingOptimizer',
-                       'ParallelTemperingOptimizer',
-                       'ParticleSwarmOptimizer',
-                       'EvolutionStrategyOptimizer',
-                       'BayesianOptimizer',
-                       'TreeStructuredParzenEstimators',
-                       'DecisionTreeOptimizer'],
-        'general': ['HillClimbingOptimizer',
-                    'RepulsingHillClimbingOptimizer',
-                    'SimulatedAnnealingOptimizer',
-                    'RandomSearchOptimizer',
-                    'RandomRestartHillClimbingOptimizer',
-                    'RandomAnnealingOptimizer',
-                    'ParallelTemperingOptimizer',
-                    'ParticleSwarmOptimizer',
-                    'EvolutionStrategyOptimizer',
-                    'BayesianOptimizer',
-                    'TreeStructuredParzenEstimators',
-                    'DecisionTreeOptimizer'],
-        'simplex': [],
-        'trust_region': [],
-        'levenberg-marquardt': [],
-        'gauss_newton': [],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': ['HillClimbingOptimizer',
-                                'RepulsingHillClimbingOptimizer',
-                                'SimulatedAnnealingOptimizer',
-                                'RandomSearchOptimizer',
-                                'RandomRestartHillClimbingOptimizer',
-                                'RandomAnnealingOptimizer',
-                                'ParallelTemperingOptimizer',
-                                'ParticleSwarmOptimizer',
-                                'EvolutionStrategyOptimizer',
-                                'BayesianOptimizer',
-                                'TreeStructuredParzenEstimators',
-                                'DecisionTreeOptimizer'],
-        'MCMC': []}
+        "all": [
+            "HillClimbingOptimizer",
+            "RepulsingHillClimbingOptimizer",
+            "SimulatedAnnealingOptimizer",
+            "RandomSearchOptimizer",
+            "RandomRestartHillClimbingOptimizer",
+            "RandomAnnealingOptimizer",
+            "ParallelTemperingOptimizer",
+            "ParticleSwarmOptimizer",
+            "EvolutionStrategyOptimizer",
+            "BayesianOptimizer",
+            "TreeStructuredParzenEstimators",
+            "DecisionTreeOptimizer",
+        ],
+        "ls": [],
+        "deriv_free": [
+            "HillClimbingOptimizer",
+            "RepulsingHillClimbingOptimizer",
+            "SimulatedAnnealingOptimizer",
+            "RandomSearchOptimizer",
+            "RandomRestartHillClimbingOptimizer",
+            "RandomAnnealingOptimizer",
+            "ParallelTemperingOptimizer",
+            "ParticleSwarmOptimizer",
+            "EvolutionStrategyOptimizer",
+            "BayesianOptimizer",
+            "TreeStructuredParzenEstimators",
+            "DecisionTreeOptimizer",
+        ],
+        "general": [
+            "HillClimbingOptimizer",
+            "RepulsingHillClimbingOptimizer",
+            "SimulatedAnnealingOptimizer",
+            "RandomSearchOptimizer",
+            "RandomRestartHillClimbingOptimizer",
+            "RandomAnnealingOptimizer",
+            "ParallelTemperingOptimizer",
+            "ParticleSwarmOptimizer",
+            "EvolutionStrategyOptimizer",
+            "BayesianOptimizer",
+            "TreeStructuredParzenEstimators",
+            "DecisionTreeOptimizer",
+        ],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": [],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [
+            "HillClimbingOptimizer",
+            "RepulsingHillClimbingOptimizer",
+            "SimulatedAnnealingOptimizer",
+            "RandomSearchOptimizer",
+            "RandomRestartHillClimbingOptimizer",
+            "RandomAnnealingOptimizer",
+            "ParallelTemperingOptimizer",
+            "ParticleSwarmOptimizer",
+            "EvolutionStrategyOptimizer",
+            "BayesianOptimizer",
+            "TreeStructuredParzenEstimators",
+            "DecisionTreeOptimizer",
+        ],
+        "MCMC": [],
+    }
 
-    controller_name = 'gradient_free'
+    controller_name = "gradient_free"
+
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -85,7 +96,6 @@ class GradientFreeController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self._status = None
         self.search_space = None
         self.initialize = None
@@ -98,8 +108,9 @@ class GradientFreeController(Controller):
 
         if self.value_ranges is None or np.any(np.isinf(self.value_ranges)):
             raise MissingBoundsError(
-                "Gradient-Free-Optimizers requires finite bounds "
-                "on all parameters")
+                "Gradient-Free-Optimizers requires "
+                "finite bounds on all parameters"
+            )
 
         # set search_space to be the space where the minimizer can search
         # for the best parameters i.e. parameter bounds
@@ -108,9 +119,12 @@ class GradientFreeController(Controller):
 
         # set dictionary of initial parameter values to pass to gfo search
         # function
-        param_dict = {self.problem.param_names[i]: self.initial_params[i]
-                      for i in range(len(self.initial_params))}
+        param_dict = {
+            self.problem.param_names[i]: self.initial_params[i]
+            for i in range(len(self.initial_params))
+        }
 
+        self.iteration_count = 1000
         self.initialize = {"warm_start": param_dict}
 
     def _feval(self, p):
@@ -139,7 +153,7 @@ class GradientFreeController(Controller):
         method_to_call = getattr(gfo, self.minimizer)
 
         opt = method_to_call(self.search_space)
-        opt.search(self._feval, n_iter=1000, verbosity=False)
+        opt.search(self._feval, n_iter=self.iteration_count, verbosity=False)
         self.results = opt.best_para
         self._status = 0 if self.results is not None else 1
 

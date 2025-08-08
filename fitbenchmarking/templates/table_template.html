@@ -11,6 +11,16 @@
     <script type="text/javascript" src="{{ dropdown_js }}"></script>
     <script id="MathJax-script" async src="{{ mathjax }}"></script>
     <script type="text/javascript" src="{{ table_js }}"></script>
+    <script>        
+        // When the table page loads, read the selected runtime metric
+        // and update the display of the runtime rows accordingly.
+        document.addEventListener("DOMContentLoaded", () => {
+            const metric = sessionStorage.getItem("selected_runtime_metric");
+            if (metric) {
+                update_runtime(metric);
+            }
+        });
+    </script>
     <head>
         <title>{{ run_name }}Fitbenchmark Results Table</title>
     </head>
@@ -40,7 +50,12 @@
                         <center>
                             <div>
                                 {{ problem_dropdown }}
+                                {{ costfunc_dropdown }}
+                                {{ software_dropdown }}
                                 {{ minimizer_dropdown }}
+                            </div>
+                            <div class="checkbox-row">
+                                {{ runtime_dropdown }}
                                 {{ probsize_checkbox }}
                             </div>
                         </center>
@@ -60,19 +75,15 @@
                             {{ table }}
                         </div>
                         </center>
-                        <p>
-                            Clicking a result in the tables will give more details,
-                            such as graphs of the fit against the data and the parameters that the minimizer found.
-                        </p>
-                        <p>
-                            Clicking the problem names will take you to details of the best minimizer.
-                        </p>
-                        <p>
-                            Clicking the software name will take you to FitBenchmarking Read the Docs documentation for the selected software.
-                        </p>
-                        <p>
-                            Hovering over each minimizer name will display its matching algorithm types out of those selected in options.
-                        </p>
+                    <div class="info-box">
+                        <p><b>Important Information:</b></p>
+                        <ul>
+                            <li>Clicking a result in the tables will provide more details, such as graphs of the fit against the data and the parameters found.</li>
+                            <li>Clicking the problem names will take you to details of the best minimizer.</li>
+                            <li>Clicking the software name will take you to the FitBenchmarking documentation for the selected software.</li>
+                            <li>Hovering over each minimizer name will display its matching algorithm types out of those selected in options.</li>
+                        </ul>
+                    </div>
                         {% if report_failed_min %}
                             <h3>Failed minimizers</h3>
                             <p>
@@ -114,16 +125,16 @@
                             {% endif %}
                             <h3>Errors</h3>
                             <p>
-                                The superscripts in the tables denote current error handling within FitBenchmarking.
-                                Currently the errors correspond to:
+                                The <b>superscripts</b> in the tables denote current error handling within FitBenchmarking.
+                                Currently the <span class='pill'>errors</span> correspond to:
                             </p>
-                            <table style="width:60%">
+                            <table class="error-table">
                                 <tr>
                                     <th>Error flag</th>
                                     <th>Error message</th>
                                 </tr>
                                 {% for flag, message in error_message.items() %}
-                                    <tr>
+                                    <tr class="{% if loop.index is even %}even-row{% else %}odd-row{% endif %}">
                                         <td>{{ flag }}</td>
                                         <td>{{ message }}</td>
                                     </tr>
@@ -164,24 +175,23 @@
                                     </div>
                                 </div>
                                 <p id="profiles_info" style={{"display:none" if n_solvers_large else "display:block"}}>
-                                    Fits are taken from all benchmarks, so if FitBenchmarking is run with
-                                    ``n`` problems and ``m`` cost functions, the resulting profile plots will have
-                                    ``n*m`` steps on the y-axis.
-                                    <br>
-                                    This is a Dolan-Moré performance profile.
-                                    The solvers appearing in the top left corner may be considered the best
-                                    performing on this test set.
-                                    See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.
-                                    <br>
-                                    <br>
-                                    <b>
-                                        The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
-                                        or hidden by unselecting the minimizer in the legend.
-                                        However, the whole graph highly depends on the best minimizer (the one in the top left corner), that is,
-                                        each line is computed with respect to the best minimizer and should only be compared to the latter (rather
-                                        than to any other line in the graph). Currently, if a line is removed, the graph is not recalculated, which
-                                        means care should be taken in interpreting results after having removed lines.
-                                    </b>
+                                    <div class="info-box">
+                                        <p><b>Important Information:</b></p>
+                                        <ul>
+                                            <li> Fits are taken from all benchmarks, so if FitBenchmarking is run with
+                                                <em>n</em> <b>problems</b> and <em>m</em> <b>cost functions</b>, the resulting profile plots will have
+                                                <em>n * m</em> <b>steps</b> on the y-axis.</li>
+                                            <li>This is a Dolan-Moré performance profile.
+                                                The solvers appearing in the <b>top left corner</b> may be considered the <b>best</b> performing on this test set.
+                                                See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.</li>
+                                        </ul>
+                                        <br>
+                                        <p>The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
+                                            or hidden by unselecting the minimizer in the legend. If a solver is removed through the dropdown,
+                                            the graph gets recalculated based on the best minimizer among the ones shown. On the other hand, if a solver
+                                            is unselected in the legend, the line gets temporarily hidden and the plot is not recalculated.
+                                            <b>We recommend only analysing graphs where lines are removed via the dropdown.</b></p>
+                                    </div>
                                 </p>
                             </div>
                         </section>

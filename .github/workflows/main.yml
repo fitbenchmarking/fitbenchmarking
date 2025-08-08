@@ -17,154 +17,155 @@ on:
 
 jobs:
   default_system_linux:
-    name: 'Default System Tests (Linux)'
-    runs-on: 'ubuntu-latest'
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
+    name: Default System Tests (Linux)
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    concurrency:
+      group: default_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
-      run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
-    - name: 'Running Tests'
-      run: |
-        ci/system_tests_default.sh
-    - name: 'Upload Test Results'
-      if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
       with:
+        python-version: '3.13'
+        check-latest: true
+    - name: Install dependencies
+      run: |
+        pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
+        pip install --upgrade .[dev]
+    - name: Run tests
+      run: ci/system_tests_default.sh
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: default_system_tests
         path: test-results/default_system_pytest.xml
 
   full_system_linux:
-    name: 'Full System Tests (Linux)'
-    runs-on: 'ubuntu-latest'
+    name: Full System Tests (Linux)
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    concurrency:
+      group: full_system_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
+      uses: actions/checkout@v4
+    - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install pybind11[global]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
-    - name: 'Running Tests'
-      run: |
-        ci/system_tests.sh
-    - name: 'Upload Test Results'
+    - name: Run tests
+      run: ci/system_tests.sh
+    - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: full_system_tests
         path: test-results/full_system_pytest.xml
 
-  default_unit_linux:
-    name: 'Default Unit Tests (Linux)'
-    runs-on: 'ubuntu-latest'
-    container:
-      image: 'fitbenchmarking/fitbenchmarking-deps:latest'
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
-      run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install -r requirements.txt
-    - name: 'Running Tests'
-      run: |
-        ci/unit_tests_default.sh
-    - name: 'Upload Test Results'
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        path: test-results/default_unit_pytest.xml
-
   full_unit_linux:
-    name: 'Full Unit Tests (Linux)'
-    runs-on: 'ubuntu-latest'
+    name: Full Unit Tests (Linux)
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    concurrency:
+      group: full_unit_linux-${{ github.ref }}
+      cancel-in-progress: true
     container:
-      image: 'fitbenchmarking/fitbenchmarking-extras:latest'
+      image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras:latest'
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Installing
+      uses: actions/checkout@v4
+    - name: Install dependencies
       run: |
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient_free,levmar,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
-        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade -r requirements.txt
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install pybind11[global]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install .[bumps,DFO,gofit,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte,hogben]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install --upgrade .[dev]
+        sudo -HE --preserve-env=PATH $VIRTUAL_ENV/bin/pip install "numpy<2.0"
         mkdir -p $MASTSIF
         mkdir -p $PYCUTEST_CACHE
         sudo apt update
         sudo apt install -y curl
-    - name: 'Running Tests'
+    - name: Run tests
       run: |
         ci/unit_tests.sh
-    - name: 'Submit Coverage'
+    - name: Submit coverage
+      if: always()
       uses: coverallsapp/github-action@v2
       with:
         file: coverage.lcov
-        compare-ref: master
+        compare-sha: ${{ github.event.pull_request.base.sha }}
         git-commit: ${{ github.event.pull_request.head.sha }}
-    - name: 'Upload Test Results'
+    - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
+        name: full_unit_tests
         path: test-results/full_unit_pytest.xml
 
-  linting_linux:
-    name: 'Linting Tests (Linux)'
-    runs-on: 'ubuntu-latest'
-    steps:
-    - name: 'Checkout code'
-      uses: actions/checkout@v3
-    - name: 'Choose Python Version'
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
-    - name: 'Installing'
-      run: |
-        python -m pip install --upgrade pip==20.0.2
-        python -m pip install --upgrade wheel
-        pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
-        pip install -r requirements.txt
-    - name: 'Run Linting'
-      run: |
-        ci/linting_tests.sh
-
-  default_unit_windows:
-    name: 'Default Unit Tests (Windows)'
-    runs-on: 'windows-latest'
+  default_unit_tests:
+    name: Default Unit Tests (Linux)
+    if: github.event.repository.fork == false
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.9', '3.13']
+    runs-on: ubuntu-latest
+    concurrency:
+      group: default_unit_tests-${{ matrix.python }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-    - name: 'Choose Python Version'
-      uses: actions/setup-python@v4
+      uses: actions/checkout@v4
+    - name: Install python
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.8'
-    - name: Installing
+        python-version: ${{ matrix.python }}
+        check-latest: true
+    - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install wheel
-        python -m pip install .[bumps,DFO,gofit,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
-        python -m pip install -r requirements.txt
-    - name: 'Running Tests'
-      run: |
-        bash ci/unit_tests_default.sh
+        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install --upgrade .[dev]
+    - name: Run linux tests
+      if: runner.os == 'Linux'
+      run: ci/unit_tests_default.sh
+    - name: Upload test results
+      if: matrix.python == '3.13'
+      uses: actions/upload-artifact@v4
+      with:
+        name: default_unit_tests
+        path: test-results/default_unit_pytest.xml
 
   publish-test-results:
-    name: 'Publish Test Results'
-    needs: [default_system_linux, full_system_linux, default_unit_linux, full_unit_linux]
-    runs-on: 'ubuntu-latest'
-    if: always()
+    name: Publish Test Results
+    if: github.event.repository.fork == false && always()
+    needs: [default_system_linux, full_system_linux, default_unit_tests, full_unit_linux]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish_test_results-${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - name: 'Download Artifacts'
-        uses: actions/download-artifact@v3
-        with:
-          path: artifacts
-
-      - name: 'Publish Test Results'
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          check_name: 'Unit & System Test Results'
-          files: artifacts/**/*.xml
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        check_name: Unit & system test results
+        files: artifacts/**/*.xml

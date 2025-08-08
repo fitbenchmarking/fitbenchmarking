@@ -1,4 +1,4 @@
-.. fitting_report:
+.. _fitting_report:
 
 ==============
 Fitting Report

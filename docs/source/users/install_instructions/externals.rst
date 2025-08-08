@@ -15,12 +15,11 @@ Ceres Solver
 ------------
 
 Ceres Solver is used as a fitting software in FitBenchmarking, and is called via the
-PyCeres interface.
+pyceres interface.
 
-Install instructions can be found on the `PyCeres <https://github.com/Edwinem/ceres_python_bindings#recommended-build-alongside-ceres>`__ Github page and 
+Install instructions can be found on the `pyceres <https://github.com/cvg/pyceres#installation>`__ Github page and 
 `Ceres Solver documentation <http://ceres-solver.org/installation.html>`__ 
 
-Please note that the ``PYCERES_LOCATION`` environment variable must be set.
 
 CUTEst
 ------
@@ -33,6 +32,13 @@ following the instructions outlined on the `pycutest documentation <https://jfow
 
 Please note that the ``PYCUTEST_CACHE`` environment variable must be set, and it must be
 in the ``PYTHONPATH``.
+
+GALAHAD
+-------
+
+GALAHAD is used as a fitting software in FitBenchmarking.
+
+Install instructions can be found in the `GALAHAD README.md <https://github.com/ralna/GALAHAD#python-interface>`__.
 
 GSL
 ---
@@ -50,9 +56,16 @@ Horace
 ------
 
 Horace can be installed by following the instructions `on the Horace
-website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`__.
+website <https://pace-neutrons.github.io/Horace/v4.0.0/introduction/Download_and_setup.html>`__.
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
+
+SpinW
+-----
+
+SpinW can be installed by following the instructions `on the SpinW website
+<https://spinw.org/IntroToSpinW/#/install1>`__. In addition, MATLAB and the MATLAB
+engine must be installed following the :ref:`instructions given below<matlab-install>`.
 
 .. _levmar-install:
 
@@ -60,18 +73,10 @@ Levmar
 ------
 
 Levmar is available on pip, however the latest release will only work up to Python 3.8.
-In order to use Levmar with newer versions of python, you are required to clone the
-repository and build it locally. This is fast and has been tested on Ubuntu 20.04.
+The python interface to levmar is unmaintained and no longer easy to install on the latest versions of python.
+The bindings may be installable from the `github repo <https://github.com/bjodah/levmar>`__ though
+we have not tested them on python >= 3.12.
 
-Instructions for linux are below, for other operating systems the process will be the same.
-
-```
-git clone git@github.com:bjodah/levmar.git
-cd levmar
-pip install .
-cd ..
-rm -rf levmar
-```
 
 Mantid
 ------
@@ -86,16 +91,17 @@ at `<https://download.mantidproject.org/>`_.
 MATLAB
 ------
 
-MATLAB is available to use as fitting software in FitBenchmarking, and is
-called via the MATLAB Engine API for Python.
+MATLAB is available to use as fitting software in FitBenchmarking, and is called via the MATLAB Engine API for Python. Therefore, 
+to use MATLAB within Fitbenchmarking, both MATLAB and the MATLAB engine must be installed. Official installation instructions 
+for MATLAB are available at `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. For more 
+information on how to install MATLAB through WSL, please refer to :ref:`external-instructions-matlab`. 
 
-To use this fitting software, both MATLAB and the MATLAB engine must be
-installed. Installation instructions for MATLAB are available at
-`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_,
-and instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
-Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how to install 
-these packages by following the link provided: :ref:`here <extra_dependencies>`.
+Instructions for installing and setting up the MATLAB engine are
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_. 
+
+Furthermore, MATLAB requires additional Python packages to be installed. You can find the instructions on how 
+to install these packages by following the link provided: :ref:`here <extra_dependencies>`.
+
 
 RALFit
 ------
@@ -105,7 +111,7 @@ RALFit is available to use as fitting software.
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
 
 Theseus
-------
+-------
 
 Theseus is used as a fitting software in FitBenchmarking, and is called via theseus-ai python
 module which requries pytorch

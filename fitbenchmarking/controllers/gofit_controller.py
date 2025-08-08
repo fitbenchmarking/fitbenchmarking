@@ -1,14 +1,16 @@
 """
 Implements a controller for global optimization algorithms.
 """
-import numpy as np
 
+import numpy as np
 from gofit import alternating, multistart, regularisation
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
-from fitbenchmarking.utils.exceptions import UnknownMinimizerError
-from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
+from fitbenchmarking.utils.exceptions import (
+    IncompatibleMinimizerError,
+    MissingBoundsError,
+    UnknownMinimizerError,
+)
 
 
 class GOFitController(Controller):
@@ -17,22 +19,25 @@ class GOFitController(Controller):
     """
 
     algorithm_check = {
-        'all': ['alternating', 'multistart', 'regularisation'],
-        'ls': ['alternating', 'multistart', 'regularisation'],
-        'deriv_free': [],
-        'general': [],
-        'simplex': [],
-        'trust_region': [],
-        'levenberg-marquardt': ['regularisation'],
-        'gauss_newton': ['regularisation'],
-        'bfgs': [],
-        'conjugate_gradient': [],
-        'steepest_descent': [],
-        'global_optimization': ['alternating', 'multistart'],
-        'MCMC': []
+        "all": ["alternating", "multistart", "regularisation"],
+        "ls": ["alternating", "multistart", "regularisation"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": [],
+        "levenberg-marquardt": ["regularisation"],
+        "gauss_newton": ["regularisation"],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": ["alternating", "multistart"],
+        "MCMC": [],
     }
 
-    jacobian_enabled_solvers = ['multistart', 'regularisation']
+    jacobian_enabled_solvers = ["multistart", "regularisation"]
+
+    support_for_bounds = True
+    no_bounds_minimizers = ["regularisation"]
 
     def __init__(self, cost_func):
         """
@@ -44,8 +49,6 @@ class GOFitController(Controller):
 
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ['regularisation']
         self._options = None
         self._nsplit = None
         self._p0 = None
@@ -60,26 +63,30 @@ class GOFitController(Controller):
         """
 
         # these are the GOFit defaults (for now)
-        self._options = {'maxit': 200,
-                         'samples': 100,
-                         'eps_r': 1e-5,
-                         'eps_g': 1e-4,
-                         'eps_s': 1e-8
-                         }
+        self._options = {
+            "maxit": 200,
+            "samples": 100,
+            "eps_r": 1e-5,
+            "eps_g": 1e-4,
+            "eps_s": 1e-8,
+        }
 
         if self.value_ranges is None and self.minimizer != "regularisation":
             raise MissingBoundsError(
-                "GOFit global minimizers require bounds on parameters")
+                "GOFit global minimizers require bounds on parameters"
+            )
 
         # set split point for CrystalField problems
         if self.minimizer == "alternating":
             try:
                 self._nsplit = self.problem.param_names.index(
-                    'IntensityScaling')
+                    "IntensityScaling"
+                )
             except ValueError as minimizer_incompatible:
                 raise IncompatibleMinimizerError(
                     "alternating minimizer currently only supports "
-                    "CrystalField problems") from minimizer_incompatible
+                    "CrystalField problems"
+                ) from minimizer_incompatible
 
         if self.minimizer != "regularisation":
             low, high = zip(*self.value_ranges)
@@ -100,24 +107,38 @@ class GOFitController(Controller):
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
             xopt, status = alternating(
-                m, n, self._nsplit, self._p0, self._pl, self._pu,
-                self.cost_func.eval_r, **self._options)
+                m,
+                n,
+                self._nsplit,
+                self._p0,
+                self._pl,
+                self._pu,
+                self.cost_func.eval_r,
+                **self._options,
+            )
         elif self.minimizer == "multistart":
             if not self.cost_func.jacobian.use_default_jac:
-                self._options['jac'] = self.cost_func.jac_res
+                self._options["jac"] = self.cost_func.jac_res
             xopt, status = multistart(
-                m, n, self._pl, self._pu, self.cost_func.eval_r,
-                **self._options)
+                m,
+                n,
+                self._pl,
+                self._pu,
+                self.cost_func.eval_r,
+                **self._options,
+            )
         elif self.minimizer == "regularisation":
-            del self._options['eps_r']
-            del self._options['samples']
+            del self._options["eps_r"]
+            del self._options["samples"]
             if not self.cost_func.jacobian.use_default_jac:
-                self._options['jac'] = self.cost_func.jac_res
+                self._options["jac"] = self.cost_func.jac_res
             xopt, status = regularisation(
-                m, n, self._p0, self.cost_func.eval_r, **self._options)
+                m, n, self._p0, self.cost_func.eval_r, **self._options
+            )
         else:
             raise UnknownMinimizerError(
-                f"No {self.minimizer} minimizer for GOFit")
+                f"No {self.minimizer} minimizer for GOFit"
+            )
 
         self._popt = xopt
         self._status = status

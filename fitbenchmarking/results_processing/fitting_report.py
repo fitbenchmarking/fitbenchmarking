@@ -2,10 +2,10 @@
 Set up and build the fitting reports for various types of problems.
 """
 
-
 import inspect
 import os
 
+import numpy as np
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -26,9 +26,9 @@ def create(results, support_pages_dir, options):
     """
 
     for prob_result in results:
-        create_prob_group(prob_result,
-                          support_pages_dir,
-                          options)
+        if np.isinf(prob_result.accuracy) and np.isinf(prob_result.runtime):
+            continue
+        create_prob_group(prob_result, support_pages_dir, options)
 
 
 def create_prob_group(result, support_pages_dir, options):
@@ -47,61 +47,89 @@ def create_prob_group(result, support_pages_dir, options):
     """
     prob_name = result.sanitised_name
 
-    file_name = f'{prob_name}_{result.costfun_tag}_' \
-                f'{result.sanitised_min_name(with_software=True)}.html'
+    file_name = (
+        f"{prob_name}_{result.costfun_tag}_"
+        f"{result.sanitised_min_name(with_software=True)}.html"
+    )
     file_name = file_name.lower()
     file_path = os.path.join(support_pages_dir, file_name)
 
     # Bool for print message/insert image
-    fit_success = init_success = pdf_success = options.make_plots
+    fit_success = pdf_success = options.make_plots
 
     if options.make_plots:
-        fig_fit, fig_start, fig_pdf = get_figure_paths(result)
-        fit_success = fig_fit != ''
-        init_success = fig_start != ''
-        pdf_success = fig_pdf != ''
+        fig_fit, fig_pdf = get_figure_paths(result)
+        fit_success = fig_fit != ""
+        pdf_success = fig_pdf != ""
         if not fit_success:
             fig_fit = result.figure_error
-        if not init_success:
-            fig_start = result.figure_error
         if not pdf_success:
             fig_pdf = result.figure_error
     else:
-        fig_fit = fig_start = fig_pdf = 'Re-run with make_plots ' \
-            'set to yes in the ini file to generate plots.'
+        fig_fit = fig_pdf = (
+            "Re-run with make_plots set to yes "
+            "in the ini file to generate plots."
+        )
 
-    run_name = f"{options.run_name}: " if options.run_name else ''
+    run_name = f"{options.run_name}: " if options.run_name else ""
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
     env = Environment(loader=FileSystemLoader(template_dir))
     css = get_css(options, support_pages_dir)
     template = env.get_template("fitting_report_template.html")
+    n_params = result.get_n_parameters()
+    list_params = n_params < 100
 
-    with open(file_path, 'w') as fh:
-        fh.write(template.render(
-            css_style_sheet=css['main'],
-            table_style=css['table'],
-            custom_style=css['custom'],
-            title=result.name,
-            run_name=run_name,
-            description=result.problem_desc,
-            equation=result.equation,
-            initial_guess=result.ini_function_params,
-            minimizer=result.modified_minimizer_name(),
-            accuracy=f"{result.accuracy:.4g}",
-            runtime=f"{result.runtime:.4g}",
-            emissions=f"{result.emissions:.4g}",
-            is_best_fit=result.is_best_fit,
-            initial_plot_available=init_success,
-            initial_plot=fig_start,
-            min_params=result.fin_function_params,
-            fitted_plot_available=fit_success,
-            fitted_plot=fig_fit,
-            pdf_plot_available=pdf_success,
-            pdf_plot=fig_pdf,
-            n_params=result.get_n_parameters(),
-            n_data_points=result.get_n_data_points()))
+    iteration_count = (
+        str(result.iteration_count)
+        if result.iteration_count
+        else "not available"
+    )
+
+    func_evals = (
+        str(result.func_evals) if result.func_evals else "not available"
+    )
+
+    energy_disp = (
+        "N/A" if np.isnan(result.energy) else f"{result.energy:.4g} kWh"
+    )
+
+    with open(file_path, "w", encoding="utf-8") as fh:
+        fh.write(
+            template.render(
+                css_style_sheet=css["main"],
+                table_style=css["table"],
+                custom_style=css["custom"],
+                title=result.name,
+                run_name=run_name,
+                description=result.problem_desc,
+                equation=result.equation,
+                initial_guess=result.ini_function_params,
+                minimizer=result.modified_minimizer_name(),
+                accuracy=f"{result.accuracy:.4g}",
+                runtime_metric=result.runtime_metric,
+                mean_runtime=f"{result.mean_runtime:.4g}",
+                minimum_runtime=f"{result.minimum_runtime:.4g}",
+                maximum_runtime=f"{result.maximum_runtime:.4g}",
+                first_runtime=f"{result.first_runtime:.4g}",
+                median_runtime=f"{result.median_runtime:.4g}",
+                harmonic_runtime=f"{result.harmonic_runtime:.4g}",
+                trim_runtime=f"{result.trim_runtime:.4g}",
+                energy=energy_disp,
+                is_best_fit=result.is_best_fit,
+                min_params=result.fin_function_params,
+                fitted_plot_available=fit_success,
+                fitted_plot=fig_fit,
+                pdf_plot_available=pdf_success,
+                pdf_plot=fig_pdf,
+                n_params=n_params,
+                list_params=list_params,
+                n_data_points=result.get_n_data_points(),
+                iteration_count=iteration_count,
+                func_evals=func_evals,
+            )
+        )
 
     result.fitting_report_link = os.path.abspath(file_path)
 
@@ -116,12 +144,10 @@ def get_figure_paths(result):
     :return: the paths to the required figures
     :rtype: tuple(str, str)
     """
-
-    figures_dir = "figures"
-
-    output = []
-    for link in [result.figure_link, result.start_figure_link,
-                 result.posterior_plots]:
-        output.append(os.path.join(figures_dir, link) if link else '')
-
-    return output[0], output[1], output[2]
+    return tuple(
+        os.path.join("figures", link) if link else ""
+        for link in [
+            result.figure_link,
+            result.posterior_plots,
+        ]
+    )

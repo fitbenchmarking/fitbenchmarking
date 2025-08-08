@@ -4,7 +4,7 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-We recommend using |Python 3.7.1+| for running/installing Fitbenchmarking.
+We recommend using |Python 3.9.1+| for running/installing Fitbenchmarking.
 The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
@@ -78,13 +78,13 @@ or
 where valid strings ``option-x`` are:
 
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
-* ``DFO`` -- installs the `DFO-LS <http://people.maths.ox.ac.uk/robertsl/dfols/userguide.html>`_ and `DFO-GN <http://people.maths.ox.ac.uk/robertsl/dfogn/userguide.html>`_ fitting packages.
-* ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package.
-* ``gradient_free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
+* ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`_ fitting package.
+* ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package (suitable for Python up to 3.11).
+* ``gradient-free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
 * ``mantid`` -- installs the `h5py <https://pypi.org/project/h5py/>`_ and `pyyaml <https://pypi.org/project/PyYAML/>`_ modules.
 * ``matlab`` -- installs the `dill <https://pypi.org/project/dill/>`_ module required to run matlab controllers in fitbenchmarking
-* ``minuit`` -- installs the `Minuit <http://seal.web.cern.ch/seal/snapshot/work-packages/mathlibs/minuit/>`_ fitting package.
+* ``minuit`` -- installs the `Minuit <https://scikit-hep.org/iminuit/>`_ fitting package.
 * ``SAS`` -- installs the `Sasmodels <https://github.com/SasView/sasmodels>`_ fitting package and the `tinycc <https://pypi.org/project/tinycc/>`_ module.
 * ``numdifftools`` -- installs the `numdifftools <https://numdifftools.readthedocs.io/en/latest/index.html>`_ numerical differentiation package.
 * ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
@@ -93,7 +93,7 @@ where valid strings ``option-x`` are:
 * ``hogben`` -- installs the `HOGBEN <https://github.com/jfkcooper/HOGBEN>`__ package.
 
 
-.. |Python 3.7.1+| image:: https://img.shields.io/badge/python-3.7.1+-blue.svg
-   :alt: Python 3.7.1+
+.. |Python 3.9.1+| image:: https://img.shields.io/badge/python-3.9.1+-blue.svg
+   :alt: Python 3.9.1+
    :target: https://www.python.org/downloads/
 

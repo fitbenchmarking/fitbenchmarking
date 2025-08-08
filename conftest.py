@@ -1,7 +1,8 @@
 import pytest
 
 # set choices for --test-type
-test_choices = ['all', 'default', 'matlab']
+test_choices = ["all", "default", "matlab"]
+
 
 def pytest_addoption(parser):
     """
@@ -9,8 +10,11 @@ def pytest_addoption(parser):
     as an input
     """
     parser.addoption(
-        "--test-type", action="store", default="all", type=str,
-        choices=test_choices
+        "--test-type",
+        action="store",
+        default="all",
+        type=str,
+        choices=test_choices,
     )
 
 
@@ -18,7 +22,7 @@ def pytest_configure(config):
     """
     Sets variable `pytest.test_type` to be used within testing
     """
-    pytest.test_type = config.getoption('--test-type')
+    pytest.test_type = config.getoption("--test-type")
 
 
 def run_for_test_types(TEST_TYPE, *test_types):
@@ -36,7 +40,8 @@ def run_for_test_types(TEST_TYPE, *test_types):
              skipped based on chosen TEST_TYPE
     :rtype: callable
     """
-    to_skip = [type for type in test_choices
-               if type not in test_types]
-    return pytest.mark.skipif(TEST_TYPE in to_skip,
-                              reason="Tests can't be run with selected test type")
+    to_skip = [type for type in test_choices if type not in test_types]
+    return pytest.mark.skipif(
+        TEST_TYPE in to_skip,
+        reason="Tests can't be run with selected test type",
+    )
