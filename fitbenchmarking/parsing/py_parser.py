@@ -3,6 +3,7 @@ This file implements a parser for python problem sets.
 """
 import inspect
 import os
+from functools import partial
 import sys
 import typing
 from importlib import import_module
@@ -13,7 +14,15 @@ from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 class PyParser(FitbenchmarkParser):
     """
     Parser for a python problem definition file.
+    The python function should be formatted as
+      f(x, fixed_parameters: dict, var1, var2, var3 ...)
     """
+
+    def _parse_fixed_args(self) -> list[dict]:
+        return self._parse_string("fixed_arguments")
+
+    def _parse_variables(self) -> list[dict]:
+        return self._parse_string("variable_arguments")
 
     def _create_function(self) -> typing.Callable:
         """
@@ -25,20 +34,24 @@ class PyParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
-
-        pf = self._parsed_func[0]
+        # import the function
+        pf: dict = self._parsed_func[0]
         path = os.path.join(os.path.dirname(self._filename), pf['module'])
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
         fun = getattr(module, pf['func'])
-        sig = inspect.signature(fun)
-        # parmas[0] should be x so start after.
-        p_names = list(sig.parameters.keys())[1:]
+        print(fun.__name__)
+        # get the fixed and variable function arguments
+        self.fixed_args = self._parse_fixed_args()[0]
+        print(self.fixed_args)
+        # define function which fixes variables
+        reduced_fun = partial(fun, fixed_parameters=self.fixed_args)
 
         # pylint: disable=attribute-defined-outside-init
-        self._equation = fun.__name__
-        self._starting_values = [{n: pf[n] for n in p_names}]
-        return fun
+        self._equation = "parse_test"
+        self._starting_values = self._parse_variables()
+        print(self._starting_values)
+        return reduced_fun
 
     def _get_equation(self) -> str:
         """
@@ -47,7 +60,7 @@ class PyParser(FitbenchmarkParser):
         :return: The equation in the problem definition file.
         :rtype: str
         """
-        return self._parsed_func[0]['func']
+        return self._equation
 
     def _get_starting_values(self) -> list:
         """
