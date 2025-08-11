@@ -112,6 +112,23 @@ class AOCLDAController(Controller):
         self._ub = None
         self._x = None
         self._status = None
+        
+        # All these options should be passed
+        self.maxit = 500       # Same as RALFit
+        self.ftol = 1e-5
+        self.abs_ftol = 1e-6   # Similar to Ceres?
+        self.gtol = 1e-8
+        self.abs_gtol = 1e-10  # Similar to Ceres?
+        self.xtol = 1e-8
+
+        # These are passed as a new jacobian type
+        # use_fd = False
+        # fd_step = 1e-7
+        # fd_ttol = 1e-4
+
+        # call-backs
+        self.aoclda_jac = self.jac_eval if self.cost_func.jacobian and not use_fd else None
+        self.aoclda_hes = self.hes_eval if self.cost_func.hessian else None
 
     def eval_r(_, x, r, data) -> int:
         """
@@ -146,8 +163,6 @@ class AOCLDAController(Controller):
         :return: evaluation flag
         :rtype: int
         """
-
-        # TODO jac_res returns a list of 1D numpy arrays
         J[:] = data.cost_func.jac_res(x)
         return 0
 
@@ -186,36 +201,36 @@ class AOCLDAController(Controller):
         # Use bytestrings explicitly as python 3 defaults to unicode.
         if self.minimizer == "gn":
             model = b"gauss-newton"  # self._options[b"model"] = 1
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"tr"  # self._options[b"type_of_method"] = 1
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"tr"    # self._options[b"type_of_method"] = 1
         elif self.minimizer == "gn_reg":
             model = b"gauss-newton"  # self._options[b"model"] = 1
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"reg"  # self._options[b"type_of_method"] = 2
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"reg"   # self._options[b"type_of_method"] = 2
         elif self.minimizer == "hybrid":
-            model = b"hybrid"  # self._options[b"model"] = 3
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"tr"  # self._options[b"type_of_method"] = 1
+            model = b"hybrid"        # self._options[b"model"] = 3
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"tr"    # self._options[b"type_of_method"] = 1
         elif self.minimizer == "hybrid_reg":
-            model = b"hybrid"  # self._options[b"model"] = 3
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"reg"  # self._options[b"type_of_method"] = 2
+            model = b"hybrid"        # self._options[b"model"] = 3
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"reg"   # self._options[b"type_of_method"] = 2
         elif self.minimizer == "newton":
             model = b"quasi-newton"  # self._options[b"model"] = 2
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"tr"  # self._options[b"type_of_method"] = 1
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"tr"    # self._options[b"type_of_method"] = 1
         elif self.minimizer == "newton_reg":
             model = b"quasi-newton"  # self._options[b"model"] = 2
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"reg"  # self._options[b"type_of_method"] = 2
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"reg"   # self._options[b"type_of_method"] = 2
         elif self.minimizer == "newton-tensor":
-            model = b"tensor-newton"  # self._options[b"model"] = 4
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"tr"  # self._options[b"type_of_method"] = 1
+            model = b"tensor-newton" # self._options[b"model"] = 4
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"tr"    # self._options[b"type_of_method"] = 1
         elif self.minimizer == "newton-tensor_reg":
-            model = b"tensor-newton"  # self._options[b"model"] = 4
-            method = b"galahad"  # self._options[b"nlls_method"] = 4
-            glob_strategy = b"reg"  # self._options[b"type_of_method"] = 2
+            model = b"tensor-newton" # self._options[b"model"] = 4
+            method = b"galahad"      # self._options[b"nlls_method"] = 4
+            glob_strategy = b"reg"   # self._options[b"type_of_method"] = 2
         else:
             raise UnknownMinimizerError(
                 f"No {self.minimizer} minimizer for AOCLDA"
@@ -240,74 +255,52 @@ class AOCLDAController(Controller):
             glob_strategy=glob_strategy,
             verbose=self.VERBOSE,
         )
+        
+        # Set initial iterate
+        self._x = np.array(
+            self.initial_params
+        )  # x has to be np.array and is overwritten!
 
     def fit(self):
         """
         Run problem with AOCLDA.
+        Note: only this method is timed
         """
-
-        maxit = 500  # Same as RALFit
-        # ftol = 1e-8  # TODO how to pass this option?
-        # abs_ftol = 1e-8  # TODO how to pass this option?
-        # gtol = 1e-8  # TODO how to pass this option?
-        # abs_gtol = 1e-5  # TODO how to pass this option?
-        # xtol = 2.22e-16  # TODO how to pass this option?
-
-        use_fd = False  # TODO how to pass this option?
-        # fd_step = 1e-7  # TODO how to pass this option?
-        # fd_ttol = 1e-4  # TODO how to pass this option?
-
-        jac = self.jac_eval if self.cost_func.jacobian and not use_fd else None
-
-        hes = self.hes_eval if self.cost_func.hessian else None
-
-        self._x = np.array(
-            self.initial_params
-        )  # x has to be np.array and is overwritten!
 
         try:
             self._handle.fit(
                 x=self._x,
                 fun=self.eval_r,
-                jac=jac,
-                hes=hes,
+                jac=self.aoclda_jac,
+                hes=self.aoclda_hes,
                 hep=None,
                 data=self,
-                maxit=maxit,
+                maxit=self.maxit,
+                xtol=self.xtol,
             )
-        # ftol=ftol,
-        # abs_ftol=abs_ftol,
-        # gtol=gtol,
-        # abs_gtol,
-        # xtol=xtol,
-        # fd_step=fd_step,
-        # fd_ttol=fd_ttol)
+        # ftol = self.ftol,
+        # abs_ftol = self.abs_ftol,
+        # gtol = self.gtol,
+        # abs_gtol = self.abs_gtol,
+        # fd_step = self.fd_step,
+        # fd_ttol = self.fd_ttol)
 
         except RuntimeWarning:  # FIXME this is not caught
             #    2: Software run but didn't converge to solution
             #    6: Solver has exceeded maximum allowed runtime
             self._status = 2
+            
         except Exception as e:
             if self.VERBOSE > 0:
                 print(e)
                 print(traceback.format_exc())
             self._status = 3  # Software raised an exception
+            
         else:
             #    0: Successfully converged
-            #    1: Software reported maximum number of iterations exceeded
-            #    5: Solution doesn't respect parameter bounds
-            ok = True
-            if self._lb is not None:
-                ok = ok and all(self._lb <= self._x)
-            if self._ub is not None:
-                ok = ok and all(self._ub >= self._x)
-
-            if maxit <= self._handle.n_iter:
-                self._status = 1
-            elif not ok:
-                self._status = 5
-            else:
-                self._status = 0
+            #    1: Software reported maximum number of iterations exceeded -> taken care by framework
+            #    5: Solution doesn't respect parameter bounds -> taken care by framework
+            self._status = 0
 
     def cleanup(self):
         """
