@@ -42,7 +42,6 @@ class NLLSCostFunc(BaseNLLSCostFunc):
                 f"len(x)={len(x)} and len(y)={len(y)}."
             )
         result = y - self.problem.eval_model(params=params, x=x)
-        result = self.subtitute_nans(result)
         # Flatten in case of a vector function
         return ravel(result)
 
