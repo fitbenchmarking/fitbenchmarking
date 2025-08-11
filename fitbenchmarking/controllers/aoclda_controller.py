@@ -122,7 +122,7 @@ class AOCLDAController(Controller):
         self.xtol = 1e-8
 
         # These are passed as a new jacobian type
-        # use_fd = False
+        use_fd = False
         # fd_step = 1e-7
         # fd_ttol = 1e-4
 
@@ -299,9 +299,10 @@ class AOCLDAController(Controller):
             self._status = 3  # Software raised an exception
 
         else:
-            #    0: Successfully converged
-            #    1: Software reported maximum number of iterations exceeded -> taken care by framework
-            #    5: Solution doesn't respect parameter bounds -> taken care by framework
+            # 0: Successfully converged
+            # Taken care by framework
+            # 1: Software reported maximum number of iterations exceeded
+            # 5: Solution doesn't respect parameter bounds -> taken care by framework
             self._status = 0
 
     def cleanup(self):
