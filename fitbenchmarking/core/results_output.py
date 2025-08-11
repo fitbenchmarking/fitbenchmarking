@@ -860,4 +860,4 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         )
     )
 
-    app.run(port=options.port)
+    app.run(host=options.ip_address, port=options.port)
