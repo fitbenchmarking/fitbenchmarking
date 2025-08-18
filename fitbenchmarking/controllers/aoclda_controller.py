@@ -25,6 +25,7 @@ https://github.com/amd/aocl-data-analytics
 """
 
 import traceback
+import warnings
 
 import numpy as np
 from aoclda.nonlinear_model import nlls
@@ -104,8 +105,6 @@ class AOCLDAController(Controller):
         """
         super().__init__(cost_func)
 
-        self.VERBOSE = 0
-
         # AOCLDA data
         self._handle = None
         self._lb = None
@@ -115,22 +114,11 @@ class AOCLDAController(Controller):
 
         # All these options should be passed
         self.maxit = 500  # Same as RALFit
-        self.ftol = 1e-5
-        self.abs_ftol = 1e-6  # Similar to Ceres?
-        self.gtol = 1e-8
-        self.abs_gtol = 1e-10  # Similar to Ceres?
+        # self.ftol = 1e-5
+        # self.abs_ftol = 1e-6  # Similar to Ceres?
+        # self.gtol = 1e-8
+        # self.abs_gtol = 1e-10  # Similar to Ceres?
         self.xtol = 1e-8
-
-        # These are passed as a new jacobian type
-        use_fd = False
-        # fd_step = 1e-7
-        # fd_ttol = 1e-4
-
-        # call-backs
-        self.aoclda_jac = (
-            self.jac_eval if self.cost_func.jacobian and not use_fd else None
-        )
-        self.aoclda_hes = self.hes_eval if self.cost_func.hessian else None
 
     def eval_r(_, x, r, data) -> int:
         """
@@ -198,7 +186,7 @@ class AOCLDAController(Controller):
 
         n_coef = len(self.initial_params)
         n_res = len(self.data_y)
-        # self.VERBOSE = 0 # inherit from -e parameter (print level 0..3)
+        VERBOSE = 0
 
         # Use bytestrings explicitly as python 3 defaults to unicode.
         if self.minimizer == "gn":
@@ -255,7 +243,7 @@ class AOCLDAController(Controller):
             model=model,
             method=method,
             glob_strategy=glob_strategy,
-            verbose=self.VERBOSE,
+            verbose=VERBOSE,
         )
 
         # Set initial iterate
@@ -268,13 +256,16 @@ class AOCLDAController(Controller):
         Run problem with AOCLDA.
         Note: only this method is timed
         """
-
-        try:
+        with warnings.catch_warnings(record=True) as self._status:
+            # Solver raises RuntimeWarning for
+            # 1: Software reported maximum number of iterations exceeded
+            # 2: Software run but didn't converge to solution
+            # these are handled in cleanup
             self._handle.fit(
                 x=self._x,
                 fun=self.eval_r,
-                jac=self.aoclda_jac,
-                hes=self.aoclda_hes,
+                jac=self.jac_eval,
+                hes=self.hes_eval,
                 hep=None,
                 data=self,
                 maxit=self.maxit,
@@ -283,27 +274,7 @@ class AOCLDAController(Controller):
                 # abs_ftol=self.abs_ftol,
                 # gtol=self.gtol,
                 # abs_gtol=self.abs_gtol,
-                # fd_step = self.fd_step,
-                # fd_ttol = self.fd_ttol
             )
-
-        except RuntimeWarning:  # FIXME this is not caught
-            #    2: Software run but didn't converge to solution
-            #    6: Solver has exceeded maximum allowed runtime
-            self._status = 2
-
-        except Exception as e:
-            if self.VERBOSE > 0:
-                print(e)
-                print(traceback.format_exc())
-            self._status = 3  # Software raised an exception
-
-        else:
-            # 0: Successfully converged
-            # Taken care by framework
-            # 1: Software reported maximum number of iterations exceeded
-            # 5: Solution doesn't respect parameter bounds -> taken care by framework
-            self._status = 0
 
     def cleanup(self):
         """
@@ -311,17 +282,21 @@ class AOCLDAController(Controller):
         will be read from.
         """
 
-        if (
-            self._status == 0
-            or self._status == 1
-            or self._status == 2
-            or self._status == 5
-        ):
-            self.iteration_count = self._handle.n_iter
-            self.func_evals = self._handle.n_eval["f"]  # "fd_f" also available
+        if self._status:
+            for warning in self._status:
+                if warning.category.__name__ == "RuntimeWarning":
+                    if str(warning.message)[31:59] == "Maximum number of iterations":
+                        self.flag = 1
+                        break
+                    else:
+                        self.flag = 2
+                        break
+                # ignore all other
+        else:
+            self.flag = 0
+            
+        self.iteration_count = self._handle.n_iter
+        self.func_evals = self._handle.n_eval["f"]  # "fd_f" also available
 
         # Final Params: The final values for the params from the minimizer
         self.final_params = self._x.tolist()
-
-        # Flag: error handling flag
-        self.flag = self._status
