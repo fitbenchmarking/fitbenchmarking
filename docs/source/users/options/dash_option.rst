@@ -30,4 +30,4 @@ Default is 127.0.0.1 .
 .. code-block:: rst
 
     [DASH]
-    port: 127.0.0.1
+    ip_address: 127.0.0.1
