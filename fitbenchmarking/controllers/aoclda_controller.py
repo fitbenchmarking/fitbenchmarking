@@ -24,7 +24,6 @@ Implements a controller for AMD AOCL Data Analytics NLLS solver
 https://github.com/amd/aocl-data-analytics
 """
 
-import traceback
 import warnings
 
 import numpy as np
@@ -285,7 +284,10 @@ class AOCLDAController(Controller):
         if self._status:
             for warning in self._status:
                 if warning.category.__name__ == "RuntimeWarning":
-                    if str(warning.message)[31:59] == "Maximum number of iterations":
+                    if (
+                        str(warning.message)[31:59]
+                        == "Maximum number of iterations"
+                    ):
                         self.flag = 1
                         break
                     else:
@@ -294,7 +296,7 @@ class AOCLDAController(Controller):
                 # ignore all other
         else:
             self.flag = 0
-            
+
         self.iteration_count = self._handle.n_iter
         self.func_evals = self._handle.n_eval["f"]  # "fd_f" also available
 
