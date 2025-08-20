@@ -26,8 +26,8 @@ class DashOptionsTests(unittest.TestCase):
         """
         config_str = """
             [DASH]
-            port: 4000
-            ip_address: 127.0.0.1
+            port: 3000
+            ip_address: 127.0.0.3
         """
 
         self.options_file = Path("test_options_tests.ini")
@@ -60,6 +60,20 @@ class DashOptionsTests(unittest.TestCase):
         args = mock_run_dash.call_args[1]
         self.assertEqual(args["host"], expected_address)
         self.assertEqual(args["port"], expected_port)
+
+    def test_dash_default(self):
+        """
+        Checks dash default options
+        """
+        default_options = Options()
+        expected_port = 4000
+        expected_ip = "127.0.0.1"
+
+        actual_port = default_options.port
+        actual_ip = default_options.ip_address
+
+        self.assertEqual(expected_port, actual_port)
+        self.assertEqual(expected_ip, actual_ip)
 
 
 class UserDashOptionTests(BaseFittingOptionTests):
