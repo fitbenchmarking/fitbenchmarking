@@ -178,6 +178,14 @@ of the Fitbenchmarking docs. """
         help="Set the port for Dash.",
     )
 
+    parser.add_argument(
+        "--ip_address",
+        metavar="IP_ADDRESS",
+        type=str,
+        default="",
+        help="Set the ip address for Dash.",
+    )
+
     make_plots_group = parser.add_mutually_exclusive_group()
     make_plots_group.add_argument(
         "--make_plots",
@@ -541,6 +549,7 @@ def main():
         "run_name": args.run_name,
         "runtime_metric": args.runtime_metric,
         "port": args.port,
+        "ip_address": args.ip_address,
     }
 
     # Check if make_plots in options.py should be overridden, and if so,
