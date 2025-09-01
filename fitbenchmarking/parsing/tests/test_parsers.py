@@ -90,10 +90,13 @@ def generate_test_cases():
             "hogben",
             "mantiddev",
             "bal",
-            "sscanss",
         ]
     elif TEST_TYPE == "default":
         formats = ["nist"]
+    elif TEST_TYPE == "local_only":
+        formats = [
+            "sscanss",
+        ]
     else:
         formats = ["nist", "horace"]
 

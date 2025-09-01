@@ -6,16 +6,13 @@ This is used to manage the imports and reduce effort in adding new parsers.
 import os
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
-from typing import TYPE_CHECKING
 
 from fitbenchmarking.parsing.base_parser import Parser
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import (
     MissingSoftwareError,
     NoParserError,
 )
-
-if TYPE_CHECKING:
-    from fitbenchmarking.parsing.fitting_problem import FittingProblem
 
 
 class ParserFactory:
