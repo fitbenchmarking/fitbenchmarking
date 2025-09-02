@@ -11,6 +11,7 @@ import os
 import sys
 import textwrap
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from collections import defaultdict
 
 from fitbenchmarking.cli.exception_handler import exception_handler
 from fitbenchmarking.core.results_output import (
@@ -154,6 +155,20 @@ def generate_report(options_file="", additional_options=None, debug=False):
 
     checkpoint = Checkpoint(options=options)
     results, unselected_minimizers, failed_problems, config = checkpoint.load()
+
+    # Update options.software and options.minimizers
+    # so that they hold the correct values rather than
+    # the default. This update is necessary for processing
+    # the multstart plots.
+    set_minimizers = defaultdict(set)
+    for results_list in results.values():
+        for r in results_list:
+            set_minimizers[r.software].add(r.minimizer)
+    minimizers = defaultdict(
+        list, {k: list(v) for k, v in set_minimizers.items()}
+    )
+    options.software = list(minimizers.keys())
+    options.minimizers = minimizers
 
     all_dirs = []
     pp_dfs_all_prob_sets = {}
