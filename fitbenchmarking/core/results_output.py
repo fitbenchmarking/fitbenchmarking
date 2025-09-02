@@ -628,7 +628,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )
 
     if options.run_dash:
-        run_dash_app(options, pp_dfs_all_prob_sets)
+        prepare_dash_app_and_run(options, pp_dfs_all_prob_sets)
 
 
 def update_warning(solvers, max_solvers):
@@ -748,10 +748,10 @@ def display_page(
     return html.Div(new_layout)
 
 
-def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
+def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
     """
-    Runs the Dash app to produce the interactive performance profile
-    plots.
+    Prepares the Dash app to produce the interactive performance profile
+    plots, and calls the function to run it.
 
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
@@ -860,4 +860,18 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         )
     )
 
-    app.run(port=options.port)
+    run_dash_app(app=app, host=options.ip_address, port=options.port)
+
+
+def run_dash_app(app, host, port):
+    """
+    Runs the Dash app.
+
+    :param host: The dash app to run
+    :type host: dash.dash.Dash
+    :param host: The ip address where to run the app.
+    :type host: str
+    :param port: The port where to run the app.
+    :type port: str
+    """
+    app.run(host=host, port=port)
