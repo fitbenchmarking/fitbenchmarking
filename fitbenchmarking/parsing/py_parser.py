@@ -1,6 +1,7 @@
 """
 This file implements a parser for python problem sets.
 """
+
 import os
 import sys
 import typing
@@ -50,10 +51,10 @@ class PyParser(FitbenchmarkParser):
         """
         # import the objective function
         pf: dict = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        path = os.path.join(os.path.dirname(self._filename), pf["module"])
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
-        fun = getattr(module, pf['func'])
+        fun = getattr(module, pf["func"])
 
         # get the fixed and variable function arguments
         self.fixed_args: dict = self._parse_fixed_args()[0]
