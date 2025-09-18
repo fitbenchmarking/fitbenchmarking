@@ -64,7 +64,6 @@ class PyParser(FitbenchmarkParser):
 
         # set variable parameters starting values
         self._starting_values = self._parse_variables()
-        print(self._starting_values)
         return reduced_fun
 
     def _get_equation(self) -> str:
