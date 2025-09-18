@@ -16,20 +16,23 @@ def get_printable_table(class_name: str, class_info: dict) -> str:
     :return: The class info in a readable format.
     :rtype: str
     """
-    max_key = max([len(k) for k in class_info.keys()])
-    max_value = max([len(str(v)) for v in class_info.values()])
+    max_key = max(len(k) for k in class_info)
+    max_value = max(len(str(v)) for v in class_info.values())
 
     header_separator = f"+{'=' * (max_key + max_value + 5)}+"
     row_separator = header_separator.replace("=", "-")
 
-    rows = [header_separator,
-            f"| {class_name}"
-            f"{' ' * (max_key + max_value - len(class_name) + 4)}|",
-            header_separator]
+    rows = [
+        header_separator,
+        f"| {class_name}{' ' * (max_key + max_value - len(class_name) + 4)}|",
+        header_separator,
+    ]
 
     for key, value in class_info.items():
-        row = f"| {key}{' ' * (max_key - len(key))} | " \
-              f"{value}{' ' * (max_value - len(str(value)))} |"
+        row = (
+            f"| {key}{' ' * (max_key - len(key))} | "
+            f"{value}{' ' * (max_value - len(str(value)))} |"
+        )
         rows.append(row)
         rows.append(row_separator)
 

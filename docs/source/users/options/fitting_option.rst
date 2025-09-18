@@ -17,6 +17,7 @@ a newline-separated list. Available options are:
 * ``ceres`` (external software -- see :ref:`external-instructions`)
 * ``CUTEst`` (external software -- see :ref:`external-instructions`)
 * ``dfo`` (external software -- see :ref:`extra_dependencies`)
+* ``galahad`` (external software -- see :ref:`external-instructions`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
 * ``gradient_free`` (external software -- see :ref:`extra_dependencies`)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
@@ -34,6 +35,7 @@ a newline-separated list. Available options are:
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)
+* ``scipy_leastsq`` (default software)
 * ``scipy_go``
 * ``theseus`` (external software -- see :ref:`external-instructions`)
 
@@ -119,13 +121,14 @@ Current Jacobian methods are:
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
+* ``best_available`` - uses the analytic jacobian if it is available, otherwise uses a Scipy jacobian.
 
-Default is ``analytic``
+Default is ``best_available``
 
 .. code-block:: rst
 
     [FITTING]
-    jac_method: analytic
+    jac_method: best_available
 
 .. warning::
 
@@ -145,13 +148,14 @@ Current Hessian methods are:
 * ``analytic`` - uses the analytic Hessian extracted from the fitting problem.
 * ``scipy`` -  uses :ref:`SciPy's finite difference approximations <scipy-hes>`.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-hes>`.
+* ``best_available`` - uses the analytic hessian if it is available, otherwise uses a Scipy hessian.
 
-Default is ``analytic``
+Default is ``best_available``
 
 .. code-block:: rst
 
     [FITTING]
-    hes_method: analytic
+    hes_method: best_available
 
 .. warning::
 

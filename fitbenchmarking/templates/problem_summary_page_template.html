@@ -19,75 +19,6 @@
             </div>
             <p>{{ description }}</p>
             <hr>
-            <section class="accordion">
-                <input type="checkbox" name="collapse" id="start-accordion" checked="checked">
-                <h2 class="handle">
-                    <label for="start-accordion">Problem Outline</label>
-                </h2>
-                <div class="content">
-                    <p><em>Number of parameters</em>: {{ n_params }}</p>
-                    <p><em>Number of data points</em>: {{ n_data_points }}</p>
-                    <p><em>Functions</em>:</p>
-                    <table>
-                        <colgroup>
-                            <col width="45%" />
-                            <col width="55%" />
-                        </colgroup>
-                        <thead valign="bottom">
-                            <tr>
-                                <th class="head">Form</th>
-                                <th class="head">Parameters</th>
-                            </tr>
-                        </thead>
-                        <tbody valign="top">
-                            <tr>
-                                <td>{{ equation }}</td>
-                                <td>{{ initial_guess }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="row">
-                      {% if initial_plot_available %}
-		       <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ initial_plot }}"></iframe>
-                      {% else %}
-                        <h3>{{ initial_plot }}</h3>
-                      {% endif %}
-                    </div>
-                </div>
-            </section>
-            <section class="accordion">
-                <input type="checkbox" name="collapse" id="comparison-accordion" checked="checked">
-                <h2 class="handle">
-                    <label for="comparison-accordion">Comparison</label>
-                </h2>
-                <div class="content">
-                    <p>
-                        {% if best_results|length == 1 %}
-                        This plot shows a comparison of the runs. The minimizer
-                        which produced closest fit is in bold, with the other
-                        minimizers shown as thinner lines for context.
-                        {% else %}
-                        This plot shows a comparison of the runs across cost
-                        functions. Colours are used to distinguish between fits
-                        obtained using each cost function. Within a cost function,
-                        the minimizer which produced closest fit is in bold and
-                        the other minimizers are shown as thinner lines for context.
-                        {% endif %}
-                        <br>Please note that this plot is intended for use as an
-                        indication of the variety of the fits that were obtained
-                        for specific details, please consult the individual support
-                        pages.
-                    </p>
-                    <div align="center" class="figure align-center">
-                        {% if summary_plot_available %}
-		            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
-                        {% else %}
-                            <h3>{{ summary_plot }}</h3>
-                        {% endif %}
-                    </div>
-                </div>
-            </section>
-
             {% if best_results|length == 1 %}
                 <section class="accordion">
                     <input type="checkbox" name="collapse" id="best-accordion">
@@ -95,33 +26,78 @@
                         <label for="best-accordion">{{ categories[0] }}: {{ best_results[0].modified_minimizer_name(True) }}</label>
                     </h2>
                     <div class="content">
-                        <p>This is the best fit of the minimizers used.</p>
-
-                        <p><em>Minimizer</em>: {{ best_results[0].modified_minimizer_name(True) }}</p>
-                        <p><em>Functions</em>:</p>
-                        <table>
+                        <p>This is the <span class="pill">best</span> fit of the minimizers used.</p>
+                        <br>
+                        <table class="simple-table">
                             <colgroup>
-                                <col width="36%" />
-                                <col width="64%" />
+                                <col width="25%" />
+                                <col width="25%" />
+                                <col width="25%" />
+                                <col width="25%" />
                             </colgroup>
-                            <thead valign="bottom">
-                                <tr>
-                                    <th class="head">Form</th>
-                                    <th class="head">Parameters</th>
-                                </tr>
-                            </thead>
                             <tbody valign="top">
+                                <!-- Summary Section -->
                                 <tr>
-                                    <td>{{ equation }}</td>
-                                    <td>{{ best_results[0].fin_function_params }}</td>
+                                    <td class="heading" colspan="4">Summary</td>
                                 </tr>
+                                <tr>
+                                    <td class="label">Number of parameters</td>
+                                    <td colspan="3">{{ n_params }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Number of data points</td>
+                                    <td colspan="3">{{ n_data_points }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Minimizer</td>
+                                    <td colspan="3">{{ best_results[0].modified_minimizer_name(True) }}</td>
+                                </tr>
+                                <!-- Functions Section -->
+                                <tr>
+                                    <td class="heading" colspan="4">Function</td>
+                                </tr>
+                                <tr>
+                                    <td class="label">Form</td>
+                                    <td colspan="3">{{ equation }}</td>
+                                </tr>
+                                <!-- Parameters Section -->
+                                <tr>
+                                    <td class="heading" colspan="4">Parameters</td>
+                                </tr>
+                                <tr>
+                                    <td class="subheading">Name</td>
+                                    <td class="subheading">Initial value</td>
+                                    <td class="subheading">Best value</td>
+                                    <td class="subheading">Change (Δ)</td>
+                                </tr>
+
+                                {% if list_params %}
+                                    {% set initial_list = initial_guess.split(", ") %}
+                                    {% set fitted_list = min_params.split(", ") %}
+
+                                    {% for init in initial_list %}
+                                        {% set fit = fitted_list[loop.index0] %}
+                                        {% set init_key, init_value = init.split("=") %}
+                                        {% set fit_key, fit_value = fit.split("=") %}
+                                        <tr>
+                                            <td class="label">{{ init_key.strip() }}</td>
+                                            <td>{{ init_value.strip() }}</td>
+                                            <td>{{ fit_value.strip() }}</td>
+                                            <td>{{ fit_value.strip()|float - init_value.strip()|float }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="4">Too many parameters to display</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                         <div align="center" class="figure align-center">
                             {% if best_plots_available[0] %}
 			        <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[0] }}"></iframe>
                             {% else %}
-                                <h3>{{ best_plots[0] }}</h3>
+                                <h3>{{ rerun_make_plots_msg }}</h3>
                             {% endif %}
                         </div>
                     </div>
@@ -136,38 +112,158 @@
                         </h2>
                         <div class="content">
                             <p>{{ plot_descriptions[loop.index0] }}</p>
-
-                            <p><em>Minimizer</em>: {{ best_results[loop.index0].modified_minimizer_name(True) }}</p>
-                            <p><em>Functions</em>:</p>
-                            <table>
+                            <br>
+                            <table class="simple-table">
                                 <colgroup>
-                                    <col width="36%" />
-                                    <col width="64%" />
+                                    <col width="25%" />
+                                    <col width="25%" />
+                                    <col width="25%" />
+                                    <col width="25%" />
                                 </colgroup>
-                                <thead valign="bottom">
-                                    <tr>
-                                        <th class="head">Form</th>
-                                        <th class="head">Parameters</th>
-                                    </tr>
-                                </thead>
                                 <tbody valign="top">
+                                    <!-- Summary Section -->
                                     <tr>
-                                        <td>{{ equation }}</td>
-                                        <td>{{ best_results[loop.index0].fin_function_params }}</td>
+                                        <td class="heading" colspan="4">Summary</td>
                                     </tr>
+                                    <tr>
+                                        <td class="label">Number of parameters</td>
+                                        <td colspan="3">{{ n_params }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Number of data points</td>
+                                        <td colspan="3">{{ n_data_points }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Minimizer</td>
+                                        <td colspan="3">{{ best_results[loop.index0].modified_minimizer_name(True)}}</td>
+                                    </tr>
+                                    <!-- Functions Section -->
+                                    <tr>
+                                        <td class="heading" colspan="4">Function</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Form</td>
+                                        <td colspan="3">{{ equation }}</td>
+                                    </tr>
+                                     <!-- Parameters Section -->
+                                    <tr>
+                                        <td class="heading" colspan="4">Parameters</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="subheading">Name</td>
+                                        <td class="subheading">Initial value</td>
+                                        <td class="subheading">Best value</td>
+                                        <td class="subheading">Change (Δ)</td>
+                                    </tr>
+
+                                    {% if list_params %}
+                                        {% set initial_list = initial_guess.split(", ") %}
+                                        {% set fitted_list = min_params.split(", ") %}
+
+                                        {% for init in initial_list %}
+                                            {% set fit = fitted_list[loop.index0] %}
+                                            {% set init_key, init_value = init.split("=") %}
+                                            {% set fit_key, fit_value = fit.split("=") %}
+                                            <tr>
+                                                <td class="label">{{ init_key.strip() }}</td>
+                                                <td>{{ init_value.strip() }}</td>
+                                                <td>{{ fit_value.strip() }}</td>
+                                                <td>{{ fit_value.strip()|float - init_value.strip()|float }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4">Too many parameters to display</td>
+                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                             <div align="center" class="figure align-center">
                                 {% if best_plots_available[loop.index0] %}
 				    <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ best_plots[loop.index0] }}"></iframe>
                                 {% else %}
-                                    <h3>{{ best_plots[loop.index0] }}</h3>
+                                    <h3>{{ rerun_make_plots_msg }}</h3>
                                 {% endif %}
                             </div>
                         </div>
                     </section>
                 {% endfor %}
             {% endif %}
+            <section class="accordion">
+                <input type="checkbox" name="collapse" id="comparison-accordion" checked="checked">
+                <h2 class="handle">
+                    <label for="comparison-accordion">Comparison</label>
+                </h2>
+                <div class="content">
+                    {% if summary_plot_available %}
+                        {% if best_results|length > 1 %}
+                            <h3>Summary</h3>
+                            <p>
+                                This plot shows a comparison of the runs across cost
+                                functions. Colours are used to distinguish between fits
+                                obtained using each cost function. Within a cost function,
+                                the minimizer which produced closest fit is in bold and
+                                the other minimizers are shown as thinner dashed lines for context.
+                                <br>Please note that this plot is intended for use as an
+                                indication of the variety of the fits that were obtained
+                                for specific details, please consult the individual support
+                                pages.
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ summary_plot }}"></iframe>
+                            </div>
+                        {% endif %}
+                        <h3>Residuals</h3>
+                        <p>
+                            Below, you can see a plot for each cost function used (one or multiple),
+                            showing the residuals for each fit. Different colours correspond to 
+                            different minimizers. The minimizer that produced the best fit is marked 
+                            in the legend. To be able to compare this to the residuals for other 
+                            minimizers, it might be necessary to click on their names in the legend to 
+                            hide/show the respective data. 
+                        </p>
+                        <div align="center" class="figure align-center">
+                            <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
+                        </div>
+                        {% if two_d_plot_available %}
+                            <h3>2d Plots</h3>
+                            <p>
+                                The plot below shows the fit on the 2D data. For each cost
+                                function used, only the best fit is shown, that is the fit
+                                produced by the best minimizer in each case. A contour plot 
+                                can be added on top of the 2D image (or hidden) by clicking 
+                                on the corresponding name in the legend shown below
+                                the plot.
+                                When more than one plot is shown, i.e. for multiple cost 
+                                functions, the plots share the same colour range, so the 
+                                same colorbar applies to both.
+
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ two_d_plot }}"></iframe>
+                            </div>  
+                        {% endif %}
+                        {% if multistart_plot_avaliable %}
+                            <h3>Multistart plots</h3>
+                            <p>
+                                The plot below shows the fits with different starting conditions. 
+                                The line traces shaded red are the starting values that did not
+                                lead to good fitting outcomes. While the line traces shaded blue
+                                are the ones that did. The data points are also displayed in the
+                                subplots. For the best visualization of the multistart plot,
+                                it is recommended to limit the number of sub plots to 9 or less.
+                            </p>
+                            <div align="center" class="figure align-center">
+                                <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ multistart_plot }}"></iframe>
+                            </div>  
+                        {% endif %}                      
+                    {% else %}
+                        <div align="center" class="figure align-center">
+                            <h3>{{ rerun_make_plots_msg }}</h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
             <div align="center" class="figure align-center">
                 <button class="btn default" onclick="history.go(-1)">
                     <i class="fa fa-arrow-left"></i>

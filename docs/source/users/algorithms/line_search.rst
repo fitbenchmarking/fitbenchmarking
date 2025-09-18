@@ -27,6 +27,7 @@ Simple method where search direction :math:`p_k` is set to be :math:`-\nabla f_k
 
 **Disadvantages**:
     - Slow convergence for nonlinear problems
+
 [Nocedal]_
 
 .. _conjugate_gradient:
@@ -57,6 +58,7 @@ Polak-Ribiere:  :math:`\beta_{k+1} = \frac{ \nabla f_{k+1}^T ( \nabla f_{k+1} - 
 **Disadvantages**:
     - For Fletcher-Reeves method it can be shown that if the method generates a bad direction and step, then the next direction and step are also likely to be bad. However, this is not the case with the Polak Ribiere method.
     - Generally, the Polak Ribiere method is more efficient that the Fletcher-Reeves method but it has the disadvantage is requiring one more vector of storage.
+
 [Nocedal]_
 
 .. _bfgs:
@@ -87,6 +89,7 @@ with :math:`\rho_k = \frac{1}{y_k^T s_k}`
 
 **Disadvantages**:
     - Newton's method has quadratic convergence but this is lost with BFGS.
+
 [Nocedal]_
 
 .. _gauss_newton:
@@ -97,6 +100,7 @@ Modified Newton's method with line search. Instead of solving standard Newton eq
 
 .. math::
     \nabla^2 f(x_k)p = -\nabla f(x_k),
+
 solve the system
 
 .. math::
@@ -115,6 +119,7 @@ Here, the approximation of the Hessian :math:`\nabla^2 f_k \approx J_k^T J_k` ha
     - Without a good initial guess, or if the matrix :math:`J_k^T J_k` is ill-conditioned, the Gauss Newton Algorithm is very slow to converge to a solution.
     - If relative residuals are large, then large amounts of information will be lost.
     - :math:`J_k` must be full rank.
+
 [Nocedal]_ [Floater]_
 
 .. [Nocedal] Jorge Nocedal, Stephen J. Wright (2006), Numerical Optimization

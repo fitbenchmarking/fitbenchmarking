@@ -1,0 +1,11 @@
+# FitBenchmark Problem
+software = 'Horace'
+name = 'Triangular AFM Powder Spectrum 2d'
+description = 'Simulated powder spectrum of a triangular AFM with constant background and normally distributed noise, fit to 2D data'
+input_file = 'whole_tri_AFM_powder.mat'
+function = 'foreground=m_scripts/functions/tri_AFM_powder.m,J1=0.85,slope_en=-0.0622, slope_modq=-0.0018, intercept=1.5475, b1=1.0'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_tri_AFM.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_tri_AFM_2d.m'
+plot_type = '2d'
+q_cens = '0.8,1.2,1.6'
+dq = '0.05'

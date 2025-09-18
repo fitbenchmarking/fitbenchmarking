@@ -3,6 +3,7 @@ This file contains a factory implementation for the Hessians.
 This is used to manage the imports and reduce effort in adding new Hessian
 methods.
 """
+
 from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
@@ -21,17 +22,24 @@ def create_hessian(hes_method):
     :rtype: fitbenchmarking.hessian.base_controller.Hessian subclass
     """
 
-    module_name = f'{hes_method}_hessian'
+    module_name = f"{hes_method}_hessian"
 
     try:
-        module = import_module('.' + module_name, __package__)
+        module = import_module("." + module_name, __package__)
     except ImportError as e:
-        raise NoHessianError('Could not find Hessian class with type as '
-                             f'{hes_method}.') from e
+        raise NoHessianError(
+            f"Could not find Hessian class with type as {hes_method}."
+        ) from e
 
-    classes = getmembers(module, lambda m: (isclass(m)
-                                            and not isabstract(m)
-                                            and issubclass(m, Hessian)
-                                            and m is not Hessian))
+    classes = getmembers(
+        module,
+        lambda m: (
+            isclass(m)
+            and not isabstract(m)
+            and issubclass(m, Hessian)
+            and m is not Hessian
+            and m.__name__.lower() == hes_method.replace("_", "")
+        ),
+    )
 
     return classes[0][1]

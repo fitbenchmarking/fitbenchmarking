@@ -32,6 +32,7 @@ authors:
   - given-names: Rabiya
     family-names: Farooq
     affiliation: STFC, ISIS Neutron and Muon facility
+    orcid: 'https://orcid.org/0009-0008-1436-3933'
   - given-names: Joshua
     family-names: Kitenge
     affiliation: STFC, Scientific Computing Department
@@ -76,6 +77,10 @@ authors:
     family-names: McCluskey
     affiliation: Diamond Light Source/European Spallation Source
     orcid: 'https://orcid.org/0000-0003-3381-5911'
+  - given-names: Letizia
+    family-names: Protopapa
+    affiliation: STFC, Scientific Computing Department
+    orcid: 'https://orcid.org/0009-0008-6781-5876'
 identifiers:
   - type: doi
     value: 10.21105/joss.03127
@@ -95,5 +100,5 @@ abstract: >-
   software fitting packages perform on various fitting
   problems.
 license: BSD-3-Clause
-version: v1.0.0
-date-released: '2023-08-08'
+version: v1.3.0v1.2.0v1.1.0v1.0.0
+date-released: '2025-05-29'

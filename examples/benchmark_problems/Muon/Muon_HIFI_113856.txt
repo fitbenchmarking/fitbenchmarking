@@ -1,4 +1,4 @@
-# FitBenchmark Problem#
+# FitBenchmark Problem
 software = 'Mantid'
 name = 'HIFI 113856'
 description = 'An example of (full) detector calibration for the HIFI instrument'

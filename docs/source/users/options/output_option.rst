@@ -130,9 +130,9 @@ Options are:
   The value of :math:`\frac{|| J^T r||}{||r||}` for those parameters is also returned.
   The output looks like ``{bool} (norm_value)``, and the colouring is red for false and cream for true.
   This option is only meaningful for least-squares cost functions.
-* ``emissions`` indicates that the resulting table should contain the CO\ :sub:`2` \ emissions for each of the minimizers.
+* ``energy_usage`` indicates that the resulting table should contain energy consumption (kWh) for each of the minimizers.
 
-Default is ``acc``, ``runtime``, ``compare``, ``local_min``, and ``emissions``.
+Default is ``acc``, ``runtime``, ``compare``, ``local_min``, and ``energy_usage``.
 
 .. code-block:: rst
 
@@ -141,7 +141,7 @@ Default is ``acc``, ``runtime``, ``compare``, ``local_min``, and ``emissions``.
                 runtime
                 compare
                 local_min
-                emissions
+                energy_usage
 
 Run Dash (:code:`run_dash`)
 -------------------------------
@@ -155,3 +155,24 @@ Default is ``True`` (``yes``/``no`` can also be used)
 
     [OUTPUT]
     run_dash: yes
+
+Multistart success threshold (:code:`multistart_success_threshold`)
+--------------------------------------------------------------------
+
+This allows the user to set the threshold to differentiate between the successful 
+and unsuccessful fitted results in the multistart plots. 
+
+A value of 1.5 means that all results with a **norm_acc** of less than 1.5 will be
+classed successful while the rest will be classed unsuccessful. 
+
+The successful results will have blue traces while the unsuccessful results will have
+red traces in the multistart plots.
+
+Setting a value between 1.0 and 2.0 is recommended.
+
+Default is ``1.5``
+
+.. code-block:: rst
+
+    [OUTPUT]
+    multistart_success_threshold: 1.2

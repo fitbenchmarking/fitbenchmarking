@@ -7,8 +7,8 @@ import inspect
 import os
 import sys
 import typing
-import numpy as np
 
+import numpy as np
 from scipy.integrate import solve_ivp
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -32,34 +32,37 @@ class IVPParser(FitbenchmarkParser):
         :rtype: callable
         """
         if len(self._parsed_func) > 1:
-            raise ParsingError('Could not parse IVP problem. Please ensure '
-                               'only 1 function definition is present')
+            raise ParsingError(
+                "Could not parse IVP problem. Please ensure "
+                "only 1 function definition is present"
+            )
 
         pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        path = os.path.join(os.path.dirname(self._filename), pf["module"])
         sys.path.append(os.path.dirname(path))
         module = importlib.import_module(os.path.basename(path))
-        fun = getattr(module, pf['func'])
-        time_step = pf['step']
+        fun = getattr(module, pf["func"])
+        time_step = pf["step"]
         sig = inspect.signature(fun)
         # params[0] should be t
         # parmas[1] should be x so start after.
         p_names = list(sig.parameters.keys())[2:]
 
-        # pylint: disable=attribute-defined-outside-init
         self._equation = fun.__name__
         self._starting_values = [{n: pf[n] for n in p_names}]
 
         def fitFunction(x, *p):
-            if len(x.shape) == 1:
+            if x.ndim == 1:
                 x = np.array([x])
             y = np.zeros_like(x)
             for i, inp in enumerate(x):
-                soln = solve_ivp(fun=fun,
-                                 t_span=[0, time_step],
-                                 y0=inp,
-                                 args=p,
-                                 vectorized=False)
+                soln = solve_ivp(
+                    fun=fun,
+                    t_span=[0, time_step],
+                    y0=inp,
+                    args=p,
+                    vectorized=False,
+                )
                 y[i, :] = soln.y[:, -1]
             return y
 

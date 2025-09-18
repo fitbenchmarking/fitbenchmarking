@@ -2,10 +2,9 @@
 Implements a controller for the Bumps fitting software.
 """
 
+import numpy as np
 from bumps.fitters import fit as bumpsFit
 from bumps.names import Curve, FitProblem, PoissonCurve
-
-import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
@@ -21,24 +20,29 @@ class BumpsController(Controller):
     """
 
     algorithm_check = {
-            'all': ['amoeba',
-                    'lm-bumps',
-                    'newton',
-                    'de',
-                    'scipy-leastsq',
-                    'dream'],
-            'ls': ['lm-bumps', 'scipy-leastsq'],
-            'deriv_free': ['amoeba', 'de', 'dream'],
-            'general': ['amoeba', 'newton', 'de', 'dream'],
-            'simplex': ['amoeba'],
-            'trust_region': ['lm-bumps', 'scipy-leastsq'],
-            'levenberg-marquardt': ['lm-bumps', 'scipy-leastsq'],
-            'gauss_newton': [],
-            'bfgs': ['newton'],
-            'conjugate_gradient': [],
-            'steepest_descent': [],
-            'global_optimization': ['de', 'dream'],
-            'MCMC': []}
+        "all": [
+            "amoeba",
+            "lm-bumps",
+            "newton",
+            "de",
+            "scipy-leastsq",
+            "dream",
+        ],
+        "ls": ["lm-bumps", "scipy-leastsq"],
+        "deriv_free": ["amoeba", "de"],
+        "general": ["amoeba", "newton", "de"],
+        "simplex": ["amoeba"],
+        "trust_region": ["lm-bumps", "scipy-leastsq"],
+        "levenberg-marquardt": ["lm-bumps", "scipy-leastsq"],
+        "gauss_newton": [],
+        "bfgs": ["newton"],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": ["de"],
+        "MCMC": ["dream"],
+    }
+
+    support_for_bounds = True
 
     def __init__(self, cost_func):
         """
@@ -49,10 +53,10 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-
-        self._param_names = [name.replace('.', '_')
-                             for name in self.problem.param_names]
-        self.support_for_bounds = True
+        # Need unique strings that are valid python vars
+        self._param_names = [
+            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
+        ]
         self._func_wrapper = None
         self._fit_problem = None
         self.fit_order = None
@@ -60,17 +64,16 @@ class BumpsController(Controller):
         self._bumps_result = None
         # Need to map the minimizer to an internal one to avoid changing the
         # minimizer in results
-        self._minimizer = ''
+        self._minimizer = ""
 
     def setup(self):
-        # pylint: disable=exec-used,protected-access
         """
         Setup problem ready to run with Bumps.
 
         Creates a FitProblem for calling in the fit() function of Bumps
         """
         # Bumps fails with the *args notation
-        param_name_str = ', '.join(self._param_names)
+        param_name_str = ", ".join(self._param_names)
         wrapper = f"def fitFunction(x, {param_name_str}):\n"
         wrapper += f"    return func([{param_name_str}], x=x)"
 
@@ -80,27 +83,25 @@ class BumpsController(Controller):
 
         # Create a Function Wrapper for the problem function. The type of the
         # Function Wrapper is acceptable by Bumps.
-        if isinstance(self.cost_func, create_cost_func('poisson')):
+        if isinstance(self.cost_func, create_cost_func("poisson")):
             # Bumps has a built in poisson cost fucntion, so use that.
-            exec_dict = {'func': self.problem.eval_model}
+            exec_dict = {"func": self.problem.eval_model}
             exec(wrapper, exec_dict)
-            model = exec_dict['fitFunction']
-            func_wrapper = PoissonCurve(fn=model,
-                                        x=self.data_x,
-                                        y=self.data_y,
-                                        **param_dict)
+            model = exec_dict["fitFunction"]
+            func_wrapper = PoissonCurve(
+                fn=model, x=self.data_x, y=self.data_y, **param_dict
+            )
         else:  # nlls cost functions
             # Send in the residual as the model, with zero
             # y data.  This allows all our supported nlls
             # cost fucntions to be used.
-            exec_dict = {'func': self.cost_func.eval_r}
+            exec_dict = {"func": self.cost_func.eval_r}
             exec(wrapper, exec_dict)
-            model = exec_dict['fitFunction']
+            model = exec_dict["fitFunction"]
             zero_y = np.zeros(len(self.data_y))
-            func_wrapper = Curve(fn=model,
-                                 x=self.data_x,
-                                 y=zero_y,
-                                 **param_dict)
+            func_wrapper = Curve(
+                fn=model, x=self.data_x, y=zero_y, **param_dict
+            )
 
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
@@ -119,10 +120,7 @@ class BumpsController(Controller):
 
         # Determine the order of the parameters in `self.fit_problem` as this
         # could differ from the ordering of parameters in `self._param_names`
-        param_order = []
-        for i in range(len(self._param_names)):
-            param_order.append(str(self._fit_problem._parameters[i]))
-        self.fit_order = param_order
+        self.fit_order = self._fit_problem.labels()
 
         if self.minimizer == "lm-bumps":
             self._minimizer = "lm"
@@ -148,9 +146,12 @@ class BumpsController(Controller):
         """
         Run problem with Bumps.
         """
-        result = bumpsFit(self._fit_problem,
-                          method=self._minimizer,
-                          abort_test=self._check_timer_abort_test)
+        result = bumpsFit(
+            self._fit_problem,
+            method=self._minimizer,
+            abort_test=self._check_timer_abort_test,
+            samples=self.chain_length,
+        )  # add number of samples for dream
 
         self._bumps_result = result
         self._status = self._bumps_result.status
@@ -176,5 +177,20 @@ class BumpsController(Controller):
                 result.append(self._bumps_result.x[ind])
         else:
             result = self._bumps_result.x
+
+        if self._minimizer == "dream":
+            self.params_pdfs = {}
+            mcmc_draw = self._bumps_result.state.draw()
+            if self.fit_order != self._param_names:
+                for name1, name2 in zip(
+                    self.problem.param_names, self._param_names
+                ):
+                    ind = self.fit_order.index(name2)
+                    self.params_pdfs[name1] = mcmc_draw.points[:, ind].tolist()
+            else:
+                self.params_pdfs = {
+                    param: mcmc_draw.points[:, i].tolist()
+                    for i, param in enumerate(self.problem.param_names)
+                }
 
         self.final_params = result

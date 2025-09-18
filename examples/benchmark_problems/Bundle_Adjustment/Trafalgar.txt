@@ -1,0 +1,5 @@
+# FitBenchmark Problem
+software = 'bal'
+name = 'trafalgar'
+description = 'Images from Trafalgar Square'
+input_file = 'problem-21-11315-pre.txt.bz2'
