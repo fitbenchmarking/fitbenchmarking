@@ -489,7 +489,7 @@ class Options:
         "external_output": "log_only",
     }
     DEFAULT_RUNTIME = {"runtime_metric": "mean"}
-    DEFAULT_DASH = {"port": 4000}
+    DEFAULT_DASH = {"port": 4000, "ip_address": "127.0.0.1"}
     DEFAULTS = {
         "MINIMIZERS": DEFAULT_MINIMZERS,
         "FITTING": DEFAULT_FITTING,
@@ -687,6 +687,10 @@ class Options:
             dash_settings.getint, "port", additional_options
         )
 
+        self.ip_address = self.read_value(
+            dash_settings.getstr, "ip_address", additional_options
+        )
+
         logging = config["LOGGING"]
 
         self.log_append = self.read_value(
@@ -834,7 +838,7 @@ class Options:
 
         config["RUNTIME"] = {"runtime_metric": self.runtime_metric}
 
-        config["DASH"] = {"port": self.port}
+        config["DASH"] = {"port": self.port, "ip_address": self.ip_address}
 
         return config
 
