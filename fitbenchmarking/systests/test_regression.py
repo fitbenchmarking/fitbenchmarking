@@ -68,6 +68,38 @@ class TestRegressionAll(TestCase):
         self.assertListEqual([], diff, msg)
 
 
+@run_for_test_types(TEST_TYPE, "local_only")
+class TestRegressionLocal(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with
+    matlab fitting software
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
+
+    def test_results_consistent_all(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+        problem_sub_directory = "local_only_set"
+
+        run_benchmark(self.results_dir, problem_sub_directory)
+
+        diff, msg = compare_results(
+            problem_sub_directory, "local_only_set.csv"
+        )
+        self.assertListEqual([], diff, msg)
+
+
 @run_for_test_types(TEST_TYPE, "matlab")
 class TestRegressionMatlab(TestCase):
     """
@@ -255,6 +287,19 @@ def setup_options(
             "matlab_curve",
             "matlab_opt",
             "matlab_stats",
+        ],
+        "local_only": [
+            "bumps",
+            "dfo",
+            "ceres",
+            "gofit",
+            "gsl",
+            "lmfit",
+            "minuit",
+            "nlopt",
+            "scipy",
+            "scipy_ls",
+            "scipy_leastsq",
         ],
     }
 

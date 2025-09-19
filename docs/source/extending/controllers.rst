@@ -85,8 +85,11 @@ repository so that other can use this package.  To do this need to follow our
    ``pyproject.toml`` and add to the installation step in
    ``.github/workflows/release.yml``.
    If not, document the installation procedure in :ref:`external-instructions`
-   and update the ``FullInstall`` Docker Container -- the main developers will
+   and update the ``FullInstall`` Container -- the main developers will
    help you with this.
+   If the new software cannot be added to the container for some reason, tests should be
+   marked as ``local_only`` so tests aren't failing due to missing dependencies.
+   In this case, reviewers will need to manually run the tests.
 
 .. note::
    For ease of maintenance, please add new controllers to a list of
