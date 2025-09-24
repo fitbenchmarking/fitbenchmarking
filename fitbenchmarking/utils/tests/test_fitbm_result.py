@@ -431,9 +431,7 @@ class FitbmResultTests(unittest.TestCase):
             ]
         )
         indexes = [(np.array([3, 4]),)]
-        obtained = self.result.get_1d_cuts_spinw(
-            problem, indexes, array_to_cut
-        )
+        obtained = self.result.get_1d_cuts_spinw(indexes, array_to_cut)
         expected = (
             [
                 0.20253164499999998,
@@ -504,9 +502,7 @@ class FitbmResultTests(unittest.TestCase):
             ]
         )
         indexes = [(np.array([1]),)]
-        obtained = self.result.get_1d_cuts_spinw(
-            problem, indexes, array_to_cut
-        )
+        obtained = self.result.get_1d_cuts_spinw(indexes, array_to_cut)
         expected = (
             [[0.07594937, 0.17721519, 0.27848101, 0.37974684]],
             np.array(
