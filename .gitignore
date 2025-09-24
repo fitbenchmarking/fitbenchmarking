@@ -1,4 +1,5 @@
 fitbenchmarking_results/
+new_results
 *.pyc
 logs/
 .idea/
