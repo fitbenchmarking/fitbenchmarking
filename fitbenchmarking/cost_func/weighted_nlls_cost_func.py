@@ -2,7 +2,6 @@
 Implements the weighted non-linear least squares cost function
 """
 
-# import numpy as np
 from numpy import ravel
 from scipy.sparse import issparse
 
@@ -46,8 +45,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                 f" and len(e)={len(e)}"
             )
         result = (y - self.problem.eval_model(params=params, x=x)) / e
-        # nanIndices =  np.where(np.isnan(result))[0]
-        # print(nanIndices)
+
         # Flatten in case of a vector function
         return ravel(result)
 
@@ -70,9 +68,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         if issparse(jac):
             return -jac.transpose().multiply(1 / e).transpose()
 
-        result = -jac / e[:, None]
-
-        return result
+        return -jac / e[:, None]
 
     def hes_res(self, params, **kwargs):
         """

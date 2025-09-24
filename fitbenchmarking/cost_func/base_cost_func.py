@@ -5,9 +5,6 @@ Implements the base class for the cost function class.
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
-# import numpy as np
-# from scipy.interpolate import NearestNDInterpolator, interp1d
-
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
 if TYPE_CHECKING:
