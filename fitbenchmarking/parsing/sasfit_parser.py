@@ -102,14 +102,10 @@ class SASFitParser(FitbenchmarkParser):
         py_values = [100.0, 0.5, 1.0, 1e-4]
         param_array = (c_double * MAXPAR)(*py_values)
 
-        # Create the sasfit_param instance
-        sasfit_param_instance = SASFIT_PARAM()
-        sasfit_param_instance.p = param_array
-
         # Should be read as input from file but just setting these
         # like this for now
         self.scattering_fn = ff_g_dab_handle
-        self.sasfit_params = sasfit_param_instance
+        self.sasfit_params = param_array
         self.x_data = np.array([1.0, 2.0, 3.0])
 
     def import_libraries(self):
@@ -158,19 +154,17 @@ class SASFitParser(FitbenchmarkParser):
         set_hankel_strategy = self.sasfit.sasfit_set_hankel_strategy
         set_hankel_strategy(c_int(hankel_strategy))
 
-        # Wrapper around ff_g_dab_handle
+        # Wrapper around scattering_fn
         @FunctionType
-        def my_function_gdab_t(q, params):
+        def gdab_t(q, params):
             t_param = cast(params, POINTER(SASFIT_PARAM))
             return self.scattering_fn(q, t_param)
 
-        # Parameters for the Hankel transform
+        # Get sasfit_hankel
         nu = c_double(0.0)
         params = cast(pointer(self.sasfit_params), c_void_p)
 
-        result_Gr = hankel_transform_handle(
-            nu, my_function_gdab_t, np.abs(x), params
-        )
+        result_Gr = hankel_transform_handle(nu, gdab_t, np.abs(x), params)
         return result_Gr
 
     def compute_hankel_at_R0(self):
@@ -179,13 +173,13 @@ class SASFitParser(FitbenchmarkParser):
         Computes sasfit_integrate for x=0
         """
 
-        # Wrapper 2 around ff_g_dab_handle
+        # Wrapper 2 around scattering_fn
         @FunctionType2
-        def my_function_gdab_hankel0(q, params):
+        def gdab_hankel0(q, params):
             return q * self.scattering_fn(q, params)
 
-        # sasfit integrate handle
-        params2 = cast(pointer(self.sasfit_params), POINTER(SASFIT_PARAM))
+        # Get sasfit_integrate
+        params = cast(pointer(self.sasfit_params), POINTER(SASFIT_PARAM))
         sasfit_integrate_handle = self.sasfit.sasfit_integrate_ctm
         sasfit_integrate_handle.argtypes = [
             c_double,
@@ -195,9 +189,7 @@ class SASFitParser(FitbenchmarkParser):
         ]
         sasfit_integrate_handle.restype = c_double
 
-        result_G0 = sasfit_integrate_handle(
-            0, np.inf, my_function_gdab_hankel0, params2
-        )
+        result_G0 = sasfit_integrate_handle(0, np.inf, gdab_hankel0, params)
         return result_G0
 
     def compute_expected_y(self, hankel_strategy, x_data):
