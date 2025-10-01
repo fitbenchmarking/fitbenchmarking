@@ -2,8 +2,8 @@
 software = 'Horace'
 name = 'CrCl2pym 2d'
 description = 'CrCl2 pyrumidine data'
-input_file = 'CrCl2Pym_cropped_v2_small.mat'
-function = 'foreground=m_scripts/functions/CrCl2Pym.m, J1=0.8, J2=-0.15, J3=-0.02, D1=-0.1,slope_en=10, slope_modq=10, intercept=40, b1=1000'
+input_file = 'CrCl2Pym_cropped_v2_large.mat'
+function = 'foreground=m_scripts/functions/CrCl2Pym.m, J1=0.7, J2=-0.07, J3=-0.009, D1=-0.1,slope_en=10, slope_modq=10, intercept=10, b1=1000'
 wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_spinw_2d.m'
 simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_CrCl2Pym_2d.m'
 parameter_ranges = {'J1': (0.0, 5.0), 'J2': (-5.0, 0.5), 'J3': (-5.0, 0.5), 'D1': (-2.0, 0.0)}
