@@ -320,7 +320,7 @@ of the Fitbenchmarking docs. """
         default=False,
         action="store_true",
         help=(
-            "Load results from the checkpoint and generate"
+            "Load results from the checkpoint and generate "
             "reports. Will not run any new tests."
         ),
     )
@@ -348,7 +348,7 @@ of the Fitbenchmarking docs. """
         "--check_jacobian",
         action="store_true",
         help=(
-            "Use this option to check the jacobian against"
+            "Use this option to check the jacobian against "
             "a finite difference approximation."
         ),
     )

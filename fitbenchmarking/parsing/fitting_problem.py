@@ -25,7 +25,7 @@ class FittingProblem:
     Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
-    Onces populated, this should include the data, the function and any other
+    Once populated, this should include the data, the function and any other
     additional requirements from the data.
     """
 
