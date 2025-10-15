@@ -80,7 +80,7 @@ class BaseNLLSCostFunc(CostFunc):
 
         :param params: The parameters at which to calculate Jacobians
         :type params: list
-        
+
         :return: evaluated Jacobian of the cost function
         :rtype: 1D numpy array
         """
