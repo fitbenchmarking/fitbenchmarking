@@ -155,3 +155,24 @@ Default is ``True`` (``yes``/``no`` can also be used)
 
     [OUTPUT]
     run_dash: yes
+
+Multistart success threshold (:code:`multistart_success_threshold`)
+--------------------------------------------------------------------
+
+This allows the user to set the threshold to differentiate between the successful 
+and unsuccessful fitted results in the multistart plots. 
+
+A value of 1.5 means that all results with a **norm_acc** of less than 1.5 will be
+classed successful while the rest will be classed unsuccessful. 
+
+The successful results will have blue traces while the unsuccessful results will have
+red traces in the multistart plots.
+
+Setting a value between 1.0 and 2.0 is recommended.
+
+Default is ``1.5``
+
+.. code-block:: rst
+
+    [OUTPUT]
+    multistart_success_threshold: 1.2

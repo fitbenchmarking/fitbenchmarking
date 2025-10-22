@@ -5,6 +5,8 @@ Test the OUTPUT section for the options file
 import unittest
 from pathlib import Path
 
+from parameterized import parameterized
+
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.tests.test_options_fitting import (
     BaseFittingOptionTests,
@@ -32,53 +34,31 @@ class OutputOptionTests(unittest.TestCase):
         """
         self.options = Options()
 
-    def test_make_plots_default(self):
+    @parameterized.expand(
+        [
+            ("make_plots", True),
+            ("pbar", True),
+            ("colour_map", "magma_r"),
+            ("colour_ulim", 100),
+            ("cmap_range", [0.2, 0.8]),
+            ("comparison_mode", "both"),
+            ("results_browser", True),
+            ("run_dash", True),
+            ("check_jacobian", True),
+            (
+                "table_type",
+                ["acc", "runtime", "compare", "local_min", "energy_usage"],
+            ),
+            ("run_name", ""),
+            ("checkpoint_filename", "checkpoint.json"),
+            ("multistart_success_threshold", 1.5),
+        ]
+    )
+    def test_defaults(self, attribute, expected):
         """
-        Checks make_plots default
+        Checks the default values of the output options
         """
-        expected = True
-        actual = self.options.make_plots
-        self.assertEqual(expected, actual)
-
-    def test_colour_map_default(self):
-        """
-        Checks colour_map default
-        """
-        expected = "magma_r"
-        actual = self.options.colour_map
-        self.assertEqual(expected, actual)
-
-    def test_cmap_range_default(self):
-        """
-        Checks cmap_range default
-        """
-        expected = [0.2, 0.8]
-        actual = self.options.cmap_range
-        self.assertEqual(expected, actual)
-
-    def test_colour_ulim_default(self):
-        """
-        Checks colour_ulim default
-        """
-        expected = 100
-        actual = self.options.colour_ulim
-        self.assertEqual(expected, actual)
-
-    def test_comparison_mode_default(self):
-        """
-        Checks comparison_mode default
-        """
-        expected = "both"
-        actual = self.options.comparison_mode
-        self.assertEqual(expected, actual)
-
-    def test_table_type_default(self):
-        """
-        Checks table_type default
-        """
-        expected = ["acc", "runtime", "compare", "local_min", "energy_usage"]
-        actual = self.options.table_type
-        self.assertEqual(expected, actual)
+        self.assertEqual(getattr(self.options, attribute), expected)
 
 
 class UserOutputOptionTests(BaseFittingOptionTests):

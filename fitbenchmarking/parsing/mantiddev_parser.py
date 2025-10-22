@@ -59,7 +59,7 @@ class MantidDevParser(FitbenchmarkParser):
             return jac
 
         fp = self.fitting_problem
-        if self._is_multifit():
+        if fp.multifit:
             # currently cannot do Jacobian and multifit
             return None
         # need to trim x data to the correct range for Jacobian
@@ -117,10 +117,17 @@ class MantidDevParser(FitbenchmarkParser):
         :return: A callable function
         :rtype: callable
         """
+        function = self._entries["function"]
+        if self.fitting_problem.multistart:
+            # Replace the parameter placeholders with the parameter means
+            parameter_means = self._parse_single_function(
+                self._entries["parameter_means"]
+            )
+            for key, value in parameter_means.items():
+                function = function.replace(f"{{{key}}}", str(value))
+
         # Get mantid to build the function
-        ifun = msapi.FunctionFactory.createInitialized(
-            self._entries["function"]
-        )
+        ifun = msapi.FunctionFactory.createInitialized(function)
 
         # Extract the parameter info
         all_params = [
@@ -177,7 +184,7 @@ class MantidDevParser(FitbenchmarkParser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        if self._is_multifit():
+        if self.fitting_problem.multifit:
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]
             self.fitting_problem.data_e = [

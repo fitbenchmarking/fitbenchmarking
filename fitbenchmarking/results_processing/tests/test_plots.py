@@ -8,8 +8,10 @@ import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import (
@@ -133,20 +135,6 @@ class PlotTests(unittest.TestCase):
                     ignore_index=True,
                 )
 
-    def test_plot_initial_guess_create_files(self):
-        """
-        Test that initial plot creates a file and errorbars are
-        added to the plot.
-        """
-        file_name = self.plot.plot_initial_guess(
-            self.df[("Fake_Test_Data", "prob_1")]
-        )
-
-        self.assertEqual(file_name, "start_for_prob_1.html")
-        path = os.path.join(self.figures_dir, file_name)
-        self.assertTrue(os.path.exists(path))
-        self.assertEqual(find_error_bar_count(path), 2)
-
     def test_best_filename_return(self):
         """
         Test that best_filename returns the correct filename
@@ -180,7 +168,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_data_len_called_by_plotly_fit(self, check_data_len):
+    def test_check_data_len_called_by_plotly_fit(self, check_data_len):
         """
         Test that plotly_fit calls _check_data_len
         when plot_info is set.
@@ -203,7 +191,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._check_data_len"
     )
-    def test__check_data_len_not_called(self, check_data_len):
+    def test_check_data_len_not_called(self, check_data_len):
         """
         Test that plotly_fit and plots_residuals don't call
         _check_data_len when plot_info is not set.
@@ -219,7 +207,7 @@ class PlotTests(unittest.TestCase):
         )
         check_data_len.assert_not_called()
 
-    def test__check_data_len_raises_error(self):
+    def test_check_data_len_raises_error(self):
         """
         Test _check_data_len raises error if data lengths are
         unexpected
@@ -302,7 +290,7 @@ class PlotTests(unittest.TestCase):
         path = os.path.join(self.figures_dir, file_name)
         self.assertTrue(os.path.exists(path))
 
-    def test__create_empty_residuals_plots(self):
+    def test_create_empty_residuals_plots(self):
         """
         Test that create_empty_residuals_plot_spinw creates correct
         number of subplots
@@ -334,7 +322,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
     )
-    def test__create_empty_residuals_plots_not_called_when_no_subplots(
+    def test_create_empty_residuals_plots_not_called_when_no_subplots(
         self, create_empty_residuals
     ):
         """
@@ -352,7 +340,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_residual_traces"
     )
-    def test__add_residual_traces_called_by_plot_residuals(
+    def test_add_residual_traces_called_by_plot_residuals(
         self, add_residual_traces
     ):
         """
@@ -371,7 +359,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
     )
-    def test__plot_minimizer_results_called_by_plot_summary(
+    def test_plot_minimizer_results_called_by_plot_summary(
         self, plot_minimizer_results
     ):
         """
@@ -386,10 +374,87 @@ class PlotTests(unittest.TestCase):
         expected = len(self.fr["Fake_Test_Data"])
         self.assertEqual(plot_minimizer_results.call_count, expected)
 
+    @mock.patch("fitbenchmarking.results_processing.plots.len")
+    def test_plot_minimizer_results_calls_len_when_data_x_cuts(self, len_func):
+        """
+        Test _plot_minimizer_results calls the len built-in function
+        a number of times equal to n_plots when data_x_cuts is set.
+        """
+        fig = make_subplots(rows=1, cols=2)
+
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+
+        result.data_x_cuts = np.arange(10)
+        result.data_y_cuts = np.arange(10)
+        result.fin_y_cuts = np.arange(10)
+        n_plots = 2
+
+        self.plot._plot_minimizer_results(
+            fig=fig,
+            result=result,
+            categ=categ1_name,
+            n_plots=n_plots,
+            ax_titles={"x": "x", "y": "y"},
+            colour="rgb(255,0,0)",
+        )
+        self.assertEqual(len_func.call_count, n_plots)
+
+    @mock.patch("fitbenchmarking.results_processing.plots.len")
+    def test_plot_minimizer_results_calls_len_when_subplots_present(
+        self, len_func
+    ):
+        """
+        Test _plot_minimizer_results calls the len built-in function
+        a number of times equal to n_plots even when data_x_cuts is not set.
+        """
+        fig = make_subplots(rows=1, cols=2)
+
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+        n_plots = 2
+
+        self.plot._plot_minimizer_results(
+            fig=fig,
+            result=result,
+            categ=categ1_name,
+            n_plots=n_plots,
+            ax_titles={"x": "x", "y": "y"},
+            colour="rgb(255,0,0)",
+        )
+        self.assertEqual(len_func.call_count, n_plots)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot._create_empty_residuals_plots"
+    )
+    def test_plot_residuals_calls__create_empty_residuals_plots(
+        self, create_empty_residuals_plots
+    ):
+        """
+        Test that plot_residuals calls _create_empty_residuals_plots
+        when plot_info is set.
+        """
+        categs = self.fr
+        categ1_name, categ1_results = next(iter(categs.items()))
+        result = categ1_results[0]
+        result.plot_info = {"n_plots": 2, "subplot_titles": ["plot1", "plot2"]}
+        modif_categs = {categ1_name: [result]}
+
+        self.plot.plot_residuals(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(create_empty_residuals_plots.call_count, 1)
+
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
-    def test__add_data_points_called_by_plot_summary(self, add_data_points):
+    def test_add_data_points_called_by_plot_summary(self, add_data_points):
         """
         Test that _add_data_points gets called once by plot_summary.
         """
@@ -404,20 +469,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_data_points"
     )
-    def test__add_data_points_called_by_plot_initial_guess(
-        self, add_data_points
-    ):
-        """
-        Test that _add_data_points gets called once by
-        plot_initial_guess.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        add_data_points.assert_called_once()
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._add_data_points"
-    )
-    def test__add_data_points_called_by_plotly_fit(self, add_data_points):
+    def test_add_data_points_called_by_plotly_fit(self, add_data_points):
         """
         Test that _add_data_points gets called the right number of times
         by plotly_fit.
@@ -432,21 +484,7 @@ class PlotTests(unittest.TestCase):
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
     )
-    def test__add_starting_guess_called_by_plot_initial_guess(
-        self, add_starting_guess
-    ):
-        """
-        Test that _add_starting_guess gets called by plot_initial_guess.
-        """
-        self.plot.plot_initial_guess(self.df[("Fake_Test_Data", "prob_1")])
-        add_starting_guess.assert_called_once()
-
-    @mock.patch(
-        "fitbenchmarking.results_processing.plots.Plot._add_starting_guess"
-    )
-    def test__add_starting_guess_called_by_plotly_fit(
-        self, add_starting_guess
-    ):
+    def test_add_starting_guess_called_by_plotly_fit(self, add_starting_guess):
         """
         Test that _add_starting_guess gets called by plotly_fit, the
         correct number of times.
@@ -458,13 +496,105 @@ class PlotTests(unittest.TestCase):
         ].unique()
         self.assertEqual(add_starting_guess.call_count, len(minimizers))
 
-    def test__sample_colours(self):
+    def test_plot_2d_data_creates_files(self):
+        """
+        Test that plot_2d_data creates a file.
+        """
+        categs = self.fr
+        modif_categs = {}
+        categ1_key, categ1_results = next(iter(categs.items()))
+        new_results = []
+
+        for result in categ1_results:
+            result.plot_info = {
+                "plot_type": "2d",
+                "ebin_cens": np.arange(3),
+                "modQ_cens": np.arange(40),
+            }
+            result.fin_y_complete = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+            new_results.append(result)
+
+        modif_categs[categ1_key] = new_results
+
+        file_name = self.plot.plot_2d_data(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(file_name, "2d_plots_for_best_minims_prob_1.html")
+        path = os.path.join(self.figures_dir, file_name)
+        self.assertTrue(os.path.exists(path))
+
+    def test_plot_summary_creates_files_when_data_x_cuts(self):
+        """
+        Test that plot_summary creates a file when data_x_cuts is set.
+        """
+        categs = self.fr
+        modif_categs = {}
+        categ1_key, categ1_results = next(iter(categs.items()))
+        new_results = []
+
+        for result in categ1_results:
+            result.data_x_cuts = np.arange(10)
+            result.data_y_cuts = np.arange(10)
+            new_results.append(result)
+
+        modif_categs[categ1_key] = new_results
+
+        file_name = self.plot.plot_summary(
+            categories=modif_categs,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+
+        self.assertEqual(file_name, "summary_plot_for_prob_0.html")
+        path = os.path.join(self.figures_dir, file_name)
+        self.assertTrue(os.path.exists(path))
+
+    def test_sample_colours(self):
         """
         Test that _sample_colours produces the expected output.
         """
         exp_colours = ["rgb(9, 173, 234)", "rgb(213, 242, 0)"]
         colours = self.plot._sample_colours([0.4, 0.7])
         self.assertEqual(exp_colours, colours)
+
+    @mock.patch(
+        "fitbenchmarking.results_processing.plots.Plot.write_html_with_link_plotlyjs"
+    )
+    @mock.patch("plotly.graph_objects.Figure.add_trace")
+    def test_plot_multistart(self, mock_add_trace, mock_write_html):
+        """
+        Test that the loops in the _plot_multistart method run as expected.
+        """
+        results = {
+            "cf1": {
+                "s1": {
+                    "m1": [
+                        self.fr["Fake_Test_Data"][0],
+                        self.fr["Fake_Test_Data"][1],
+                    ]
+                }
+            },
+            "cf2": {
+                "s2": {
+                    "m2": [
+                        self.fr["Fake_Test_Data"][2],
+                        self.fr["Fake_Test_Data"][3],
+                    ]
+                }
+            },
+        }
+        self.plot.plot_multistart(
+            results=results,
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        assert mock_add_trace.call_count == 9
+        assert mock_write_html.call_count == 1
 
 
 if __name__ == "__main__":

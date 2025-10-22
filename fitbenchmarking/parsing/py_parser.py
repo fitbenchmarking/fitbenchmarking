@@ -1,10 +1,11 @@
 """
 This file implements a parser for python problem sets.
 """
-import inspect
+
 import os
 import sys
 import typing
+from functools import partial
 from importlib import import_module
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -13,32 +14,58 @@ from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 class PyParser(FitbenchmarkParser):
     """
     Parser for a python problem definition file.
+    The python function should be formatted as
+      f(x, var1, var2, var3 ... fixed_parameters: dict)
     """
+
+    def _parse_fixed_args(self) -> list[dict]:
+        """parses the problem definition file for a dictionary
+        of fixed arguments to the objective function given by the
+        keyword \"fixed_arguments\"
+
+        Returns:
+            list[dict]: a list of a dictionary containing keys
+            and fixed values of the selected fixed arguments"
+        """
+        return self._parse_string("fixed_arguments")
+
+    def _parse_variables(self) -> list[dict]:
+        """parses the problem definition file for a dictionary
+        of variable arguments to the objective function given by the
+        keyword \"variable_arguments\". The objective function will
+        be minimised over these arguments.
+
+        Returns:
+            list[dict]: a list of a dictionary containing keys
+            and starting values of the selected variable arguments"
+        """
+        return self._parse_string("variable_arguments")
 
     def _create_function(self) -> typing.Callable:
         """
         Process the import into a callable.
-
         Expected function format:
         function='module=functions/py_funcs,func=model'
-
         :return: A callable function
         :rtype: callable
         """
-
-        pf = self._parsed_func[0]
-        path = os.path.join(os.path.dirname(self._filename), pf['module'])
+        # import the objective function
+        pf: dict = self._parsed_func[0]
+        path = os.path.join(os.path.dirname(self._filename), pf["module"])
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
-        fun = getattr(module, pf['func'])
-        sig = inspect.signature(fun)
-        # parmas[0] should be x so start after.
-        p_names = list(sig.parameters.keys())[1:]
+        fun = getattr(module, pf["func"])
 
-        # pylint: disable=attribute-defined-outside-init
+        # get the fixed and variable function arguments
+        self.fixed_args: dict = self._parse_fixed_args()[0]
+
+        # define function which fixes variables
+        reduced_fun = partial(fun, fixed_parameters=self.fixed_args)
         self._equation = fun.__name__
-        self._starting_values = [{n: pf[n] for n in p_names}]
-        return fun
+
+        # set variable parameters starting values
+        self._starting_values = self._parse_variables()
+        return reduced_fun
 
     def _get_equation(self) -> str:
         """
@@ -47,7 +74,7 @@ class PyParser(FitbenchmarkParser):
         :return: The equation in the problem definition file.
         :rtype: str
         """
-        return self._parsed_func[0]['func']
+        return self._equation
 
     def _get_starting_values(self) -> list:
         """
