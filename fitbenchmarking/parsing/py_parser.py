@@ -2,10 +2,10 @@
 This file implements a parser for python problem sets.
 """
 
+import inspect
 import os
 import sys
 import typing
-from functools import partial
 from importlib import import_module
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -18,28 +18,16 @@ class PyParser(FitbenchmarkParser):
       f(x, var1, var2, var3 ... fixed_parameters: dict)
     """
 
-    def _parse_fixed_args(self) -> list[dict]:
+    def _parse_fixed_params(self) -> list[dict]:
         """parses the problem definition file for a dictionary
-        of fixed arguments to the objective function given by the
-        keyword \"fixed_arguments\"
+        of fixed parameters to the objective function given by the
+        keyword \"fixed_params\"
 
         Returns:
             list[dict]: a list of a dictionary containing keys
-            and fixed values of the selected fixed arguments"
+            and fixed values of the selected fixed parameters"
         """
-        return self._parse_string("fixed_arguments")
-
-    def _parse_variables(self) -> list[dict]:
-        """parses the problem definition file for a dictionary
-        of variable arguments to the objective function given by the
-        keyword \"variable_arguments\". The objective function will
-        be minimised over these arguments.
-
-        Returns:
-            list[dict]: a list of a dictionary containing keys
-            and starting values of the selected variable arguments"
-        """
-        return self._parse_string("variable_arguments")
+        return self._parse_string("fixed_params")
 
     def _create_function(self) -> typing.Callable:
         """
@@ -55,17 +43,44 @@ class PyParser(FitbenchmarkParser):
         sys.path.append(os.path.dirname(path))
         module = import_module(os.path.basename(path))
         fun = getattr(module, pf["func"])
-
-        # get the fixed and variable function arguments
-        self.fixed_args: dict = self._parse_fixed_args()[0]
-
-        # define function which fixes variables
-        reduced_fun = partial(fun, fixed_parameters=self.fixed_args)
         self._equation = fun.__name__
 
-        # set variable parameters starting values
-        self._starting_values = self._parse_variables()
-        return reduced_fun
+        sig = inspect.signature(fun)
+        # params[0] should be x so start after.
+        all_param_names = list(sig.parameters.keys())[1:]
+
+        fixed_params = {}
+        fixed_params = (
+            self._parse_fixed_params()[0]
+            if "fixed_params" in self._entries
+            else {}
+        )
+        pf |= fixed_params
+        is_fixed = [param in fixed_params for param in all_param_names]
+
+        all_params = [
+            (all_param_names[i], pf[n], is_fixed[i])
+            for i, n in enumerate(all_param_names)
+        ]
+
+        # This list will be used to input fixed values alongside unfixed ones
+        all_params_dict = {name: value for name, value, _ in all_params}
+
+        starting_params = {
+            name: value for name, value, fixed in all_params if not fixed
+        }
+        self._starting_values = [starting_params]
+
+        def wrapped(x, *p):
+            """
+            Only update non-fixed parameters
+            """
+            update_dict = dict(zip(starting_params.keys(), p))
+            all_params_dict.update(update_dict)
+
+            return fun(x, *all_params_dict.values())
+
+        return wrapped
 
     def _get_equation(self) -> str:
         """
