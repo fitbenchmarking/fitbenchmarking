@@ -8,6 +8,7 @@ from importlib import import_module
 from inspect import getmembers, isabstract, isclass
 
 from fitbenchmarking.parsing.base_parser import Parser
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import (
     MissingSoftwareError,
     NoParserError,
@@ -90,7 +91,7 @@ class ParserFactory:
         return classes[0][1]
 
 
-def parse_problem_file(prob_file, options):
+def parse_problem_file(prob_file, options) -> list[FittingProblem]:
     """
     Loads the problem file into a fitting problem using the correct parser.
 
@@ -104,7 +105,12 @@ def parse_problem_file(prob_file, options):
     """
     parser = ParserFactory.create_parser(prob_file)
     with parser(prob_file, options) as p:
-        problem = p.parse()
+        problems = p.parse()
 
-    problem.verify()
-    return problem
+    if not isinstance(problems, list):
+        problems = [problems]
+
+    for problem in problems:
+        problem.verify()
+
+    return problems
