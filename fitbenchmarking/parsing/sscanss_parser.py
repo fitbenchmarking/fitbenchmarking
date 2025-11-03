@@ -140,4 +140,5 @@ class SScanSSParser(FitbenchmarkParser):
         return {
             "x": np.array(["x", "y", "z", "ex", "ey", "ez"]),
             "y": np.array([0, 0, 0, 0, 0, 0]),
+            "e": np.array([1, 1, 1, 1, 1, 1]),
         }

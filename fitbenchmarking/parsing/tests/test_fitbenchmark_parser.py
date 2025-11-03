@@ -277,16 +277,17 @@ class TestFitbenchmarkParser(TestCase):
 
     @parameterized.expand(
         [
-            ("['multifit1.txt','multifit2.txt']", True),
-            ('["multifit1.txt", "multifit2.txt"]', True),
-            ("fit1.txt", False),
+            ({"input_file": "['multifit1.txt','multifit2.txt']"}, True),
+            ({"input_file": '["multifit1.txt", "multifit2.txt"]'}, True),
+            ({"input_file": "fit1.txt"}, False),
+            ({}, False),
         ]
     )
-    def test_is_multifit(self, input_file, expected):
+    def test_is_multifit(self, entries, expected):
         """
         Verifies the output of _is_multifit() method.
         """
-        self.parser._entries = {"input_file": input_file}
+        self.parser._entries = entries
         assert self.parser._is_multifit() == expected
 
     @parameterized.expand(
