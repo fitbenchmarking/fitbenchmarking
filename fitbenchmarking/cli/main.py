@@ -304,7 +304,8 @@ of the Fitbenchmarking docs. """
         default="",
         help=(
             "Specify the minimum level of logging to display "
-            "on console during runtime."
+            "on console during runtime. Can be any of: "
+            "NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL ."
         ),
     )
     parser.add_argument(
@@ -312,7 +313,10 @@ of the Fitbenchmarking docs. """
         "--external_output",
         metavar="EXTERNAL_OUTPUT",
         default="",
-        help="Select the amount of information displayed from third-parties.",
+        help=(
+            "Select the amount of information displayed from third-parties. "
+            "Can be any of: display, log_only, debug."
+        ),
     )
 
     parser.add_argument(
@@ -320,7 +324,7 @@ of the Fitbenchmarking docs. """
         default=False,
         action="store_true",
         help=(
-            "Load results from the checkpoint and generate"
+            "Load results from the checkpoint and generate "
             "reports. Will not run any new tests."
         ),
     )
@@ -348,7 +352,7 @@ of the Fitbenchmarking docs. """
         "--check_jacobian",
         action="store_true",
         help=(
-            "Use this option to check the jacobian against"
+            "Use this option to check the jacobian against "
             "a finite difference approximation."
         ),
     )
