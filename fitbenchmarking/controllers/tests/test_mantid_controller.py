@@ -37,7 +37,7 @@ class TestMantidController(TestCase):
         """
         bench_prob_dir = Path(inspect.getfile(test_files)).resolve().parent
         fname = bench_prob_dir / "multifit_set" / "multifit.txt"
-        fitting_problem = parse_problem_file(fname, Options())
+        fitting_problem = parse_problem_file(fname, Options())[0]
         fitting_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(fitting_problem)
         controller = ControllerFactory.create_controller("mantid")
@@ -182,7 +182,7 @@ class TestMantidController(TestCase):
         # Create the controller
         bench_prob_dir = Path(inspect.getfile(test_files)).resolve().parent
         fname = bench_prob_dir / file_path
-        fitting_problem = parse_problem_file(fname, Options())
+        fitting_problem = parse_problem_file(fname, Options())[0]
         fitting_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(fitting_problem)
         controller = ControllerFactory.create_controller("mantid")
@@ -209,7 +209,7 @@ class TestMantidController(TestCase):
         """
         bench_prob_dir = Path(inspect.getfile(test_files)).resolve().parent
         fname = bench_prob_dir / "multifit_set" / "multifit.txt"
-        fitting_problem = parse_problem_file(fname, Options())
+        fitting_problem = parse_problem_file(fname, Options())[0]
         fitting_problem.correct_data()
         cost_func = HellingerNLLSCostFunc(fitting_problem)
         controller = ControllerFactory.create_controller("mantid")

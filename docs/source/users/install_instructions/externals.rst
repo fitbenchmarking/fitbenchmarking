@@ -110,6 +110,13 @@ RALFit is available to use as fitting software.
 
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
 
+SScanSS-2
+---------
+
+SScanSS-2 is used in parsing some inverse kinematics files.
+
+Install instructions can be found on the `SScanSS-2 Github page <https://github.com/ISISNeutronMuon/SScanSS-2>`__.
+
 Theseus
 -------
 

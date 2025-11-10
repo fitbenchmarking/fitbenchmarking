@@ -1,0 +1,5 @@
+# Fitbenchmark Problem
+software = 'sscanss'
+name = 'Enginx Combo'
+description = 'Testing the enginx combo.'
+function = 'module=data/kinematics,robot=enginx_combo_robot,targets=ec_targets,p1=0,p2=0,p3=0,p4=0,p5=0,p6=0,p7=0'
