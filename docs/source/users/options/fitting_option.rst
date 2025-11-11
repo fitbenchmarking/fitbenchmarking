@@ -55,7 +55,7 @@ Default software options are ``scipy`` and ``scipy_ls``
 
 .. warning::
 
-   Software must be listed to be here to be run.
+   Software must be listed here to be run.
    Any minimizers set in :ref:`minimizer_option` will not be run if the software is not also
    present in this list.
 
