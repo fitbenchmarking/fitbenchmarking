@@ -89,6 +89,7 @@ omit = [
     '*/matlab*_controller.py',
     '*/horace_controller.py',
     '*/horace_parser.py',
+    '*/sscanss_parser.py',
     '*/matlab_engine.py',
 ]
 

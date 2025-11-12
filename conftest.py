@@ -1,7 +1,7 @@
 import pytest
 
 # set choices for --test-type
-test_choices = ["all", "default", "matlab"]
+test_choices = ["all", "default", "matlab", "local_only"]
 
 
 def pytest_addoption(parser):
