@@ -49,7 +49,6 @@ class PyParser(FitbenchmarkParser):
         # params[0] should be x so start after.
         all_param_names = list(sig.parameters.keys())[1:]
 
-        fixed_params = {}
         fixed_params = (
             self._parse_fixed_params()[0]
             if "fixed_params" in self._entries
