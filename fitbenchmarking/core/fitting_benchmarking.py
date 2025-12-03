@@ -108,13 +108,14 @@ class Fit:
             try:
                 with self._grabbed_output:
                     parsed = parse_problem_file(p, self._options)
-                    parsed.correct_data()
             except FitBenchmarkException as e:
                 LOGGER.info("Could not parse problem from: %s", p)
                 LOGGER.warning(e)
             else:
-                name_count[parsed.name] = name_count.get(parsed.name, 0) + 1
-                problems.append((p, parsed))
+                for fp in parsed:
+                    fp.correct_data()
+                    name_count[fp.name] = name_count.get(fp.name, 0) + 1
+                    problems.append((p, fp))
 
         LOGGER.info("Running problems")
 
@@ -141,7 +142,7 @@ class Fit:
 
                 info_str = (
                     f" Running data from: {os.path.basename(fname)}"
-                    f" {i + 1}/{len(problem_group)} "
+                    f" {i + 1}/{len(problems)} "
                 )
                 LOGGER.info("\n%s", "#" * len(info_str))
                 LOGGER.info(info_str)
@@ -201,7 +202,8 @@ class Fit:
             self._start_values_index = index
 
             if num_start_vals > 1:
-                problem.name = f"{name}, Start {index + 1}"
+                prefix = (len(str(num_start_vals)) - len(str(index + 1))) * "0"
+                problem.name = f"{name}, Start {prefix}{index + 1}"
 
             #############################
             # Loops over cost functions #
@@ -418,6 +420,7 @@ class Fit:
                     if (
                         self._options.check_jacobian
                         and not controller.problem.multifit
+                        and not controller.problem.multistart
                     ):
                         params = list(
                             controller.starting_values[

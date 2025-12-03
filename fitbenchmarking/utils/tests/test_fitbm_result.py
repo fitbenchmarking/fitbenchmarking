@@ -15,6 +15,7 @@ from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.controllers.scipy_controller import ScipyController
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.hessian.analytic_hessian import (
     Analytic as AnalyticHessian,
@@ -45,10 +46,12 @@ class FitbmResultTests(unittest.TestCase):
         test_files_dir = os.path.dirname(inspect.getfile(test_files))
         problem_dir = os.path.join(test_files_dir, "cubic.dat")
 
-        problem: FittingProblem = parse_problem_file(problem_dir, self.options)
-        problem.correct_data()
+        self.problem: FittingProblem = parse_problem_file(
+            problem_dir, self.options
+        )[0]
+        self.problem.correct_data()
 
-        cost_func = NLLSCostFunc(problem)
+        cost_func = NLLSCostFunc(self.problem)
 
         controller = ScipyController(cost_func=cost_func)
         controller.flag = 0
@@ -57,11 +60,11 @@ class FitbmResultTests(unittest.TestCase):
         controller.final_params = np.array([1, 3, 4, 4])
         controller.parameter_set = 0
 
-        jac = Scipy(problem=problem)
+        jac = Scipy(problem=self.problem)
         jac.method = "2-point"
         cost_func.jacobian = jac
 
-        hess = AnalyticHessian(problem, jac)
+        hess = AnalyticHessian(self.problem, jac)
         cost_func.hessian = hess
         self.controller = controller
 
@@ -334,6 +337,294 @@ class FitbmResultTests(unittest.TestCase):
         self.assertEqual(
             self.result.sanitised_min_name(True), "m1_[s1]_jj1_hh1"
         )
+
+    def test_get_indexes_1d_cuts_spinw(self):
+        """
+        Test that get_indexes_1d_cuts_spinw returns expected output.
+        """
+        problem = self.controller.problem
+        problem.additional_info["modQ_cens"] = np.array(
+            [
+                0.39491525,
+                0.4440678,
+                0.49322034,
+                0.54237288,
+                0.59152542,
+                0.64067797,
+                0.68983051,
+                0.73898305,
+                0.78813559,
+                0.83728814,
+                0.88644068,
+                0.93559322,
+                0.98474576,
+                1.03389831,
+                1.08305085,
+                1.13220339,
+                1.18135593,
+                1.23050847,
+                1.27966102,
+                1.32881356,
+                1.3779661,
+                1.42711864,
+                1.47627119,
+                1.52542373,
+                1.57457627,
+                1.62372881,
+                1.67288136,
+                1.7220339,
+                1.77118644,
+                1.82033898,
+            ]
+        )
+
+        problem.additional_info["q_cens"] = np.array(["0.8", "1.2"])
+        problem.additional_info["dq"] = 0.05
+        expected_ind = [
+            (np.array([8, 9]),),
+            (np.array([16, 17]),),
+        ]
+        obtained_ind = self.result.get_indexes_1d_cuts_spinw(problem)
+
+        expected_ind_list = [tuple_i[0].tolist() for tuple_i in expected_ind]
+        obtained_ind_list = [tuple_i[0].tolist() for tuple_i in obtained_ind]
+
+        self.assertEqual(expected_ind_list, obtained_ind_list)
+
+    def test_get_1d_cuts_spinw(self):
+        """
+        Test that get_1d_cuts_spinw returns expected output,
+        when indexes come in tuples.
+        """
+        problem = self.controller.problem
+        problem.additional_info["ebin_cens"] = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+            ]
+        )
+        array_to_cut = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+                0.2278481,
+                0.27848101,
+                0.32911392,
+                0.37974684,
+                0.43037975,
+                0.48101266,
+                0.53164557,
+                0.58227848,
+                0.63291139,
+                0.6835443,
+                0.73417722,
+                0.78481013,
+                0.83544304,
+                0.88607595,
+                0.93670886,
+                0.98734177,
+            ]
+        )
+        indexes = [(np.array([3, 4]),)]
+        obtained = self.result.get_1d_cuts_spinw(
+            problem, indexes, array_to_cut
+        )
+        expected = (
+            [0.734177215, 0.7848101249999999, 0.8354430399999999, 0.88607595],
+            np.array(
+                [
+                    [
+                        0.02531646,
+                        0.07594937,
+                        0.12658228,
+                        0.17721519,
+                    ],
+                    [
+                        0.2278481,
+                        0.27848101,
+                        0.32911392,
+                        0.37974684,
+                    ],
+                    [
+                        0.43037975,
+                        0.48101266,
+                        0.53164557,
+                        0.58227848,
+                    ],
+                    [
+                        0.63291139,
+                        0.6835443,
+                        0.73417722,
+                        0.78481013,
+                    ],
+                    [
+                        0.83544304,
+                        0.88607595,
+                        0.93670886,
+                        0.98734177,
+                    ],
+                ]
+            ),
+        )
+        self.assertEqual(obtained[0], expected[0])
+        self.assertTrue((obtained[1] == expected[1]).all())
+
+    def test_get_1d_cuts_spinw_when_indexes_are_not_tuples(self):
+        """
+        Test that get_1d_cuts_spinw returns expected output,
+        when indexes are not tuples, but a single index per cut.
+        """
+        problem = self.controller.problem
+        problem.additional_info["ebin_cens"] = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+            ]
+        )
+        array_to_cut = np.array(
+            [
+                0.02531646,
+                0.07594937,
+                0.12658228,
+                0.17721519,
+                0.2278481,
+                0.27848101,
+                0.32911392,
+                0.37974684,
+            ]
+        )
+        indexes = [(np.array([1]),)]
+        obtained = self.result.get_1d_cuts_spinw(
+            problem, indexes, array_to_cut
+        )
+        expected = (
+            [[0.2278481, 0.27848101, 0.32911392, 0.37974684]],
+            np.array(
+                [
+                    [
+                        0.02531646,
+                        0.07594937,
+                        0.12658228,
+                        0.17721519,
+                    ],
+                    [
+                        0.2278481,
+                        0.27848101,
+                        0.32911392,
+                        0.37974684,
+                    ],
+                ]
+            ),
+        )
+        self.assertEqual(obtained[0], expected[0])
+        self.assertTrue((obtained[1] == expected[1]).all())
+
+    def test_data_x_when_plot_type_1d_cuts(self):
+        """
+        Test data_x is correct when plot_type is "1d_cuts".
+        """
+        problem = self.problem
+        problem.additional_info = {
+            "plot_type": "1d_cuts",
+            "n_plots": 2,
+            "subplot_titles": [],
+            "ax_titles": [],
+            "ebin_cens": np.array([0.02, 0.075, 0.126, 0.177, 0.22]),
+        }
+
+        problem.data_y = np.arange(10)
+        cost_func = NLLSCostFunc(problem)
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
+
+        controller = ScipyController(cost_func=cost_func)
+        controller.minimizer = "Newton-CG"
+        controller.parameter_set = 0
+
+        result = FittingResult(
+            controller=controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            energy=self.energy,
+        )
+        obtained = result.data_x
+        expected = np.array(
+            [0.02, 0.075, 0.126, 0.177, 0.22, 0.02, 0.075, 0.126, 0.177, 0.22]
+        )
+        self.assertTrue((obtained == expected).all())
+
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.FittingResult.get_indexes_1d_cuts_spinw",
+        return_value=[
+            (np.array([8, 9]),),
+        ],
+    )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.FittingResult.get_1d_cuts_spinw",
+        return_value=(None, None),
+    )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc.jac_res",
+        return_value=np.arange(10),
+    )
+    @patch(
+        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc.eval_r",
+        return_value=np.arange(10),
+    )
+    def test_data_x_cuts_when_plot_type_2d(
+        self, mock_eval_r, mock_jac_res, mock_get_cuts, mock_get_indexes
+    ):
+        """
+        Test data_x_cuts is correct when plot_type is "2d".
+        Also test that get_indexes_1d_cuts_spinw and get_1d_cuts_spinw
+        get called the right amount of times.
+        """
+        problem = self.problem
+        problem.additional_info = {
+            "plot_type": "2d",
+            "n_plots": 2,
+            "subplot_titles": [],
+            "ax_titles": [],
+            "q_cens": np.array(["0.8", "1.2"]),
+            "dq": 0.05,
+            "ebin_cens": np.array([0.075, 0.126, 0.177]),
+            "modQ_cens": np.array([0.837, 0.886, 0.935, 0.984]),
+        }
+
+        cost_func = BaseNLLSCostFunc(problem)
+        jac = Scipy(problem=problem)
+        jac.method = "2-point"
+        cost_func.jacobian = jac
+        hess = AnalyticHessian(problem, jac)
+        cost_func.hessian = hess
+
+        controller = ScipyController(cost_func=cost_func)
+        controller.minimizer = "Newton-CG"
+        controller.parameter_set = 0
+        controller.initial_params = np.array([0, 0, 0, 0])
+        controller.final_params = np.array([1, 3, 4, 4])
+
+        result = FittingResult(
+            controller=controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            energy=self.energy,
+        )
+        obtained = result.data_x_cuts
+        expected = np.array([0.075, 0.126, 0.177, 0.075, 0.126, 0.177])
+
+        self.assertTrue((obtained == expected).all())
+        self.assertEqual(mock_get_indexes.call_count, 1)
+        self.assertEqual(mock_get_cuts.call_count, 5)
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ class FittingProblem:
     Definition of a fitting problem, which will be populated by a parser from a
     problem definition file.
 
-    Onces populated, this should include the data, the function and any other
+    Once populated, this should include the data, the function and any other
     additional requirements from the data.
     """
 
@@ -97,18 +97,21 @@ class FittingProblem:
         #: This should be avoided if possible.
         self.additional_info = {}
 
-        #: *bool* Used to check if a problem is using multifit.
-        self.multifit = False
+        # Used to check if a problem is using multifit.
+        self.multifit = None
+
+        # Used to check if a problem will be used down the line for
+        # varying starting conditions analysis.
+        self.multistart = None
 
         #: Callable function for the Jacobian
         self.jacobian = None
 
         self.sparse_jacobian = None
 
-        #: *bool*
         #: Whether the function has been wrapped to reduce the dimension of x
         #: on function calls
-        self.multivariate = False
+        self.multivariate = None
 
         #: Callable function for the Hessian
         self.hessian = None
@@ -224,20 +227,7 @@ class FittingProblem:
             "weighted_nlls" in self.options.cost_func_type
             or "loglike_nlls" in self.options.cost_func_type
         )
-        if not self.multifit:
-            correct_vals = correct_data(
-                x=self.data_x,
-                y=self.data_y,
-                e=self.data_e,
-                startx=self.start_x,
-                endx=self.end_x,
-                use_errors=use_errors,
-            )
-            self.data_x = correct_vals[0]
-            self.data_y = correct_vals[1]
-            self.data_e = correct_vals[2]
-            self.sorted_index = correct_vals[3]
-        else:
+        if self.multifit:
             # Mantid multifit problem
             self.sorted_index = []
             num_data = len(self.data_x)
@@ -254,6 +244,17 @@ class FittingProblem:
                 self.data_y[i] = correct_vals[1]
                 self.data_e[i] = correct_vals[2]
                 self.sorted_index.append(correct_vals[3])
+        else:
+            self.data_x, self.data_y, self.data_e, self.sorted_index = (
+                correct_data(
+                    x=self.data_x,
+                    y=self.data_y,
+                    e=self.data_e,
+                    startx=self.start_x,
+                    endx=self.end_x,
+                    use_errors=use_errors,
+                )
+            )
 
     def set_value_ranges(self, value_ranges):
         """
@@ -341,12 +342,14 @@ def correct_data(x, y, e, startx, endx, use_errors):
     # impose x ranges
     if startx is not None and endx is not None:
         mask = np.logical_and(x >= startx, x <= endx)
-        x = x[mask]
-        y = y[mask]
+        x: np.ndarray = x[mask]
+        y: np.ndarray = y[mask]
         if e is not None:
-            e = e[mask]
+            e: np.ndarray = e[mask]
 
     # Stores the indices of the sorted data
-    sorted_index = np.argsort(x)
+    sorted_index = (
+        np.argsort(x) if not isinstance(x[0], str) else np.arange(len(x))
+    )
 
     return x, y, e, sorted_index

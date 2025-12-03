@@ -202,7 +202,7 @@ class TestFitbenchmarkParser(TestCase):
     @parameterized.expand(
         [
             "na+me= BackToBackExponential",
-            "na.me= BackToBackExponential",
+            "na.m.e= BackToBackExponential",
             "na$me = BackToBackExponential",
             "na%me = BackToBackExponential",
         ]
@@ -277,17 +277,65 @@ class TestFitbenchmarkParser(TestCase):
 
     @parameterized.expand(
         [
-            ("['multifit1.txt','multifit2.txt']", True),
-            ('["multifit1.txt", "multifit2.txt"]', True),
-            ("fit1.txt", False),
+            ({"input_file": "['multifit1.txt','multifit2.txt']"}, True),
+            ({"input_file": '["multifit1.txt", "multifit2.txt"]'}, True),
+            ({"input_file": "fit1.txt"}, False),
+            ({}, False),
         ]
     )
-    def test_is_multifit(self, input_file, expected):
+    def test_is_multifit(self, entries, expected):
         """
         Verifies the output of _is_multifit() method.
         """
-        self.parser._entries = {"input_file": input_file}
+        self.parser._entries = entries
         assert self.parser._is_multifit() == expected
+
+    @parameterized.expand(
+        [
+            (
+                [{"x": np.array([[1], [2]]), "y": np.array([3])}],
+                True,
+            ),
+            (
+                [{"x": np.array([[1], [2]]), "y": np.array([[3], [4]])}],
+                True,
+            ),
+            (
+                [{"x": np.array([1]), "y": np.array([[3], [4]])}],
+                True,
+            ),
+        ]
+    )
+    def test_is_multivariate(self, data_points, expected):
+        """
+        Verifies the output of _is_multivariate method.
+        """
+        assert self.parser._is_multivariate(data_points) == expected
+
+    @parameterized.expand(
+        [
+            (
+                {},
+                False,
+                False,
+            ),
+            (
+                {"n_fits": 1},
+                True,
+                True,
+            ),
+        ]
+    )
+    def test_is_multistart(self, entries, is_error, expected):
+        """
+        Verifies the _is_multistart method.
+        """
+        self.parser._entries = entries
+        if is_error:
+            with self.assertRaises(exceptions.ParsingError):
+                _ = self.parser._is_multistart()
+        else:
+            assert self.parser._is_multistart() == expected
 
     @parameterized.expand(
         [
@@ -628,6 +676,7 @@ class TestFitbenchmarkParser(TestCase):
         Verifies the output of _get_starting_values() method.
         """
         self.parser._parsed_func = parsed_func
+        self.parser._PARAM_IGNORE_LIST = ["name"]
         assert self.parser._get_starting_values() == expected
 
     @parameterized.expand(
@@ -776,6 +825,7 @@ class TestFitbenchmarkParser(TestCase):
         mock_create_function.return_value = ["mock_function"]
 
         self.parser.options = Options()
+        self.parser._PARAM_IGNORE_LIST = ["name"]
         result = self.parser.parse()
 
         # Verify all the parameters are set correctly
@@ -792,6 +842,7 @@ class TestFitbenchmarkParser(TestCase):
         assert not result.jacobian
         assert result.multifit
         assert result.multivariate
+        assert not result.multistart
         assert result.name == "Basic MultiFit"
         assert result.param_names == ["A0", "A1"]
         assert result.plot_scale == "linear"

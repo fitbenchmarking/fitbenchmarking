@@ -85,6 +85,7 @@ class MantidController(Controller):
     ]
 
     support_for_bounds = True
+    incompatible_problems = ["sscanss"]
 
     def __init__(self, cost_func):
         """
@@ -109,6 +110,8 @@ class MantidController(Controller):
 
         # In case of mantid parser:
         #    mantid_equation is set in additional_info
+        #      In case of multistart analysis, mantid_equation
+        #      is a list of strings. Otherwise, it is a string.
         # In case of mantid dev parser:
         #    additional_info does not have the mantid_equation key
         self._mantid_equation = self.problem.additional_info.get(
@@ -123,6 +126,8 @@ class MantidController(Controller):
         )
 
         if self.problem.multifit:
+            if self.data_x[0].dtype not in [float, int]:
+                self.data_x = [np.array(range(len(d))) for d in self.data_x]
             # len(data_obj) will be equal to dataset count
             data_obj = [
                 msapi.CreateWorkspace(
@@ -140,6 +145,8 @@ class MantidController(Controller):
                 for i, v in enumerate(data_obj[1:])
             }
         else:
+            if self.data_x.dtype not in [float, int]:
+                self.data_x = np.array(range(len(self.data_x)))
             data_obj = msapi.CreateWorkspace(
                 DataX=self.data_x, DataY=self.data_y, DataE=self.data_e
             )
@@ -216,7 +223,11 @@ class MantidController(Controller):
         """
         # Use the raw string format if this is from a Mantid problem.
         # This enables advanced features such as contraints.
-        function_def = self._mantid_equation
+        function_def = (
+            self._mantid_equation[self.parameter_set]
+            if self.problem.multistart
+            else self._mantid_equation
+        )
 
         if self.problem.multifit:
             # Each function must include '$domains=i'

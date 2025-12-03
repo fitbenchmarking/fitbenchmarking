@@ -60,6 +60,7 @@ class FittingResult:
         # Problem definition + scores
         self.name: str = problem.name
         self.multivariate: bool = problem.multivariate
+        self.multistart: bool = problem.multistart
         self.problem_format: str = problem.format
         self.problem_desc: str = problem.description
         self.initial_params: list[float] = controller.initial_params
@@ -83,12 +84,32 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
-        # if SpinW, make sure data_x is correct
+        # Needed for spinw 2d case, for plotting
+        indexes_cuts = None
+
         if "ebin_cens" in problem.additional_info:
-            n_plots = problem.additional_info["n_plots"]
-            self.data_x = np.array(
-                n_plots * problem.additional_info["ebin_cens"].tolist()
-            )
+            # If SpinW 1d, make sure data_x is correct
+            if problem.additional_info["plot_type"] == "1d_cuts":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+
+            # In the SpinW 2d case, produce cuts of data
+            elif problem.additional_info["plot_type"] == "2d":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x_cuts = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+                indexes_cuts = self.get_indexes_1d_cuts_spinw(problem)
+                self.data_y_cuts, self.data_y_complete = (
+                    self.get_1d_cuts_spinw(problem, indexes_cuts, self.data_y)
+                )
+
+                if self.data_e is not None:
+                    self.data_e_cuts, _ = self.get_1d_cuts_spinw(
+                        problem, indexes_cuts, self.data_e
+                    )
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
@@ -100,13 +121,17 @@ class FittingResult:
         self.params_pdfs = controller.params_pdfs
 
         # Additional plotting info for SpinW powder plots
-        if "plot_type" in problem.additional_info:
+        if "n_plots" in problem.additional_info:
             self.plot_info = {
                 "plot_type": problem.additional_info["plot_type"],
                 "n_plots": problem.additional_info["n_plots"],
                 "subplot_titles": problem.additional_info["subplot_titles"],
                 "ax_titles": problem.additional_info["ax_titles"],
             }
+
+            for key in ["modQ_cens", "ebin_cens"]:
+                if key in problem.additional_info:
+                    self.plot_info[key] = problem.additional_info[key].tolist()
         else:
             self.plot_info = None
 
@@ -136,6 +161,11 @@ class FittingResult:
         self.jac_x = None
 
         self.ini_y = problem.ini_y(controller.parameter_set)
+        if hasattr(self, "ini_y") and indexes_cuts is not None:
+            self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
+                problem, indexes_cuts, self.ini_y
+            )
+
         self.fin_y = None
         if self.params is not None:
             cost_func.problem.timer.reset()
@@ -143,12 +173,20 @@ class FittingResult:
                 self.r_x = cost_func.eval_r(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
+                if hasattr(self, "r_x") and indexes_cuts is not None:
+                    self.r_x_cuts, _ = self.get_1d_cuts_spinw(
+                        problem, indexes_cuts, self.r_x
+                    )
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
             self.fin_y = cost_func.problem.eval_model(
                 self.params, x=self.data_x
             )
+            if hasattr(self, "fin_y") and indexes_cuts is not None:
+                self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
+                    problem, indexes_cuts, self.fin_y
+                )
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(
@@ -173,6 +211,53 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
+    def get_1d_cuts_spinw(self, problem, indexes, array_to_cut):
+        """
+        Given a flattened array of spinw y data, this function reshapes it
+        into a 2d array (based on the length of ebin_cens), then takes
+        1d cuts based on the q_cens specified by the user.
+        """
+
+        len_single_data_x = len(problem.additional_info["ebin_cens"].tolist())
+        len_y_flattened = len(array_to_cut)
+        new_shape = (
+            int(len_y_flattened / len_single_data_x),
+            len_single_data_x,
+        )
+        reshaped_data = array_to_cut.reshape(new_shape)
+        array_to_cut_as_2d = reshaped_data
+
+        data_cuts = []
+        for ind in indexes:
+            if len(list(ind[0])) == 1:
+                data_cuts = data_cuts + array_to_cut_as_2d[ind, :][0].tolist()
+
+            elif len(list(ind[0])) > 1:
+                mean_y = np.mean(array_to_cut_as_2d[ind, :][0], axis=0)
+                data_cuts = data_cuts + mean_y.tolist()
+
+        return data_cuts, array_to_cut_as_2d
+
+    def get_indexes_1d_cuts_spinw(self, problem):
+        """
+        Get indexes of 1d cuts for SpinW data, based on the q_cens
+        specified by the user.
+        """
+        modQ_cens = problem.additional_info["modQ_cens"]
+        q_cens = problem.additional_info["q_cens"]
+        dq = problem.additional_info["dq"]
+        qmin = [float(i) - dq for i in q_cens]
+        qmax = [float(i) + dq for i in q_cens]
+
+        indexes_cuts = []
+        for qmin_i, qmax_i in zip(qmin, qmax):
+            indexes_cuts.append(
+                np.where(
+                    np.logical_and(modQ_cens >= qmin_i, modQ_cens <= qmax_i)
+                )
+            )
+        return indexes_cuts
+
     def init_blank(self):
         """
         Initialise a new blank version of the class with the required
@@ -196,7 +281,6 @@ class FittingResult:
         # Paths to various output files
         self.problem_summary_page_link = ""
         self.fitting_report_link = ""
-        self.start_figure_link = ""
         self.figure_link = ""
         self.figure_error = ""
         self.posterior_plots = ""

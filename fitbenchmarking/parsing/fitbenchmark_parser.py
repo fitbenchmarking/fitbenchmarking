@@ -26,6 +26,8 @@ class FitbenchmarkParser(Parser):
     file.
     """
 
+    _PARAM_IGNORE_LIST = []
+
     def __init__(self, filename, options):
         super().__init__(filename, options)
 
@@ -37,7 +39,7 @@ class FitbenchmarkParser(Parser):
         Parse the Fitbenchmark problem file into a Fitting Problem.
 
         :return: The fully parsed fitting problem
-        :rtype: fitbenchmarking.parsing.fitting_problem.FittingProblem
+        :rtype: Union[FittingProblem, List[FittingProblem]]
         """
         self._entries = self._get_data_problem_entries()
 
@@ -46,6 +48,7 @@ class FitbenchmarkParser(Parser):
         self._parsed_func = self._parse_function()
 
         self.fitting_problem.multifit = self._is_multifit()
+        self.fitting_problem.multistart = self._is_multistart()
 
         self.fitting_problem.name = self._entries["name"]
         self.fitting_problem.description = self._entries["description"]
@@ -57,20 +60,15 @@ class FitbenchmarkParser(Parser):
 
         self.fitting_problem.plot_scale = self._get_plot_scale()
 
-        # If using a multivariate function wrap the call to take a single
-        # argument
+        self.fitting_problem.multivariate = self._is_multivariate(data_points)
         if data_points[0]["x"].ndim > 1:
+            # If using a multivariate function wrap the call to take a single
+            # argument
             old_function = self.fitting_problem.function
             all_data = np.concatenate([dp["x"] for dp in data_points])
-
             self.fitting_problem.function = lambda x, *p: old_function(
                 all_data[x], *p
             )
-            self.fitting_problem.multivariate = True
-
-        # Set this flag if the output is non-scalar either
-        if data_points[0]["y"].ndim > 1:
-            self.fitting_problem.multivariate = True
 
         # EQUATION
         self.fitting_problem.equation = self._get_equation()
@@ -109,7 +107,38 @@ class FitbenchmarkParser(Parser):
         :return: True if the problem is a multi fit problem.
         :rtype: bool
         """
+        if "input_file" not in self._entries:
+            return False
         return self._entries["input_file"].startswith("[")
+
+    def _is_multistart(self) -> bool:
+        """
+        Returns false for all parsers. multistart analysis
+        is only enabled for the mantid parser.
+
+        :return: False because multi start analysis is disabled.
+        :rtype: bool
+        """
+        if "n_fits" in self._entries:
+            raise ParsingError(
+                "Multi start analysis is only supported "
+                "for mantid problems. Either remove 'n_fits' "
+                "entry from the problem definition file. "
+                "Or update the 'software' in the problem "
+                "definition file to 'Mantid'."
+            )
+        return False
+
+    def _is_multivariate(self, data_points) -> bool:
+        """
+        Returns true if the problem is multivariate.
+
+        :param data_points: A list of data points.
+        :type data_points: list
+        :return: True if problem is multivariate.
+        :rtype: bool
+        """
+        return data_points[0]["x"].ndim > 1 or data_points[0]["y"].ndim > 1
 
     def _create_function(self) -> Callable:
         """
@@ -137,12 +166,11 @@ class FitbenchmarkParser(Parser):
         :return: The starting values for the problem.
         :rtype: list
         """
-        # Functions can have reserved "name" keyword so ignore this
         return [
             {
                 key: val
                 for key, val in self._parsed_func[0].items()
-                if key != "name"
+                if key not in self._PARAM_IGNORE_LIST
             }
         ]
 
@@ -332,7 +360,9 @@ class FitbenchmarkParser(Parser):
         matches = re.findall(pattern, func)
 
         for key, value in matches:
-            if not re.match(r"^\w+$", key):
+            if not re.match(r"^\w+$", key) and not (
+                "." in key and key.count(".") == 1
+            ):
                 raise ParsingError(
                     f"Unexpected character in parameter name: {key}"
                 )
