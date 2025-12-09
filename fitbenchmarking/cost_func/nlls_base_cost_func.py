@@ -77,8 +77,10 @@ class BaseNLLSCostFunc(CostFunc):
         Uses the Jacobian of the model to evaluate the Jacobian of the
         cost function, :math:`\\nabla_p F(r(x,y,p))`, at the given
         parameters.
+
         :param params: The parameters at which to calculate Jacobians
         :type params: list
+
         :return: evaluated Jacobian of the cost function
         :rtype: 1D numpy array
         """

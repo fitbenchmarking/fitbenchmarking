@@ -46,7 +46,7 @@ class Controller:
     #:     - ``general`` - minimizers which solve a generic `min f(x)`
     #:     - ``simplex`` - derivative free simplex based algorithms
     #:       e.g. Nelder-Mead
-    #:     - ``trust_region`` - algorithms which emply a trust region approach
+    #:     - ``trust_region`` - algorithms which employ a trust region approach
     #:     - ``levenberg-marquardt`` - minimizers that use the
     #:       Levenberg-Marquardt algorithm
     #:     - ``gauss_newton`` - minimizers that use the Gauss Newton algorithm
@@ -62,7 +62,7 @@ class Controller:
     #:
     #: The ``algorithm_check`` dictionary is used to determine which minimizers
     #: to run given the ``algorithm_type`` selected in Fitting Options.
-    #: For guidance on how to catagorise minimizers, see the Optimization
+    #: For guidance on how to categorise minimizers, see the Optimization
     #: Algorithms section of the FitBenchmarking docs.
     algorithm_check = {
         "all": [],

@@ -480,6 +480,7 @@ class Options:
         ],
         "run_name": "",
         "checkpoint_filename": "checkpoint.json",
+        "multistart_success_threshold": 1.5,
     }
     DEFAULT_LOGGING = {
         "file_name": "fitbenchmarking.log",
@@ -488,7 +489,7 @@ class Options:
         "external_output": "log_only",
     }
     DEFAULT_RUNTIME = {"runtime_metric": "mean"}
-    DEFAULT_DASH = {"port": 4000}
+    DEFAULT_DASH = {"port": 4000, "ip_address": "127.0.0.1"}
     DEFAULTS = {
         "MINIMIZERS": DEFAULT_MINIMZERS,
         "FITTING": DEFAULT_FITTING,
@@ -650,6 +651,9 @@ class Options:
         self.colour_ulim = self.read_value(
             output.getfloat, "colour_ulim", additional_options
         )
+        self.multistart_success_threshold = self.read_value(
+            output.getfloat, "multistart_success_threshold", additional_options
+        )
         self.cmap_range = self.read_value(
             output.getrng, "cmap_range", additional_options
         )
@@ -681,6 +685,10 @@ class Options:
         dash_settings = config["DASH"]
         self.port = self.read_value(
             dash_settings.getint, "port", additional_options
+        )
+
+        self.ip_address = self.read_value(
+            dash_settings.getstr, "ip_address", additional_options
         )
 
         logging = config["LOGGING"]
@@ -810,6 +818,7 @@ class Options:
             "colour_map": self.colour_map,
             "cmap_range": self.cmap_range,
             "colour_ulim": self.colour_ulim,
+            "multistart_success_threshold": self.multistart_success_threshold,
             "comparison_mode": self.comparison_mode,
             "make_plots": self.make_plots,
             "results_browser": self.results_browser,
@@ -829,7 +838,7 @@ class Options:
 
         config["RUNTIME"] = {"runtime_metric": self.runtime_metric}
 
-        config["DASH"] = {"port": self.port}
+        config["DASH"] = {"port": self.port, "ip_address": self.ip_address}
 
         return config
 
