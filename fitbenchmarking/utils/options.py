@@ -46,7 +46,7 @@ class Options:
             "Polak_Ribiere",
             "Hestenes_Stiefel",
         ],
-        "dfo": ["dfols"],
+        "dfo": ["dfols", "dfols-noisy"],
         "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["alternating", "multistart", "regularisation"],
         "gradient_free": [

@@ -15,12 +15,12 @@ class DFOController(Controller):
     """
 
     algorithm_check = {
-        "all": ["dfols"],
-        "ls": ["dfols"],
-        "deriv_free": ["dfols"],
+        "all": ["dfols", "dfols-noisy"],
+        "ls": ["dfols", "dfols-noisy"],
+        "deriv_free": ["dfols", "dfols-noisy"],
         "general": [],
         "simplex": [],
-        "trust_region": ["dfols"],
+        "trust_region": ["dfols", "dfols-noisy"],
         "levenberg-marquardt": [],
         "gauss_newton": [],
         "bfgs": [],
@@ -82,12 +82,23 @@ class DFOController(Controller):
         """
         Run problem with DFO.
         """
-        self._soln = dfols.solve(
-            self.cost_func.eval_r,
-            self._pinit,
-            rhobeg=self.rhobeg,
-            bounds=self.param_ranges,
-        )
+        if self.minimizer == "dfols-noisy":
+            self._soln = dfols.solve(
+                self.cost_func.eval_r,
+                self._pinit,
+                rhobeg=self.rhobeg,
+                bounds=self.param_ranges,
+                objfun_has_noise=True,
+                print_progress=True,
+            )
+        else:
+            self._soln = dfols.solve(
+                self.cost_func.eval_r,
+                self._pinit,
+                rhobeg=self.rhobeg,
+                bounds=self.param_ranges,
+                print_progress=True,
+            )
 
         self._popt = self._soln.x
         self._status = self._soln.flag
