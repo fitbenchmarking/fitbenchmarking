@@ -499,7 +499,7 @@ def _parse_range(range_str: str) -> dict:
 
         pattern = (
             r'\'?"?([\w\.\s]+)"?\'?\s*:\s*'
-            r"([\(\[\{])([\d\.]+),\s*([\d\.]+)([\)\]\}])"
+            r"([\(\[\{])([-?\d\.]+),\s*([-?\d\.]+)([\)\]\}])"
         )
 
         if not (matches := re.findall(pattern, range_str)):
