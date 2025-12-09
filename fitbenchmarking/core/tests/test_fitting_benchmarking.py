@@ -134,7 +134,7 @@ def set_up_controller(file, options):
     """
     data_file = os.path.join(DATA_DIR, file)
 
-    parsed_problem = parse_problem_file(data_file, options)
+    parsed_problem = parse_problem_file(data_file, options)[0]
     parsed_problem.correct_data()
     cost_func = WeightedNLLSCostFunc(parsed_problem)
 
@@ -318,7 +318,7 @@ class HessianTests(unittest.TestCase):
         )
         cp = Checkpoint(options)
 
-        parsed_problem = parse_problem_file(data_file, options)
+        parsed_problem = parse_problem_file(data_file, options)[0]
         parsed_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(parsed_problem)
 
@@ -433,7 +433,7 @@ class JacobianTests(unittest.TestCase):
         )
         cp = Checkpoint(options)
 
-        parsed_problem = parse_problem_file(data_file, options)
+        parsed_problem = parse_problem_file(data_file, options)[0]
         parsed_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(parsed_problem)
 
@@ -586,7 +586,7 @@ class MinimizersTests(unittest.TestCase):
         )
         cp = Checkpoint(options)
 
-        parsed_problem = parse_problem_file(data_file, options)
+        parsed_problem = parse_problem_file(data_file, options)[0]
         parsed_problem.correct_data()
         cost_func = WeightedNLLSCostFunc(parsed_problem)
 
@@ -686,7 +686,7 @@ class SoftwareTests(unittest.TestCase):
         )
         self.cp = Checkpoint(self.options)
 
-        parsed_problem = parse_problem_file(self.data_file, self.options)
+        parsed_problem = parse_problem_file(self.data_file, self.options)[0]
         parsed_problem.correct_data()
         self.cost_func = WeightedNLLSCostFunc(parsed_problem)
 
@@ -761,7 +761,7 @@ class CostFunctionTests(unittest.TestCase):
         )
         cp = Checkpoint(options)
 
-        self.parsed_problem = parse_problem_file(data_file, options)
+        self.parsed_problem = parse_problem_file(data_file, options)[0]
         self.parsed_problem.correct_data()
 
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)
@@ -830,7 +830,7 @@ class StartingValueTests(unittest.TestCase):
         )
         cp = Checkpoint(options)
 
-        self.parsed_problem = parse_problem_file(data_file, options)
+        self.parsed_problem = parse_problem_file(data_file, options)[0]
         self.parsed_problem.correct_data()
 
         self.fit = Fit(options=options, data_dir=data_file, checkpointer=cp)

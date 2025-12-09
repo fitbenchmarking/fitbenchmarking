@@ -363,7 +363,6 @@ def create_plots(options, results, best_results, figures_dir):
     """
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
-        initial_guess_path = {}
         data = {}
 
         # Create a dataframe for each problem
@@ -439,9 +438,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = str(e)
                 continue
 
-            # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess(data[cf])
-
             # Get filenames of best plot first
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
@@ -452,7 +448,6 @@ def create_plots(options, results, best_results, figures_dir):
                 best_dict[
                     cf
                 ].figure_error = "Minimizer failed to produce any parameters"
-            best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
             plot_paths = plot.plotly_fit(data[cf])
@@ -469,7 +464,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = (
                         "Minimizer failed to produce any parameters"
                     )
-                result.start_figure_link = initial_guess_path[cf]
 
         # For each result, if it succeeded and produced posterior pdf estimates
         # for each parameter, create histogram plots and add plot links to the
@@ -634,7 +628,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )
 
     if options.run_dash:
-        run_dash_app(options, pp_dfs_all_prob_sets)
+        prepare_dash_app_and_run(options, pp_dfs_all_prob_sets)
 
 
 def update_warning(solvers, max_solvers):
@@ -754,10 +748,10 @@ def display_page(
     return html.Div(new_layout)
 
 
-def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
+def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
     """
-    Runs the Dash app to produce the interactive performance profile
-    plots.
+    Prepares the Dash app to produce the interactive performance profile
+    plots, and calls the function to run it.
 
     :param options: The user options for the benchmark.
     :type options: fitbenchmarking.utils.options.Options
@@ -866,4 +860,18 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         )
     )
 
-    app.run(port=options.port)
+    run_dash_app(app=app, host=options.ip_address, port=options.port)
+
+
+def run_dash_app(app, host, port):
+    """
+    Runs the Dash app.
+
+    :param host: The dash app to run
+    :type host: dash.dash.Dash
+    :param host: The ip address where to run the app.
+    :type host: str
+    :param port: The port where to run the app.
+    :type port: str
+    """
+    app.run(host=host, port=port)
