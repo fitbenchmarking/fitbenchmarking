@@ -48,7 +48,7 @@ class FitbmResultTests(unittest.TestCase):
 
         self.problem: FittingProblem = parse_problem_file(
             problem_dir, self.options
-        )
+        )[0]
         self.problem.correct_data()
 
         cost_func = NLLSCostFunc(self.problem)

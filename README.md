@@ -4,7 +4,7 @@
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
-[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281/zenodo.14224242-blue.svg?style=flat-square)](https://doi.org/10.5281/zenodo.14224242)
+[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281/zenodo.15546207-blue.svg?style=flat-square)](https://zenodo.org/records/15546207)
 [![JOSS](https://img.shields.io/badge/JOSS-10.21105/joss.03127-brightgreen.svg?style=flat-square)](https://doi.org/10.21105/joss.03127)
 # FitBenchmarking
 

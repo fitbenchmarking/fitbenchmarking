@@ -70,4 +70,4 @@ Default is ``log_only``
 .. code-block:: rst
 
     [LOGGING]
-    append: log_only
+    external_output: log_only
