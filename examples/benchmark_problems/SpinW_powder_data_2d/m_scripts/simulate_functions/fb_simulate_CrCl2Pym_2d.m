@@ -76,6 +76,15 @@ function y = fb_simulate_tri_AFM_2d(w,fitpars,msk)
     % set parameters passsed to sw_instrument
     fitpow.sw_instrument_args = struct('dQ', dQ, 'ThetaMin', 3.5, 'Ei', Ei);
 
+
+    [pfit, ~, stat] = fitpow.fit_background_and_scale();
+
+    fileID = fopen('/home/letizia/fitbenchmarking_new/test3.txt','a');
+    fprintf(fileID, '%d\n',pfit(5));
+    fprintf(fileID, '%d\n',pfit(6));
+    fprintf(fileID, '%d\n',pfit(7));
+    fprintf(fileID, '%d\n',pfit(8));
+
     [y, bg] = fitpow.calc_spinwave_spec(fitpars);
     y = y';
     y = y(~msk);
