@@ -3,27 +3,65 @@ FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+
+##############################################################
+# Update cmake -- kitware hosts 3.22 where ubuntu hosts 3.16 #
+# (follows instructions on apt.kitware.com)                  #
+##############################################################
+# RUN curl https://apt.kitware.com/kitware-archive.sh | sh -s -- noble
+
+
 # Install the packages we need to build fitbenchmarking
-RUN apt-get update && apt-get install -y \
+# From pkg-config to dbus is needed for SScanSS
+# From gsl-bin to swig for pygsl
+# from gfortan to libgdal-dev for RALfit
+# from libgoogle-glog-dev from libtbb-dev for ceres
+RUN apt-get update && apt-get install -y --no-install-recommends\
     git \
     sudo \
     cmake \
     ninja-build \
     mpich \
     curl \
-    apt-utils
+    apt-utils \
+    cmake \ 
+    pkg-config \   
+    libhdf5-dev \
+    libglib2.0-0 \
+    libegl-dev \
+    libxkbcommon-dev \
+    dbus \  
+    gsl-bin \
+    libgsl-dev \
+    libgsl-dbg \
+    swig \
+    wget \
+    gfortran \
+    lcov \
+    libblas-dev \
+    liblapack-dev \
+    libgdal-dev \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    libatlas-base-dev \
+    libsuitesparse-dev \
+    libeigen3-dev \
+    libtbb-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # use uv to manage python version
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN wget --no-check-certificate https://astral.sh/uv/install.sh | sh
 RUN $HOME/.local/bin/uv python install 3.12
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
+RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN . $VIRTUAL_ENV
 
-RUN pip install wheel
-RUN pip install "pytest>3.6" \
+
+RUN python -m pip install wheel \
+    "pytest>3.6" \
     pytest-cov \
     coveralls \
     "coverage~=4.5.4" \ 
@@ -34,13 +72,6 @@ RUN pip install "pytest>3.6" \
 
 WORKDIR /
 
-##############################################################
-# Update cmake -- kitware hosts 3.22 where ubuntu hosts 3.16 #
-# (follows instructions on apt.kitware.com)                  #
-##############################################################
-RUN curl https://apt.kitware.com/kitware-archive.sh | sh -s -- noble
-
-RUN sudo apt-get install -y cmake
 
 
 ###########
@@ -49,33 +80,16 @@ RUN sudo apt-get install -y cmake
 
 WORKDIR /
 
-RUN apt-get install -y pkg-config libhdf5-dev libglib2.0-0 libegl-dev libxkbcommon-dev dbus
-
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
 RUN python -m pip install --no-binary=h5py h5py
 RUN pip install .
-
+RUN rm -rf /SScanSS-2
 WORKDIR /
-
-#################
-# Install pygsl #
-#################
-
-RUN apt-get update && \
- apt-get install -y gsl-bin \
- libgsl-dev \
- libgsl-dbg
 
 ##################
 # Install RALFit #
 ##################
-RUN apt-get install -y gfortran \
-    lcov \
-    libblas-dev \
-    liblapack-dev \
-    libgdal-dev
-
 RUN git clone --depth 1 https://github.com/ralna/RALFit
 
 RUN mkdir -p /RALFit-build
@@ -140,7 +154,6 @@ RUN python -m pip install pycutest
 
 WORKDIR /
 
-RUN apt-get -y install swig
 RUN wget -O pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.4.0.tar.gz
 RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
 
@@ -151,13 +164,6 @@ RUN python -m pip install .
 # Install Ceres #
 #################
 WORKDIR /
-
-RUN sudo apt-get install -y libgoogle-glog-dev \
- libgflags-dev \
- libatlas-base-dev \
- libsuitesparse-dev \
- libeigen3-dev \
- libtbb-dev
 
 # Make ceres directory 
 RUN mkdir -p /ceres
@@ -190,8 +196,6 @@ WORKDIR /
 ###########
 
 WORKDIR /
-
-RUN apt-get install libsuitesparse-dev
 
 # Install pytorch
 RUN pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
