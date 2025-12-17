@@ -16,3 +16,4 @@ docs/source/contributors/module_index
 .eggs/
 *.out
 powermetrics_log.txt
+compare_gradient_free/
