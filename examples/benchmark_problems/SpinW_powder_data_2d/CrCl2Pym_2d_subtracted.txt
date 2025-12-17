@@ -1,0 +1,12 @@
+# FitBenchmark Problem
+software = 'Horace'
+name = 'CrCl2pym 2d subtracted'
+description = 'CrCl2 pyrumidine data'
+input_file = 'CrCl2Pym_1p7-25K_cropped.mat'
+function = 'foreground=m_scripts/functions/CrCl2Pym.m, J1=0.85, J2=-0.075, J3=-0.005, D1=-0.1, slope_en=5, slope_modq=7, intercept=10, b1=200'
+wye_function = 'matlab_script=m_scripts/wye_functions/fb_wye_spinw_2d.m'
+simulate_function = 'matlab_script=m_scripts/simulate_functions/fb_simulate_CrCl2Pym_2d.m'
+parameter_ranges = {'J1': (0.0, 5.0), 'J2': (-5.0, 0.5), 'J3': (-5.0, 0.5), 'D1': (-2.0, 0.0)}
+plot_type = '2d'
+q_cens = '0.75, 0.85, 1.1, 1.35'
+dq = '0.025'
