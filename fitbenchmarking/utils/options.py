@@ -92,6 +92,7 @@ class Options:
             "trust-constr",
             "dogleg",
             "leastsq",
+            "leastsq_step_size",
             "newton",
             "tnc",
             "lbfgsb",
