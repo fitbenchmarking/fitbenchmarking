@@ -19,12 +19,16 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends\
     git \
     sudo \
+    make \
     cmake \
     ninja-build \
     mpich \
     curl \
     apt-utils \
-    cmake \ 
+    cmake \
+    gcc \
+    g++ \
+    ca-certificates \
     pkg-config \   
     libhdf5-dev \
     libglib2.0-0 \
@@ -50,17 +54,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     && rm -rf /var/lib/apt/lists/*
 
 # use uv to manage python version
-RUN wget --no-check-certificate https://astral.sh/uv/install.sh | sh
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN $HOME/.local/bin/uv python install 3.12
 
 # set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN python -m venv $VIRTUAL_ENV
+RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN . $VIRTUAL_ENV
 
-
-RUN python -m pip install wheel \
+# pip install dependencies in one line.
+# h5py needed for SScanSS
+# torch needed for theseus
+RUN pip install wheel \
     "pytest>3.6" \
     pytest-cov \
     coveralls \
@@ -68,11 +73,11 @@ RUN python -m pip install wheel \
     urllib3 \
     mock \
     meson \
-    "numpy<2.0"
+    "numpy<2.0" \
+    --no-binary=h5py h5py \
+    torch --extra-index-url https://download.pytorch.org/whl/cpu
 
 WORKDIR /
-
-
 
 ###########
 # Sscanss #
@@ -82,7 +87,6 @@ WORKDIR /
 
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
-RUN python -m pip install --no-binary=h5py h5py
 RUN pip install .
 RUN rm -rf /SScanSS-2
 WORKDIR /
@@ -145,8 +149,7 @@ RUN ln -s /usr/local/lib/libcutest_single.a objects/pc64.lnx.gfo/single/libcutes
 RUN ln -s /usr/local/lib/libcutest_double.a objects/pc64.lnx.gfo/double/libcutest.a
 
 # install pycutest
-RUN python -m pip install pycutest
-
+RUN pip install pycutest
 
 #################
 # install pygsl #
@@ -158,7 +161,7 @@ RUN wget -O pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.4.0
 RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
 
 WORKDIR /pygsl-2.4.0
-RUN python -m pip install .
+RUN pip install .
 
 #################
 # Install Ceres #
@@ -186,10 +189,9 @@ WORKDIR /
 ENV CXX=g++
 RUN git clone --depth 1 https://github.com/cvg/pyceres.git
 WORKDIR /pyceres
-RUN python -m pip install .
+RUN pip install .
 
 WORKDIR /
-
 
 ###########
 # Theseus #
@@ -197,14 +199,8 @@ WORKDIR /
 
 WORKDIR /
 
-# Install pytorch
-RUN pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
-
 # Install theseus
 RUN pip install theseus-ai --no-build-isolation
-
-# WORKDIR /
-
 
 ###########
 # Tidy up #
