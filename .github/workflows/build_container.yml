@@ -44,7 +44,7 @@ jobs:
       with:
         containerfiles: |
           Containers/${{ matrix.container }}/Containerfile
-        context: Container/${{ matrix.container }}
+        context: Containers/${{ matrix.container }}
         image: fitbenchmarking-extras-${{ matrix.container }}
         tags: latest
     
