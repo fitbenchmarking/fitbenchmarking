@@ -602,7 +602,6 @@ class DefaultControllerTests(TestCase):
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
-@run_for_test_types(TEST_TYPE, "all")
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -618,6 +617,7 @@ class ControllerBoundsTests(TestCase):
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
 
+    @run_for_test_types(TEST_TYPE, "all")
     @parameterized.expand(
         [
             ("scipy", "L-BFGS-B"),
@@ -626,7 +626,6 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
-            ("mantid", "Levenberg-Marquardt"),
             ("nlopt", "LD_LBFGS"),
             ("ceres", "Levenberg_Marquardt"),
             ("lmfit", "least_squares"),
@@ -649,8 +648,25 @@ class ControllerBoundsTests(TestCase):
             self.assertLessEqual(controller.value_ranges[count][0], value)
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
+    @run_for_test_types(TEST_TYPE, "mantid")
+    def test_mantid_controller_bounds(self):
+        """
+        Test that runs bounded problem and checks
+        `final_params` respect parameter bounds
+        """
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "Levenberg-Marquardt"
 
-@run_for_test_types(TEST_TYPE, "all")
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+
 class ControllerValidateTests(TestCase):
     """
     Tests to ensure controller data is validated correctly.
@@ -662,6 +678,7 @@ class ControllerValidateTests(TestCase):
         """
         self.cost_func = make_cost_func("cubic-fba-test-go.txt")
 
+    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_does_not_raise(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -676,6 +693,7 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_will_raise(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -691,6 +709,7 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "default")
     def test_scipy_controller_will_raise(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -706,6 +725,7 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "default")
     def test_controller_will_not_raise_for_compatible_jacobian(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -720,6 +740,7 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_does_not_raise_hessian(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -739,6 +760,7 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_will_raise_hessian(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -759,6 +781,7 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleHessianError):
             controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "default")
     def test_scipy_controller_will_raise_hessian(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -779,6 +802,7 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleHessianError):
             controller.validate()
 
+    @run_for_test_types(TEST_TYPE, "default")
     def test_controller_will_not_raise_for_compatible_hessian(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -845,41 +869,6 @@ class ExternalControllerTests(TestCase):
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand(["Levenberg-Marquardt", "FABADA"])
-    def test_mantid(self, minimizer):
-        """
-        MantidController: Test for output shape
-        """
-        controller = create_controller("mantid", self.cost_func)
-
-        controller.minimizer = minimizer
-        self.shared_tests.controller_run_test(controller)
-
-        controller._status = "success"
-        self.shared_tests.check_converged(controller)
-        controller._status = "Failed to converge"
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = "Failed"
-        self.shared_tests.check_diverged(controller)
-
-    def test_mantid_default_jacobian(self):
-        """
-        MantidController: Test for default jacobian
-        """
-        self.shared_tests = ControllerSharedTesting()
-        self.cost_func.jacobian = Default(self.problem)
-
-        controller = create_controller("mantid", self.cost_func)
-        controller.minimizer = "Levenberg-Marquardt"
-        self.shared_tests.controller_run_test(controller)
-
-        controller._status = "success"
-        self.shared_tests.check_converged(controller)
-        controller._status = "Failed to converge"
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = "Failed"
-        self.shared_tests.check_diverged(controller)
-
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
     def test_gsl(self, minimizer):
         """
@@ -925,6 +914,56 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 1
         self.shared_tests.check_max_iterations(controller)
+
+
+@run_for_test_types(TEST_TYPE, "mantid")
+class MantidControllerTests(TestCase):
+    """
+    Tests for the Mantid Controller
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = self.jac
+
+    @parameterized.expand(["Levenberg-Marquardt", "FABADA"])
+    def test_mantid(self, minimizer):
+        """
+        MantidController: Test for output shape
+        """
+        controller = create_controller("mantid", self.cost_func)
+
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
+
+    def test_mantid_default_jacobian(self):
+        """
+        MantidController: Test for default jacobian
+        """
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = Default(self.problem)
+
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "Levenberg-Marquardt"
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
 
 
 @run_for_test_types(TEST_TYPE, "matlab")

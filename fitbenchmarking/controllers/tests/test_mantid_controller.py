@@ -25,7 +25,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(TEST_TYPE, "mantid")
 class TestMantidController(TestCase):
     """
     Unit tests the MantidController class.
