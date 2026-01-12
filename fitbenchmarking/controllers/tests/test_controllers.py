@@ -602,6 +602,7 @@ class DefaultControllerTests(TestCase):
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
+@run_for_test_types(TEST_TYPE, "mantid")
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -617,7 +618,6 @@ class ControllerBoundsTests(TestCase):
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
 
-    @run_for_test_types(TEST_TYPE, "all")
     @parameterized.expand(
         [
             ("scipy", "L-BFGS-B"),
@@ -626,6 +626,7 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
+            ("mantid", "Levenberg-Marquardt"),
             ("nlopt", "LD_LBFGS"),
             ("ceres", "Levenberg_Marquardt"),
             ("lmfit", "least_squares"),
@@ -648,25 +649,8 @@ class ControllerBoundsTests(TestCase):
             self.assertLessEqual(controller.value_ranges[count][0], value)
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
-    @run_for_test_types(TEST_TYPE, "mantid")
-    def test_mantid_controller_bounds(self):
-        """
-        Test that runs bounded problem and checks
-        `final_params` respect parameter bounds
-        """
-        controller = create_controller("mantid", self.cost_func)
-        controller.minimizer = "Levenberg-Marquardt"
 
-        controller.parameter_set = 0
-        controller.prepare()
-        controller.fit()
-        controller.cleanup()
-
-        for count, value in enumerate(controller.final_params):
-            self.assertLessEqual(controller.value_ranges[count][0], value)
-            self.assertGreaterEqual(controller.value_ranges[count][1], value)
-
-
+@run_for_test_types(TEST_TYPE, "mantid")
 class ControllerValidateTests(TestCase):
     """
     Tests to ensure controller data is validated correctly.
@@ -678,7 +662,6 @@ class ControllerValidateTests(TestCase):
         """
         self.cost_func = make_cost_func("cubic-fba-test-go.txt")
 
-    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_does_not_raise(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -693,7 +676,6 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_will_raise(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -709,7 +691,6 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "default")
     def test_scipy_controller_will_raise(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -725,7 +706,6 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleJacobianError):
             controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "default")
     def test_controller_will_not_raise_for_compatible_jacobian(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -740,7 +720,6 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_does_not_raise_hessian(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -760,7 +739,6 @@ class ControllerValidateTests(TestCase):
 
         controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_controller_will_raise_hessian(self):
         """
         MantidController: Test that the Mantid controller validation
@@ -781,7 +759,6 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleHessianError):
             controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "default")
     def test_scipy_controller_will_raise_hessian(self):
         """
         ScipyController: Test that the Scipy controller validation
@@ -802,7 +779,6 @@ class ControllerValidateTests(TestCase):
         with self.assertRaises(exceptions.IncompatibleHessianError):
             controller.validate()
 
-    @run_for_test_types(TEST_TYPE, "default")
     def test_controller_will_not_raise_for_compatible_hessian(self):
         """
         ScipyController: Test that the Scipy controller validation
