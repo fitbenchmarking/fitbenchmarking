@@ -75,7 +75,7 @@ jobs:
         name: full_system_tests
         path: test-results/full_system_pytest.xml
 
-    mantid_system_linux:
+  mantid_system_linux:
     name: Mantid System Tests (Linux)
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
