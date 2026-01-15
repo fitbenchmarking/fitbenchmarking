@@ -364,7 +364,7 @@ class Plot:
                 go.Scatter(
                     x=data_x,
                     y=data_y[(data_len * i) : (data_len * (i + 1))],
-                    # error_y=error_y,
+                    error_y=error_y,
                     mode="markers",
                     name="Data",
                     marker=Plot._data_marker,
