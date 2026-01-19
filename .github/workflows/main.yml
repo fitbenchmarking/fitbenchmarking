@@ -94,10 +94,10 @@ jobs:
       run: |
         conda activate mantid_env
         python -m pip install pybind11[global]
-        python -m pip install .[numdifftools, nlopt]
+        python -m pip install .[numdifftools,nlopt]
         python -m pip install --upgrade .[dev]
     - name: Run tests
-      run: ci/ystem_tests-mantid.sh
+      run: ci/system_tests-mantid.sh
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -166,7 +166,7 @@ jobs:
       run: |
         conda activate mantid_env
         python -m pip install pybind11[global]
-        python -m pip install .[numdifftools, nlopt]
+        python -m pip install .[numdifftools,nlopt]
         python -m pip install --upgrade .[dev]
     - name: Run tests
       run: |
