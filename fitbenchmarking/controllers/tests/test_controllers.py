@@ -602,7 +602,7 @@ class DefaultControllerTests(TestCase):
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(TEST_TYPE, "all")
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -612,7 +612,7 @@ class ControllerBoundsTests(TestCase):
         """
         Setup for bounded problem
         """
-        self.cost_func = make_cost_func("cubic-fba-test-bounds.txt")
+        self.cost_func = make_cost_func("1D_cylinder_neutron_def0_bounds.txt")
         self.problem = self.cost_func.problem
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
@@ -626,7 +626,6 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
-            ("mantid", "Levenberg-Marquardt"),
             ("nlopt", "LD_LBFGS"),
             ("ceres", "Levenberg_Marquardt"),
             ("lmfit", "least_squares"),
@@ -639,6 +638,40 @@ class ControllerBoundsTests(TestCase):
         """
         controller = create_controller(controller_name, self.cost_func)
         controller.minimizer = minimizer
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+
+@run_for_test_types(TEST_TYPE, "mantid")
+class MantidControllerBoundsTests(TestCase):
+    """
+    Tests to ensure mantid controllers handle and respect bounds correctly
+    """
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func("cubic-fba-test-bounds.txt")
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+
+    def test_mantid_controller_bounds(self):
+        """
+        Test that runs bounded problem and checks
+        `final_params` respect parameter bounds
+        """
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "Levenberg-Marquardt"
 
         controller.parameter_set = 0
         controller.prepare()

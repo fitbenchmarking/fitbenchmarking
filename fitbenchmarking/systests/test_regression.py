@@ -90,11 +90,11 @@ class TestRegressionMantid(TestCase):
         containing all problem types against a single minimizer from each of
         the supported softwares
         """
-        problem_sub_directory = "all_parsers_set"
+        problem_sub_directory = "mantid_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
 
-        diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
+        diff, msg = compare_results(problem_sub_directory, "mantid.csv")
         self.assertListEqual([], diff, msg)
 
     def test_multifit_consistent(self):

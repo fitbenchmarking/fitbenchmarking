@@ -69,8 +69,6 @@ RUN pip install --no-cache-dir \
     --no-binary=h5py h5py \
     torch --extra-index-url https://download.pytorch.org/whl/cpu
 
-WORKDIR /
-
 ###########
 # Sscanss #
 ###########

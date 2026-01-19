@@ -94,7 +94,7 @@ jobs:
       run: |
         conda activate mantid_env
         python -m pip install pybind11[global]
-        python -m pip install .
+        python -m pip install .[numdifftools, nlopt]
         python -m pip install --upgrade .[dev]
     - name: Run tests
       run: ci/ystem_tests-mantid.sh
@@ -166,7 +166,7 @@ jobs:
       run: |
         conda activate mantid_env
         python -m pip install pybind11[global]
-        python -m pip install .
+        python -m pip install .[numdifftools, nlopt]
         python -m pip install --upgrade .[dev]
     - name: Run tests
       run: |
