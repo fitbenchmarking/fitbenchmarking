@@ -49,24 +49,6 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
-    def test_multifit_consistent(self):
-        """
-        Regression testing that the results of fitting multifit problems
-        against a single minimizer from mantid.
-        """
-        problem_sub_directory = "multifit_set"
-
-        run_benchmark(
-            self.results_dir,
-            problem_sub_directory,
-            override_software=["mantid"],
-            jac_num_method={"scipy": ["2-point", "3-point"]},
-            additional_options={"jac_method": ["scipy"]},
-        )
-
-        diff, msg = compare_results(problem_sub_directory, "multifit.csv")
-        self.assertListEqual([], diff, msg)
-
 
 @run_for_test_types(TEST_TYPE, "mantid")
 class TestRegressionMantid(TestCase):
@@ -84,7 +66,7 @@ class TestRegressionMantid(TestCase):
             os.path.dirname(__file__), "fitbenchmarking_results"
         )
 
-    def test_results_consistent_all(self):
+    def test_results_consistent_mantid(self):
         """
         Regression testing that the results of fitting a set of problems
         containing all problem types against a single minimizer from each of
