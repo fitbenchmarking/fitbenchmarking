@@ -35,7 +35,6 @@ class LmfitController(Controller):
             "ampgo",
             "shgo",
             "dual_annealing",
-            "leastsq_step_size",
         ],
         "ls": ["least_squares", "leastsq"],
         "deriv_free": ["powell", "cobyla", "nelder", "differential_evolution"],
@@ -155,9 +154,6 @@ class LmfitController(Controller):
         Run problem with lmfit
         """
         kwargs = {"method": self.minimizer}
-
-        if self.minimizer == "leastsq_step_size":
-            kwargs["epsfcn"] = 0.015
         if self.minimizer == "emcee":
             kwargs["progress"] = False
             kwargs["burn"] = 300
