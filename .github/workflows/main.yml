@@ -80,7 +80,7 @@ jobs:
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     concurrency:
-      group: full_system_linux-${{ github.ref }}
+      group: mantid_system_linux-${{ github.ref }}
       cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras-mantid-tests:latest'
@@ -152,7 +152,7 @@ jobs:
     if: github.event.repository.fork == false
     runs-on: ubuntu-latest
     concurrency:
-      group: full_unit_linux-${{ github.ref }}
+      group: mantid_unit_linux-${{ github.ref }}
       cancel-in-progress: true
     container:
       image: 'ghcr.io/fitbenchmarking/fitbenchmarking-extras-mantid-tests:latest'
