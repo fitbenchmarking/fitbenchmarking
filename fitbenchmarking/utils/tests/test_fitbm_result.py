@@ -620,6 +620,24 @@ class FitbmResultTests(unittest.TestCase):
         self.assertEqual(mock_get_indexes.call_count, 1)
         self.assertEqual(mock_get_cuts.call_count, 5)
 
+    def test_fitting_result_gets_mask_from_problem(self):
+        """
+        Check that if problem has an attribute "mask", then
+        the FittingResult will have that attribute too.
+        """
+        problem = self.problem
+        problem.mask = np.array([1, 2, 3])
+
+        result = FittingResult(
+            controller=self.controller,
+            accuracy=self.accuracy,
+            runtimes=self.runtimes,
+            energy=self.energy,
+        )
+        obtained = result.mask
+        expected = np.array([1, 2, 3])
+        self.assertTrue((obtained == expected).all())
+
 
 if __name__ == "__main__":
     unittest.main()
