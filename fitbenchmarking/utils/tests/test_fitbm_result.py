@@ -512,8 +512,6 @@ class FitbmResultTests(unittest.TestCase):
                 ]
             ),
         )
-        print(obtained[1])
-        print(expected[1])
         self.assertEqual(obtained[0], expected[0])
         self.assertTrue(
             np.array_equal(obtained[1], expected[1], equal_nan="False")
