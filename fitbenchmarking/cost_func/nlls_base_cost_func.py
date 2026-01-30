@@ -40,7 +40,6 @@ class BaseNLLSCostFunc(CostFunc):
         """
         # Problem: The problem object from parsing
         super().__init__(problem)
-
         self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod

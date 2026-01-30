@@ -160,16 +160,11 @@ class HoraceParser(FitbenchmarkParser):
             raise ParsingError(
                 f"Failed to evaluate wye_function: {script}: {e}"
             ) from e
-
+        mask = np.array(eng.workspace[f"{self._horace_msk}"])
         signal = np.array(eng.workspace["y"], dtype=np.float64)
         error = np.array(eng.workspace["e"], dtype=np.float64)
 
         # check for NaNs in 2D SpinW problems
-        if "plot_type" in self._entries and np.isnan([signal, error]).any():
-            raise ParsingError(
-                "SpinW problems should not contain NaN values, "
-                "please ensure these are removed within the wye function "
-            )
 
         add_persistent_matlab_var(self._horace_msk)
         add_persistent_matlab_var(self._horace_w)
@@ -181,7 +176,7 @@ class HoraceParser(FitbenchmarkParser):
         x = np.ones(len(y))
 
         self._horace_x = x
-        return {"x": x, "y": y, "e": e}
+        return {"x": x, "y": y, "e": e, "mask": mask}
 
     def _create_function(self) -> typing.Callable:
         """
@@ -393,13 +388,4 @@ class HoraceParser(FitbenchmarkParser):
             else:
                 raise ParsingError(
                     "q_cens are required for plotting 1D cuts of SpinW data"
-                )
-
-            if not float(
-                len(self.fitting_problem.data_y)
-                / self.fitting_problem.additional_info["n_plots"]
-            ).is_integer():
-                raise ParsingError(
-                    "Number of data points must be divisible "
-                    "by number of q_cens"
                 )
