@@ -28,7 +28,7 @@ jobs:
         pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install --upgrade .[dev]
     - name: Run tests (macOS)
-      if: matrix.os == 'macos-13'
+      if: matrix.os == 'macos-latest'
       run: ci/unit_tests_default.sh
     - name: Run tests (Windows)
       if: matrix.os == 'windows-latest'
