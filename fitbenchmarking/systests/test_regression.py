@@ -317,7 +317,17 @@ def setup_options(
             "matlab_opt",
             "matlab_stats",
         ],
-        "mantid": ["mantid"],
+        "mantid": [
+            "mantid",
+            "bumps",
+            "dfo",
+            "lmfit",
+            "minuit",
+            "nlopt",
+            "scipy",
+            "scipy_ls",
+            "scipy_leastsq",
+        ],
         "local_only": [
             "bumps",
             "dfo",

@@ -1,6 +1,6 @@
-,,mantid
-,,Levenberg-Marquardt: j:best_available
-1D sphere (synthetic neutron) IV0,"5 params, 255 points",239.1 (1)
-"DanWood, Start 1","2 params, 6 points",0.001098 (1)
-"DanWood, Start 2","2 params, 6 points",0.001098 (1)
-trig_noisy-fba,"3 params, 100 points",0.7222 (1)
+,,bumps,dfo,lmfit,mantid,minuit,nlopt,scipy,scipy_leastsq,scipy_ls
+,,lm-bumps,dfols,least_squares,Levenberg-Marquardt: j:best_available,migrad,LD_VAR1: j:best_available,Nelder-Mead,lm-leastsq: j:best_available,lm-scipy: j:best_available
+1D sphere (synthetic neutron) IV0,"5 params, 255 points",239.1 (1),239.1 (1),239.1 (1),239.1 (1),239.1 (1),inf (inf)[3],239.1 (1),239.1 (1),239.1 (1)
+"DanWood, Start 1","2 params, 6 points",0.001098 (1),0.001098 (1),0.001098 (1),0.001098 (1),0.001171 (1.066),24.04 (2.189e+04),0.001098 (1),0.001098 (1),0.001098 (1)
+"DanWood, Start 2","2 params, 6 points",0.001098 (1),0.001098 (1),0.001098 (1),0.001098 (1),0.001183 (1.078),0.001098 (1),0.001098 (1),0.001098 (1),0.001098 (1)
+trig_noisy-fba,"3 params, 100 points",0.7222 (1),0.7222 (1),1033 (1430),0.7222 (1),0.7222 (1),inf (inf)[3],0.7222 (1),0.7222 (1),0.7222 (1)
