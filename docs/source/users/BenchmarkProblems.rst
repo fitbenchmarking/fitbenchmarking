@@ -379,8 +379,8 @@ SpinW 2D Powder Data
 1D cuts example
 ---------------
 
-**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data.zip>`
-or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/Spinw_powder_data.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/Spinw_powder_data.tar.gz>`
 
 This problem (also found in the folder `examples/benchmark_problems/SpinW_powder_data`)
 contains 2D powder data simulated using SpinW, approach outlined in
@@ -391,8 +391,8 @@ data has been cropped before being parsed into FitBenchmarking.
 2D data
 --------
 
-**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data_2d.zip>`
-or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/spinw_powder_data_2d.tar.gz>`
+**Download** :download:`.zip <https://fitbenchmarking.github.io/assets/datasets/Spinw_powder_data_2d.zip>`
+or :download:`.tar.gz <https://fitbenchmarking.github.io/assets/datasets/Spinw_powder_data_2d.tar.gz>`
 
 This set  of problems (also found in the folder `examples/benchmark_problems/SpinW_powder_data_2d`)
 contains 2D powder data, with one dataset simulated using SpinW (using the approach outlined in 
