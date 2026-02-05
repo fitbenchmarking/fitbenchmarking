@@ -65,7 +65,7 @@ RUN pip install --no-cache-dir \
     urllib3 \
     mock \
     meson \
-    "numpy<2.0" \
+    numpy \
     --no-binary=h5py h5py \
     torch --extra-index-url https://download.pytorch.org/whl/cpu
 

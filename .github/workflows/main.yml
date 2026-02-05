@@ -169,8 +169,7 @@ jobs:
         python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         python -m pip install --upgrade .[dev]
     - name: Run tests
-      run: |
-        ci/unit_tests_mantid.sh
+      run: ci/unit_tests_mantid.sh
     - name: Submit coverage
       if: always()
       uses: coverallsapp/github-action@v2
