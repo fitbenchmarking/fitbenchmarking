@@ -147,13 +147,13 @@ RUN pip install --no-cache-dir pycutest
 
 WORKDIR /
 
-RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.4.0.tar.gz
+RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.6.4.tar.gz
 RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
 
-WORKDIR /pygsl-2.4.0
+WORKDIR /pygsl-2.6.4
 RUN pip install --no-cache-dir .
 WORKDIR /
-RUN rm -rf /pygsl-2.4.0 pygsl.tar.gz
+RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
 
 #################
 # Install Ceres #

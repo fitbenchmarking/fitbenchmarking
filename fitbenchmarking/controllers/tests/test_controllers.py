@@ -626,7 +626,7 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
-            ("nlopt", "LD_LBFGS"),
+            ("nlopt", "LN_NELDERMEAD"),
             ("ceres", "Levenberg_Marquardt"),
             ("lmfit", "least_squares"),
         ]
