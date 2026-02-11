@@ -1,4 +1,4 @@
-function y = fb_simulate_tri_AFM(w,fitpars,msk)
+function y = fb_simulate_tri_AFM_2d(w,fitpars,msk)
     % simulate loop to solve for the parameters 
     
     fit_func = @tri_AFM_powder;
@@ -33,8 +33,9 @@ function y = fb_simulate_tri_AFM(w,fitpars,msk)
     % set parameters passsed to sw_instrument
     fitpow.sw_instrument_args = struct('dQ', dQ, 'ThetaMin', 3.5, 'Ei', Ei);
     
-    [y, bg] = fitpow.calc_spinwave_spec([fitpars(1), -0.0622,-0.0018,1.5475,fitpars(2)])
-    y = y'
+    [y, bg] = fitpow.calc_spinwave_spec(fitpars);
+    y = y';
+    y = y(~msk);
     
     end
     

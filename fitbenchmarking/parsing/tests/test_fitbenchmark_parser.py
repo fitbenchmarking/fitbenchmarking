@@ -687,6 +687,7 @@ class TestFitbenchmarkParser(TestCase):
                         "x": np.array([0]),
                         "y": np.array([1]),
                         "e": np.array([2]),
+                        "mask": np.array([3]),
                     },
                 ],
                 [],
@@ -723,6 +724,8 @@ class TestFitbenchmarkParser(TestCase):
         assert self.parser.fitting_problem.data_e == data_points[0].get(
             "e", None
         )
+        if "mask" in data_points[0]:
+            assert self.parser.fitting_problem.mask == data_points[0]["mask"]
         if fit_ranges:
             assert self.parser.fitting_problem.start_x == fit_ranges[0]["x"][0]
             assert self.parser.fitting_problem.end_x == fit_ranges[0]["x"][1]
