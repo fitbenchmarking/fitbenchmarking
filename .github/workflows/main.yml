@@ -98,7 +98,10 @@ jobs:
         python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         python -m pip install --upgrade .[dev]
     - name: Run tests
-      run: ci/system_tests_mantid.sh
+      run: |
+        . /opt/conda/etc/profile.d/conda.sh
+        conda activate mantid_env
+        ci/system_tests_mantid.sh
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
@@ -170,7 +173,10 @@ jobs:
         python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
         python -m pip install --upgrade .[dev]
     - name: Run tests
-      run: ci/unit_tests_mantid.sh
+      run: |
+        . /opt/conda/etc/profile.d/conda.sh
+        conda activate mantid_env
+        ci/unit_tests_mantid.sh
     - name: Submit coverage
       if: always()
       uses: coverallsapp/github-action@v2
