@@ -92,7 +92,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        source /opt/conda/etc/profile.d/conda.sh
+        . /opt/conda/etc/profile.d/conda.sh
         conda activate mantid_env
         python -m pip install pybind11[global]
         python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
@@ -165,7 +165,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Install dependencies
       run: |
-        source /opt/conda/etc/profile.d/conda.sh
+        . /opt/conda/etc/profile.d/conda.sh
         conda activate mantid_env
         python -m pip install pybind11[global]
         python -m pip install .[bumps,DFO,minuit,SAS,numdifftools,lmfit,nlopt,paramonte]
