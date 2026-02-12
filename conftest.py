@@ -1,12 +1,12 @@
 import pytest
 
 # set choices for --test-type
-test_choices = ["all", "default", "matlab", "local_only"]
+test_choices = ["all", "default", "matlab", "mantid", "local_only"]
 
 
 def pytest_addoption(parser):
     """
-    Command line input function which requires 'all', 'default' or 'matlab'
+    Command line input function which requires one of test_choices
     as an input
     """
     parser.addoption(

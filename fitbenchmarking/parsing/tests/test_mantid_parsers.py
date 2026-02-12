@@ -17,7 +17,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(TEST_TYPE, "mantid")
 class TestMantidDevParser(TestCase):
     """
     Unit tests the MantidDevParser class.
@@ -271,7 +271,7 @@ class TestMantidDevParser(TestCase):
             assert self.parser._dense_jacobian() is None
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(TEST_TYPE, "mantid")
 class TestMantidParser(TestCase):
     """
     Unit tests the MantidParser class.

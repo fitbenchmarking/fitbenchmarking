@@ -1,0 +1,200 @@
+# Use ubuntu as a parent image
+FROM ubuntu:24.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install the packages we need to build fitbenchmarking
+# From pkg-config to dbus is needed for SScanSS
+# From gsl-bin to swig for pygsl
+# from gfortan to libgdal-dev for RALfit
+# from libgoogle-glog-dev from libtbb-dev for ceres
+RUN apt-get update && apt-get install -y --no-install-recommends\
+    git \
+    sudo \
+    make \
+    cmake \
+    ninja-build \
+    mpich \
+    curl \
+    apt-utils \
+    cmake \
+    gcc \
+    g++ \
+    ca-certificates \
+    pkg-config \   
+    libhdf5-dev \
+    libglib2.0-0 \
+    libegl-dev \
+    libxkbcommon-dev \
+    dbus \  
+    gsl-bin \
+    libgsl-dev \
+    libgsl-dbg \
+    swig \
+    gfortran \
+    lcov \
+    libblas-dev \
+    liblapack-dev \
+    libgdal-dev \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    libatlas-base-dev \
+    libsuitesparse-dev \
+    libeigen3-dev \
+    libtbb-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# use uv to manage python version
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+RUN $HOME/.local/bin/uv python install 3.12
+
+# set up a venv to stop python/python3 sillyness
+ENV VIRTUAL_ENV=/opt/venv
+RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# pip install dependencies in one line.
+# h5py needed for SScanSS
+# torch needed for theseus
+RUN pip install --no-cache-dir \
+    wheel \
+    "pytest>3.6" \
+    pytest-cov \
+    coveralls \
+    "coverage~=4.5.4" \ 
+    urllib3 \
+    mock \
+    meson \
+    numpy \
+    --no-binary=h5py h5py \
+    torch --extra-index-url https://download.pytorch.org/whl/cpu
+
+###########
+# Sscanss #
+###########
+
+WORKDIR /
+
+RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
+WORKDIR /SScanSS-2
+RUN pip install --no-cache-dir .
+WORKDIR /
+RUN rm -rf /SScanSS-2
+
+##################
+# Install RALFit #
+##################
+RUN git clone --depth 1 https://github.com/ralna/RALFit
+
+RUN mkdir -p /RALFit-build
+WORKDIR /RALFit-build
+
+ENV CC=gcc
+RUN cmake /RALFit/libRALFit && make && make install
+
+# make install for RALFit doesn't work in a container, so manually pip install
+RUN pip install --no-cache-dir .
+
+ENV LD_LIBRARY_PATH=/RALFit-build/src:$LD_LIBRARY_PATH
+RUN rm -rf /RALFit/libRALFit/
+
+################
+# Build cutest #
+################
+
+RUN mkdir -p /cutest
+
+WORKDIR /cutest
+
+RUN git clone --depth 1 https://github.com/ralna/ARCHDefs ./archdefs && \
+    git clone --depth 1 https://github.com/ralna/SIFDecode ./sifdecode && \
+    git clone --depth 1 https://github.com/ralna/CUTEst ./cutest
+
+RUN mkdir pycutest_cache
+
+ENV ARCHDEFS=/cutest/archdefs/ \
+    SIFDECODE=/cutest/sifdecode/ \
+    MASTSIF=/home/fitbenchmarking/examples/benchmark_problems/SIF/ \
+    CUTEST=/cutest/cutest/ \
+    MYARCH="pc64.lnx.gfo" \
+    PYCUTEST_CACHE=/cutest/pycutest_cache/
+
+ENV PYTHONPATH="${PYCUTEST_CACHE}:${PYTHONPATH}"
+
+# Install sifdecode
+
+WORKDIR $SIFDECODE
+RUN printf "1\n1\nn" > sifdecode.input && \
+    printf "1\nny" >> sifdecode.input && \
+    ./install_sifdecode  < sifdecode.input
+
+# Install cutest
+WORKDIR $CUTEST
+RUN meson setup builddir -Dtests=false
+RUN meson compile -C builddir
+RUN meson install -C builddir
+RUN mkdir -p objects/pc64.lnx.gfo/single
+RUN mkdir -p objects/pc64.lnx.gfo/double
+RUN ln -s /usr/local/lib/libcutest_single.a objects/pc64.lnx.gfo/single/libcutest.a
+RUN ln -s /usr/local/lib/libcutest_double.a objects/pc64.lnx.gfo/double/libcutest.a
+
+# install pycutest
+RUN pip install --no-cache-dir pycutest
+
+#################
+# install pygsl #
+#################
+
+WORKDIR /
+
+RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.6.4.tar.gz
+RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
+
+WORKDIR /pygsl-2.6.4
+RUN pip install --no-cache-dir .
+WORKDIR /
+RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
+
+#################
+# Install Ceres #
+#################
+
+# Make ceres directory 
+RUN mkdir -p /ceres
+# Change working directory to ceres  
+WORKDIR /ceres 
+# Download ceres solver 2.0.0 tar 
+RUN curl -LsSf -o ceres.tar.gz http://ceres-solver.org/ceres-solver-2.2.0.tar.gz
+# unpack the tar file 
+RUN tar --no-same-owner --no-same-permissions -xzf ceres.tar.gz
+# Make ceres-bin directory
+RUN mkdir -p ceres-bin 
+# Change working directory to ceres-bin
+WORKDIR /ceres/ceres-bin
+RUN cmake -G Ninja ../ceres-solver-2.2.0 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+RUN cmake --build .
+RUN cmake --install .
+RUN rm -rf ../ceres-solver-2.2.0 ceres.tar.gz
+
+WORKDIR /
+ENV CXX=g++
+RUN git clone --depth 1 https://github.com/cvg/pyceres.git
+WORKDIR /pyceres
+RUN pip install --no-cache-dir .
+WORKDIR /
+RUN rm -rf /pyceres
+
+###########
+# Theseus #
+###########
+
+# Install theseus
+RUN pip install --no-cache-dir theseus-ai --no-build-isolation
+
+###########
+# Tidy up #
+###########
+RUN apt-get -y autoremove
+
+## ALL SET UP ##
+WORKDIR /home/

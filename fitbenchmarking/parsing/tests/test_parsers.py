@@ -88,9 +88,10 @@ def generate_test_cases():
             "ivp",
             "sasview",
             "hogben",
-            "mantiddev",
             "bal",
         ]
+    elif TEST_TYPE == "mantid":
+        formats = ["mantiddev"]
     elif TEST_TYPE == "default":
         formats = ["nist"]
     elif TEST_TYPE == "local_only":
@@ -559,7 +560,7 @@ class TestParserNoJac(TestCase):
 
         assert fitting_problem.sparse_jacobian is None
 
-    @run_for_test_types(TEST_TYPE, "all")
+    @run_for_test_types(TEST_TYPE, "mantid")
     def test_mantid_jac_when_no_func_by_user(self):
         """
         Tests that, for mantid problems, when no jacobian is provided

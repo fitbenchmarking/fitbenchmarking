@@ -1,0 +1,11 @@
+# Use Mambaforge base image
+FROM docker.io/condaforge/mambaforge:latest
+
+RUN apt-get update && apt-get install -y --no-install-recommends\
+    git \
+    sudo \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mamba create -n mantid_env -c mantid mantid
+
