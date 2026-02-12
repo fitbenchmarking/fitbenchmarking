@@ -626,6 +626,7 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
+            ("aoclda", "gn"),
             ("mantid", "Levenberg-Marquardt"),
             ("nlopt", "LD_LBFGS"),
             ("ceres", "Levenberg_Marquardt"),
@@ -897,7 +898,26 @@ class ExternalControllerTests(TestCase):
         controller.flag = 2
         self.shared_tests.check_diverged(controller)
 
-    @parameterized.expand(["gn", "gn_reg", "hybrid", "hybrid_reg"])
+    @parameterized.expand(
+        ["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"]
+    )
+    def test_aoclda(self, minimizer):
+        """
+        AOCLDAController: Tests for output shape
+        """
+        controller = create_controller("aoclda", self.cost_func)
+
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 2
+        self.shared_tests.check_diverged(controller)
+
+    @parameterized.expand(
+        ["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"]
+    )
     def test_ralfit(self, minimizer):
         """
         RALFitController: Tests for output shape
@@ -1225,7 +1245,7 @@ class FactoryTests(TestCase):
         controller = ControllerFactory.create_controller(software)
         self.assertTrue(controller.__name__.lower().startswith(name))
 
-    @parameterized.expand(["mantid", "ralfit"])
+    @parameterized.expand(["mantid", "ralfit", "aoclda"])
     @run_for_test_types(TEST_TYPE, "all")
     def test_external_imports(self, software):
         """
