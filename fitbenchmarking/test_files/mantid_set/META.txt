@@ -1,0 +1,3 @@
+mantid_set
+
+This dataset contains problems for testing mantid software.

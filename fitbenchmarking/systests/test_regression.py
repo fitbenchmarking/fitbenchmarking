@@ -49,6 +49,36 @@ class TestRegressionAll(TestCase):
         diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
         self.assertListEqual([], diff, msg)
 
+
+@run_for_test_types(TEST_TYPE, "mantid")
+class TestRegressionMantid(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with
+    mantid fitting software
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
+
+    def test_results_consistent_mantid(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+        problem_sub_directory = "mantid_set"
+
+        run_benchmark(self.results_dir, problem_sub_directory)
+
+        diff, msg = compare_results(problem_sub_directory, "mantid.csv")
+        self.assertListEqual([], diff, msg)
+
     def test_multifit_consistent(self):
         """
         Regression testing that the results of fitting multifit problems
@@ -271,7 +301,6 @@ def setup_options(
             "gofit",
             "gsl",
             "lmfit",
-            "mantid",
             "minuit",
             "nlopt",
             "ralfit",
@@ -287,6 +316,17 @@ def setup_options(
             "matlab_curve",
             "matlab_opt",
             "matlab_stats",
+        ],
+        "mantid": [
+            "mantid",
+            "bumps",
+            "dfo",
+            "lmfit",
+            "minuit",
+            "nlopt",
+            "scipy",
+            "scipy_ls",
+            "scipy_leastsq",
         ],
         "local_only": [
             "bumps",
