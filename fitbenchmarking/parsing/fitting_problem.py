@@ -280,7 +280,10 @@ class FittingProblem:
         for name in lower_param_names:
             if name in value_ranges:
                 self.value_ranges.append(
-                    (value_ranges[name][0], value_ranges[name][1])
+                    (
+                        float(value_ranges[name][0]),
+                        float(value_ranges[name][1]),
+                    )
                 )
             else:
                 self.value_ranges.append((-np.inf, np.inf))
