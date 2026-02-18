@@ -4,8 +4,9 @@
 Technical Reports
 #################
 
-On this page you will find links to Technical Reports that showcase new FitBenchmarking features, and it
-has been used for particular problems or for specific scientific software packages.
+On this page you will find links to Technical Reports that showcase new features, and
+examples of how FitBenchmarking has been used for particular problems or for specific
+scientific software packages.
 
 Adding Bayesian Methods to FitBenchmarking
 ==========================================
