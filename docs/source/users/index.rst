@@ -22,4 +22,4 @@ the FitBenchmarking software.
     tests
     notes
     tutorials
-
+    technical_reports
