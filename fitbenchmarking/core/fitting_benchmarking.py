@@ -414,7 +414,7 @@ class Fit:
                         LOGGER.info(
                             "%sJacobian: %s",
                             self._logger_prefix * 5,
-                            jacobian.name() if jacobian.name() else "default",
+                            jacobian.name() or "default",
                         )
 
                     if (

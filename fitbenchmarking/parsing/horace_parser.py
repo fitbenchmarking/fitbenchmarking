@@ -80,7 +80,7 @@ class HoraceParser(FitbenchmarkParser):
         q_cens = [float(i) for i in self._entries["q_cens"].split(",")]
         foreground_dict = self._parsed_func[0]
         params_dict = {
-            k: v for k, v in foreground_dict.items() if k not in {"foreground"}
+            k: v for k, v in foreground_dict.items() if k != "foreground"
         }
 
         process_f = self._parse_function(self._entries["process_function"])
