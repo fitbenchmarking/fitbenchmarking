@@ -823,9 +823,11 @@ class Plot:
 
         # Place name of cost function on left hand side of figure
         fig.for_each_annotation(
-            lambda a: a.update(x=-0.08, textangle=-90)
-            if a.text in row_titles
-            else ()
+            lambda a: (
+                a.update(x=-0.08, textangle=-90)
+                if a.text in row_titles
+                else ()
+            )
         )
         return fig
 
