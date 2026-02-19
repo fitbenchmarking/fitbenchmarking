@@ -25,4 +25,4 @@ In this report, we utilise FitBenchmarking to analyse the performance of differe
 algorithms for 2D powder averaging problems in SpinW, in particular examining the CrCl_2(pwm)
 dataset. SpinW is a linear spin wave theory (LSWT) modelling code written in MATLAB, and its
 sw_fitpowder class provides the capability to fit powder-averaged spectra to inelastic neutron scattering
-(INS) data
+(INS) data.
