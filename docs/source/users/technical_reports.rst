@@ -11,7 +11,7 @@ scientific software packages.
 Adding Bayesian Methods to FitBenchmarking
 ==========================================
 
-DOI: `10.5286/stfctr.2026004 <https://doi.org/10.5286/stfctr.2026004>`__
+DOI: `10.5286/stfctr.2025001 <https://doi.org/10.5286/stfctr.2025001>`__
 
 This report outlines the Bayesian approach for parameter estimation which has been implemented
 in FitBenchmarking.
