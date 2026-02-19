@@ -123,7 +123,7 @@ class GalahadController(Controller):
                 }
             )
 
-        elif minimizer in ["nls"]:
+        elif minimizer == "nls":
             if not has_hessian:
                 raise IncompatibleMinimizerError(
                     "Requires hessian information (for now)"
@@ -178,7 +178,7 @@ class GalahadController(Controller):
                 "eval_g": self._jacobian,
                 "eval_h": self._hessian,
             }
-        elif self._minimizer in ["nls"]:
+        elif self._minimizer == "nls":
             m = self.data_x.shape[0]
             kwargs = {
                 "n": self._num_vars,
