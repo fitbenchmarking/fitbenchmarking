@@ -39,6 +39,7 @@ dependencies = [
 [project.optional-dependencies]
 bumps = ['bumps<1.0.0']
 DFO = ['DFO-LS']
+galahad = ['galahad-optrove']
 gofit = ['gofit']
 gradient-free = ['gradient-free-optimizers[sklearn]']
 hogben = ['HOGBEN']

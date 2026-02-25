@@ -99,10 +99,14 @@ class GalahadController(Controller):
         }
 
         if minimizer in ["arc", "tru"]:
+            if not has_hessian:
+                raise IncompatibleMinimizerError(
+                    "Requires hessian information (for now)"
+                )
             kwargs.update(
                 {
                     "n": self._num_vars,
-                    "H_type": "dense" if has_hessian else "absent",
+                    "H_type": "dense",
                     "H_ne": 10,
                     "H_row": None,
                     "H_col": None,
@@ -218,6 +222,7 @@ class GalahadController(Controller):
             -82: 3,  # Killed by user
         }
         info = self._module.information()
+        print(info)
         self._module.terminate()
         self.final_params = self._result[0]
         self.flag = status_map[info["status"]]

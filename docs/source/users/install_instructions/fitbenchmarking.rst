@@ -79,6 +79,7 @@ where valid strings ``option-x`` are:
 
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
 * ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`_ fitting package.
+* ``galahad`` -- installs the Python interface to the `GALAHAD <https://www.galahad.rl.ac.uk/>`__ nonlinear optimization library.
 * ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package (suitable for Python up to 3.11).
 * ``gradient-free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
