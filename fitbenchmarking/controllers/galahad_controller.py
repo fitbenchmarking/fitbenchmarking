@@ -94,6 +94,10 @@ class GalahadController(Controller):
         x_u = np.array(x_u)
 
         opts = self._module.initialize()
+
+        if minimizer == "arc":
+            opts["glrt_options"]["impose_descent"] = False
+
         kwargs: dict[str, Any] = {
             "options": opts,
         }
@@ -222,7 +226,6 @@ class GalahadController(Controller):
             -82: 3,  # Killed by user
         }
         info = self._module.information()
-        print(info)
         self._module.terminate()
         self.final_params = self._result[0]
         self.flag = status_map[info["status"]]
