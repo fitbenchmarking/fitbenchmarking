@@ -16,15 +16,6 @@
 #
 import os
 import sys
-from unittest import mock
-
-# Mock theseus
-MOCK_MODULES = [
-    "theseus",
-    "torch",
-]
-for m in MOCK_MODULES:
-    sys.modules[m] = mock.Mock()
 
 sys.path.append(os.path.abspath("./_ext"))
 sys.path.insert(0, os.path.abspath("../../"))

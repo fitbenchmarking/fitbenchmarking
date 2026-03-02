@@ -2,7 +2,12 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from collections.abc import Sequence
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 import numpy as np
 import theseus as th
