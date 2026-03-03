@@ -3,13 +3,16 @@ Implements a controller for the GALAHAD fitting software.
 """
 
 from contextlib import suppress
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from galahad import arc, bgo, dgo, nls, trb, tru
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class GalahadController(Controller):

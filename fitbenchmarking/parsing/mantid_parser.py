@@ -5,7 +5,6 @@ files, as Mantid does an internal function evaluation.
 """
 
 import re
-from typing import Union
 
 import numpy as np
 
@@ -62,7 +61,7 @@ class MantidParser(MantidDevParser):
                 )
             return True
 
-    def _get_starting_values(self) -> Union[list[float], list[dict]]:
+    def _get_starting_values(self) -> list[float] | list[dict]:
         """
         Returns the starting values for the problem.
 
