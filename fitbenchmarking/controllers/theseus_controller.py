@@ -2,8 +2,12 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from collections.abc import Sequence
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 import numpy as np
 import theseus as th
@@ -24,8 +28,8 @@ class TheseusCostFunction(th.CostFunction):
         var: list[th.Vector],
         auxvar: Sequence[th.Variable],
         dim: int,
-        cost_weight: Optional[th.CostWeight] = None,
-        name: Optional[str] = None,
+        cost_weight: th.CostWeight | None = None,
+        name: str | None = None,
     ):
         if cost_weight is None:
             cost_weight = th.ScaleCostWeight(1.0)
@@ -79,7 +83,7 @@ class TheseusCostFunction(th.CostFunction):
         """
         return self._dim
 
-    def _copy_impl(self, new_name: Optional[str] = None):
+    def _copy_impl(self, new_name: str | None = None):
         return TheseusCostFunction(  # type: ignore
             var=[v.copy() for v in self.var],
             auxvar=[v.copy() for v in self.auxvar],

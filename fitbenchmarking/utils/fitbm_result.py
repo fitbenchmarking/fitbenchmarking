@@ -3,7 +3,7 @@ FitBenchmarking results object
 """
 
 from statistics import StatisticsError, fmean, harmonic_mean, median
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from scipy import stats
@@ -29,13 +29,13 @@ class FittingResult:
     def __init__(
         self,
         controller: Controller,
-        accuracy: Union[float, list[float]] = np.inf,
-        runtimes: Union[float, list[float]] = np.inf,
+        accuracy: float | list[float] = np.inf,
+        runtimes: float | list[float] = np.inf,
         energy: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: Optional[int] = None,
+        dataset: int | None = None,
     ) -> None:
         """
         Initialise the Fitting Result

@@ -9,7 +9,6 @@ import platform
 import re
 import webbrowser
 from shutil import copytree
-from typing import Optional, Union
 
 import pandas as pd
 from dash import Dash, dcc, html
@@ -164,7 +163,7 @@ def preprocess_data(results: list[FittingResult]):
     col_sections = ["costfun"]
 
     # Generate the columns, category, and row tags and sort
-    rows: Union[list[str], set[str]] = set()
+    rows: list[str] | set[str] = set()
     columns = {}
     for r in results:
         # Error 4 means none of the jacobians ran so can't infer the
@@ -192,7 +191,7 @@ def preprocess_data(results: list[FittingResult]):
     }
 
     # Build the sorted results dictionary
-    sorted_results: dict[str, dict[str, list[Optional[FittingResult]]]] = {
+    sorted_results: dict[str, dict[str, list[FittingResult | None]]] = {
         r.strip(":"): {
             k: [None for _ in category] for k, category in columns.items()
         }
