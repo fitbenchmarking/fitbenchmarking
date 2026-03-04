@@ -95,7 +95,7 @@ class GalahadController(Controller):
 
         opts = self._module.initialize()
 
-        if minimizer == "arc":
+        if minimizer in ["arc", "nls"]:
             opts["glrt_options"]["impose_descent"] = False
 
         kwargs: dict[str, Any] = {
