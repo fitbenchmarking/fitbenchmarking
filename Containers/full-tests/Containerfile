@@ -9,6 +9,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # from gfortan to libgdal-dev for RALfit
 # from libgoogle-glog-dev from libtbb-dev for ceres
 RUN apt-get update && apt-get install -y --no-install-recommends\
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev \
     git \
     sudo \
     make \
@@ -44,19 +47,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libtbb-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# use uv to manage python version
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN $HOME/.local/bin/uv python install 3.12
-
-# set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
+RUN python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN . $VIRTUAL_ENV
 
 # pip install dependencies in one line.
 # h5py needed for SScanSS
 # torch needed for theseus
-RUN pip install --no-cache-dir \
+RUN python -m pip install --no-cache-dir \
     wheel \
     "pytest>3.6" \
     pytest-cov \
@@ -77,7 +76,7 @@ WORKDIR /
 
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
-RUN pip install --no-cache-dir .
+RUN python -m pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /SScanSS-2
 
@@ -93,7 +92,7 @@ ENV CC=gcc
 RUN cmake /RALFit/libRALFit && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
-RUN pip install --no-cache-dir .
+RUN python -m pip install --no-cache-dir .
 
 ENV LD_LIBRARY_PATH=/RALFit-build/src:$LD_LIBRARY_PATH
 RUN rm -rf /RALFit/libRALFit/
@@ -139,7 +138,7 @@ RUN ln -s /usr/local/lib/libcutest_single.a objects/pc64.lnx.gfo/single/libcutes
 RUN ln -s /usr/local/lib/libcutest_double.a objects/pc64.lnx.gfo/double/libcutest.a
 
 # install pycutest
-RUN pip install --no-cache-dir pycutest
+RUN python -m pip install --no-cache-dir pycutest
 
 #################
 # install pygsl #
@@ -151,7 +150,7 @@ RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/
 RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
 
 WORKDIR /pygsl-2.6.4
-RUN pip install --no-cache-dir .
+RUN python -m pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
 
@@ -180,7 +179,7 @@ WORKDIR /
 ENV CXX=g++
 RUN git clone --depth 1 https://github.com/cvg/pyceres.git
 WORKDIR /pyceres
-RUN pip install --no-cache-dir .
+RUN python -m pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /pyceres
 
@@ -189,7 +188,7 @@ RUN rm -rf /pyceres
 ###########
 
 # Install theseus
-RUN pip install --no-cache-dir theseus-ai --no-build-isolation
+RUN python -m pip install --no-cache-dir theseus-ai --no-build-isolation
 
 ###########
 # Tidy up #
