@@ -55,7 +55,7 @@ RUN . $VIRTUAL_ENV
 # pip install dependencies in one line.
 # h5py needed for SScanSS
 # torch needed for theseus
-RUN python -m pip install --no-cache-dir \
+RUN pip install --no-cache-dir \
     wheel \
     "pytest>3.6" \
     pytest-cov \
@@ -65,6 +65,7 @@ RUN python -m pip install --no-cache-dir \
     mock \
     meson \
     numpy \
+    "scikit-sparse>=0.4.11,<0.5.0" \
     --no-binary=h5py h5py \
     torch --extra-index-url https://download.pytorch.org/whl/cpu
 
@@ -76,7 +77,7 @@ WORKDIR /
 
 RUN git clone --depth 1 https://github.com/ISISNeutronMuon/SScanSS-2.git
 WORKDIR /SScanSS-2
-RUN python -m pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /SScanSS-2
 
@@ -92,7 +93,7 @@ ENV CC=gcc
 RUN cmake /RALFit/libRALFit && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
-RUN python -m pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
 
 ENV LD_LIBRARY_PATH=/RALFit-build/src:$LD_LIBRARY_PATH
 RUN rm -rf /RALFit/libRALFit/
@@ -138,7 +139,7 @@ RUN ln -s /usr/local/lib/libcutest_single.a objects/pc64.lnx.gfo/single/libcutes
 RUN ln -s /usr/local/lib/libcutest_double.a objects/pc64.lnx.gfo/double/libcutest.a
 
 # install pycutest
-RUN python -m pip install --no-cache-dir pycutest
+RUN pip install --no-cache-dir pycutest
 
 #################
 # install pygsl #
@@ -150,7 +151,7 @@ RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/
 RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
 
 WORKDIR /pygsl-2.6.4
-RUN python -m pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
 
@@ -179,7 +180,7 @@ WORKDIR /
 ENV CXX=g++
 RUN git clone --depth 1 https://github.com/cvg/pyceres.git
 WORKDIR /pyceres
-RUN python -m pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
 WORKDIR /
 RUN rm -rf /pyceres
 
@@ -188,7 +189,7 @@ RUN rm -rf /pyceres
 ###########
 
 # Install theseus
-RUN python -m pip install --no-cache-dir theseus-ai --no-build-isolation
+RUN pip install --no-cache-dir theseus-ai --no-build-isolation
 
 ###########
 # Tidy up #
