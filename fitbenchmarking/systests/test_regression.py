@@ -10,7 +10,6 @@ except ImportError:
 import os
 from sys import platform
 from tempfile import NamedTemporaryFile
-from typing import Optional
 from unittest import TestCase
 
 from pytest import test_type as TEST_TYPE
@@ -269,8 +268,8 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
 
 
 def setup_options(
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
 ) -> Options:
     """
     Setups up options class for system tests
@@ -380,8 +379,8 @@ def setup_options(
 
 
 def create_options_file(
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
 ):
     """
     Creates a temporary options file and returns its name.
@@ -404,9 +403,9 @@ def create_options_file(
 def run_benchmark(
     results_dir: str,
     problem_sub_directory: str,
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
-    additional_options: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
+    additional_options: dict | None = None,
 ) -> None:
     """
     Runs a benchmark of the problems in a specific directory
