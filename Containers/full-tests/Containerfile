@@ -9,6 +9,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # from gfortan to libgdal-dev for RALfit
 # from libgoogle-glog-dev from libtbb-dev for ceres
 RUN apt-get update && apt-get install -y --no-install-recommends\
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev \
     git \
     sudo \
     make \
@@ -44,14 +47,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libtbb-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# use uv to manage python version
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-RUN $HOME/.local/bin/uv python install 3.12
-
-# set up a venv to stop python/python3 sillyness
 ENV VIRTUAL_ENV=/opt/venv
-RUN $HOME/.local/bin/uv venv --seed $VIRTUAL_ENV
+RUN python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN . $VIRTUAL_ENV
 
 # pip install dependencies in one line.
 # h5py needed for SScanSS
@@ -66,6 +65,7 @@ RUN pip install --no-cache-dir \
     mock \
     meson \
     numpy \
+    "scikit-sparse>=0.4.11,<0.5.0" \
     --no-binary=h5py h5py \
     torch --extra-index-url https://download.pytorch.org/whl/cpu
 
