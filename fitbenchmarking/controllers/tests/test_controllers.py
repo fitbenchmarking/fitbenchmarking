@@ -461,6 +461,12 @@ class DefaultControllerTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(
+            self.cost_func.problem, self.cost_func.jacobian
+        )
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
+
         self.shared_tests = ControllerSharedTesting()
 
     def test_bumps(self):
@@ -589,6 +595,38 @@ class DefaultControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller.lmfit_out.success = False
         self.shared_tests.check_diverged(controller)
+
+    def test_galahad(self):
+        """
+        GalahadController: Test for output shape
+        """
+        controller = create_controller("galahad", self.cost_func)
+        controller.minimizer = "arc"
+        self.shared_tests.controller_run_test(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": 0}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_converged(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": -18}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_max_iterations(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": -16}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_diverged(controller)
 
     @parameterized.expand(["lmfit", "bumps"])
     def test_variable_names_corrected_in_controllers(self, controller_name):

@@ -25,7 +25,7 @@ jobs:
         check-latest: true
     - name: Install dependencies
       run: |
-        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install .[bumps,DFO,galahad,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install --upgrade .[dev]
     - name: Run tests (macOS)
       if: matrix.os == 'macos-latest'
