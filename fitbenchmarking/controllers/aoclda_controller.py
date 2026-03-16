@@ -109,7 +109,7 @@ class AOCLDAController(Controller):
         self._lb = None
         self._ub = None
         self._x = None
-        self._status = None
+        self._warnings = None
 
         # All these options should be passed
         self.maxit = 500  # Same as RALFit
@@ -255,7 +255,7 @@ class AOCLDAController(Controller):
         Run problem with AOCLDA.
         Note: only this method is timed
         """
-        with warnings.catch_warnings(record=True) as self._status:
+        with warnings.catch_warnings(record=True) as self._warnings:
             # Solver raises RuntimeWarning for
             # 1: Software reported maximum number of iterations exceeded
             # 2: Software run but didn't converge to solution
@@ -281,8 +281,8 @@ class AOCLDAController(Controller):
         will be read from.
         """
 
-        if self._status:
-            for warning in self._status:
+        if self._warnings is not None and len(self._warnings) > 0:
+            for warning in self._warnings:
                 if warning.category.__name__ == "RuntimeWarning":
                     if (
                         str(warning.message)[31:59]
