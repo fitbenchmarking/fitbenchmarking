@@ -1,7 +1,4 @@
 #!/bin/bash
-# Handle gracefully the mantid segfault issue
-/opt/Mantid/bin/mantidpython -m mantid.simpleapi >file 2>/dev/null | cat
-echo "first run of mantid is expected to segfault"
 
 DIRS="cli controllers core cost_func hessian jacobian parsing results_processing utils"
 for d in $DIRS; do FULL_DIRS="$FULL_DIRS fitbenchmarking/$d"; done

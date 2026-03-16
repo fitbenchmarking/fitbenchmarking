@@ -62,10 +62,10 @@ class HoraceParser(FitbenchmarkParser):
 
         # A container for improving efficiency in function call if calling
         # with full input data
-        self._horace_x: typing.Optional[np.ndarray] = None
-        self._horace_w: typing.Optional[str] = None
-        self._horace_msk: typing.Optional[str] = None
-        self._horace_path: typing.Optional[str] = None
+        self._horace_x: np.ndarray | None = None
+        self._horace_w: str | None = None
+        self._horace_msk: str | None = None
+        self._horace_path: str | None = None
 
     def _process_spinw_data(self, data_file_path):
         """
@@ -80,7 +80,7 @@ class HoraceParser(FitbenchmarkParser):
         q_cens = [float(i) for i in self._entries["q_cens"].split(",")]
         foreground_dict = self._parsed_func[0]
         params_dict = {
-            k: v for k, v in foreground_dict.items() if k not in {"foreground"}
+            k: v for k, v in foreground_dict.items() if k != "foreground"
         }
 
         process_f = self._parse_function(self._entries["process_function"])

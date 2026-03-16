@@ -10,7 +10,6 @@ except ImportError:
 import os
 from sys import platform
 from tempfile import NamedTemporaryFile
-from typing import Optional
 from unittest import TestCase
 
 from pytest import test_type as TEST_TYPE
@@ -47,6 +46,36 @@ class TestRegressionAll(TestCase):
         run_benchmark(self.results_dir, problem_sub_directory)
 
         diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
+        self.assertListEqual([], diff, msg)
+
+
+@run_for_test_types(TEST_TYPE, "mantid")
+class TestRegressionMantid(TestCase):
+    """
+    Regression tests for the Fitbenchmarking software with
+    mantid fitting software
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Create an options file, run it, and get the results.
+        """
+        cls.results_dir = os.path.join(
+            os.path.dirname(__file__), "fitbenchmarking_results"
+        )
+
+    def test_results_consistent_mantid(self):
+        """
+        Regression testing that the results of fitting a set of problems
+        containing all problem types against a single minimizer from each of
+        the supported softwares
+        """
+        problem_sub_directory = "mantid_set"
+
+        run_benchmark(self.results_dir, problem_sub_directory)
+
+        diff, msg = compare_results(problem_sub_directory, "mantid.csv")
         self.assertListEqual([], diff, msg)
 
     def test_multifit_consistent(self):
@@ -239,8 +268,8 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
 
 
 def setup_options(
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
 ) -> Options:
     """
     Setups up options class for system tests
@@ -269,10 +298,10 @@ def setup_options(
             "bumps",
             "dfo",
             "ceres",
+            "galahad",
             "gofit",
             "gsl",
             "lmfit",
-            "mantid",
             "minuit",
             "nlopt",
             "ralfit",
@@ -288,6 +317,17 @@ def setup_options(
             "matlab_curve",
             "matlab_opt",
             "matlab_stats",
+        ],
+        "mantid": [
+            "mantid",
+            "bumps",
+            "dfo",
+            "lmfit",
+            "minuit",
+            "nlopt",
+            "scipy",
+            "scipy_ls",
+            "scipy_leastsq",
         ],
         "local_only": [
             "bumps",
@@ -310,6 +350,7 @@ def setup_options(
         "bumps": "lm-bumps",
         "dfo": "dfols",
         "ceres": "Levenberg_Marquardt",
+        "galahad": "arc",
         "gofit": "regularisation",
         "gsl": "lmsder",
         "horace": "lm-lsqr",
@@ -340,8 +381,8 @@ def setup_options(
 
 
 def create_options_file(
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
 ):
     """
     Creates a temporary options file and returns its name.
@@ -364,9 +405,9 @@ def create_options_file(
 def run_benchmark(
     results_dir: str,
     problem_sub_directory: str,
-    override_software: Optional[list] = None,
-    jac_num_method: Optional[dict] = None,
-    additional_options: Optional[dict] = None,
+    override_software: list | None = None,
+    jac_num_method: dict | None = None,
+    additional_options: dict | None = None,
 ) -> None:
     """
     Runs a benchmark of the problems in a specific directory

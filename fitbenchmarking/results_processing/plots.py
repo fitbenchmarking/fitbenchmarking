@@ -5,7 +5,6 @@ guess plot.
 
 from itertools import cycle
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import plotly.colors as ptly_colors
@@ -823,9 +822,11 @@ class Plot:
 
         # Place name of cost function on left hand side of figure
         fig.for_each_annotation(
-            lambda a: a.update(x=-0.08, textangle=-90)
-            if a.text in row_titles
-            else ()
+            lambda a: (
+                a.update(x=-0.08, textangle=-90)
+                if a.text in row_titles
+                else ()
+            )
         )
         return fig
 
@@ -1001,7 +1002,7 @@ class Plot:
         return plotly_colours
 
     @staticmethod
-    def _get_n_plots_and_titles(result) -> tuple[int, Optional[str], str]:
+    def _get_n_plots_and_titles(result) -> tuple[int, str | None, str]:
         """
         A helper method that returns number of plots, subplot titles
         and axis titles.

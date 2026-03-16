@@ -3,7 +3,6 @@ Implements a controller for the Mantid fitting software.
 """
 
 from itertools import repeat
-from typing import Union
 
 import numpy as np
 from mantid import simpleapi as msapi
@@ -410,11 +409,11 @@ class MantidController(Controller):
     # =====================
     def eval_chisq(
         self,
-        params: Union[float, list[float]],
-        x: Union[np.ndarray, list[np.ndarray], None] = None,
-        y: Union[np.ndarray, list[np.ndarray], None] = None,
-        e: Union[np.ndarray, list[np.ndarray], None] = None,
-    ) -> Union[np.ndarray, list[np.ndarray]]:
+        params: float | list[float],
+        x: np.ndarray | list[np.ndarray] | None = None,
+        y: np.ndarray | list[np.ndarray] | None = None,
+        e: np.ndarray | list[np.ndarray] | None = None,
+    ) -> np.ndarray | list[np.ndarray]:
         """
         Computes the chisq value.
         If multi-fit inputs will be lists and this will return a list of chi
