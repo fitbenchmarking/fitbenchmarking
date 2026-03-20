@@ -151,8 +151,8 @@ class Fit:
                 results = self._loop_over_starting_values(problem)
                 self._results.extend(results)
 
-                if self._emissions_tracker:
-                    _ = self._emissions_tracker.stop()
+        if self._emissions_tracker:
+            _ = self._emissions_tracker.stop()
 
         self._checkpointer.finalise_group(
             self._label, self._failed_problems, self._unselected_minimizers
