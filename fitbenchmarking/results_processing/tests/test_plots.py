@@ -153,8 +153,8 @@ class PlotTests(unittest.TestCase):
 
     def test_plotly_fit_create_files(self):
         """
-        Test that plotly_fit creates a file and errorbars are
-        added to the plot.
+        Test that plotly_fit creates a file with the expected file name, error
+        bars and interactible buttons.
         """
         file_names = self.plot.plotly_fit(
             self.df[("Fake_Test_Data", "prob_1")]
