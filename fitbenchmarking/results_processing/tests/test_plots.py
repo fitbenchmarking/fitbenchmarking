@@ -61,7 +61,7 @@ def find_error_bar_count(path):
 
 def find_error_bar_toggle(path):
     """
-    Reads html file checks if the Toggle error button is there
+    Reads html file and checks that the Toggle error button is there
     """
     with open(path, encoding="utf-8") as file:
         html_content = file.read()
