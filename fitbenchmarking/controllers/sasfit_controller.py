@@ -193,7 +193,7 @@ class SASFitController(Controller):
             self.x_ptr,  # x values
             self.y_ptr,  # measured y
             self.sig_ptr,  # signma values
-            self.res_ptr,  # residuals
+            self.res_ptr,  
             self.yfit_ptr,  # model prediction
             c_int(self.ndata),
             self.a_arr,
