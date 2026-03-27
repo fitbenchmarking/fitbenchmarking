@@ -9,33 +9,11 @@ from ctypes import (
     c_float,
     c_bool,
     POINTER,
-    Structure,
     CFUNCTYPE,
     byref,
 )
 
 from fitbenchmarking.controllers.base_controller import Controller
-
-
-class sasfit_analytpar(Structure):
-    _fields_ = []  # Probably okay to stay empty
-
-
-class SASFIT_CData(Structure):
-    _fields_ = [
-        ("alpha", POINTER(POINTER(c_float))),
-        ("covar", POINTER(POINTER(c_float))),
-        ("oneda", POINTER(POINTER(c_float))),
-        ("beta", POINTER(c_float)),
-        ("a", POINTER(c_float)),
-        ("da", POINTER(c_float)),
-        ("atry", POINTER(c_float)),
-        ("lista", POINTER(c_int)),
-        ("ma", c_int),
-        ("mfit", c_int),
-        ("max_SD", c_int),
-        ("chisq", c_float),
-    ]
 
 
 class SASFitController(Controller):
@@ -63,7 +41,6 @@ class SASFitController(Controller):
         FUNCS_T = CFUNCTYPE(
             c_float,
             c_float,  # x_i
-            c_float,  # res_i
             POINTER(c_float),  # a
             POINTER(c_float),  # ymod
             POINTER(c_float),  # dyda
@@ -73,7 +50,6 @@ class SASFitController(Controller):
 
         # ---- Bind the C functions ----
         self.lib.SASFITmrqmin.argtypes = [
-            POINTER(c_float),
             POINTER(c_float),
             POINTER(c_float),
             POINTER(c_float),
@@ -98,7 +74,6 @@ class SASFitController(Controller):
         self.lib.SASFITmrqmin.restype = None
 
         self.lib.SASFITmrqcof.argtypes = [
-            POINTER(c_float),
             POINTER(c_float),
             POINTER(c_float),
             POINTER(c_float),
@@ -143,7 +118,6 @@ class SASFitController(Controller):
 
         # ---- Outputs ----
         yfit_np = np.zeros(self.ndata, dtype=np.float32)
-        res_np = np.zeros(self.ndata, dtype=np.float32)
         self.chisq = c_float(0.0)
 
         # ---- Convert numpy arrays to c float* ----
@@ -151,8 +125,7 @@ class SASFitController(Controller):
         self.y_ptr = self.data_y.ctypes.data_as(POINTER(c_float))
         self.sig_ptr = __.ctypes.data_as(
             POINTER(c_float)
-        )  # FIXME: Do we read sigma in ??
-        self.res_ptr = res_np.ctypes.data_as(POINTER(c_float))
+        )  # FIXME: This is the standard deviation associated with  the data
         self.yfit_ptr = yfit_np.ctypes.data_as(POINTER(c_float))
 
         # ---- Other inputs for fitting ----
@@ -193,7 +166,6 @@ class SASFitController(Controller):
             self.x_ptr,  # x values
             self.y_ptr,  # measured y
             self.sig_ptr,  # signma values
-            self.res_ptr,  
             self.yfit_ptr,  # model prediction
             c_int(self.ndata),
             self.a_arr,
