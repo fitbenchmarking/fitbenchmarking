@@ -988,7 +988,7 @@ class Plot:
     @staticmethod
     def _add_menu_buttons(fig) -> go.Figure:
         """
-        Adds an interactible menu to the plot
+        Adds an interactible button to the plot, to toggle error bars
 
         :param fig: The plotly figure to update the axis for
         :type fig: plotly.graph_objects.Figure
