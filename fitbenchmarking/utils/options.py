@@ -165,6 +165,7 @@ class Options:
             "newton-tensor",
             "newton-tensor_reg",
         ],
+        "sasfit": ["lm-sasfit"],
         "scipy": [
             "Nelder-Mead",
             "Powell",
@@ -222,6 +223,7 @@ class Options:
             "nlopt",
             "paramonte",
             "ralfit",
+            "sasfit",
             "scipy",
             "scipy_ls",
             "scipy_leastsq",
@@ -421,6 +423,7 @@ class Options:
             "newton",
             "newton_reg",
         ],
+        "sasfit": ["lm-sasfit"],
         "scipy": [
             "Nelder-Mead",
             "Powell",
