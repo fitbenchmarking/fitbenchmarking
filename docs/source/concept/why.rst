@@ -30,7 +30,7 @@ Example workflow
 The black crosses on the plot below are data obtained from an experiment
 at the VESUVIO beamline at ISIS Neutron and Muon source:
 
-.. figure:: ../../images/start_for_EVS14188-90_processed_Gaussian_peaks_1_1.png  
+.. figure:: ../../images/VESUVIO_raw.png  
    :alt: VESUVIO experiment data
    :width: 100.0%
 
@@ -70,28 +70,27 @@ less suited to a problem, depending on factors such as the architecture
 of the machine, the availability of first and second derivatives, the
 amount of data, the type of model used, etc.
 
-Below we show the data overlayed by a blue curve, which is a model fitted using the
+Below we show the data overlayed by a red curve, which is a model fitted using the
 implementation of the Levenberg-Marquardt algorithm from the GNU Scientific Library (:code:`lmsder`).
-The algorithm claims to have found a local minimum with a Chi-squared error of 
-0.4771 in 1.9 seconds.
+The algorithm claims to have found a local minimum with a :math:`\chi^2` error of 15.87 in 0.0067 seconds.
 
-.. figure:: ../../images/lmsder_fit_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
+.. figure:: ../../images/GSL_lmsder_VESUVIO.png
    :alt: VESUVIO experiment data: :code:`lmsder`
    :width: 100.0%
 
    GSL's :code:`lmsder` (Levenberg-Marquardt) algorithm on the data
 
 We also solved the nonlinear least squares problem using GSL's implementation of
-a Nelder-Mead simplex algorithm (:code:`nmsimplex2`), which again claimed to solve
-the problem, this time in a faster 1.5 seconds.  However, this time the Chi-squared error was
-0.8505, and we plot the curve obtained in green below.  The previous curve
-is in dotted-blue, for comparison.
+a Nelder-Mead simplex algorithm (:code:`nmsimplex`), which claimed to solve
+the problem in 0.0072 seconds.  However, this time with a :math:`\chi^2` error of
+25.26. The curve obtained is plotted in red below and the previous curve
+is in dotted-blue for comparison.
    
-.. figure:: ../../images/nmsimplex2_fit_for_EVS14188-90_processed_Gaussian_peaks_1_1.png
-   :alt: VESUVIO experiment data: :code:`nmsimplex2`
+.. figure:: ../../images/GSL_nmsimplex_VESUVIO.png
+   :alt: VESUVIO experiment data: :code:`nmsimplex`
    :width: 100.0%
 
-   GSL's :code:`nmsimplex2` (Nelder-Mead Simplex) algorithm on the data
+   GSL's :code:`nmsimplex` (Nelder-Mead Simplex) algorithm on the data
 
 By eye it is clear that the solution given by :code:`lmsder` is better.
 As the volume of data increases, and we do more and more data analysis
