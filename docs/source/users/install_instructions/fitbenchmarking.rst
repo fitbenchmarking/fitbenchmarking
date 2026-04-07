@@ -4,7 +4,7 @@
 Installing FitBenchmarking and default fitting packages
 #######################################################
 
-We recommend using |Python 3.9.1+| for running/installing Fitbenchmarking.
+We recommend using |Python 3.10.1+| for running/installing Fitbenchmarking.
 The easiest way to install FitBenchmarking is by using the Python package manager,
 `pip <https://pip.pypa.io/en/stable/>`__.
 
@@ -79,6 +79,7 @@ where valid strings ``option-x`` are:
 
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
 * ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`_ fitting package.
+* ``galahad`` -- installs the Python interface to the `GALAHAD <https://www.galahad.rl.ac.uk/>`__ nonlinear optimization library.
 * ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package (suitable for Python up to 3.11).
 * ``gradient-free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
@@ -93,7 +94,7 @@ where valid strings ``option-x`` are:
 * ``hogben`` -- installs the `HOGBEN <https://github.com/jfkcooper/HOGBEN>`__ package.
 
 
-.. |Python 3.9.1+| image:: https://img.shields.io/badge/python-3.9.1+-blue.svg
-   :alt: Python 3.9.1+
+.. |Python 3.10.1+| image:: https://img.shields.io/badge/python-3.10.1+-blue.svg
+   :alt: Python 3.10.1+
    :target: https://www.python.org/downloads/
 

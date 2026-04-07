@@ -5,7 +5,6 @@ guess plot.
 
 from itertools import cycle
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import plotly.colors as ptly_colors
@@ -193,7 +192,7 @@ class Plot:
                 title=self.result.name, legend=self._legend_style
             )
             self._update_to_logscale_if_needed(fig, self.result)
-
+            self._add_menu_buttons(fig)
             htmlfile = (
                 f"{minimizer}_fit_for_{self.result.costfun_tag}"
                 f"_{self.result.sanitised_name}.html"
@@ -987,6 +986,40 @@ class Plot:
         return fig
 
     @staticmethod
+    def _add_menu_buttons(fig) -> go.Figure:
+        """
+        Adds an interactible button to the plot, to toggle error bars
+
+        :param fig: The plotly figure to update the axis for
+        :type fig: plotly.graph_objects.Figure
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        fig.update_layout(
+            updatemenus=[
+                {
+                    "type": "buttons",
+                    "direction": "down",
+                    "showactive": False,
+                    "x": 1.25,
+                    "y": 1.15,
+                    "xanchor": "right",
+                    "yanchor": "top",
+                    "buttons": [
+                        {
+                            "label": "Toggle error bars",
+                            "method": "restyle",
+                            "args": [{"error_y.visible": [True]}, [0]],
+                            "args2": [{"error_y.visible": [False]}, [0]],
+                        }
+                    ],
+                }
+            ]
+        )
+        return fig
+
+    @staticmethod
     def _sample_colours(points: np.ndarray) -> list[str]:
         """
         Samples plotly colours based on values passed as input.
@@ -1003,7 +1036,7 @@ class Plot:
         return plotly_colours
 
     @staticmethod
-    def _get_n_plots_and_titles(result) -> tuple[int, Optional[str], str]:
+    def _get_n_plots_and_titles(result) -> tuple[int, str | None, str]:
         """
         A helper method that returns number of plots, subplot titles
         and axis titles.

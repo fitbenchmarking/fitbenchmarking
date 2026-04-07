@@ -10,8 +10,8 @@ speed.
 """
 
 import re
+from collections.abc import Callable
 from itertools import repeat
-from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -46,7 +46,7 @@ class MantidDevParser(FitbenchmarkParser):
                 r"['\"](.*?)['\"]", self._entries.get("ties", "")
             )
 
-    def _dense_jacobian(self) -> Optional[Callable]:
+    def _dense_jacobian(self) -> Callable | None:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.

@@ -10,7 +10,6 @@ import pickle
 import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import numpy as np
 
@@ -47,9 +46,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: Optional[TemporaryDirectory] = None
-        self.problems_file: Optional[str] = None
-        self.results_file: Optional[str] = None
+        self.dir: TemporaryDirectory | None = None
+        self.problems_file: str | None = None
+        self.results_file: str | None = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(

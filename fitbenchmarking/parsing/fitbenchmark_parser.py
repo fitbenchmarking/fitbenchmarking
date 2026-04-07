@@ -5,10 +5,10 @@ This file implements a parser for the Fitbenchmark data format.
 import importlib
 import re
 import sys
+from collections.abc import Callable
 from contextlib import suppress
 from functools import partialmethod
 from pathlib import Path
-from typing import Callable, Optional, Union
 
 import numpy as np
 
@@ -278,7 +278,7 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_string(self, key: str, func: Optional[str] = None):
+    def _parse_string(self, key: str, func: str | None = None):
         """
         if key == "function"
             Get the params from the function as a list of dicts
@@ -304,7 +304,7 @@ class FitbenchmarkParser(Parser):
     _parse_function = partialmethod(_parse_string, "function")
     _parse_jac_function = partialmethod(_parse_string, "jac")
 
-    def _get_jacobian(self, jac_type) -> Optional[Callable]:
+    def _get_jacobian(self, jac_type) -> Callable | None:
         """
         Process the dense/sparse jac function into a callable.
         Returns None if this is not possible.
@@ -411,7 +411,7 @@ class FitbenchmarkParser(Parser):
         return value
 
     @staticmethod
-    def _parse_function_value(value: str) -> Union[int, float, bool, str]:
+    def _parse_function_value(value: str) -> int | float | bool | str:
         """
         Parse a value from a string into a numerical type if possible.
 

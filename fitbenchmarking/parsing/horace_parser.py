@@ -62,10 +62,10 @@ class HoraceParser(FitbenchmarkParser):
 
         # A container for improving efficiency in function call if calling
         # with full input data
-        self._horace_x: typing.Optional[np.ndarray] = None
-        self._horace_w: typing.Optional[str] = None
-        self._horace_msk: typing.Optional[str] = None
-        self._horace_path: typing.Optional[str] = None
+        self._horace_x: np.ndarray | None = None
+        self._horace_w: str | None = None
+        self._horace_msk: str | None = None
+        self._horace_path: str | None = None
 
     def _process_spinw_data(self, data_file_path):
         """

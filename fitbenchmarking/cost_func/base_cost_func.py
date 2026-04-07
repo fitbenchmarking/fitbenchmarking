@@ -3,7 +3,7 @@ Implements the base class for the cost function class.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
 
@@ -32,7 +32,7 @@ class CostFunc:
         self.problem: FittingProblem = problem
 
         # The Jacobian object to evaluate
-        self.jacobian: Optional[Jacobian] = None
+        self.jacobian: Jacobian | None = None
 
         # The Hessian object to evaluate
         self.hessian = None

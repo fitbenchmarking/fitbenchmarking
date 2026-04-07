@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
-        python: ['3.9', '3.13']
+        python: ['3.10', '3.13']
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
         check-latest: true
     - name: Install dependencies
       run: |
-        pip install .[bumps,DFO,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
+        pip install .[bumps,DFO,galahad,gradient-free,minuit,SAS,numdifftools,lmfit,nlopt]
         pip install --upgrade .[dev]
     - name: Run tests (macOS)
       if: matrix.os == 'macos-latest'
