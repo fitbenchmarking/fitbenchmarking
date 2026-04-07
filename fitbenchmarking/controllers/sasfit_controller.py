@@ -218,7 +218,7 @@ class SASFitController(Controller):
     def make_funcs_wrapper(self, cost_func):
         def funcs_wrapper(x_i, a_ptr, ymod_ptr, dyda_ptr):
             # need this for getting the right jac later
-            idx = int(np.where(self.data_x == x_i)[0][0])
+            idx = min(range(len(self.data_x)), key=lambda i: abs(self.data_x[i] - x_i))
 
             # extract params correctly
             params = [float(a_ptr[i]) for i in range(self.n_params)]
@@ -230,7 +230,7 @@ class SASFitController(Controller):
             ymod_ptr[0] = y
 
             # compute jacobian
-            jac = cost_func.jac_res(params)
+            jac = cost_func.jacobian.eval(self.initial_params)
 
             for i in range(self.n_params):
                 dyda_ptr[i] = np.asarray(jac[idx][i], dtype=np.float32)
