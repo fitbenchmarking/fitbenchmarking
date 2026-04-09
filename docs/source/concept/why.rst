@@ -61,7 +61,7 @@ fit, and :math:`\boldsymbol{\beta}` are the parameters we're trying to
 find.
 
 Usually the scientist will supply a starting guess,
-:math:`{\boldsymbol{\beta}}_0` (the pink curve in the graph above),
+:math:`{\boldsymbol{\beta}}_0` (the green curve in the graph above),
 which describes where they think the solution might be.
 She then has to *choose which algorithm to use to fit the curve*
 from the selection available in the analysis software.
