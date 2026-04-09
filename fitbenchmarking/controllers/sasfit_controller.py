@@ -150,6 +150,7 @@ class SASFitController(Controller):
         self.alamda = c_float(
             -1.0
         )  # LM control parameter, just needs to be < 0
+        self.error = c_bool(False)
 
         # error_type controls how the data (y) and model outputs (ymod) are
         # transformed before computing residuals and χ²
@@ -195,10 +196,11 @@ class SASFitController(Controller):
             self.make_funcs_wrapper(self.cost_func),  # the model function
             byref(self.alamda),  # Levenberg Marquardt control parameter
             c_int(self.error_type),  # 0 to 4
-            byref(c_bool(False)),  # Set to TRUE if anything goes wrong
+            byref(self.error),  # Set to TRUE if anything goes wrong
         )
 
         self._popt = self.ptr_to_numpy(self.a_arr, self.ma)
+        self._status = 0 if not self.error else 1
 
     def make_matrix_float(self, rows, cols):
         """
@@ -244,25 +246,14 @@ class SASFitController(Controller):
         return np.ctypeslib.as_array(ptr, shape=(length,))
 
     def cleanup(self):
-        # max_iters_messages = [
-        #     "maximum number of iterations",
-        #     "iteration limit reached",
-        #     "iterations reached limit",
-        # ]
-
-        # if self.result.success:
-        #     self.flag = 0
-        # elif any(
-        #     message in self.result.message.lower()
-        #     for message in max_iters_messages
-        # ):
-        #     self.flag = 1
-        # else:
-        #     self.flag = 2
+        if self._status == 0:
+            self.flag = 0
+        else:
+            self.flag = 3
 
         # if "nfev" in self.result:
         #     self.func_evals = self.result.nfev
         # if "nit" in self.result:
         #     self.iteration_count = self.result.nit
-        self.flag = 0
+
         self.final_params = self._popt
