@@ -26,6 +26,8 @@ class FittingResult:
     fitting problem test.
     """
 
+    status: str
+
     def __init__(
         self,
         controller: Controller,
@@ -200,7 +202,24 @@ class FittingResult:
 
         # Controller error handling
         self.error_flag = controller.flag
-
+        status_messages = {
+            0: "Successfully converged",
+            1: "Software reported maximum number of iterations exceeded",
+            2: "Software run but didn't converge to solution",
+            3: "Software raised an exception",
+            4: "Solver doesn't support bounded problems",
+            5: "Solution doesn't respect parameter bounds",
+            6: "Solver has exceeded maximum allowed runtime",
+            7: "Validation of the provided options failed",
+            8: "Confidence in fit could not be calculated",
+        }
+        if (
+            isinstance(self.error_flag, int)
+            and self.error_flag in status_messages
+        ):
+            self.status = status_messages[self.error_flag]
+        else:
+            self.status = "Unknown error flag"
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
