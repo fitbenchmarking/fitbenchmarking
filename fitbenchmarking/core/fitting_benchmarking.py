@@ -5,6 +5,7 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 
 import numpy as np
@@ -71,8 +72,15 @@ class Fit:
         self._emissions_tracker = None
         self._logger_prefix = "    "
         if "energy_usage" in options.table_type:
+            if platform.system() == "Darwin":
+                LOGGER.info(
+                    "Please be aware that you may be prompted by "
+                    "CodeCarbon to provide a password to give sudo rights "
+                    "so that the powermetrics tool can be used."
+                )
             self._emissions_tracker = EmissionsTracker(
                 measure_power_secs=1,
+                allow_multiple_runs=False,
                 tracking_mode="process",
                 save_to_file=False,
                 log_level="error",
