@@ -349,7 +349,7 @@ class Checkpoint:
                 new_result.r_x = _decompress(r["r"])
                 new_result.jac_x = _decompress(r["J"])
                 new_result.algorithm_type = r["tags"]
-                new_result.status = r["status"]
+                new_result.status = r.get("status", "unknown")
 
                 new_result.name = r["name"]
                 p = problems[new_result.name]
