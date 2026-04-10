@@ -80,7 +80,6 @@ class Fit:
                 )
             self._emissions_tracker = EmissionsTracker(
                 measure_power_secs=1,
-                allow_multiple_runs=False,
                 tracking_mode="process",
                 save_to_file=False,
                 log_level="error",
