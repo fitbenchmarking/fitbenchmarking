@@ -80,17 +80,17 @@ The algorithm claims to have found a local minimum with a :math:`\chi^2` error o
 
    GSL's :code:`lmsder` (Levenberg-Marquardt) algorithm on the data
 
-We also solved the nonlinear least squares problem using GSL's implementation of
-a Nelder-Mead simplex algorithm (:code:`nmsimplex`), which claimed to solve
-the problem in 0.0072 seconds.  However, this time with a :math:`\chi^2` error of
-25.26. The curve obtained is plotted in red below and the previous curve
+We also solved the nonlinear least squares problem using SciPy's implementation of
+a Constrained Optimization BY Linear Approximation (COBYLA) algorithm (:code:`COBYLA`),
+which claimed to solve the problem in less time (0.0060 seconds) but with a much higher :math:`\chi^2` error of
+39.88. The curve obtained is plotted in red below and the previous curve
 is in dotted-blue for comparison.
    
-.. figure:: ../../images/GSL_nmsimplex_VESUVIO.png
-   :alt: VESUVIO experiment data: :code:`nmsimplex`
+.. figure:: ../../images/GSL_COBYLA_VESUVIO.png
+   :alt: VESUVIO experiment data: :code:`COBYLA`
    :width: 100.0%
 
-   GSL's :code:`nmsimplex` (Nelder-Mead Simplex) algorithm on the data
+   SciPy's :code:`COBYLA` (Constrained Optimization BY Linear Approximation) algorithm on the data
 
 By eye it is clear that the solution given by :code:`lmsder` is better.
 As the volume of data increases, and we do more and more data analysis
