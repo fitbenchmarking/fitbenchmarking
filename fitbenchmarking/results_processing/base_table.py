@@ -243,7 +243,7 @@ class Table:
 
     def get_hover_str_dict(self):
         """
-        Create a dictionary with the table values as strings for display.
+        Create a dict with the tooltip for each cell froom self.sorted_results
 
         :return: The dictionary of strings for the table
         :rtype: dict[list[str]]
@@ -358,6 +358,15 @@ class Table:
 
     @staticmethod
     def get_hover_text(result: FittingResult) -> str:
+        """
+        Generate The tooltip text for a given fitting result.
+        :param result: The result to generate the text for
+        :type result: FittingResult
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+
         if math.isinf(result.runtime) or math.isinf(result.min_accuracy):
             return f"Error: {result.status}"
 
