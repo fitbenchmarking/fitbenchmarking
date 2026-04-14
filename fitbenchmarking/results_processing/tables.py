@@ -15,21 +15,11 @@ from fitbenchmarking.utils.exceptions import (
     UnknownTableError,
 )
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.misc import get_css, get_error_flag_meanings, get_js
 
 LOGGER = get_logger()
 
-ERROR_OPTIONS = {
-    0: "Successfully converged",
-    1: "Software reported maximum number of iterations exceeded",
-    2: "Software run but didn't converge to solution",
-    3: "Software raised an exception",
-    4: "Solver doesn't support bounded problems",
-    5: "Solution doesn't respect parameter bounds",
-    6: "Solver has exceeded maximum allowed runtime",
-    7: "Validation of the provided options failed",
-    8: "Confidence in fit could not be calculated",
-}
+ERROR_OPTIONS = get_error_flag_meanings()
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "energy_usage"]
 

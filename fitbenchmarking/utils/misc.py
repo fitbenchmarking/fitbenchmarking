@@ -11,6 +11,20 @@ from fitbenchmarking.utils.log import get_logger
 LOGGER = get_logger()
 
 
+def get_error_flag_meanings() -> dict[int, str]:
+    return {
+        0: "Successfully converged",
+        1: "Software reported maximum number of iterations exceeded",
+        2: "Software run but didn't converge to solution",
+        3: "Software raised an exception",
+        4: "Solver doesn't support bounded problems",
+        5: "Solution doesn't respect parameter bounds",
+        6: "Solver has exceeded maximum allowed runtime",
+        7: "Validation of the provided options failed",
+        8: "Confidence in fit could not be calculated",
+    }
+
+
 def get_problem_files(data_dir):
     """
     Gets all the problem definition files from the specified problem
