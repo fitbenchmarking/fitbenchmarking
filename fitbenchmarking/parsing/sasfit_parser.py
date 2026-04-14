@@ -72,7 +72,8 @@ class SASfitParser(FitbenchmarkParser):
         self._starting_values = [starting_params]
 
         def fitFunction(x, *p):
-            param_dict = dict(zip(all_param_names, p))
+            x = np.atleast_1d(x)
+            param_dict = dict(zip(all_param_values.keys(), p))
             y_vals = np.zeros(len(x))
             for f in functions_to_call:
                 f_params = [param_dict[name] for name in param_names[f]]
