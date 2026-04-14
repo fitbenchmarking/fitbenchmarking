@@ -9,6 +9,7 @@ import docutils.core
 import matplotlib as mpl
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt
@@ -832,7 +833,7 @@ class Table:
             "runtime_dropdown", "Select Runtime Metric", items
         )
 
-    def get_runtime_value_str(self, result):
+    def get_runtime_value_str(self, result: FittingResult) -> str:
         """
         Generates the value str for the compare and runtime tables.
 
@@ -843,6 +844,7 @@ class Table:
                  metrics.
         :rtype: str
         """
+        error = result.error_flag if result.error_flag != 0 else ""
         val_str = ""
         for rt in self.runtime_choices:
             formated_runtime = f"{getattr(result, rt + '_runtime'):.4g}"
@@ -851,7 +853,9 @@ class Table:
             val_str += (
                 f"<span class='runtime' id='{rt}' "
                 f"style='display:{display_style}'>"
-                f"{formated_runtime} ({formatted_norm_runtime})</span>"
+                f"{formated_runtime} ({formatted_norm_runtime})"
+                f"<sup>{error}</sup>"
+                f"</span>"
             )
         return val_str
 
