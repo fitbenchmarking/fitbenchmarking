@@ -243,7 +243,7 @@ class Table:
 
     def get_hover_str_dict(self):
         """
-        Create a dict with the tooltip for each cell froom self.sorted_results
+        Create a dict with the tooltip for each cell from self.sorted_results
 
         :return: The dictionary of strings for the table
         :rtype: dict[list[str]]
