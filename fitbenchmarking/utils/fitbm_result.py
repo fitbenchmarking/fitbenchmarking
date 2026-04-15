@@ -12,7 +12,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_error_flag_meanings
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -203,12 +203,11 @@ class FittingResult:
 
         # Controller error handling
         self.error_flag = controller.flag
-        status_messages = get_error_flag_meanings()
         if (
             isinstance(self.error_flag, int)
-            and self.error_flag in status_messages
+            and self.error_flag in ERROR_FLAG_MAPPINGS
         ):
-            self.status = status_messages[self.error_flag]
+            self.status = ERROR_FLAG_MAPPINGS[self.error_flag]
         else:
             self.status = "Unknown error flag"
         # Attributes for table creation

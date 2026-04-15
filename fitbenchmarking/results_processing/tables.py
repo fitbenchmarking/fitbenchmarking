@@ -15,11 +15,9 @@ from fitbenchmarking.utils.exceptions import (
     UnknownTableError,
 )
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_error_flag_meanings, get_js
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS, get_css, get_js
 
 LOGGER = get_logger()
-
-ERROR_OPTIONS = get_error_flag_meanings()
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "energy_usage"]
 
@@ -147,7 +145,7 @@ def create_results_tables(
                         ),
                         cbar=cbar,
                         run_name=run_name,
-                        error_message=ERROR_OPTIONS,
+                        error_message=ERROR_FLAG_MAPPINGS,
                         failed_problems=failed_problems,
                         unselected_minimzers=unselected_minimzers,
                         algorithm_type=options.algorithm_type,

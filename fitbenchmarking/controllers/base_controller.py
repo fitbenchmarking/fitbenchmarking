@@ -17,7 +17,7 @@ from fitbenchmarking.utils.exceptions import (
     MissingBoundsError,
     UnknownMinimizerError,
 )
-from fitbenchmarking.utils.misc import get_error_flag_meanings
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -196,10 +196,9 @@ class Controller:
 
     @property
     def flag(self):
-        f"""
-        {get_error_flag_meanings()}
-        """
         return self._flag
+
+    flag.__doc__ = f"""{ERROR_FLAG_MAPPINGS}"""
 
     @flag.setter
     def flag(self, value):
