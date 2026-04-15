@@ -241,7 +241,7 @@ class Table:
             ]
         return str_dict
 
-    def get_hover_str_dict(self):
+    def get_hover_table(self):
         """
         Create a dict with the tooltip for each cell from self.sorted_results
 
@@ -251,7 +251,7 @@ class Table:
         str_dict = {}
         for k, results in self.sorted_results.items():
             str_dict[k] = [self.get_hover_text(result) for result in results]
-        return str_dict
+        return str_dict.values()
 
     def get_colour_df(self, like_df=None):
         """
@@ -587,7 +587,7 @@ Function Evaluations: {result.func_evals}"""
         )
 
         hover_table = pd.DataFrame(
-            list(self.get_hover_str_dict().values()),
+            list(self.get_hover_table()),
             index=index,
             columns=columns,
         )
