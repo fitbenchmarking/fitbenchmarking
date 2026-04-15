@@ -430,8 +430,6 @@ Function Evaluations: {result.func_evals}"""
         :return: DataFrame with string representations of results
         :rtype: pandas.DataFrame
         """
-        # Check all rows incase first row has missing information
-
         str_results = self.get_str_dict(html)
         rows, columns = self.format_results_indicies(str_results)
 
@@ -455,7 +453,7 @@ Function Evaluations: {result.func_evals}"""
         )
 
         minimizers_list = []
-
+        # Check all rows incase first row has missing information
         for row in self.sorted_results.values():
             for i, result in enumerate(row):
                 formatted = (
