@@ -359,7 +359,7 @@ class Table:
     @staticmethod
     def get_hover_text(result: FittingResult) -> str:
         """
-        Generate The tooltip text for a given fitting result.
+        Generate the tooltip text for a given fitting result.
         :param result: The result to generate the text for
         :type result: FittingResult
 
