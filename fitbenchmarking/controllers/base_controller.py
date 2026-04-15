@@ -206,8 +206,7 @@ class Controller:
         self._flag = int(value)
 
     _flag_docstring = "\n" + "\n".join(
-        f"""\t * {key}: {value}"""
-        for key, value in ERROR_FLAG_MAPPINGS.items()
+        f"""\t :{key}: {value}""" for key, value in ERROR_FLAG_MAPPINGS.items()
     )
     flag.__doc__ = f"""Valid flags:
         {_flag_docstring}"""
