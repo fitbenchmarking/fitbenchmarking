@@ -206,9 +206,7 @@ class Controller:
             )
         self._flag = int(value)
 
-    flag.__doc__ = (
-        f"valid flags: \n {pformat(ERROR_FLAG_MAPPINGS, width=80).strip('{}')}"
-    )
+    flag.__doc__ = f"valid flags: \n {'<br/>'.join(pformat(ERROR_FLAG_MAPPINGS, width=80).strip('{}').splitlines())}"  # noqa: E501
 
     @property
     def software(self):
