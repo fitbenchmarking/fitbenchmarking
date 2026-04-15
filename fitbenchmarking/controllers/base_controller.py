@@ -3,7 +3,6 @@ Implements the base class for the fitting software controllers.
 """
 
 from abc import ABCMeta, abstractmethod
-from pprint import pformat
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -206,7 +205,12 @@ class Controller:
             )
         self._flag = int(value)
 
-    flag.__doc__ = f"""valid flags: \a {pformat(ERROR_FLAG_MAPPINGS, width=80).strip("{}")}"""  # noqa: E501
+    _flag_docstring = "\n" + "\n".join(
+        f"""\t * {key}: {value}"""
+        for key, value in ERROR_FLAG_MAPPINGS.items()
+    )
+    flag.__doc__ = f"""Valid flags:
+        {_flag_docstring}"""
 
     @property
     def software(self):
