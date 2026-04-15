@@ -33,7 +33,7 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    VALID_FLAGS = ERROR_FLAG_MAPPINGS.keys()
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -198,8 +198,6 @@ class Controller:
     def flag(self):
         return self._flag
 
-    flag.__doc__ = f"""{ERROR_FLAG_MAPPINGS}"""
-
     @flag.setter
     def flag(self, value):
         if value not in self.VALID_FLAGS:
@@ -208,6 +206,8 @@ class Controller:
                 f"{list(self.VALID_FLAGS)}. Got: {value}."
             )
         self._flag = int(value)
+
+    flag.__doc__ = f"valid flags: {ERROR_FLAG_MAPPINGS}"
 
     @property
     def software(self):
