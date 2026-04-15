@@ -59,6 +59,15 @@ def find_error_bar_count(path):
     return html_content.count("error_y")
 
 
+def find_error_bar_toggle(path):
+    """
+    Reads html file and checks that the Toggle error button is there
+    """
+    with open(path, encoding="utf-8") as file:
+        html_content = file.read()
+    return "Toggle error bars" in html_content
+
+
 class PlotTests(unittest.TestCase):
     """
     Test the plot object is correct.
@@ -144,8 +153,8 @@ class PlotTests(unittest.TestCase):
 
     def test_plotly_fit_create_files(self):
         """
-        Test that plotly_fit creates a file and errorbars are
-        added to the plot.
+        Test that plotly_fit creates a file with the expected file name, error
+        bars and interactible buttons.
         """
         file_names = self.plot.plotly_fit(
             self.df[("Fake_Test_Data", "prob_1")]
@@ -163,7 +172,8 @@ class PlotTests(unittest.TestCase):
             )
             path = os.path.join(self.figures_dir, file_names[file_name_prefix])
             self.assertTrue(os.path.exists(path))
-            self.assertEqual(find_error_bar_count(path), 2)
+            self.assertEqual(find_error_bar_count(path), 4)
+            self.assertTrue(find_error_bar_toggle(path))
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._check_data_len"
