@@ -34,8 +34,6 @@ class Controller:
 
     __metaclass__ = ABCMeta
 
-    VALID_FLAGS = ERROR_FLAG_MAPPINGS.keys()
-
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
     #: such that the **keys** are given by:
@@ -201,15 +199,15 @@ class Controller:
 
     @flag.setter
     def flag(self, value):
-        if value not in self.VALID_FLAGS:
+        if value not in ERROR_FLAG_MAPPINGS:
             raise ControllerAttributeError(
                 "controller.flag must be one of "
-                f"{list(self.VALID_FLAGS)}. Got: {value}."
+                f"{list(ERROR_FLAG_MAPPINGS.keys())}. Got: {value}."
             )
         self._flag = int(value)
 
     flag.__doc__ = (
-        f"valid flags: \n{pformat(ERROR_FLAG_MAPPINGS, width=80).strip('{}')}"
+        f"valid flags: \n {pformat(ERROR_FLAG_MAPPINGS, width=80).strip('{}')}"
     )
 
     @property
