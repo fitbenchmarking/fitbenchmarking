@@ -208,7 +208,9 @@ class Controller:
             )
         self._flag = int(value)
 
-    flag.__doc__ = f"valid flags: \n{pformat(ERROR_FLAG_MAPPINGS)}"
+    flag.__doc__ = (
+        f"valid flags: \n{pformat(ERROR_FLAG_MAPPINGS, width=80).strip('{}')}"
+    )
 
     @property
     def software(self):
