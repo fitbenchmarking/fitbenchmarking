@@ -206,7 +206,7 @@ class Controller:
             )
         self._flag = int(value)
 
-    flag.__doc__ = f"""valid flags: \\a {pformat(ERROR_FLAG_MAPPINGS, width=80).strip("{}")}"""  # noqa: E501
+    flag.__doc__ = f"""valid flags: \a {pformat(ERROR_FLAG_MAPPINGS, width=80).strip("{}")}"""  # noqa: E501
 
     @property
     def software(self):
