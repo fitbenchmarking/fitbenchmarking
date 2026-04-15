@@ -375,12 +375,15 @@ class Table:
         else:
             iterations = result.func_evals
 
-        return f"""Status: {result.status} \\a \
-Acc: {result.accuracy:.4g} \\a \
-{result.runtime_metric.capitalize()} runtime: {result.runtime:.4g} \\a \
-Energy usage: {result.energy:.4g} \\a \
-Iterations: {iterations} \\a \
-Function Evaluations: {result.func_evals}"""
+        return (
+            f"""Status: {result.status}"""
+            f"""\\a Accuracy: {result.accuracy:.4g}"""
+            f"""\\a {result.runtime_metric.capitalize()}"""
+            f""" runtime: {result.runtime:.4g}"""
+            f"""\\a Energy usage: {result.energy:.4g}"""
+            f"""\\a Iterations: {iterations}"""
+            f"""\\a Function Evaluations: {result.func_evals}"""
+        )
 
     def get_colours_for_row(self, results):
         """
