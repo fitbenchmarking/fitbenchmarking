@@ -126,6 +126,7 @@ class SASFitController(Controller):
         ############################################################
 
         self.ndata = len(self.data_x)
+        print(self.ndata)
 
         # ---- Outputs ----
         yfit_np = np.zeros(self.ndata, dtype=np.float32)
@@ -134,7 +135,12 @@ class SASFitController(Controller):
         # ---- Convert numpy arrays to c float* ----
         self.data_x_np = np.asarray(self.data_x, dtype=np.float32, order="C")
         self.data_y_np = np.asarray(self.data_y, dtype=np.float32, order="C")
-        self.data_e_np = np.asarray(self.data_e, dtype=np.float32, order="C")
+        if self.data_e:
+            self.data_e_np = np.asarray(
+                self.data_e, dtype=np.float32, order="C"
+            )
+        else:
+            self.data_e_np = np.ones_like(self.data_y_np)
 
         self.x_ptr = self.data_x_np.ctypes.data_as(POINTER(c_float))
         self.y_ptr = self.data_y_np.ctypes.data_as(POINTER(c_float))
@@ -158,9 +164,7 @@ class SASFitController(Controller):
         self.error_type = 0  # FIXME: should the user give this?
 
         # ---- LM parameter arrays ----
-        self.a_arr = (c_float * self.ma)(
-            *self.initial_params
-        )  # e.g. (c_float * self.ma)(*[1.0, 1.0])
+        self.a_arr = (c_float * self.ma)(*self.initial_params)
         self.da_arr = (c_float * self.ma)()  # proposed parameter changes
         self.atry_arr = (c_float * self.ma)()  # the trial parameter vector
         self.beta_arr = (c_float * self.mfit)()  # the gradient vector
@@ -220,15 +224,26 @@ class SASFitController(Controller):
     def make_funcs_wrapper(self, cost_func):
         def funcs_wrapper(x_i, a_ptr, ymod_ptr, dyda_ptr):
             # need this for getting the right jac later
-            idx = min(range(len(self.data_x)), key=lambda i: abs(self.data_x[i] - x_i))
+            idx = min(
+                range(len(self.data_x)),
+                key=lambda i: abs(self.data_x[i] - x_i),
+            )
 
             # extract params correctly
             params = [float(a_ptr[i]) for i in range(self.n_params)]
 
+            # with open('output.txt', 'a') as f:
+            #     f.write('@@@@@@@@'+str(x_i)+'\n')
+
             # compute model
             y = float(
-                cost_func.problem.eval_model(x=np.array(x_i), params=params)
+                cost_func.problem.eval_model(x=[x_i], params=params)
+                # cost_func.problem.eval_model(x=np.array(x_i), params=params)
             )
+
+            # with open('output.txt', 'a') as f:
+            #     f.write('########'+str(y)+'\n')
+
             ymod_ptr[0] = y
 
             # compute jacobian
@@ -250,10 +265,5 @@ class SASFitController(Controller):
             self.flag = 0
         else:
             self.flag = 3
-
-        # if "nfev" in self.result:
-        #     self.func_evals = self.result.nfev
-        # if "nit" in self.result:
-        #     self.iteration_count = self.result.nit
 
         self.final_params = self._popt

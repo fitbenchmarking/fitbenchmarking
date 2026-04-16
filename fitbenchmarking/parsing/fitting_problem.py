@@ -152,6 +152,12 @@ class FittingProblem:
 
         self.timer.check_elapsed_time()
 
+        # try:
+        # if len(kwargs.get("x", self.data_x)) == 1:
+        #     print(kwargs)
+        # except:
+        #     print(kwargs.get("x", self.data_x))
+        #     print(type(kwargs.get("x", self.data_x)))
         x = kwargs.get("x", self.data_x)
         return self.function(x, *params)
 
