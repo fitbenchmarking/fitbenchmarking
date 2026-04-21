@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'SASfit'
+name = 'SANS Swollen Microgel'
+description = 'SANS Swollen Microgel'
+input_file = 'SANS_SwollMicrogel.txt'
+function = 'name=polynom,p0=0.0;name=generalized_Gaussian_coil,Rg=4.0,nu=0.5,I0=1.0;name=fuzzysphere,R=1.0,sigma=0.1,eta_sph=0.5,eta_sol=0.5'
+fixed_params = 'p1=0.0,p2=0.0,p3=0.0,p4=0.0'
+plot_scale = 'loglog'
