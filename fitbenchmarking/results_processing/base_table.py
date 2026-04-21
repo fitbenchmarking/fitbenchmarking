@@ -16,6 +16,7 @@ mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas.io.formats import style
 
 from fitbenchmarking.utils.misc import get_js
 
@@ -559,8 +560,8 @@ class Table:
         return style.to_html(table_uuid="table")
 
     def style_df_for_html(
-        self, index, columns, styler: pd.io.formats.style.Styler
-    ) -> pd.io.formats.style.Styler:
+        self, index, columns, styler: style.Styler
+    ) -> style.Styler:
         column_dividers = [styler.columns[0]]
         for column in styler.columns[1:]:
             if column[0] != column_dividers[-1][0]:
