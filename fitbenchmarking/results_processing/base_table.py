@@ -2,6 +2,7 @@
 Implements the base class for the tables.
 """
 
+import math
 import os
 from abc import ABCMeta, abstractmethod
 
@@ -15,6 +16,7 @@ mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas.io.formats import style
 
 from fitbenchmarking.utils.misc import get_js
 
@@ -92,8 +94,13 @@ class Table:
         :type table_name: str
         """
         # Flatten to reduce the necessity on having problems as rows.
+
+        # dict[row/problem, dict[column/minimiser, list[FittingResult]]]
         self.results = results
+
+        # dict[row/problem, dict[column/minimiser, FittingResult]]
         self.best_results = best_results
+
         self.options = options
         self.group_dir = group_dir
         self.pp_locations = pp_locations
@@ -227,12 +234,24 @@ class Table:
         """
         str_dict = {}
         for k, results in self.sorted_results.items():
-            _, text_arrs = self.get_colours_for_row(results)
+            _, text_colors = self.get_colours_for_row(results)
             str_dict[k] = [
-                self.get_str_result(r, t, html)
-                for r, t in zip(results, text_arrs)
+                self.get_str_result(result, color, html)
+                for result, color in zip(results, text_colors)
             ]
         return str_dict
+
+    def get_hover_table(self):
+        """
+        Create a dict with the tooltip for each cell from self.sorted_results
+
+        :return: The dictionary of strings for the table
+        :rtype: dict[list[str]]
+        """
+        str_dict = {}
+        for k, results in self.sorted_results.items():
+            str_dict[k] = [self.get_hover_text(result) for result in results]
+        return str_dict.values()
 
     def get_colour_df(self, like_df=None):
         """
@@ -337,6 +356,35 @@ class Table:
         )
         return val_str
 
+    @staticmethod
+    def get_hover_text(result: FittingResult) -> str:
+        """
+        Generate the tooltip text for a given fitting result.
+        :param result: The result to generate the text for
+        :type result: FittingResult
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+
+        if math.isinf(result.runtime) or math.isinf(result.min_accuracy):
+            return f"Error: {result.status}"
+
+        if result.iteration_count is None or result.iteration_count == 0:
+            iterations = "not available"
+        else:
+            iterations = result.func_evals
+
+        return (
+            f"""Status: {result.status}"""
+            f"""\\a Accuracy: {result.accuracy:.4g}"""
+            f"""\\a {result.runtime_metric.capitalize()}"""
+            f""" runtime: {result.runtime:.4g}"""
+            f"""\\a Energy usage: {result.energy:.4g}"""
+            f"""\\a Iterations: {iterations}"""
+            f"""\\a Function Evaluations: {result.func_evals}"""
+        )
+
     def get_colours_for_row(self, results):
         """
         Get the colours as strings for the given results in the table.
@@ -386,31 +434,48 @@ class Table:
         :rtype: pandas.DataFrame
         """
         str_results = self.get_str_dict(html)
-        # Check all rows incase first row has missing information
+        rows, columns = self.format_results_indicies(str_results)
+
+        results_only = np.array(list(str_results.values()))
+
+        table = pd.DataFrame(results_only, index=rows, columns=columns)
+
+        return table
+
+    def format_results_indicies(self, results: dict[str, list[str]]):
+        """
+        Format rows and columns for the results dable
+
+        :param results: The results to format the indices for
+        :type dict: dict[row/problem, list[result string]]]
+        """
+        problems = list(results.keys())
+
+        problem_index_with_sizes = pd.MultiIndex.from_tuples(
+            zip(problems, self.problem_sizes)
+        )
+
         minimizers_list = []
+        # Check all rows incase first row has missing information
         for row in self.sorted_results.values():
-            for i, r in enumerate(row):
-                formatted = (r.software, r.modified_minimizer_name(False))
+            for i, result in enumerate(row):
+                formatted = (
+                    result.software,
+                    result.modified_minimizer_name(False),
+                )
+
+                # add the minimiser the first time it is seen
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
+                # if a longer minimiser name is seen under the same software,
+                # update the tuple to use that minimiser instead
+                # this ensures column width is wide enough for all minimisers
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
                     minimizers_list[i] = formatted
 
         multi_columns = pd.MultiIndex.from_tuples(minimizers_list)
 
-        single_index = list(str_results.keys())
-
-        multi_index = pd.MultiIndex.from_tuples(
-            zip(single_index, self.problem_sizes)
-        )
-
-        results_only = np.array(list(str_results.values()))
-
-        table = pd.DataFrame(
-            results_only, index=multi_index, columns=multi_columns
-        )
-
-        return table
+        return problem_index_with_sizes, multi_columns
 
     def to_html(self):
         """
@@ -490,15 +555,21 @@ class Table:
         multi_index = pd.MultiIndex.from_tuples(double_index)
         table.index = multi_index
 
-        # Get columns where cost function changes
-        column_dividers = [table.columns[0]]
-        for column in table.columns[1:]:
+        style = self.style_df_for_html(multi_index, columns, table.style)
+
+        return style.to_html(table_uuid="table")
+
+    def style_df_for_html(
+        self, index, columns, styler: style.Styler
+    ) -> style.Styler:
+        column_dividers = [styler.columns[0]]
+        for column in styler.columns[1:]:
             if column[0] != column_dividers[-1][0]:
                 column_dividers.append(column)
         column_dividers = column_dividers[1:]
 
         # Set the cell colours and increase bars between cost functions
-        table_style = table.style.apply(
+        styler = styler.apply(
             lambda df: self.get_colour_df(like_df=df), axis=None
         ).set_table_styles(
             table_styles={
@@ -516,7 +587,26 @@ class Table:
             }
         )
 
-        return table_style.to_html(table_uuid="table")
+        hover_table = pd.DataFrame(
+            list(self.get_hover_table()),
+            index=index,
+            columns=columns,
+        )
+
+        styler = styler.set_tooltips(
+            ttips=hover_table,
+            props="white-space: pre;"
+            "visibility: hidden;"
+            "position: absolute; z-index: 1;"
+            "border: 1px solid #8c8b8b;"
+            "background-color: white;"
+            "color: black; font-size: 0.8em;"
+            "transform: translate(2em, -0.6em); padding: 0.6em;"
+            "border-radius: 0em;"
+            "pointer-events: none;",
+        )
+
+        return styler
 
     def to_csv_file(self):
         """
