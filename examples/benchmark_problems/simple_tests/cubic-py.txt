@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+description = 'This is a simple test problem where we interpolate points that lie exactly on a cubic polynomial.'
+software = 'py'
+name = 'cubic-py'
+input_file = 'cubic.txt'
+function ='module=functions/python_funcs, func=cubic, A1=0.0, A2=0.0, A3=0.0, A4=0.0'
+# fit_parameters = {'StartX': 0, 'EndX': 0}
+plot_scale = 'linear'
