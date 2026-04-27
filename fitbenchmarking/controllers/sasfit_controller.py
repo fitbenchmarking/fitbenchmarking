@@ -126,7 +126,6 @@ class SASFitController(Controller):
         ############################################################
 
         self.ndata = len(self.data_x)
-        print(self.ndata)
 
         # ---- Outputs ----
         yfit_np = np.zeros(self.ndata, dtype=np.float32)
@@ -135,7 +134,7 @@ class SASFitController(Controller):
         # ---- Convert numpy arrays to c float* ----
         self.data_x_np = np.asarray(self.data_x, dtype=np.float32, order="C")
         self.data_y_np = np.asarray(self.data_y, dtype=np.float32, order="C")
-        if self.data_e:
+        if isinstance(self.data_e, np.ndarray):
             self.data_e_np = np.asarray(
                 self.data_e, dtype=np.float32, order="C"
             )
