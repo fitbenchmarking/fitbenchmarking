@@ -637,7 +637,7 @@ class Fit:
         controller.timer.reset()
 
         # ensure emissions tracker has been stopped if energy not set
-        if energy == np.nan and self._emissions_tracker:
+        if np.isnan(energy) and self._emissions_tracker:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
