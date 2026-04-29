@@ -177,7 +177,7 @@ class InitializeEmissionsTrackingTests(unittest.TestCase):
         cp = Checkpoint(options)
 
         _ = Fit(options=options, data_dir="test", checkpointer=cp)
-        emissions_mock.call_count == 1
+        assert emissions_mock.call_count == 1
 
     @patch("fitbenchmarking.core.fitting_benchmarking.EmissionsTracker")
     @patch("fitbenchmarking.core.fitting_benchmarking.platform.system")
