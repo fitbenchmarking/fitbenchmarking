@@ -168,8 +168,7 @@ class InitializeEmissionsTrackingTests(unittest.TestCase):
         assert fit._emissions_tracker is None
 
     @patch("fitbenchmarking.core.fitting_benchmarking.EmissionsTracker")
-    @patch("fitbenchmarking.core.fitting_benchmarking.platform.system")
-    def test_emissions_tracking_initialized(self, sys_mock, emissions_mock):
+    def test_emissions_tracking_initialized(self, emissions_mock):
         """
         Check that _emissions_tracker is set up when the energy_usage
         table option is selected
@@ -177,11 +176,18 @@ class InitializeEmissionsTrackingTests(unittest.TestCase):
         options = Options()
         cp = Checkpoint(options)
 
-        sys_mock.return_value = "Windows"
-
         _ = Fit(options=options, data_dir="test", checkpointer=cp)
         emissions_mock.call_count == 1
 
+    @patch("fitbenchmarking.core.fitting_benchmarking.EmissionsTracker")
+    @patch("fitbenchmarking.core.fitting_benchmarking.platform.system")
+    def test_emissions_tracking_log_output_on_mac(self, sys_mock, _):
+        """
+        Check that log message is output when initiating the _emissions_tracker
+        object on a mac
+        """
+        options = Options()
+        cp = Checkpoint(options)
         sys_mock.return_value = "Darwin"
 
         with self.assertLogs(LOGGER, level="INFO") as log:
