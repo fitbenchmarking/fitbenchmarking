@@ -17,6 +17,7 @@ from fitbenchmarking.utils.exceptions import (
     MissingBoundsError,
     UnknownMinimizerError,
 )
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -31,8 +32,6 @@ class Controller:
     """
 
     __metaclass__ = ABCMeta
-
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -195,27 +194,22 @@ class Controller:
 
     @property
     def flag(self):
-        """
-        | 0: `Successfully converged`
-        | 1: `Software reported maximum number of iterations exceeded`
-        | 2: `Software run but didn't converge to solution`
-        | 3: `Software raised an exception`
-        | 4: `Solver doesn't support bounded problems`
-        | 5: `Solution doesn't respect parameter bounds`
-        | 6: `Solver has exceeded maximum allowed runtime`
-        | 7: `Validation of the provided options failed`
-        | 8: `Confidence in fit could not be calculated`
-        """
         return self._flag
 
     @flag.setter
     def flag(self, value):
-        if value not in self.VALID_FLAGS:
+        if value not in ERROR_FLAG_MAPPINGS:
             raise ControllerAttributeError(
                 "controller.flag must be one of "
-                f"{list(self.VALID_FLAGS)}. Got: {value}."
+                f"{list(ERROR_FLAG_MAPPINGS.keys())}. Got: {value}."
             )
         self._flag = int(value)
+
+    _flag_docstring = "\n" + "\n".join(
+        f"""\t :{key}: {value}""" for key, value in ERROR_FLAG_MAPPINGS.items()
+    )
+    flag.__doc__ = f"""Valid flags:
+        {_flag_docstring}"""
 
     @property
     def software(self):
