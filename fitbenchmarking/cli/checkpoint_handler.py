@@ -20,7 +20,7 @@ from fitbenchmarking.core.results_output import (
     save_results,
 )
 from fitbenchmarking.utils.checkpoint import Checkpoint
-from fitbenchmarking.utils.options import parse_options
+from fitbenchmarking.utils.options import find_options_file
 
 
 def get_parser() -> ArgumentParser:
@@ -149,7 +149,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
     if additional_options is None:
         additional_options = {}
 
-    options = parse_options(
+    options = find_options_file(
         options_file=options_file, additional_options=additional_options
     )
 

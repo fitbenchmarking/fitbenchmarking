@@ -25,7 +25,7 @@ from fitbenchmarking.core.results_output import (
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import NoResultsError
 from fitbenchmarking.utils.log import get_logger, setup_logger
-from fitbenchmarking.utils.options import parse_options
+from fitbenchmarking.utils.options import find_options_file
 
 LOGGER = get_logger()
 
@@ -461,7 +461,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
 
     # Find the options file
     current_path = os.path.abspath(os.path.curdir)
-    options = parse_options(options_file, additional_options)
+    options = find_options_file(options_file, additional_options)
 
     setup_logger(
         log_file=options.log_file,
