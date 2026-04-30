@@ -2,6 +2,7 @@
 This file contains unit tests for the main CLI script
 """
 
+import argparse
 import inspect
 import os
 from json import load
@@ -9,6 +10,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
+
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.cli import main
@@ -128,3 +131,113 @@ class TestMain(TestCase):
 
         # Check that it's not empty
         self.assertTrue(contents)
+
+    @staticmethod
+    def get_default_args():
+        return {
+            "options_file": "",
+            "problem_sets": ["/test/path"],
+            "results_dir": "",
+            "debug_mode": False,
+            "num_runs": 0,
+            "algorithm_type": [],
+            "software": [],
+            "jac_method": [],
+            "cost_func_type": [],
+            "runtime_metric": "",
+            "port": 0,
+            "ip_address": "",
+            "make_plots": False,
+            "dont_make_plots": False,
+            "results_browser": False,
+            "no_results_browser": False,
+            "pbar": False,
+            "no_pbar": False,
+            "run_name": "",
+            "comparison_mode": "",
+            "table_type": [],
+            "logging_file_name": "",
+            "append_log": False,
+            "overwrite_log": False,
+            "level": "",
+            "external_output": "",
+            "load_checkpoint": False,
+            "run_dash": False,
+            "dont_run_dash": False,
+            "check_jacobian": False,
+            "dont_check_jacobian": False,
+        }
+
+    valid_simple_options = [
+        ("results_dir"),
+        ("num_runs"),
+        ("algorithm_type"),
+        ("software"),
+        ("jac_method"),
+        ("cost_func_type"),
+        ("comparison_mode"),
+        ("table_type"),
+        ("level"),
+        ("external_output"),
+        ("run_name"),
+        ("runtime_metric"),
+        ("port"),
+        ("ip_address"),
+    ]
+
+    @parameterized.expand(valid_simple_options)
+    def test_simple_cli_options_handled_correctly(self, option):
+        """
+        Tests that "simple" CLI options are correctly parsed by
+        `parse_options_from_cli`
+        note: "simple" means that we just accept the given value without any
+        further processing
+        """
+        test_options = self.get_default_args()
+        test_options[option] = "test_value"
+
+        args = argparse.Namespace(**test_options)
+        parsed_options = main.parse_options_from_cli(args)
+
+        assert parsed_options[option] == "test_value"
+
+    # 1. cli argument provided
+    # 2. value that parser receives for argument*
+    # 3. the expected dict element to be set
+    # 4. the expected data in that element
+    # * when no value is provided, the parser receives "True" to indicate that
+    #   the flag was set. This is the case for boolean flags.
+    valid_complex_options = [
+        ("make_plots", True, "make_plots", True),
+        ("dont_make_plots", True, "make_plots", False),
+        ("results_browser", True, "results_browser", True),
+        ("no_results_browser", True, "results_browser", False),
+        ("run_dash", True, "run_dash", True),
+        ("dont_run_dash", True, "run_dash", False),
+        ("check_jacobian", True, "check_jacobian", True),
+        ("dont_check_jacobian", True, "check_jacobian", False),
+        ("pbar", True, "pbar", True),
+        ("no_pbar", True, "pbar", False),
+        ("append_log", True, "append", True),
+        ("overwrite_log", True, "append", False),
+        ("logging_file_name", "test_value", "file_name", "test_value"),
+    ]
+
+    @parameterized.expand(valid_complex_options)
+    def test_complex_cli_options_handled_correctly(
+        self, option, input_value, expected_output_key, expected_output_value
+    ):
+        """
+        Tests that complex CLI options are correctly parsed by
+        `parse_options_from_cli`
+        Complex means options where the input option name does not directly
+        map to the output dictionary key, and where the input value may not
+        map directly to the input value
+        """
+        test_options = self.get_default_args()
+        test_options[option] = input_value
+
+        args = argparse.Namespace(**test_options)
+        parsed_options = main.parse_options_from_cli(args)
+        print(parsed_options)
+        assert parsed_options[expected_output_key] == expected_output_value
