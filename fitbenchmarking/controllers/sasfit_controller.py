@@ -35,6 +35,9 @@ class SASFitController(Controller):
     controller_name = "sasfit"
     algorithm_check = {
         "all": ["lm-sasfit"],
+        "ls": ["lm-sasfit"],
+        "trust_region": ["lm-sasfit"],
+        "levenberg-marquardt": ["lm-sasfit"],
     }
 
     def __init__(self, cost_func):
