@@ -246,15 +246,11 @@ class TestMain(TestCase):
 
     # _ used to discard the test name
     @parameterized.expand(valid_options)
-    def test_complex_cli_options_handled_correctly(
+    def test_cli_options_handled_correctly(
         self, _, option_mapping: cli_option_mapping
     ):
         """
-        Tests that complex CLI options are correctly parsed by
-        `parse_options_from_cli`
-        Complex means options where the input option name does not directly
-        map to the output dictionary key, and where the input value may not
-        map directly to the input value
+        Tests that CLI options are correctly parsed by `parse_options_from_cli`
         """
         test_options = get_default_args()
         test_options[option_mapping.cli_key] = option_mapping.cli_value
