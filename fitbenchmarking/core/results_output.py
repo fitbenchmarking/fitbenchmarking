@@ -627,7 +627,11 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )
 
     if options.run_dash:
-        prepare_dash_app_and_run(options, pp_dfs_all_prob_sets)
+        app = Dash(__name__, suppress_callback_exceptions=True)
+        app = prepare_dash_app_for_performance_profiles(
+            app, options, pp_dfs_all_prob_sets
+        )
+        run_dash_app(app, host=options.ip_address, port=options.port)
 
 
 def update_warning(solvers, max_solvers):
@@ -747,7 +751,9 @@ def display_page(
     return html.Div(new_layout)
 
 
-def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
+def prepare_dash_app_for_performance_profiles(
+    app: Dash, options, pp_dfs_all_prob_sets
+) -> Dash:
     """
     Prepares the Dash app to produce the interactive performance profile
     plots, and calls the function to run it.
@@ -825,8 +831,6 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
     log = logging.getLogger("werkzeug")
     log.disabled = True
 
-    app = Dash(__name__, suppress_callback_exceptions=True)
-
     app.layout = html.Div(
         [
             dcc.Location(id="url", refresh=False),
@@ -857,8 +861,7 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
             run_id=options.run_id,
         )
     )
-
-    run_dash_app(app=app, host=options.ip_address, port=options.port)
+    return app
 
 
 def run_dash_app(app, host, port):
