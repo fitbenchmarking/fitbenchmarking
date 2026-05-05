@@ -631,7 +631,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         app = prepare_dash_app_for_performance_profiles(
             app, options, pp_dfs_all_prob_sets
         )
-        run_dash_app(app, host=options.ip_address, port=options.port)
+        app.run(host=options.ip_address, port=options.port)
 
 
 def update_warning(solvers, max_solvers):
@@ -862,17 +862,3 @@ def prepare_dash_app_for_performance_profiles(
         )
     )
     return app
-
-
-def run_dash_app(app, host, port):
-    """
-    Runs the Dash app.
-
-    :param host: The dash app to run
-    :type host: dash.dash.Dash
-    :param host: The ip address where to run the app.
-    :type host: str
-    :param port: The port where to run the app.
-    :type port: str
-    """
-    app.run(host=host, port=port)
