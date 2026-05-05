@@ -804,7 +804,7 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
 
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
-        inst = {
+        profile_instances_all_groups[group] = {
             "acc": DashPerfProfile(
                 profile_name="Accuracy", pp_df=pp_dfs["acc"], group_label=group
             ),
@@ -819,7 +819,6 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
                 group_label=group,
             ),
         }
-        profile_instances_all_groups[group] = inst
 
     # Needed to prevent unnecessary warning in the terminal
     # 'werkzeug' is the name of the logger used by dash
