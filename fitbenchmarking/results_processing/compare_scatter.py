@@ -1,4 +1,6 @@
-from dash import callback
+from dash import callback, html
+
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
 class compare_scatter:
@@ -28,7 +30,7 @@ class compare_scatter_view:
         """
 
     def get_plot(self):
-        pass
+        return html.Div("test")
 
     def make_html(self):
         pass
@@ -71,7 +73,7 @@ class compare_scatter_controller:
 
 
 class compare_scatter_data_model:
-    def __init__(self, results):
+    def __init__(self, results: list[FittingResult]):
         self.results = results
 
     def get_values_for_axis(self, metric):
@@ -81,7 +83,7 @@ class compare_scatter_data_model:
         pass
 
     def get_hover_text_for_result(self, result):
-        # call util
+        # call util, and prepend the metrics being plotted
         pass
 
     def get_hover_text_array(self):
