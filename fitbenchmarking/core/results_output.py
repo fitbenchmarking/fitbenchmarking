@@ -689,7 +689,8 @@ def display_page(
 
     :param pathname: The link to the page with the Dash plot
     :type pathname: str
-    :param profile_instances_all_groups: The data to be plotted
+    :param profile_instances_all_groups: The data to be plotted (formatted as
+    problem set: dict())
     :type profile_instances_all_groups: dict[str[dict]]
     :param layout: Layout of the Dash app
     :type layout: list of dcc or html components
@@ -705,30 +706,31 @@ def display_page(
     try:
         _, plot_id, group, plot, metric_str = pathname.split("/")
     except ValueError:
-        example_url = [
-            "ip-address:port/run_id/problem_set/plot/performance_profile.",
+        out_msg = [
+            "Path does not have the expected format. "
+            "Please provide it in the following form:",
             html.Br(),
-            f"The current run_id is {run_id}",
+            "ip-address:port/run_id/problem_set/plot_type/source_table.",
+            html.Br(),
+            "Please see the following for an example of the expected "
+            "formatting:",
         ]
 
         for problem_set in profile_instances_all_groups:
             for plot in profile_instances_all_groups[problem_set]:
-                example_url.extend(
+                out_msg.extend(
                     [html.Br(), f"{run_id}/{problem_set}/pp/{plot}"]
                 )
 
-        return html.Div(
-            [
-                html.H2(["404 Page Error!"]),
-                html.Div(
-                    [
-                        "Path does not have the expected format. "
-                        "Please provide it in the following form:",
-                        html.Br(),
-                    ].extend(example_url)
-                ),
-            ]
-        )
+            all_tables_string = "+".join(
+                list(profile_instances_all_groups[problem_set].keys())
+            )
+
+            out_msg.extend(
+                [html.Br(), f"{run_id}/{problem_set}/pp/{all_tables_string}"]
+            )
+
+        return [html.H2(["404 Page Error!"]), html.Div(out_msg)]
 
     if run_id != plot_id:
         return [
@@ -753,12 +755,21 @@ def display_page(
     if plot not in valid_plot_types:
         return [
             html.H2(["404 Page Error!"]),
-            f"404 Page Error! Plot type '{plot}' not available.",
+            f"Plot type '{plot}' not available.",
             html.Br(),
             f"valid plot types include: {valid_plot_types}",
         ]
 
-    group_profiles = profile_instances_all_groups[group]
+    try:
+        group_profiles = profile_instances_all_groups[group]
+    except KeyError:
+        valid_problem_sets = list(profile_instances_all_groups.keys())
+        return [
+            html.H1("404 Page Error!"),
+            "The problem set was not recognized.",
+            html.Br(),
+            f"Valid names include: {valid_problem_sets}",
+        ]
 
     new_layout = layout
 
