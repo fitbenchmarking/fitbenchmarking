@@ -705,19 +705,58 @@ def display_page(
     try:
         _, plot_id, group, plot, metric_str = pathname.split("/")
     except ValueError:
-        return (
-            "404 Page Error! Path does not have the expected format. "
-            "Please provide it in the following form:  \n"
-            "ip-address:port/run_id/problem_set/plot/performance_profile."
+        example_url = [
+            "ip-address:port/run_id/problem_set/plot/performance_profile.",
+            html.Br(),
+            f"The current run_id is {run_id}",
+        ]
+
+        for problem_set in profile_instances_all_groups:
+            for plot in profile_instances_all_groups[problem_set]:
+                example_url.extend(
+                    [html.Br(), f"{run_id}/{problem_set}/pp/{plot}"]
+                )
+
+        return html.Div(
+            [
+                html.H2(["404 Page Error!"]),
+                html.Div(
+                    [
+                        "Path does not have the expected format. "
+                        "Please provide it in the following form:",
+                        html.Br(),
+                    ].extend(example_url)
+                ),
+            ]
         )
 
     if run_id != plot_id:
-        return (
-            "404 Page Error! Dash plots are not available for these results."
-            "You can use `fitbenchmarking --load_checkpoint` to fix this."
-        )
-    if plot != "pp":
-        return f"404 Page Error! Plot type '{plot}' not available."
+        return [
+            html.H2(["404 Page Error!"]),
+            html.Div(
+                [
+                    "Dash plots are not available for these results. "
+                    "Check that the URL contains the correct run ID and that "
+                    "the current run generated dash plots",
+                    html.Br(),
+                    "You can use `fitbenchmarking --load_checkpoint` to load "
+                    "from a run where dash plots were generated.",
+                    html.Br(),
+                    f"Most recent run ID: {run_id}",
+                ]
+            ),
+        ]
+
+    valid_plot_types = {
+        "pp": "performance profile"  # performance profile
+    }
+    if plot not in valid_plot_types:
+        return [
+            html.H2(["404 Page Error!"]),
+            f"404 Page Error! Plot type '{plot}' not available.",
+            html.Br(),
+            f"valid plot types include: {valid_plot_types}",
+        ]
 
     group_profiles = profile_instances_all_groups[group]
 
@@ -738,11 +777,14 @@ def display_page(
 
             new_layout = [*new_layout, group_profiles[metric].layout()]
     except KeyError:
-        return (
-            "404 Page Error! The path was not recognized. \n"
-            "The path needs to end in a list of table names "
-            "separated by '+'."
-        )
+        return [
+            html.H1("404 Page Error!"),
+            "The path was not recognized.",
+            html.Br(),
+            "The path needs to end in a list of table names separated by '+'.",
+            html.Br(),
+            f"Valid names include: {list(group_profiles.keys())}",
+        ]
 
     opts = group_profiles["acc"].default_opt
 
