@@ -52,6 +52,7 @@ def load_mock_results(additional_options=None, filename="checkpoint.json"):
         {
             "checkpoint_filename": os.path.join(cp_dir, filename),
             "external_output": "debug",
+            "run_dash": True,
         }
     )
     options = Options(additional_options=additional_options)
@@ -733,11 +734,16 @@ class DisplayPageTests(unittest.TestCase):
     @parameterized.expand(
         [
             (
-                "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime",
+                "127.0.0.1:5009/MISSING_RUN_ID/NIST_low_difficulty/pp/acc+runtime",
                 "new_id",
             ),
-            ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
-            ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+            (
+                "127.0.0.1:5009/abc/NIST_low_difficulty/MISSING_PLOT_TYPE/acc+runtime",
+                "abc",
+            ),
+            ("127.0.0.1:5009/abc/MISSING_PROB_SET/pp/acc+runtime", "abc"),
+            ("127.0.0.1:5009/INCORRECT/PATH/FORMAT", "abc"),
+            ("127.0.0.1:5009/", "abc"),
         ]
     )
     def test_dash_url_404(self, pathname, run_id):
@@ -751,7 +757,11 @@ class DisplayPageTests(unittest.TestCase):
             max_solvers=self.max_solvers,
             run_id=run_id,
         )
-        assert isinstance(output_div, str) and output_div.startswith("404")
+        assert isinstance(output_div, list)
+        assert isinstance(output_div[0], html.H2)
+        header_contents = output_div[0].children
+        assert isinstance(header_contents, str)
+        assert "404" in header_contents
 
     def test_styles_consistent_when_two_plts(self):
         """

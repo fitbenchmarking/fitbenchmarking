@@ -730,11 +730,11 @@ def display_page(
                 [html.Br(), f"{run_id}/{problem_set}/pp/{all_tables_string}"]
             )
 
-        return [html.H2(["404 Page Error!"]), html.Div(out_msg)]
+        return [html.H2("404 Page Error!"), html.Div(out_msg)]
 
     if run_id != plot_id:
         return [
-            html.H2(["404 Page Error!"]),
+            html.H2("404 Page Error!"),
             html.Div(
                 [
                     "Dash plots are not available for these results. "
@@ -754,7 +754,7 @@ def display_page(
     }
     if plot not in valid_plot_types:
         return [
-            html.H2(["404 Page Error!"]),
+            html.H2("404 Page Error!"),
             f"Plot type '{plot}' not available.",
             html.Br(),
             f"valid plot types include: {valid_plot_types}",
@@ -765,7 +765,7 @@ def display_page(
     except KeyError:
         valid_problem_sets = list(profile_instances_all_groups.keys())
         return [
-            html.H1("404 Page Error!"),
+            html.H2("404 Page Error!"),
             "The problem set was not recognized.",
             html.Br(),
             f"Valid names include: {valid_problem_sets}",
@@ -789,7 +789,7 @@ def display_page(
             new_layout = [*new_layout, group_profiles[metric].layout()]
     except KeyError:
         return [
-            html.H1("404 Page Error!"),
+            html.H2("404 Page Error!"),
             "The path was not recognized.",
             html.Br(),
             "The path needs to end in a list of table names separated by '+'.",
