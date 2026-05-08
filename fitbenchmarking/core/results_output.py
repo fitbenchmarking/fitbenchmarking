@@ -13,6 +13,8 @@ from shutil import copytree
 import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
+
+# from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -749,10 +751,29 @@ def display_page(
             ),
         ]
 
-    valid_plot_types = {
-        "pp": "performance profile"  # performance profile
-    }
-    if plot not in valid_plot_types:
+    if plot == "cs":
+        # _ = CompareScatter(results={})
+        return html.Div("test tsest test")
+    elif plot == "pp":
+        group_profiles = {}
+        try:
+            group_profiles = profile_instances_all_groups[group]
+        except KeyError:
+            valid_problem_sets = list(profile_instances_all_groups.keys())
+            return [
+                html.H2("404 Page Error!"),
+                "The problem set was not recognized.",
+                html.Br(),
+                f"Valid names include: {valid_problem_sets}",
+            ]
+        return build_performance_profile_page(
+            group_profiles, layout, metric_str, max_solvers
+        )
+    else:
+        valid_plot_types = {
+            "pp": "performance profile",  # performance profile
+            "cs": "compare scatter",
+        }
         return [
             html.H2("404 Page Error!"),
             f"Plot type '{plot}' not available.",
@@ -760,17 +781,10 @@ def display_page(
             f"valid plot types include: {valid_plot_types}",
         ]
 
-    try:
-        group_profiles = profile_instances_all_groups[group]
-    except KeyError:
-        valid_problem_sets = list(profile_instances_all_groups.keys())
-        return [
-            html.H2("404 Page Error!"),
-            "The problem set was not recognized.",
-            html.Br(),
-            f"Valid names include: {valid_problem_sets}",
-        ]
 
+def build_performance_profile_page(
+    group_profiles, layout, metric_str, max_solvers
+):
     new_layout = layout
 
     try:
@@ -801,6 +815,7 @@ def display_page(
 
     layout[1].options = opts
     layout[1].value = [i["label"] for i in opts[:max_solvers]]
+
     return html.Div(new_layout)
 
 

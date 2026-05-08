@@ -1,9 +1,9 @@
 from dash import callback, html
 
-from fitbenchmarking.utils.fitbm_result import FittingResult
+# from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
-class compare_scatter:
+class CompareScatter:
     """
     Class to handle the data processing for a compare scatter
     """
@@ -12,14 +12,17 @@ class compare_scatter:
         """
         Initialise the compare_scatter class.
         """
-        self.results = results
-        self.view = compare_scatter_view()
-        self.model = compare_scatter_data_model(results)
-        self.controller = compare_scatter_controller()
+        # self.results = results
+        self.view = CompareScatterView()
+        # self.model = compare_scatter_data_model(results)
+        # self.controller = compare_scatter_controller()
         # most of the interface is just get plot from the view
 
+    def get_layout(self):
+        return self.view.get_plot()
 
-class compare_scatter_view:
+
+class CompareScatterView:
     """
     Class to handle the basic plotting of a compare scatter
     """
@@ -73,8 +76,8 @@ class compare_scatter_controller:
 
 
 class compare_scatter_data_model:
-    def __init__(self, results: list[FittingResult]):
-        self.results = results
+    # def __init__(self, results: list[FittingResult]):
+    #    self.results = results
 
     def get_values_for_axis(self, metric):
         pass
