@@ -37,6 +37,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+aoclda = ['aoclda']
 bumps = ['bumps<1.0.0']
 DFO = ['DFO-LS']
 galahad = ['galahad-optrove']

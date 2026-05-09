@@ -16,6 +16,47 @@ the default list of minimizers unless otherwise stated.
    software is also set in :ref:`fitting_option` (either explicitly, or
    as a default option).
 
+.. _aoclda:
+
+AMD AOCL Data Analytics NLLS Solver (``aoclda``)
+================================================
+
+The `AMD Optimizing CPU Libraries (AOCL) <https://www.amd.com/en/developer/aocl.html>`__ is a compendium of
+numerical libraries tuned for AMD CPU processors. The AOCL Data Analytics
+Library's nonlinear least-squares solver (NLLS) is an adapted version of
+the :ref:`RALFit solver <ralfit>` 
+(See also `RALFit documentation <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__).
+
+This solver supports the same capabilites as RALFit:
+
+* Gauss-Newton, trust region method (:code:`gn`)
+* Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
+* Newton, trust region method (:code:`newton`)
+* Newton-tensor, trust region method (:code:`newton-tensor`)
+* Gauss-Newton, regularization (:code:`gn_reg`)
+* Hybrid Newton/Gauss-Newton, regularization (:code:`hybrid_reg`)
+* Newton, regularization (:code:`newton_reg`)
+* Newton-tensor, regularization (:code:`newton-tensor_reg`)
+
+**Links** `Github - AOCL Data Analytics <https://github.com/amd/aocl-data-analytics/>`__.
+
+**Licence** AOCL Data Analytics is available under a `3-clause BSD Licence <https://github.com/ralna/RALFit/blob/master/LICENCE>`__.
+
+The AOCLDA minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    aoclda: gn
+            gn_reg
+            hybrid
+            hybrid_reg
+            newton
+            newton_reg
+
+.. warning::
+   The external package `aoclda` must be installed to use these minimizers.
+
 .. _bumps:
 
 Bumps (:code:`bumps`)
