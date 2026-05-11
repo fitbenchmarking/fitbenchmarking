@@ -686,6 +686,7 @@ def display_page(
     layout: "list",
     max_solvers: int,
     run_id: str,
+    compare_scatter: CompareScatter,
 ):
     """
     Update the layout of the dash app.
@@ -753,8 +754,7 @@ def display_page(
         ]
 
     if plot == "cs":
-        cs = CompareScatter(results={})
-        return html.Div([cs.get_layout()])
+        return html.Div([compare_scatter.get_layout()])
     elif plot == "pp":
         group_profiles = {}
         try:
@@ -834,7 +834,53 @@ def prepare_dash_app_for_performance_profiles(
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
 
-    layout = [
+    layout = get_performance_profile_layout()
+
+    profile_instances_all_groups = create_performace_profile_instances(
+        pp_dfs_all_prob_sets
+    )
+
+    # Needed to prevent unnecessary warning in the terminal
+    # 'werkzeug' is the name of the logger used by dash
+    log = logging.getLogger("werkzeug")
+    log.disabled = True
+
+    app.layout = html.Div(
+        [
+            dcc.Location(id="url", refresh=False),
+            html.Div(id="page-content", children=[]),
+        ]
+    )
+
+    max_solvers = 15
+
+    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
+        lambda x: update_warning(x, max_solvers=max_solvers)
+    )
+
+    app.callback(
+        Output("dropdown", "options"),
+        [Input("dropdown", "options"), Input("dropdown", "value")],
+    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
+
+    # Create the callback to handle multiple pages
+    app.callback(
+        Output("page-content", "children"), [Input("url", "pathname")]
+    )(
+        lambda x: display_page(
+            x,
+            profile_instances_all_groups=profile_instances_all_groups,
+            layout=layout,
+            max_solvers=max_solvers,
+            run_id=options.run_id,
+            compare_scatter=CompareScatter(results={}),
+        )
+    )
+    return app
+
+
+def get_performance_profile_layout():
+    return [
         dcc.RadioItems(
             id="Log axis toggle",
             options=["Log x-axis", "Linear x-axis"],
@@ -877,6 +923,8 @@ def prepare_dash_app_for_performance_profiles(
         ),
     ]
 
+
+def create_performace_profile_instances(pp_dfs_all_prob_sets):
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
         profile_instances_all_groups[group] = {
@@ -894,40 +942,4 @@ def prepare_dash_app_for_performance_profiles(
                 group_label=group,
             ),
         }
-
-    # Needed to prevent unnecessary warning in the terminal
-    # 'werkzeug' is the name of the logger used by dash
-    log = logging.getLogger("werkzeug")
-    log.disabled = True
-
-    app.layout = html.Div(
-        [
-            dcc.Location(id="url", refresh=False),
-            html.Div(id="page-content", children=[]),
-        ]
-    )
-
-    max_solvers = 15
-
-    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
-        lambda x: update_warning(x, max_solvers=max_solvers)
-    )
-
-    app.callback(
-        Output("dropdown", "options"),
-        [Input("dropdown", "options"), Input("dropdown", "value")],
-    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
-
-    # Create the callback to handle multiple pages
-    app.callback(
-        Output("page-content", "children"), [Input("url", "pathname")]
-    )(
-        lambda x: display_page(
-            x,
-            profile_instances_all_groups=profile_instances_all_groups,
-            layout=layout,
-            max_solvers=max_solvers,
-            run_id=options.run_id,
-        )
-    )
-    return app
+    return profile_instances_all_groups
