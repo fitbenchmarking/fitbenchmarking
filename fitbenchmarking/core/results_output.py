@@ -631,8 +631,25 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
 
     if options.run_dash:
         app = Dash(__name__, suppress_callback_exceptions=True)
+        max_solvers = 15
         app = prepare_dash_app_for_performance_profiles(
-            app, options, pp_dfs_all_prob_sets
+            app, options, pp_dfs_all_prob_sets, max_solvers
+        )
+        profile_instances_all_groups = create_performace_profile_instances(
+            pp_dfs_all_prob_sets
+        )
+        layout = get_performance_profile_layout()
+        app.callback(
+            Output("page-content", "children"), [Input("url", "pathname")]
+        )(
+            lambda x: display_page(
+                x,
+                profile_instances_all_groups=profile_instances_all_groups,
+                layout=layout,
+                max_solvers=max_solvers,
+                run_id=options.run_id,
+                compare_scatter=CompareScatter(results={}),
+            )
         )
         app.run(host=options.ip_address, port=options.port)
 
@@ -821,7 +838,7 @@ def build_performance_profile_page(
 
 
 def prepare_dash_app_for_performance_profiles(
-    app: Dash, options, pp_dfs_all_prob_sets
+    app: Dash, options, pp_dfs_all_prob_sets, max_solvers
 ) -> Dash:
     """
     Prepares the Dash app to produce the interactive performance profile
@@ -833,12 +850,6 @@ def prepare_dash_app_for_performance_profiles(
                                  dash plots.
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
-
-    layout = get_performance_profile_layout()
-
-    profile_instances_all_groups = create_performace_profile_instances(
-        pp_dfs_all_prob_sets
-    )
 
     # Needed to prevent unnecessary warning in the terminal
     # 'werkzeug' is the name of the logger used by dash
@@ -852,8 +863,13 @@ def prepare_dash_app_for_performance_profiles(
         ]
     )
 
-    max_solvers = 15
+    app = add_perfomance_profile_callbacks(app, max_solvers)
 
+    # Create the callback to handle multiple pages
+    return app
+
+
+def add_perfomance_profile_callbacks(app: Dash, max_solvers):
     app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
         lambda x: update_warning(x, max_solvers=max_solvers)
     )
@@ -863,19 +879,6 @@ def prepare_dash_app_for_performance_profiles(
         [Input("dropdown", "options"), Input("dropdown", "value")],
     )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
 
-    # Create the callback to handle multiple pages
-    app.callback(
-        Output("page-content", "children"), [Input("url", "pathname")]
-    )(
-        lambda x: display_page(
-            x,
-            profile_instances_all_groups=profile_instances_all_groups,
-            layout=layout,
-            max_solvers=max_solvers,
-            run_id=options.run_id,
-            compare_scatter=CompareScatter(results={}),
-        )
-    )
     return app
 
 
