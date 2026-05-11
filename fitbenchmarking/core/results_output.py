@@ -13,8 +13,6 @@ from shutil import copytree
 import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
-
-# from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from jinja2 import Environment, FileSystemLoader
 
 import fitbenchmarking
@@ -25,6 +23,9 @@ from fitbenchmarking.results_processing import (
     problem_summary_page,
     tables,
 )
+
+# from fitbenchmarking.results_processing.compare_scatter import CompareScatter
+from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from fitbenchmarking.results_processing.performance_profiler import (
     DashPerfProfile,
 )
@@ -752,8 +753,8 @@ def display_page(
         ]
 
     if plot == "cs":
-        # _ = CompareScatter(results={})
-        return html.Div("test tsest test")
+        cs = CompareScatter(results={})
+        return html.Div([cs.get_layout()])
     elif plot == "pp":
         group_profiles = {}
         try:
