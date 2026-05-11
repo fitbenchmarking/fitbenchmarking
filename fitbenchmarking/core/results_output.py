@@ -582,7 +582,9 @@ def create_index_page(
     return output_file
 
 
-def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
+def open_browser(
+    output_file: str, options, pp_dfs_all_prob_sets, results
+) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -648,7 +650,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
                 layout=layout,
                 max_solvers=max_solvers,
                 run_id=options.run_id,
-                compare_scatter=CompareScatter(results={}),
+                compare_scatter=CompareScatter(results=results),
             )
         )
         app.run(host=options.ip_address, port=options.port)

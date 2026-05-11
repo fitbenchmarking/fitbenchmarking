@@ -188,7 +188,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
         all_dirs.append(directory)
 
     index_page = create_index_page(options, list(results), all_dirs)
-    open_browser(index_page, options, pp_dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets, results=results)
 
 
 @exception_handler
