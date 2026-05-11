@@ -8,18 +8,18 @@ class CompareScatter:
     Class to handle the data processing for a compare scatter
     """
 
-    def __init__(self, results):
+    def __init__(self, results=[]):
         """
         Initialise the compare_scatter class.
         """
-        # self.results = results
+        self.results = results
         self.view = CompareScatterView()
         # self.model = compare_scatter_data_model(results)
         # self.controller = compare_scatter_controller()
         # most of the interface is just get plot from the view
 
     def get_layout(self):
-        return self.view.get_plot()
+        return self.view.get_plot(self.results)
 
 
 class CompareScatterView:
@@ -27,8 +27,8 @@ class CompareScatterView:
     Class to handle the basic plotting of a compare scatter
     """
 
-    def get_plot(self):
-        return html.Div("test")
+    def get_plot(self, results):
+        return html.Div(str(results))
 
 
 #     def make_html(self):
