@@ -644,7 +644,7 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )(
             lambda x: display_page(
                 x,
-                profile_instances_all_groups=profile_instances_all_groups,
+                performance_profile_instances_all_groups=profile_instances_all_groups,
                 layout=layout,
                 max_solvers=max_solvers,
                 run_id=options.run_id,
@@ -699,7 +699,9 @@ def check_max_solvers(opts, solvers, max_solvers):
 
 def display_page(
     pathname: str,
-    profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
+    performance_profile_instances_all_groups: dict[
+        str, dict[str, DashPerfProfile]
+    ],
     layout: "list",
     max_solvers: int,
     run_id: str,
@@ -737,14 +739,18 @@ def display_page(
             "formatting:",
         ]
 
-        for problem_set in profile_instances_all_groups:
-            for plot in profile_instances_all_groups[problem_set]:
+        for problem_set in performance_profile_instances_all_groups:
+            for plot in performance_profile_instances_all_groups[problem_set]:
                 out_msg.extend(
                     [html.Br(), f"{run_id}/{problem_set}/pp/{plot}"]
                 )
 
             all_tables_string = "+".join(
-                list(profile_instances_all_groups[problem_set].keys())
+                list(
+                    performance_profile_instances_all_groups[
+                        problem_set
+                    ].keys()
+                )
             )
 
             out_msg.extend(
@@ -775,9 +781,11 @@ def display_page(
     elif plot == "pp":
         group_profiles = {}
         try:
-            group_profiles = profile_instances_all_groups[group]
+            group_profiles = performance_profile_instances_all_groups[group]
         except KeyError:
-            valid_problem_sets = list(profile_instances_all_groups.keys())
+            valid_problem_sets = list(
+                performance_profile_instances_all_groups.keys()
+            )
             return [
                 html.H2("404 Page Error!"),
                 "The problem set was not recognized.",
