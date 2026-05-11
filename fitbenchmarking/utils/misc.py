@@ -3,9 +3,11 @@ Miscellaneous functions and utilities used in fitting benchmarking.
 """
 
 import glob
+import math
 import os
 
 from fitbenchmarking.utils.exceptions import NoDataError
+from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -99,3 +101,33 @@ def get_js(options, working_directory):
     }
 
     return js_dict
+
+
+@staticmethod
+def get_hover_text(result: FittingResult) -> str:
+    """
+    Generate the tooltip text for a given fitting result.
+    :param result: The result to generate the text for
+    :type result: FittingResult
+
+    :return: The generated tooltip
+    :rtype: str
+    """
+
+    if math.isinf(result.runtime) or math.isinf(result.min_accuracy):
+        return f"Error: {result.status}"
+
+    if result.iteration_count is None or result.iteration_count == 0:
+        iterations = "not available"
+    else:
+        iterations = result.func_evals
+
+    return (
+        f"""Status: {result.status}"""
+        f"""\\a Accuracy: {result.accuracy:.4g}"""
+        f"""\\a {result.runtime_metric.capitalize()}"""
+        f""" runtime: {result.runtime:.4g}"""
+        f"""\\a Energy usage: {result.energy:.4g}"""
+        f"""\\a Iterations: {iterations}"""
+        f"""\\a Function Evaluations: {result.func_evals}"""
+    )
