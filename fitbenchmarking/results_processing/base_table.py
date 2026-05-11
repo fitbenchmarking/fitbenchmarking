@@ -2,7 +2,6 @@
 Implements the base class for the tables.
 """
 
-import math
 import os
 from abc import ABCMeta, abstractmethod
 
@@ -18,7 +17,7 @@ import numpy as np
 import pandas as pd
 from pandas.io.formats import style
 
-from fitbenchmarking.utils.misc import get_js
+from fitbenchmarking.utils.misc import get_hover_text, get_js
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
@@ -250,7 +249,7 @@ class Table:
         """
         str_dict = {}
         for k, results in self.sorted_results.items():
-            str_dict[k] = [self.get_hover_text(result) for result in results]
+            str_dict[k] = [get_hover_text(result) for result in results]
         return str_dict.values()
 
     def get_colour_df(self, like_df=None):
@@ -355,35 +354,6 @@ class Table:
             f"{val_str}</a>"
         )
         return val_str
-
-    @staticmethod
-    def get_hover_text(result: FittingResult) -> str:
-        """
-        Generate the tooltip text for a given fitting result.
-        :param result: The result to generate the text for
-        :type result: FittingResult
-
-        :return: The generated tooltip
-        :rtype: str
-        """
-
-        if math.isinf(result.runtime) or math.isinf(result.min_accuracy):
-            return f"Error: {result.status}"
-
-        if result.iteration_count is None or result.iteration_count == 0:
-            iterations = "not available"
-        else:
-            iterations = result.func_evals
-
-        return (
-            f"""Status: {result.status}"""
-            f"""\\a Accuracy: {result.accuracy:.4g}"""
-            f"""\\a {result.runtime_metric.capitalize()}"""
-            f""" runtime: {result.runtime:.4g}"""
-            f"""\\a Energy usage: {result.energy:.4g}"""
-            f"""\\a Iterations: {iterations}"""
-            f"""\\a Function Evaluations: {result.func_evals}"""
-        )
 
     def get_colours_for_row(self, results):
         """
