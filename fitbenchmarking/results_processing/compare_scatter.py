@@ -1,4 +1,8 @@
-from dash import html
+import plotly.express as px
+from dash import dcc
+
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.misc import get_hover_text
 
 # from fitbenchmarking.utils.fitbm_result import FittingResult
 
@@ -14,12 +18,22 @@ class CompareScatter:
         """
         self.results = results
         self.view = CompareScatterView()
-        # self.model = compare_scatter_data_model(results)
+        self.model = CompareScatterDataModel(results)
+
         # self.controller = compare_scatter_controller()
         # most of the interface is just get plot from the view
 
     def get_layout(self):
-        return self.view.get_plot(self.results)
+        return self.view.get_plot(
+            x=self.model.get_values_for_axis("runtime"),
+            x_title="runtime",
+            y=self.model.get_values_for_axis("norm_acc"),
+            y_title="error (normalised)",
+            tooltips=self.model.get_hover_text_for_results(),
+            errors=self.model.get_values_for_axis("error_flag"),
+            solvers=self.model.get_minimizer_names(),
+            problems=self.model.get_values_for_axis("problem_tag"),
+        )
 
 
 class CompareScatterView:
@@ -27,8 +41,29 @@ class CompareScatterView:
     Class to handle the basic plotting of a compare scatter
     """
 
-    def get_plot(self, results):
-        return html.Div(str(results))
+    def get_plot(
+        self, x, y, x_title, y_title, tooltips, errors, solvers, problems
+    ):
+        errors = [
+            f"<sup><b>{flag}</b></sup>" if flag != 0 else "" for flag in errors
+        ]
+        plot = px.scatter(
+            x=x,
+            y=y,
+            color=solvers,
+            symbol=problems,
+            log_x=True,
+            log_y=True,
+            custom_data=[tooltips],
+            text=errors,
+            color_discrete_sequence=px.colors.qualitative.Dark24,
+        )
+        plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
+        plot.update_layout(hoverlabel={"bgcolor": "white"})
+        plot.update_traces(
+            hovertemplate="%{customdata[0]}", textposition="middle right"
+        )
+        return dcc.Graph(figure=plot)
 
 
 #     def make_html(self):
@@ -71,19 +106,40 @@ class CompareScatterView:
 #         # the ones we want to keep highlighted
 
 
-# class compare_scatter_data_model:
-#     # def __init__(self, results: list[FittingResult]):
-#     #    self.results = results
+class CompareScatterDataModel:
+    def __init__(self, results: list[FittingResult]):
+        self.results = results
+        # ensure consistent processing between runs
+        self.results.sort(key=self.get_sort_key)
 
-#     def get_values_for_axis(self, metric):
-#         pass
+    @staticmethod
+    def get_sort_key(result: FittingResult):
+        return result.name
 
-#     def add_clickthrough_links(self):
-#         pass
+    def get_values_for_axis(self, metric):
+        values = [getattr(result, metric) for result in self.results]
+        return values
 
-#     def get_hover_text_for_result(self, result):
-#         # call util, and prepend the metrics being plotted
-#         pass
+    def get_minimizer_names(self):
+        values = [
+            result.modified_minimizer_name(True) for result in self.results
+        ]
+        return values
+
+    def get_report_page_URLs(self):
+        pass
+        # link_array = []
+        # for result in self.results:
+        #     link_array.append(result.)
+        # return link_array
+
+    def get_hover_text_for_results(self):
+        # call util, and prepend the metrics being plotted
+        text_array = [
+            [get_hover_text(result, newline="<br>")] for result in self.results
+        ]
+        return text_array
+
 
 #     def get_hover_text_array(self):
 #         # return an array of hover text in the same sorted order as the

@@ -7,7 +7,6 @@ import math
 import os
 
 from fitbenchmarking.utils.exceptions import NoDataError
-from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
 
 LOGGER = get_logger()
@@ -104,7 +103,7 @@ def get_js(options, working_directory):
 
 
 @staticmethod
-def get_hover_text(result: FittingResult) -> str:
+def get_hover_text(result, newline="\\a") -> str:
     """
     Generate the tooltip text for a given fitting result.
     :param result: The result to generate the text for
@@ -124,10 +123,10 @@ def get_hover_text(result: FittingResult) -> str:
 
     return (
         f"""Status: {result.status}"""
-        f"""\\a Accuracy: {result.accuracy:.4g}"""
-        f"""\\a {result.runtime_metric.capitalize()}"""
+        f"""{newline}Accuracy: {result.accuracy:.4g}"""
+        f"""{newline}{result.runtime_metric.capitalize()}"""
         f""" runtime: {result.runtime:.4g}"""
-        f"""\\a Energy usage: {result.energy:.4g}"""
-        f"""\\a Iterations: {iterations}"""
-        f"""\\a Function Evaluations: {result.func_evals}"""
+        f"""{newline}Energy usage: {result.energy:.4g}"""
+        f"""{newline}Iterations: {iterations}"""
+        f"""{newline}Function Evaluations: {result.func_evals}"""
     )
