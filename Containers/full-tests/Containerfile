@@ -192,6 +192,17 @@ RUN rm -rf /pyceres
 RUN pip install --no-cache-dir theseus-ai --no-build-isolation
 
 ###########
+# SASfit #
+###########
+
+# Install SASfit
+WORKDIR /
+RUN git clone --depth 1 https://github.com/SASfit/SASfit.git sasfit
+WORKDIR /sasfit
+RUN sh src/appveyor/0_install_linux4building.sh
+RUN src/appveyor/4_build.sh
+
+###########
 # Tidy up #
 ###########
 RUN apt-get -y autoremove
