@@ -779,7 +779,7 @@ def display_page(
         ]
 
     if plot == "cs":
-        return html.Div([compare_scatter.get_layout()])
+        return html.Div(compare_scatter.get_layout())
     elif plot == "pp":
         group_profiles = {}
         try:
