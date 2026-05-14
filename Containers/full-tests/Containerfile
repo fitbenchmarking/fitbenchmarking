@@ -8,6 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # From gsl-bin to swig for pygsl
 # from gfortan to libgdal-dev for RALfit
 # from libgoogle-glog-dev from libtbb-dev for ceres
+# lsb-release for SASfit
 RUN apt-get update && apt-get install -y --no-install-recommends\
     python3.12 \
     python3.12-venv \
@@ -45,6 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libsuitesparse-dev \
     libeigen3-dev \
     libtbb-dev \
+    lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/opt/venv
@@ -190,6 +192,17 @@ RUN rm -rf /pyceres
 
 # Install theseus
 RUN pip install --no-cache-dir theseus-ai --no-build-isolation
+
+###########
+# SASfit #
+###########
+
+# Install SASfit
+WORKDIR /
+RUN git clone --depth 1 https://github.com/SASfit/SASfit.git sasfit
+WORKDIR /sasfit
+RUN sh src/appveyor/0_install_linux4building.sh
+RUN src/appveyor/4_build.sh || true
 
 ###########
 # Tidy up #
