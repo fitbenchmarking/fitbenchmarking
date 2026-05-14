@@ -26,13 +26,14 @@ class CompareScatter:
         # most of the interface is just get plot from the view
 
     def get_layout(self):
-        x = "norm_runtime"
-        y = "norm_acc"
+        default_x = "norm_runtime"
+        default_y = "norm_acc"
+
         return self.view.get_plot(
-            x=self.model.get_values_for_axis(x),
-            x_title=x,
-            y=self.model.get_values_for_axis(y),
-            y_title=y,
+            x=self.model.get_values_for_axis(default_x),
+            x_title=default_x,
+            y=self.model.get_values_for_axis(default_y),
+            y_title=default_y,
             tooltips=self.model.get_hover_text_for_results(),
             errors=self.model.get_values_for_axis("error_flag"),
             solvers=self.model.get_values_for_axis(
@@ -85,7 +86,12 @@ class CompareScatterView:
         plot.update_traces(
             hovertemplate="%{customdata[0]}",
             textposition="middle right",
-            marker={"line": {"width": 0.5, "color": "#e5ecf6"}},
+            marker={
+                "line": {
+                    "width": 0.6,
+                    "color": "#e5ecf6",  # colour of plot background
+                }
+            },
             showlegend=False,
         )
         return [dcc.Graph(figure=plot)]
