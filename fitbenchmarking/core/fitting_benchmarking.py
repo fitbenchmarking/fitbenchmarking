@@ -78,7 +78,11 @@ class Fit:
                 log_level="error",
             )
 
-    def benchmark(self):
+    def benchmark(
+        self,
+    ) -> tuple[
+        list[fitbm_result.FittingResult], list[str], dict[str, list[str]]
+    ]:
         """
         Call benchmarking on user input and list of paths.
         The benchmarking structure is:

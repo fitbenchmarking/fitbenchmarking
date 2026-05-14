@@ -2,6 +2,7 @@
 This file contains unit tests for the main CLI script
 """
 
+import argparse
 import inspect
 import os
 from json import load
@@ -9,6 +10,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
+
+from parameterized import parameterized
 
 from fitbenchmarking import test_files
 from fitbenchmarking.cli import main
@@ -55,6 +58,76 @@ def mock_func_call(*args, **kwargs):
     failed_problems: list[str] = []
     unselected_minimizers = {}
     return results, failed_problems, unselected_minimizers
+
+
+def get_default_args():
+    return {
+        "options_file": "",
+        "problem_sets": ["/test/path"],
+        "results_dir": "",
+        "debug_mode": False,
+        "num_runs": 0,
+        "algorithm_type": [],
+        "software": [],
+        "jac_method": [],
+        "cost_func_type": [],
+        "runtime_metric": "",
+        "port": 0,
+        "ip_address": "",
+        "make_plots": False,
+        "dont_make_plots": False,
+        "results_browser": False,
+        "no_results_browser": False,
+        "pbar": False,
+        "no_pbar": False,
+        "run_name": "",
+        "comparison_mode": "",
+        "table_type": [],
+        "logging_file_name": "",
+        "append_log": False,
+        "overwrite_log": False,
+        "level": "",
+        "external_output": "",
+        "load_checkpoint": False,
+        "run_dash": False,
+        "dont_run_dash": False,
+        "check_jacobian": False,
+        "dont_check_jacobian": False,
+    }
+
+
+class cli_option_mapping:
+    """
+    Class to hold the mapping between CLI options and the expected output
+    dictionary keys and values. This is used to test that the CLI options are
+    correctly parsed by `parse_options_from_cli`
+    """
+
+    def __init__(
+        self,
+        cli_key,
+        cli_value=None,
+        expected_output_key=None,
+        expected_output_value=None,
+    ):
+        # cli_key is required so should always exist
+        self.cli_key = cli_key
+        # if the value is not provided, we assume that this is a value in its
+        # default state, so get what that should be from `get_default_args
+        self.cli_value = (
+            cli_value if cli_value is not None else get_default_args()[cli_key]
+        )
+
+        # if the output values are not provided, assume that the output name
+        # and value are the same as the input name and value
+        self.expected_output_key = (
+            expected_output_key if expected_output_key is not None else cli_key
+        )
+        self.expected_output_value = (
+            expected_output_value
+            if expected_output_value is not None
+            else cli_value
+        )
 
 
 class TestMain(TestCase):
@@ -128,3 +201,95 @@ class TestMain(TestCase):
 
         # Check that it's not empty
         self.assertTrue(contents)
+
+    valid_options = [
+        cli_option_mapping("results_dir", "test_value"),
+        cli_option_mapping("num_runs", "test_value"),
+        cli_option_mapping("algorithm_type", "test_value"),
+        cli_option_mapping("software", "test_value"),
+        cli_option_mapping("jac_method", "test_value"),
+        cli_option_mapping("cost_func_type", "test_value"),
+        cli_option_mapping("comparison_mode", "test_value"),
+        cli_option_mapping("table_type", "test_value"),
+        cli_option_mapping("level", "test_value"),
+        cli_option_mapping("external_output", "test_value"),
+        cli_option_mapping("run_name", "test_value"),
+        cli_option_mapping("runtime_metric", "test_value"),
+        cli_option_mapping("port", "test_value"),
+        cli_option_mapping("ip_address", "test_value"),
+        cli_option_mapping("make_plots", True, "make_plots", True),
+        cli_option_mapping("dont_make_plots", True, "make_plots", False),
+        cli_option_mapping("run_dash", True, "run_dash", True),
+        cli_option_mapping("dont_run_dash", True, "run_dash", False),
+        cli_option_mapping("pbar", True, "pbar", True),
+        cli_option_mapping("no_pbar", True, "pbar", False),
+        cli_option_mapping("append_log", True, "append", True),
+        cli_option_mapping("overwrite_log", True, "append", False),
+        cli_option_mapping("results_browser", True, "results_browser", True),
+        cli_option_mapping(
+            "no_results_browser", True, "results_browser", False
+        ),
+        cli_option_mapping("check_jacobian", True, "check_jacobian", True),
+        cli_option_mapping(
+            "dont_check_jacobian", True, "check_jacobian", False
+        ),
+        cli_option_mapping(
+            "logging_file_name", "test_value", "file_name", "test_value"
+        ),
+    ]
+
+    # format the data so that parameterized can add informative test names
+    valid_options = [
+        (f"{option.cli_key}_{option.cli_value}", option)
+        for option in valid_options
+    ]
+
+    # _ used to discard the test name
+    @parameterized.expand(valid_options)
+    def test_cli_options_handled_correctly(
+        self, _, option_mapping: cli_option_mapping
+    ):
+        """
+        Tests that CLI options are correctly parsed by `parse_options_from_cli`
+        """
+        test_options = get_default_args()
+        test_options[option_mapping.cli_key] = option_mapping.cli_value
+
+        args = argparse.Namespace(**test_options)
+        parsed_options = main.parse_options_from_cli(args)
+
+        assert (
+            parsed_options[option_mapping.expected_output_key]
+            == option_mapping.expected_output_value
+        )
+
+    # _ used to discard the test name
+    @parameterized.expand(valid_options)
+    def test_cli_options_do_not_have_side_effects(
+        self, _, option_mapping: cli_option_mapping
+    ):
+        """
+        Test that when cli options are parsed, all of the other options are
+        returned with their default value preseved.
+        """
+
+        # Get all of the default values
+        expected_result = main.parse_options_from_cli(
+            argparse.Namespace(**get_default_args())
+        )
+
+        test_options = get_default_args()
+        test_options[option_mapping.cli_key] = option_mapping.cli_value
+
+        args = argparse.Namespace(**test_options)
+        parsed_options = main.parse_options_from_cli(args)
+
+        # Test that excluding the option we changed, everything else is the
+        # same as the default
+        if option_mapping.expected_output_key in parsed_options:
+            parsed_options.pop(option_mapping.expected_output_key)
+
+        if option_mapping.expected_output_key in expected_result:
+            expected_result.pop(option_mapping.expected_output_key)
+
+        assert parsed_options == expected_result

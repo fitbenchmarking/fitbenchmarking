@@ -366,6 +366,79 @@ of the Fitbenchmarking docs. """
     return parser
 
 
+def parse_options_from_cli(args) -> dict:
+    """
+    parse the command line options, and apply any options which should override
+    the options file or default options.
+    :param args: The command line arguments.
+
+    :return: A dictionary of options to be used in the benchmarking run.
+    :rtype: dict
+    """
+
+    # Dictionary of options which can be set via argparse
+    # rather than from an ini file or from the default options
+    options_dictionary = {
+        "results_dir": args.results_dir,
+        "num_runs": args.num_runs,
+        "algorithm_type": args.algorithm_type,
+        "software": args.software,
+        "jac_method": args.jac_method,
+        "cost_func_type": args.cost_func_type,
+        "comparison_mode": args.comparison_mode,
+        "table_type": args.table_type,
+        "file_name": args.logging_file_name,
+        "level": args.level,
+        "external_output": args.external_output,
+        "run_name": args.run_name,
+        "runtime_metric": args.runtime_metric,
+        "port": args.port,
+        "ip_address": args.ip_address,
+    }
+    # Check if make_plots in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.make_plots:
+        options_dictionary["make_plots"] = True
+    elif args.dont_make_plots:
+        options_dictionary["make_plots"] = False
+
+    # Check if results_browser in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.results_browser:
+        options_dictionary["results_browser"] = True
+    elif args.no_results_browser:
+        options_dictionary["results_browser"] = False
+
+    # Check if run_dash in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.run_dash:
+        options_dictionary["run_dash"] = True
+    elif args.dont_run_dash:
+        options_dictionary["run_dash"] = False
+
+    # Check if check_jacobian in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.check_jacobian:
+        options_dictionary["check_jacobian"] = True
+    elif args.dont_check_jacobian:
+        options_dictionary["check_jacobian"] = False
+
+    # Check if benchmark in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.pbar:
+        options_dictionary["pbar"] = True
+    elif args.no_pbar:
+        options_dictionary["pbar"] = False
+
+    # Check if log_append in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.append_log:
+        options_dictionary["append"] = True
+    elif args.overwrite_log:
+        options_dictionary["append"] = False
+    return options_dictionary
+
+
 @exception_handler
 def run(problem_sets, additional_options=None, options_file="", debug=False):
     """
@@ -410,7 +483,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     result_dir = []
     pp_dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
-
+    results = {}
     try:
         for sub_dir in problem_sets:
             # Create full path for the directory that holds a group of
@@ -510,9 +583,8 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
             "You can also set 'results_dir' in an options file.",
             options.results_dir,
         )
-
     index_page = create_index_page(options, group_labels, result_dir)
-    open_browser(index_page, options, pp_dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets, results=results)
 
 
 def main():
@@ -536,67 +608,7 @@ def main():
             "with scipy minimizers \n"
         )
 
-    # Dictionary of options which can be set via argparse
-    # rather than from an ini file or from the default options
-    options_dictionary = {
-        "results_dir": args.results_dir,
-        "num_runs": args.num_runs,
-        "algorithm_type": args.algorithm_type,
-        "software": args.software,
-        "jac_method": args.jac_method,
-        "cost_func_type": args.cost_func_type,
-        "comparison_mode": args.comparison_mode,
-        "table_type": args.table_type,
-        "file_name": args.logging_file_name,
-        "level": args.level,
-        "external_output": args.external_output,
-        "run_name": args.run_name,
-        "runtime_metric": args.runtime_metric,
-        "port": args.port,
-        "ip_address": args.ip_address,
-    }
-
-    # Check if make_plots in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.make_plots:
-        options_dictionary["make_plots"] = True
-    elif args.dont_make_plots:
-        options_dictionary["make_plots"] = False
-
-    # Check if results_browser in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.results_browser:
-        options_dictionary["results_browser"] = True
-    elif args.no_results_browser:
-        options_dictionary["results_browser"] = False
-
-    # Check if run_dash in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.run_dash:
-        options_dictionary["run_dash"] = True
-    elif args.dont_run_dash:
-        options_dictionary["run_dash"] = False
-
-    # Check if check_jacobian in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.check_jacobian:
-        options_dictionary["check_jacobian"] = True
-    elif args.dont_check_jacobian:
-        options_dictionary["check_jacobian"] = False
-
-    # Check if benchmark in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.pbar:
-        options_dictionary["pbar"] = True
-    elif args.no_pbar:
-        options_dictionary["pbar"] = False
-
-    # Check if log_append in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.append_log:
-        options_dictionary["append"] = True
-    elif args.overwrite_log:
-        options_dictionary["append"] = False
+    options_dictionary = parse_options_from_cli(args)
 
     if args.load_checkpoint:
         generate_report(

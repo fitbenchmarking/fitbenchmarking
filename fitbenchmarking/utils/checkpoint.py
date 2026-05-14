@@ -248,7 +248,11 @@ class Checkpoint:
             f.write("\n}")
         self.finalised = True
 
-    def load(self):
+    def load(
+        self,
+    ) -> tuple[
+        dict[str, list[FittingResult]], dict, dict[str, list[str]], dict
+    ]:
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
