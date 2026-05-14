@@ -24,14 +24,18 @@ class CompareScatter:
         # most of the interface is just get plot from the view
 
     def get_layout(self):
+        x = "norm_runtime"
+        y = "norm_acc"
         return self.view.get_plot(
-            x=self.model.get_values_for_axis("runtime"),
-            x_title="runtime",
-            y=self.model.get_values_for_axis("norm_acc"),
-            y_title="error (normalised)",
+            x=self.model.get_values_for_axis(x),
+            x_title=x,
+            y=self.model.get_values_for_axis(y),
+            y_title=y,
             tooltips=self.model.get_hover_text_for_results(),
             errors=self.model.get_values_for_axis("error_flag"),
-            solvers=self.model.get_minimizer_names(),
+            solvers=self.model.get_values_for_axis(
+                "modified_minimizer_name", {"with_software": True}
+            ),
             problems=self.model.get_values_for_axis("problem_tag"),
         )
 
@@ -116,8 +120,15 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
-    def get_values_for_axis(self, metric):
-        values = [getattr(result, metric) for result in self.results]
+    def get_values_for_axis(self, metric: str, func_kwargs={}) -> list:
+        # in the case of name and normalised values, a function call is
+        # required to retreive the data, so we need to check if we have been
+        # passed an attribute or method name
+        if callable(getattr(self.results[0], metric)):
+            funcs = [getattr(result, metric) for result in self.results]
+            values = [func(**func_kwargs) for func in funcs]
+        else:
+            values = [getattr(result, metric) for result in self.results]
         return values
 
     def get_minimizer_names(self):
