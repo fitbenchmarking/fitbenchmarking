@@ -103,7 +103,7 @@ def get_js(options, working_directory):
 
 
 @staticmethod
-def get_hover_text(result, newline="\\a") -> str:
+def get_hover_text(result, include_title=False, newline="\\a") -> str:
     """
     Generate the tooltip text for a given fitting result.
     :param result: The result to generate the text for
@@ -121,7 +121,7 @@ def get_hover_text(result, newline="\\a") -> str:
     else:
         iterations = result.func_evals
 
-    return (
+    hover_text = (
         f"""Status: {result.status}"""
         f"""{newline}Accuracy: {result.accuracy:.4g}"""
         f"""{newline}{result.runtime_metric.capitalize()}"""
@@ -130,3 +130,12 @@ def get_hover_text(result, newline="\\a") -> str:
         f"""{newline}Iterations: {iterations}"""
         f"""{newline}Function Evaluations: {result.func_evals}"""
     )
+
+    if include_title:
+        hover_text = (
+            f"""<b>{result.modified_minimizer_name(with_software=True)}</b>"""
+            f"""{newline}"""
+            f"""{hover_text}"""
+        )
+
+    return hover_text
