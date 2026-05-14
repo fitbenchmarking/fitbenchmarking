@@ -64,7 +64,9 @@ class CompareScatterView:
 
         colour_groups = plotly.colors.sample_colorscale(
             colorscale="mrybm",
-            samplepoints=len(dict.fromkeys(solvers)),
+            # since the scale is cyclical, we take an extra sample to leave
+            # some space between the first and last colour
+            samplepoints=len(dict.fromkeys(solvers)) + 1,
         )
 
         valid_symbols = self.get_all_valid_symbols()
