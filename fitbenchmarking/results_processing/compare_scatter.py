@@ -1,5 +1,8 @@
+import numpy as np
+import plotly.colors
 import plotly.express as px
 from dash import dcc
+from plotly.validator_cache import ValidatorCache
 
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.misc import get_hover_text
@@ -45,69 +48,107 @@ class CompareScatterView:
     Class to handle the basic plotting of a compare scatter
     """
 
+    # dict of internal Fitting Result attribute names, and the human readable
+    # name that should be visible on the user interface
+    # metric_text_mappings = {"norm_acc": "error (normalised)"}
+
+    # def __init__(self) -> None:
+    #    for attribute in dir(FittingResult):
+    #        if not attribute.startswith("_"):
+    #            self.metric_text_mappings[attribute] = (
+    #                attribute.replace("_"," ")
+    #                if attribute not in self.metric_text_mappings
+    #                else self.metric_text_mappings[attribute]
+    #            )
+
     def get_plot(
         self, x, y, x_title, y_title, tooltips, errors, solvers, problems
     ):
         errors = [
             f"<sup><b>{flag}</b></sup>" if flag != 0 else "" for flag in errors
         ]
+
+        colour_groups = plotly.colors.sample_colorscale(
+            colorscale="mrybm",
+            samplepoints=len(dict.fromkeys(solvers)),
+        )
+        border_colour_groups = plotly.colors.sample_colorscale(
+            colorscale="mrybm",
+            samplepoints=len(dict.fromkeys(solvers)),
+        )
+        # borders are done per point instead of per group
+        border_colour_groups = np.repeat(
+            border_colour_groups, len(dict.fromkeys(problems))
+        )
+        valid_symbols = self.get_all_valid_symbols()
         plot = px.scatter(
             x=x,
             y=y,
             color=solvers,
             symbol=problems,
+            symbol_sequence=valid_symbols,
             log_x=True,
             log_y=True,
-            custom_data=[tooltips],
+            custom_data=[tooltips, solvers, problems],
             text=errors,
-            color_discrete_sequence=px.colors.qualitative.Dark24,
+            color_discrete_sequence=colour_groups,
         )
+
         plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
         plot.update_layout(hoverlabel={"bgcolor": "white"})
         plot.update_traces(
-            hovertemplate="%{customdata[0]}", textposition="middle right"
+            hovertemplate="%{customdata[0]}",
+            textposition="middle right",
+            marker={"line": {"width": 0.5, "color": "#e5ecf6"}},
+            showlegend=False,
         )
-        return dcc.Graph(figure=plot)
+        return [dcc.Graph(figure=plot)]
 
+    def get_all_valid_symbols(self):
+        validator = ValidatorCache.get_validator("scatter.marker", "symbol")
+        # the validator returns values in the format:
+        # int(ID), str(ID), str(name)
+        # we only want one of the three to eliminate duplicates, so we select
+        # every third value (starting from the third so that we have the
+        # strings for debugging)
+        valid_symbols = validator.values[2::3]
+        valid_symbols.sort(key=self.get_symbol_sort_key)
+        valid_symbols = list(filter(self.is_banned_symbol, valid_symbols))
+        return valid_symbols
 
-#     def make_html(self):
-#         pass
+    # some types of symbols (specifically the ones with rotations) repeat
+    # too frequently with only minor changes, which reduces readability, so we
+    # need to remove them before display
+    @staticmethod
+    def is_banned_symbol(symbol: str):
+        banned_prefixes = [
+            "circle-",  # limited readability
+            "arrow",  # is offset from actual point
+            "triangle-down",  # rotation
+            "triangle-left",  # rotation
+            "triangle-right",  # rotation
+            "triangle-nw",  # rotation
+            "triangle-ne",  # rotation
+            "triangle-sw",  # rotation
+            "triangle-se",  # rotation
+            "hexagon",  # too close to circle at low zoom
+            "octagon",  # too close to circle at low zoom
+            "star-triangle-up",  # rotation
+            "y-down",  # rotation
+            "y-left",  # rotation
+            "y-right",  # rotation
+            "line-ew",  # rotation
+            "line-ns",  # rotation
+        ]
+        return any(symbol.startswith(prefix) for prefix in banned_prefixes)
 
-#     def generate_custom_legend(self):
-#         # create html element for legend, which groups based on problem set
-#         # and based on solver, as two seperate lists.
-#         pass
-
-
-# class compare_scatter_controller:
-#     """
-#     Class to control the compare_scatter class.
-#     """
-
-#     def __init__(self):
-#         """
-#         Initialise the compare_scatter_controller class.
-#         """
-
-#     def process_data_for_plotting(self):
-#         # turn the list of results into x : data and y : data for plotting
-#         pass
-
-#     @callback()
-#     def switch_x_axis(self, metric):
-#         pass
-
-#     @callback()
-#     def switch_y_axis(self, metric):
-#         pass
-
-#     def focus_data(self, problem=None, solver=None):
-#         if problem is None and solver is None:
-#             pass  # throw an error
-
-#         # function should allow you to select both to isolate a single point
-#         # possibly implement by greying everything out, then un greying
-#         # the ones we want to keep highlighted
+    @staticmethod
+    def get_symbol_sort_key(symbol: str):
+        suffix_ranking = {"dot": 1, "open": 2, "open-dot": 3}
+        for suffix in suffix_ranking:
+            if symbol.endswith(suffix):
+                return suffix_ranking[suffix]
+        return 0
 
 
 class CompareScatterDataModel:
@@ -147,32 +188,10 @@ class CompareScatterDataModel:
     def get_hover_text_for_results(self):
         # call util, and prepend the metrics being plotted
         text_array = [
-            [get_hover_text(result, newline="<br>")] for result in self.results
+            [
+                get_hover_text(result, include_title=True, newline="<br>")
+                + "<extra></extra>"
+            ]  # removes grey box with trace name from plot
+            for result in self.results
         ]
         return text_array
-
-
-#     def get_hover_text_array(self):
-#         # return an array of hover text in the same sorted order as the
-# results
-#         # for example x: [1,2,3]
-#         # matches array: ["hover1","hover2","hover3"]
-#         pass
-
-#     def get_unique_problems(self):
-#         # return an array of problems in the same sorted order as the
-# #results
-#         # this means that they can be used for grouping
-#         # for example x: [1,2,3,4,5,6]
-#         # matches array: ["p123","p123","p123","p456","p456","p456"]
-#         # where "p123" is a group containing the first second and third
-# points
-#         pass
-
-#     def get_unique_solvers(self):
-#         # return an array of solvers in the same sorted order as the results
-#         # this means that they can be used for grouping
-#         # for example x: [1,2,3,4]
-#         # matches array: ["oddSolver","evenSolver","oddSolver","evenSolver",]
-#         # where "oddSolver" is a group containing the only every other point
-#         pass
