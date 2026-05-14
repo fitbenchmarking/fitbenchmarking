@@ -1,6 +1,7 @@
 import plotly.colors
 import plotly.express as px
-from dash import dcc
+import plotly.graph_objects as go
+from dash import dcc, html
 from plotly.validator_cache import ValidatorCache
 
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -94,7 +95,88 @@ class CompareScatterView:
             },
             showlegend=False,
         )
-        return [dcc.Graph(figure=plot)]
+        return [
+            dcc.Graph(figure=plot),
+            self.get_legend(
+                plot, problems, valid_symbols, solvers, colour_groups
+            ),
+        ]
+
+    def get_legend(
+        self, plot, symbol_groups, symbol_map, colour_groups, colour_map
+    ):
+        unique_symbol_groups = dict.fromkeys(symbol_groups)
+        unique_colour_groups = dict.fromkeys(colour_groups)
+
+        legend = []
+
+        legend.append(html.H1("Problem"))
+        for i, symbol_mapped_value in enumerate(unique_symbol_groups):
+            legend_item = html.Button(
+                [
+                    self.get_isolated_symbol(symbol=symbol_map[i]),
+                    f" - {symbol_mapped_value}",
+                ],
+                style={"display": "flex"},
+            )
+            legend.append(legend_item)
+            legend.append(html.Br())
+
+        legend.append(html.H1("Minimizer"))
+        for i, color_mapped_value in enumerate(unique_colour_groups):
+            legend_item = html.Button(
+                [
+                    self.get_isolated_symbol(colour=colour_map[i]),
+                    f" - {color_mapped_value}",
+                ],
+                style={"display": "flex"},
+            )
+            legend.append(legend_item)
+            legend.append(html.Br())
+
+        return html.Div(legend)
+
+    @staticmethod
+    def get_isolated_symbol(symbol="circle-x", colour="rgba(150,150,150,1)"):
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=[0],
+                y=[0],
+                marker={
+                    "symbol": symbol,
+                    "color": colour,
+                    "line": {
+                        "width": 1.5,
+                        "color": "white",
+                    },
+                    "size": 12,
+                },
+            )
+        )
+        fig.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            xaxis={
+                "range": [-0.01, 0.01],
+                "visible": False,
+                "showgrid": False,
+                "zeroline": False,
+                "fixedrange": True,
+            },
+            yaxis={
+                "range": [-0.01, 0.01],
+                "visible": False,
+                "showgrid": False,
+                "zeroline": False,
+                "fixedrange": True,
+                "scaleanchor": "x",
+            },
+            margin={"l": 0, "r": 0, "t": 2, "b": 0},
+            width=15,
+            height=15,
+        )
+        return dcc.Graph(figure=fig, config={"staticPlot": True})
 
     def get_all_valid_symbols(self):
         validator = ValidatorCache.get_validator("scatter.marker", "symbol")
