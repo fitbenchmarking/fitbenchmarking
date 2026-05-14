@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # From gsl-bin to swig for pygsl
 # from gfortan to libgdal-dev for RALfit
 # from libgoogle-glog-dev from libtbb-dev for ceres
-# from lsb-release for SASfit
+# lsb-release for SASfit
 RUN apt-get update && apt-get install -y --no-install-recommends\
     python3.12 \
     python3.12-venv \
@@ -47,9 +47,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libeigen3-dev \
     libtbb-dev \
     lsb-release \
-    libssl-dev \
-    build-essential \
-    fuse-overlayfs \
     && rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/opt/venv
