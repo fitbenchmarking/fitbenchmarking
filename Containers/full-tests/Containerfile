@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     lsb-release \
     libssl-dev \
     build-essential \
+    fuse-overlayfs \
     && rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/opt/venv
