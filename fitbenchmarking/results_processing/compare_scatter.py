@@ -1,4 +1,3 @@
-import numpy as np
 import plotly.colors
 import plotly.express as px
 from dash import dcc
@@ -50,16 +49,9 @@ class CompareScatterView:
 
     # dict of internal Fitting Result attribute names, and the human readable
     # name that should be visible on the user interface
-    # metric_text_mappings = {"norm_acc": "error (normalised)"}
 
-    # def __init__(self) -> None:
-    #    for attribute in dir(FittingResult):
-    #        if not attribute.startswith("_"):
-    #            self.metric_text_mappings[attribute] = (
-    #                attribute.replace("_"," ")
-    #                if attribute not in self.metric_text_mappings
-    #                else self.metric_text_mappings[attribute]
-    #            )
+    def __init__(self):
+        self.valid_symbols = self.get_all_valid_symbols()
 
     def get_plot(
         self, x, y, x_title, y_title, tooltips, errors, solvers, problems
@@ -72,15 +64,9 @@ class CompareScatterView:
             colorscale="mrybm",
             samplepoints=len(dict.fromkeys(solvers)),
         )
-        border_colour_groups = plotly.colors.sample_colorscale(
-            colorscale="mrybm",
-            samplepoints=len(dict.fromkeys(solvers)),
-        )
-        # borders are done per point instead of per group
-        border_colour_groups = np.repeat(
-            border_colour_groups, len(dict.fromkeys(problems))
-        )
+
         valid_symbols = self.get_all_valid_symbols()
+
         plot = px.scatter(
             x=x,
             y=y,
@@ -140,7 +126,7 @@ class CompareScatterView:
             "line-ew",  # rotation
             "line-ns",  # rotation
         ]
-        return any(symbol.startswith(prefix) for prefix in banned_prefixes)
+        return all(not symbol.startswith(prefix) for prefix in banned_prefixes)
 
     @staticmethod
     def get_symbol_sort_key(symbol: str):
