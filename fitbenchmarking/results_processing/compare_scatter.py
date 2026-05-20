@@ -126,6 +126,7 @@ class CompareScatterView:
 
     active_opacity = 1
     inactive_opacity = 0.3
+
     active_error_template = (
         f"""<sup style="opacity:{active_opacity}">"""
         """<b>{0}</b></sup>"""
@@ -149,7 +150,7 @@ class CompareScatterView:
             self.active_error_template.format(flag) if flag != 0 else ""
             for flag in errors
         ]
-        "('<sup style=\"opacity:', 1, '\"><b>3</b>', '</sup>')"
+
         plot = px.scatter(
             x=x,
             y=y,
