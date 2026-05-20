@@ -173,7 +173,8 @@ class CompareScatterView:
                 "line": {
                     "width": 0.6,
                     "color": "#e5ecf6",  # colour of plot background
-                }
+                },
+                "size": 7,
             },
             showlegend=False,
         )
@@ -262,36 +263,37 @@ class CompareScatterView:
 
         for t in plot.data:
             if (
-                isinstance(t, go.Scatter)
-                and isinstance(t.marker, go.scatter.Marker)
-                and isinstance(t.legendgroup, str)
-                and (group in t.legendgroup or bulk_operation)
+                group == t.customdata[0][1]  # type: ignore
+                or group == t.customdata[0][2]  # type: ignore
+                or bulk_operation
             ):
                 if deselect_all or (not bulk_operation and state[group]):
-                    t.marker.opacity = self.inactive_opacity
-                    marker_text = t.text if t.text is not None else ""
-
-                    if isinstance(marker_text, np.ndarray):
-                        marker_text = "".join(marker_text)
-
-                    t.text = re.sub(
-                        f"opacity:{self.active_opacity}",
-                        f"opacity:{self.inactive_opacity}",
-                        str(marker_text),
+                    self.set_trace_opacity(
+                        t,
+                        old_opacity=self.active_opacity,
+                        new_opacity=self.inactive_opacity,
                     )
                 else:
-                    t.marker.opacity = self.active_opacity
-                    marker_text = t.text if t.text is not None else ""
-
-                    if isinstance(marker_text, np.ndarray):
-                        marker_text = "".join(marker_text)
-
-                    t.text = re.sub(
-                        f"opacity:{self.inactive_opacity}",
-                        f"opacity:{self.active_opacity}",
-                        str(marker_text),
+                    self.set_trace_opacity(
+                        t,
+                        old_opacity=self.inactive_opacity,
+                        new_opacity=self.active_opacity,
                     )
         return plot
+
+    @staticmethod
+    def set_trace_opacity(t, old_opacity, new_opacity):
+        t.marker.opacity = new_opacity
+        marker_text = t.text if t.text is not None else ""
+
+        if isinstance(marker_text, np.ndarray):
+            marker_text = "".join(marker_text)
+
+        t.text = re.sub(
+            f"opacity:{old_opacity}",
+            f"opacity:{new_opacity}",
+            str(marker_text),
+        )
 
     active_button_style = {
         "display": "flex",
@@ -309,14 +311,15 @@ class CompareScatterView:
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
 
-        unique_symbol_groups = dict.fromkeys(symbol_groups)
-        unique_colour_groups = dict.fromkeys(colour_groups)
+        unique_symbol_groups = list(dict.fromkeys(symbol_groups))
+        unique_colour_groups = list(dict.fromkeys(colour_groups))
 
         legend = []
         legend_status = {}
-        # legend.append(html.H1("Problem"))
+
         problem_legend = []
         problem_legend.append(html.H2("Problem"))
+
         for i, symbol_mapped_value in enumerate(unique_symbol_groups):
             legend_item = html.Button(
                 [
@@ -332,6 +335,7 @@ class CompareScatterView:
 
         minimiser_legend = []
         minimiser_legend.append(html.H2("Minimizer"))
+
         for i, color_mapped_value in enumerate(unique_colour_groups):
             legend_item = html.Button(
                 [
@@ -345,31 +349,42 @@ class CompareScatterView:
             minimiser_legend.append(legend_item)
             minimiser_legend.append(html.Br())
 
+        all_none_buttons = html.Div(
+            [
+                html.Button(
+                    "All", id="all_button", style=self.active_button_style
+                ),
+                html.Div("|", style={"font-weight": "bold"}),
+                html.Button(
+                    "None",
+                    id="none_button",
+                    style=self.inactive_button_style,
+                ),
+            ],
+            style={
+                "display": "flex",
+                "justify-content": "center",
+                "align-items": "center",
+            },
+        )
+
+        # if len(unique_symbol_groups) > len(unique_colour_groups):
+        #     minimiser_legend.append(all_none_buttons)
+        # else:
+        #     problem_legend.append(all_none_buttons)
+
         legend.append(html.Div(problem_legend))
         legend.append(html.Div(minimiser_legend))
-        minimiser_legend.append(
-            html.Div(
-                [
-                    html.Button(
-                        "All", id="all_button", style=self.active_button_style
-                    ),
-                    html.Div("|", style={"font-weight": "bold"}),
-                    html.Button(
-                        "None",
-                        id="none_button",
-                        style=self.inactive_button_style,
-                    ),
-                ],
-                style={
-                    "display": "flex",
-                    "justify-content": "center",
-                    "align-items": "center",
-                },
-            )
-        )
         legend.append(dcc.Store(id="legend-status", data=legend_status))
 
-        return html.Div(legend, style={"display": "flex"})
+        complete_legend = html.Div(
+            [
+                html.Div(legend, style={"display": "flex"}),
+                html.Div(all_none_buttons),
+            ]
+        )
+
+        return complete_legend
 
     @staticmethod
     def sanitize_for_id(to_sanitize: str):
