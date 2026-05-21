@@ -655,7 +655,7 @@ def open_browser(
                 run_id=options.run_id,
             )
         )
-        app.run(host=options.ip_address, port=options.port, debug=True)
+        app.run(host=options.ip_address, port=options.port)
 
 
 def update_warning(solvers, max_solvers):
