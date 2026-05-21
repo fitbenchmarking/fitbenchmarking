@@ -640,20 +640,22 @@ def open_browser(
         profile_instances_all_groups = create_performace_profile_instances(
             pp_dfs_all_prob_sets
         )
-        layout = get_performance_profile_layout()
+        performance_profile_layout = get_performance_profile_layout()
+        compare_scatter = CompareScatter(app, results=results)
+        compare_scatter_layout, app = compare_scatter.get_layout()
         app.callback(
             Output("page-content", "children"), [Input("url", "pathname")]
         )(
             lambda x: display_page(
                 x,
                 performance_profile_instances_all_groups=profile_instances_all_groups,
-                layout=layout,
+                compare_scatter_layout=compare_scatter_layout,
+                performance_profile_layout=performance_profile_layout,
                 max_solvers=max_solvers,
                 run_id=options.run_id,
-                compare_scatter=CompareScatter(results=results),
             )
         )
-        app.run(host=options.ip_address, port=options.port)
+        app.run(host=options.ip_address, port=options.port, debug=True)
 
 
 def update_warning(solvers, max_solvers):
@@ -704,10 +706,10 @@ def display_page(
     performance_profile_instances_all_groups: dict[
         str, dict[str, DashPerfProfile]
     ],
-    layout: "list",
+    performance_profile_layout: "list",
     max_solvers: int,
     run_id: str,
-    compare_scatter: CompareScatter,
+    compare_scatter_layout: "list",
 ):
     """
     Update the layout of the dash app.
@@ -744,9 +746,9 @@ def display_page(
         for problem_set in performance_profile_instances_all_groups:
             for plot in performance_profile_instances_all_groups[problem_set]:
                 out_msg.extend(
-                    [html.Br(), f"{run_id}/{problem_set}/pp/{plot}"]
+                    [html.Br(), f"/{run_id}/{problem_set}/pp/{plot}"]
                 )
-
+            out_msg.extend([html.Br(), f"/{run_id}/{problem_set}/cs/_"])
             all_tables_string = "+".join(
                 list(
                     performance_profile_instances_all_groups[
@@ -756,7 +758,7 @@ def display_page(
             )
 
             out_msg.extend(
-                [html.Br(), f"{run_id}/{problem_set}/pp/{all_tables_string}"]
+                [html.Br(), f"/{run_id}/{problem_set}/pp/{all_tables_string}"]
             )
 
         return [html.H2("404 Page Error!"), html.Div(out_msg)]
@@ -779,7 +781,7 @@ def display_page(
         ]
 
     if plot == "cs":
-        return html.Div(compare_scatter.get_layout())
+        return compare_scatter_layout
     elif plot == "pp":
         group_profiles = {}
         try:
@@ -795,7 +797,7 @@ def display_page(
                 f"Valid names include: {valid_problem_sets}",
             ]
         return build_performance_profile_page(
-            group_profiles, layout, metric_str, max_solvers
+            group_profiles, performance_profile_layout, metric_str, max_solvers
         )
     else:
         valid_plot_types = {
