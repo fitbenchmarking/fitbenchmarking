@@ -35,20 +35,8 @@ class CompareScatter:
             for legend_item in legend_items:
                 button_id = self.view.sanitize_for_id(legend_item)
 
-                # callback to edit the figure
                 app.callback(
                     Output("compare_scatter", "figure", allow_duplicate=True),
-                    Input(button_id, "n_clicks"),
-                    State("legend-status", "data"),
-                    prevent_initial_call=True,
-                )(
-                    lambda _, state, group=legend_item: self.view.focus_trace(
-                        self.view.plot, state, group
-                    )
-                )
-
-                # callback to edit the legend
-                app.callback(
                     Output("legend-status", "data", True),
                     Output(button_id, "style"),
                     Output("all_button", "style", True),
@@ -57,8 +45,8 @@ class CompareScatter:
                     State("legend-status", "data"),
                     prevent_initial_call=True,
                 )(
-                    lambda _, state, group=legend_item: self.view.focus_legend(
-                        group, state
+                    lambda _, state, group=legend_item: (
+                        self.view.update_focus_for_group(group, state)
                     )
                 )
 
@@ -203,9 +191,10 @@ class CompareScatterView:
             self.active_button_style if focus else self.inactive_button_style
         )
         plot = self.plot
-        for item in state:
-            state[item] = focus
-            set_props(self.sanitize_for_id(item), {"style": style})
+        for item_type in state:
+            for item in state[item_type]:
+                state[item_type][item] = focus
+                set_props(self.sanitize_for_id(item), {"style": style})
 
         plot = self.focus_trace(self.plot, state, "all" if focus else "none")
 
@@ -219,19 +208,36 @@ class CompareScatterView:
         )
         return state, all_button_style, none_button_style, plot
 
-    def focus_legend(self, legend_item: str = "", state: dict = {}):
+    def update_focus_for_group(self, legend_item: str = "", state: dict = {}):
 
         all_button_style = None
         none_button_style = None
         new_style = None
 
-        state[legend_item] = not state[legend_item]
+        new_state = None
+        if legend_item in state["problem"]:
+            new_state = state["problem"][legend_item] = not state["problem"][
+                legend_item
+            ]
+        else:
+            new_state = state["minimizer"][legend_item] = not state[
+                "minimizer"
+            ][legend_item]
+
         new_style = (
             self.active_button_style
-            if state[legend_item]
+            if new_state
             else self.inactive_button_style
         )
 
+        plot = self.focus_trace(self.plot, state, legend_item)
+        all_button_style, none_button_style = self.update_all_none_button(
+            state
+        )
+
+        return plot, state, new_style, all_button_style, none_button_style
+
+    def update_all_none_button(self, state):
         all_selected = True
         all_deselected = True
 
@@ -252,33 +258,58 @@ class CompareScatterView:
             else self.inactive_button_style
         )
 
-        return state, new_style, all_button_style, none_button_style
+        return all_button_style, none_button_style
 
     def focus_trace(self, plot: go.Figure, state: dict, group: str):
         # we do a "in" check with tracename, since the legendgroup contains
         # both the problem and the solver in the same string
         select_all = group == "all"
         deselect_all = group == "none"
-        bulk_operation = select_all or deselect_all
 
+        selected_minimizers = [
+            g for g in state["minimizer"] if state["minimizer"][g]
+        ]
+        selected_problems = [
+            g for g in state["problem"] if state["problem"][g]
+        ]
         for t in plot.data:
-            if (
-                group == t.customdata[0][1]  # type: ignore
-                or group == t.customdata[0][2]  # type: ignore
-                or bulk_operation
-            ):
-                if deselect_all or (not bulk_operation and state[group]):
-                    self.set_trace_opacity(
-                        t,
-                        old_opacity=self.active_opacity,
-                        new_opacity=self.inactive_opacity,
+            if deselect_all:
+                visible = False
+            elif select_all:
+                visible = True
+            else:
+                minimizer = t.customdata[0][1]  # type: ignore
+                problem = t.customdata[0][2]  # type: ignore
+                if (
+                    (
+                        len(selected_problems) == 0
+                        and minimizer in selected_minimizers
                     )
+                    or (
+                        len(selected_minimizers) == 0
+                        and problem in selected_problems
+                    )
+                    or (
+                        minimizer in selected_minimizers
+                        and problem in selected_problems
+                    )
+                ):
+                    visible = True
                 else:
-                    self.set_trace_opacity(
-                        t,
-                        old_opacity=self.inactive_opacity,
-                        new_opacity=self.active_opacity,
-                    )
+                    visible = False
+
+            if visible:
+                self.set_trace_opacity(
+                    t,
+                    old_opacity=self.inactive_opacity,
+                    new_opacity=self.active_opacity,
+                )
+            else:
+                self.set_trace_opacity(
+                    t,
+                    old_opacity=self.active_opacity,
+                    new_opacity=self.inactive_opacity,
+                )
         return plot
 
     @staticmethod
@@ -315,7 +346,7 @@ class CompareScatterView:
         unique_colour_groups = list(dict.fromkeys(colour_groups))
 
         legend = []
-        legend_status = {}
+        legend_status = {"minimizer": {}, "problem": {}}
 
         problem_legend = []
         problem_legend.append(html.H2("Problem"))
@@ -329,7 +360,7 @@ class CompareScatterView:
                 style=self.active_button_style,
                 id=self.sanitize_for_id(symbol_mapped_value),
             )
-            legend_status[symbol_mapped_value] = True
+            legend_status["problem"][symbol_mapped_value] = True
             problem_legend.append(legend_item)
             problem_legend.append(html.Br())
 
@@ -345,7 +376,7 @@ class CompareScatterView:
                 style=self.active_button_style,
                 id=self.sanitize_for_id(color_mapped_value),
             )
-            legend_status[color_mapped_value] = True
+            legend_status["minimizer"][color_mapped_value] = True
             minimiser_legend.append(legend_item)
             minimiser_legend.append(html.Br())
 
