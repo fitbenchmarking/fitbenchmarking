@@ -113,7 +113,7 @@ class CompareScatterView:
         self.valid_symbols = self.get_all_valid_symbols()
 
     active_opacity = 1
-    inactive_opacity = 0.3
+    inactive_opacity = 0.2
 
     active_error_template = (
         f"""<sup style="opacity:{active_opacity}">"""
@@ -235,18 +235,19 @@ class CompareScatterView:
             state
         )
 
+        print(all_button_style)
         return plot, state, new_style, all_button_style, none_button_style
 
     def update_all_none_button(self, state):
-        all_selected = True
-        all_deselected = True
 
-        for group in state:
-            if not state[group]:
-                all_selected = False
-            if state[group]:
-                all_deselected = False
-
+        all_selected = all(state["minimizer"].values()) and all(
+            state["problem"].values()
+        )
+        all_deselected = not any(state["minimizer"].values()) and not any(
+            state["problem"].values()
+        )
+        print(all_selected)
+        print(all_deselected)
         all_button_style = (
             self.active_button_style
             if all_selected
