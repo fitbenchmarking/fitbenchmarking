@@ -18,7 +18,7 @@ class CompareScatter:
     Class to handle the data processing for a compare scatter
     """
 
-    def __init__(self, app: Dash, results=[]):
+    def __init__(self, app: Dash, options, results=[]):
         """
         Initialise the compare_scatter class.
         """
@@ -26,6 +26,7 @@ class CompareScatter:
         self.model = CompareScatterDataModel(results)
         self.view = CompareScatterView()
         self.app = app
+        self.options = options
 
         # self.controller = compare_scatter_controller()
         # most of the interface is just get plot from the view
@@ -70,14 +71,37 @@ class CompareScatter:
                 prevent_initial_call=True,
             )(lambda _, state: self.view.set_focus_for_all_items(True, state))
 
+            app.clientside_callback(
+                """
+                function(data){
+                    var newpath = data["points"][0]["customdata"][3];
+                    console.log(newpath);
+                    if (typeof(newpath) !== "undefined") {
+                        console.log("emitting");
+                        window.parent.postMessage({path:newpath},"*");
+                    }
+                }
+                """,
+                Input("compare_scatter", "clickData"),
+            )
+
         else:
             print("warning plot type is:", type(self.view.plot))
 
         return app
 
+    def get_fitting_report_urls(self):
+        return [
+            "support_pages/" + val.split("support_pages/", 1)[1]
+            if val != ""
+            else "index.html"
+            for val in self.model.get_values_for_axis("fitting_report_link")
+        ]
+
     def get_layout(self):
         default_x = "norm_runtime"
         default_y = "norm_acc"
+
         plot = self.view.get_plot(
             x=self.model.get_values_for_axis(default_x),
             x_title=default_x,
@@ -89,6 +113,7 @@ class CompareScatter:
                 "modified_minimizer_name", {"with_software": True}
             ),
             problems=self.model.get_values_for_axis("problem_tag"),
+            report_pages=self.get_fitting_report_urls(),
         )
 
         legend_items = self.model.get_unique_values_for_axis("problem_tag")
@@ -125,7 +150,16 @@ class CompareScatterView:
     )
 
     def get_plot(
-        self, x, y, x_title, y_title, tooltips, errors, solvers, problems
+        self,
+        x,
+        y,
+        x_title,
+        y_title,
+        tooltips,
+        errors,
+        solvers,
+        problems,
+        report_pages,
     ):
         colour_groups = plotly.colors.sample_colorscale(
             colorscale="mrybm",
@@ -147,7 +181,7 @@ class CompareScatterView:
             symbol_sequence=self.valid_symbols,
             log_x=True,
             log_y=True,
-            custom_data=[tooltips, solvers, problems],
+            custom_data=[tooltips, solvers, problems, report_pages],
             text=errors,
             color_discrete_sequence=colour_groups,
         )
@@ -167,7 +201,6 @@ class CompareScatterView:
             showlegend=False,
         )
         self.plot = plot
-
         legend = self.get_legend(
             symbol_groups=problems,
             symbol_map=self.valid_symbols,
@@ -235,7 +268,6 @@ class CompareScatterView:
             state
         )
 
-        print(all_button_style)
         return plot, state, new_style, all_button_style, none_button_style
 
     def update_all_none_button(self, state):
@@ -246,8 +278,6 @@ class CompareScatterView:
         all_deselected = not any(state["minimizer"].values()) and not any(
             state["problem"].values()
         )
-        print(all_selected)
-        print(all_deselected)
         all_button_style = (
             self.active_button_style
             if all_selected
@@ -332,6 +362,7 @@ class CompareScatterView:
         "background-color": "white",
         "border": "none",
         "opacity": 1,
+        "text-align": "left",
     }
 
     inactive_button_style = {
@@ -339,6 +370,7 @@ class CompareScatterView:
         "background-color": "white",
         "border": "none",
         "opacity": 0.5,
+        "text-align": "left",
     }
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
@@ -568,9 +600,6 @@ class CompareScatterDataModel:
             result.modified_minimizer_name(True) for result in self.results
         ]
         return values
-
-    def get_report_page_URLs(self):
-        pass
 
     def get_hover_text_for_results(self):
         # call util, and prepend the metrics being plotted
