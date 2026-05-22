@@ -641,7 +641,7 @@ def open_browser(
             pp_dfs_all_prob_sets
         )
         performance_profile_layout = get_performance_profile_layout()
-        compare_scatter = CompareScatter(app, results=results)
+        compare_scatter = CompareScatter(app, options, results=results)
         compare_scatter_layout, app = compare_scatter.get_layout()
         app.callback(
             Output("page-content", "children"), [Input("url", "pathname")]
