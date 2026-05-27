@@ -561,11 +561,13 @@ class Fit:
                 controller.validate()
                 controller.prepare()
                 if tracker:
+                    tracker_stopped = False
                     tracker.start_task()
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                     energy = tracker.stop_task().energy_consumed / num_runs
+                    tracker_stopped = True
                 else:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
@@ -637,7 +639,7 @@ class Fit:
         controller.timer.reset()
 
         # ensure emissions tracker has been stopped if energy not set
-        if np.isnan(energy) and self._emissions_tracker:
+        if self._emissions_tracker and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
