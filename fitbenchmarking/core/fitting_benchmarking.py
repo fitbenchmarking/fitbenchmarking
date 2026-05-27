@@ -555,13 +555,13 @@ class Fit:
         num_runs = self._options.num_runs
         energy = np.nan
         tracker = self._emissions_tracker
+        tracker_stopped = False
 
         try:
             with self._grabbed_output:
                 controller.validate()
                 controller.prepare()
                 if tracker:
-                    tracker_stopped = False
                     tracker.start_task()
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
