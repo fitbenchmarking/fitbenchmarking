@@ -85,6 +85,39 @@ class CompareScatter:
                 Input("compare_scatter", "clickData"),
             )
 
+            # TODO: find a better way to do this
+            # this lets us inject JS into the internals of the iframe
+            app.clientside_callback(
+                """
+                // escape the dash stuff
+                function() {};
+                
+                // then run whatever code we want
+                const observer = new MutationObserver(() => {
+                const el = document.getElementById(
+                    "compare_scatter_container");
+
+                if (el && el.scrollHeight > 0) {
+                    window.parent.postMessage(
+                    {
+                        height: el.scrollHeight,
+                        src: "mutation"
+                    },
+                    "*"
+                    );
+                    observer.disconnect();
+                }
+                });
+
+                observer.observe(document.body, { 
+                    childList: true, subtree: true 
+                });
+                """,
+                # dummy to suppress no input error, this runs on load anyway
+                Input("compare_scatter", "figure"),
+                prevent_initial_call=False,
+            )
+
         else:
             print("warning plot type is:", type(self.view.plot))
 
@@ -187,6 +220,7 @@ class CompareScatterView:
         )
 
         plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
+        plot.update_layout(margin={"l": 0, "r": 5, "t": 0, "b": 0})
         plot.update_layout(hoverlabel={"bgcolor": "white"})
         plot.update_traces(
             hovertemplate="%{customdata[0]}",
@@ -211,10 +245,16 @@ class CompareScatterView:
 
         return html.Div(
             [
-                dcc.Graph(figure=self.plot, id="compare_scatter"),
+                dcc.Store(id="page-load-trigger", data={"loaded": True}),
+                dcc.Graph(
+                    figure=self.plot,
+                    id="compare_scatter",
+                    style={"flex": "1", "min-width": "0"},
+                ),
                 self.legend,
             ],
-            style={"display": "flex"},
+            style={"display": "flex", "overflow": "hidden"},
+            id="compare_scatter_container",
         )
 
     problem_legend = {}
@@ -445,7 +485,8 @@ class CompareScatterView:
             [
                 html.Div(legend, style={"display": "flex"}),
                 html.Div(all_none_buttons),
-            ]
+            ],
+            id="compare_scatter_legend",
         )
 
         return complete_legend

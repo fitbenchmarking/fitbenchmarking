@@ -142,6 +142,36 @@
                             </table>
                         </div>
                     </section>
+                    <hr>
+                    <section class="accordion">
+                        <input type="checkbox" name="collapse" id="handle-cs" checked="checked">
+                        <h2 class="handle">
+                            <label for="handle-cs">Comparison plot</label>
+                        </h2>
+                        <div class="content">
+                            <script>
+                                window.addEventListener("message", (event) => {
+                                    console.log("caught message");
+                                    console.log(event.data);
+                                    if(event.data?.path){
+                                        console.log("got new path");
+                                        window.location.href=event.data.path;
+                                    }
+                                    if(event.data?.height){
+                                        console.log("height");
+                                        document.getElementById("cs_iframe").height = event.data.height + 20;
+                                        document.getElementById("cs_iframe_wrapper").height = event.data.height + 20;
+                                        console.log(event.data.height);
+                                    }
+                                })
+                            </script>
+                            <div id="cs_iframe_wrapper" class="iframe-wrapper" style="height:auto">
+                            <iframe id="cs_iframe" width="100%" frameborder="0" seamless="seamless"
+                                    src="{{ cs_dash_url }}" height="100%" width="100%" style="overflow-y:hidden"></iframe>
+                        </div>
+                        <br>
+                        </div>
+                    </section>
                     {% if has_pp %}
                         <hr>
                         <section class="accordion">
