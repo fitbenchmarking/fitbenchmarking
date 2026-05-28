@@ -61,7 +61,7 @@ def mock_func_call(*args, **kwargs):
     return results, failed_problems, unselected_minimizers
 
 
-def get_default_args():
+def get_default_cli_args():
     return {
         "options_file": "",
         "problem_sets": ["/test/path"],
@@ -218,7 +218,7 @@ class TestMain(TestCase):
         """
         Tests that CLI options are correctly parsed by `parse_options_from_cli`
         """
-        test_options = get_default_args()
+        test_options = get_default_cli_args()
         test_options[option_mapping.cli_key] = option_mapping.cli_value
 
         args = argparse.Namespace(**test_options)
@@ -239,10 +239,10 @@ class TestMain(TestCase):
 
         # Get all of the default values
         expected_result = main.parse_options_from_cli(
-            argparse.Namespace(**get_default_args())
+            argparse.Namespace(**get_default_cli_args())
         )
 
-        test_options = get_default_args()
+        test_options = get_default_cli_args()
         test_options[option_mapping.cli_key] = option_mapping.cli_value
 
         args = argparse.Namespace(**test_options)
