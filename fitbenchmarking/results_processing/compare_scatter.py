@@ -74,14 +74,19 @@ class CompareScatter:
             app.clientside_callback(
                 """
                 function(data){
-                    var newpath = data["points"][0]["customdata"][3];
+                    if (!data) {
+                        return null;
+                    }
+                    var newpath = data.points?.[0]?.customdata?.[3];
                     console.log(newpath);
                     if (typeof(newpath) !== "undefined") {
                         console.log("emitting");
                         window.parent.postMessage({path:newpath},"*");
                     }
+                    return null;
                 }
                 """,
+                Output("dummy-click", "children"),
                 Input("compare_scatter", "clickData"),
             )
 
@@ -90,29 +95,32 @@ class CompareScatter:
             app.clientside_callback(
                 """
                 // escape the dash stuff
-                function() {};
+                function() {
                 
-                // then run whatever code we want
-                const observer = new MutationObserver(() => {
-                const el = document.getElementById(
-                    "compare_scatter_container");
+                    // then run whatever code we want
+                    const observer = new MutationObserver(() => {
+                    const el = document.getElementById(
+                        "compare_scatter_container");
 
-                if (el && el.scrollHeight > 0) {
-                    window.parent.postMessage(
-                    {
-                        height: el.scrollHeight,
-                        src: "mutation"
-                    },
-                    "*"
-                    );
-                    observer.disconnect();
+                    if (el && el.scrollHeight > 0) {
+                        window.parent.postMessage(
+                        {
+                            height: el.scrollHeight,
+                            src: "mutation"
+                        },
+                        "*"
+                        );
+                        observer.disconnect();
+                    }
+                    });
+
+                    observer.observe(document.body, { 
+                        childList: true, subtree: true 
+                    });
+                    return null;
                 }
-                });
-
-                observer.observe(document.body, { 
-                    childList: true, subtree: true 
-                });
                 """,
+                Output("dummy-height", "children"),
                 # dummy to suppress no input error, this runs on load anyway
                 Input("compare_scatter", "figure"),
                 prevent_initial_call=False,
@@ -252,6 +260,8 @@ class CompareScatterView:
                     style={"flex": "1", "min-width": "0"},
                 ),
                 self.legend,
+                html.Div(id="dummy-click", style={"display": "none"}),
+                html.Div(id="dummy-height", style={"display": "none"}),
             ],
             style={"display": "flex", "overflow": "hidden"},
             id="compare_scatter_container",
