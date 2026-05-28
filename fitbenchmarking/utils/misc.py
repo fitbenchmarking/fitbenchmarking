@@ -103,7 +103,7 @@ def get_js(options, working_directory):
 
 
 @staticmethod
-def get_hover_text(result, include_title=False, newline="\\a") -> str:
+def get_hover_text(result, include_title=False, newline="""\\a """) -> str:
     """
     Generate the tooltip text for a given fitting result.
     :param result: The result to generate the text for
