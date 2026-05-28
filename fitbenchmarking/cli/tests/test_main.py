@@ -5,6 +5,7 @@ This file contains unit tests for the main CLI script
 import argparse
 import inspect
 import os
+from dataclasses import dataclass
 from json import load
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -96,40 +97,6 @@ def get_default_args():
     }
 
 
-class cli_option_mapping:
-    """
-    Class to hold the mapping between CLI options and the expected output
-    dictionary keys and values. This is used to test that the CLI options are
-    correctly parsed by `parse_options_from_cli`
-    """
-
-    def __init__(
-        self,
-        cli_key,
-        cli_value=None,
-        expected_output_key=None,
-        expected_output_value=None,
-    ):
-        # cli_key is required so should always exist
-        self.cli_key = cli_key
-        # if the value is not provided, we assume that this is a value in its
-        # default state, so get what that should be from `get_default_args
-        self.cli_value = (
-            cli_value if cli_value is not None else get_default_args()[cli_key]
-        )
-
-        # if the output values are not provided, assume that the output name
-        # and value are the same as the input name and value
-        self.expected_output_key = (
-            expected_output_key if expected_output_key is not None else cli_key
-        )
-        self.expected_output_value = (
-            expected_output_value
-            if expected_output_value is not None
-            else cli_value
-        )
-
-
 class TestMain(TestCase):
     """
     Tests for main.py
@@ -202,40 +169,41 @@ class TestMain(TestCase):
         # Check that it's not empty
         self.assertTrue(contents)
 
+    @dataclass
+    class OptionMapping:
+        cli_key: str
+        cli_value: bool | str
+        expected_output_key: str
+        expected_output_value: bool | str = "test_value"
+
     valid_options = [
-        cli_option_mapping("results_dir", "test_value"),
-        cli_option_mapping("num_runs", "test_value"),
-        cli_option_mapping("algorithm_type", "test_value"),
-        cli_option_mapping("software", "test_value"),
-        cli_option_mapping("jac_method", "test_value"),
-        cli_option_mapping("cost_func_type", "test_value"),
-        cli_option_mapping("comparison_mode", "test_value"),
-        cli_option_mapping("table_type", "test_value"),
-        cli_option_mapping("level", "test_value"),
-        cli_option_mapping("external_output", "test_value"),
-        cli_option_mapping("run_name", "test_value"),
-        cli_option_mapping("runtime_metric", "test_value"),
-        cli_option_mapping("port", "test_value"),
-        cli_option_mapping("ip_address", "test_value"),
-        cli_option_mapping("make_plots", True, "make_plots", True),
-        cli_option_mapping("dont_make_plots", True, "make_plots", False),
-        cli_option_mapping("run_dash", True, "run_dash", True),
-        cli_option_mapping("dont_run_dash", True, "run_dash", False),
-        cli_option_mapping("pbar", True, "pbar", True),
-        cli_option_mapping("no_pbar", True, "pbar", False),
-        cli_option_mapping("append_log", True, "append", True),
-        cli_option_mapping("overwrite_log", True, "append", False),
-        cli_option_mapping("results_browser", True, "results_browser", True),
-        cli_option_mapping(
-            "no_results_browser", True, "results_browser", False
-        ),
-        cli_option_mapping("check_jacobian", True, "check_jacobian", True),
-        cli_option_mapping(
-            "dont_check_jacobian", True, "check_jacobian", False
-        ),
-        cli_option_mapping(
-            "logging_file_name", "test_value", "file_name", "test_value"
-        ),
+        OptionMapping("results_dir", "test_value", "results_dir"),
+        OptionMapping("num_runs", "test_value", "num_runs"),
+        OptionMapping("algorithm_type", "test_value", "algorithm_type"),
+        OptionMapping("software", "test_value", "software"),
+        OptionMapping("jac_method", "test_value", "jac_method"),
+        OptionMapping("cost_func_type", "test_value", "cost_func_type"),
+        OptionMapping("comparison_mode", "test_value", "comparison_mode"),
+        OptionMapping("table_type", "test_value", "table_type"),
+        OptionMapping("level", "test_value", "level"),
+        OptionMapping("external_output", "test_value", "external_output"),
+        OptionMapping("run_name", "test_value", "run_name"),
+        OptionMapping("runtime_metric", "test_value", "runtime_metric"),
+        OptionMapping("port", "test_value", "port"),
+        OptionMapping("ip_address", "test_value", "ip_address"),
+        OptionMapping("logging_file_name", "test_value", "file_name"),
+        OptionMapping("make_plots", True, "make_plots", True),
+        OptionMapping("dont_make_plots", True, "make_plots", False),
+        OptionMapping("run_dash", True, "run_dash", True),
+        OptionMapping("dont_run_dash", True, "run_dash", False),
+        OptionMapping("pbar", True, "pbar", True),
+        OptionMapping("no_pbar", True, "pbar", False),
+        OptionMapping("append_log", True, "append", True),
+        OptionMapping("overwrite_log", True, "append", False),
+        OptionMapping("results_browser", True, "results_browser", True),
+        OptionMapping("no_results_browser", True, "results_browser", False),
+        OptionMapping("check_jacobian", True, "check_jacobian", True),
+        OptionMapping("dont_check_jacobian", True, "check_jacobian", False),
     ]
 
     # format the data so that parameterized can add informative test names
@@ -246,9 +214,7 @@ class TestMain(TestCase):
 
     # _ used to discard the test name
     @parameterized.expand(valid_options)
-    def test_cli_options_handled_correctly(
-        self, _, option_mapping: cli_option_mapping
-    ):
+    def test_cli_options_handled_correctly(self, _, option_mapping):
         """
         Tests that CLI options are correctly parsed by `parse_options_from_cli`
         """
@@ -265,9 +231,7 @@ class TestMain(TestCase):
 
     # _ used to discard the test name
     @parameterized.expand(valid_options)
-    def test_cli_options_do_not_have_side_effects(
-        self, _, option_mapping: cli_option_mapping
-    ):
+    def test_cli_options_do_not_have_side_effects(self, _, option_mapping):
         """
         Test that when cli options are parsed, all of the other options are
         returned with their default value preseved.
