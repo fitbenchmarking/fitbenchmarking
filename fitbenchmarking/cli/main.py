@@ -366,11 +366,12 @@ of the Fitbenchmarking docs. """
     return parser
 
 
-def parse_options_from_cli(args) -> dict:
+def parse_options_from_cli(args: argparse.Namespace) -> dict:
     """
     parse the command line options, and apply any options which should override
     the options file or default options.
     :param args: The command line arguments.
+    :type args: argparse.Namespace
 
     :return: A dictionary of options to be used in the benchmarking run.
     :rtype: dict
