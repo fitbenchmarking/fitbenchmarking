@@ -205,8 +205,10 @@ RUN sh src/appveyor/0_install_linux4building.sh
 # "|| true" below is needed to bypass an error which 
 # also occurs locally and can be safely ignored
 RUN src/appveyor/4_build.sh || true
-# The sasfit folder is not being deleted, as "libsasfit.so" is
-# needed and most likely wouldn't work if placed outside that folder
+# The sasfit folder is not being deleted completely, as "libsasfit.so" is
+# needed, as well as a few other files
+WORKDIR /
+RUN rm -rf /sasfit/doc /sasfit/examples /sasfit/data /sasfit/plugins/FrolovPoints
 
 ###########
 # Tidy up #
