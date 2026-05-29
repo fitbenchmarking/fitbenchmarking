@@ -29,12 +29,18 @@ class SASfitParser(FitbenchmarkParser):
         :rtype: callable
         """
 
+        # check if any size distributions are specified
+        if "size_dists" in self._entries:
+            size_dists = self._entries["size_dists"].split(",")
+        else:
+            size_dists = ["None"] * len(self._parsed_func)
+
         functions_to_call = []
         all_param_names = []
         scattering_contributions = {}
         param_names = {}
-        for func in self._parsed_func:
-            func_name = func["name"].replace("_", " ")
+        for i, func in enumerate(self._parsed_func):
+            func_name = func["name"].replace("__", " ")
             functions_to_call.append(func_name)
             sasfit_plugin = Plugin(func_name)
             func_param_names = list(
@@ -44,6 +50,14 @@ class SASfitParser(FitbenchmarkParser):
             all_param_names.extend(func_param_names)
             scattering_contributions[func_name] = Scattering_Contribution()
             scattering_contributions[func_name].load_form_factor(func_name)
+            if size_dists[i] != "None":
+                scattering_contributions[func_name].load_size_distribution(
+                    size_dists[i]
+                )
+            else:
+                scattering_contributions[
+                    func_name
+                ].size_distribution_plugin_name = "None"
 
         all_param_values = [
             {
@@ -83,10 +97,7 @@ class SASfitParser(FitbenchmarkParser):
                 for i in range(len(x)):
                     y_vals[i] += scattering_contributions[
                         f
-                    ].form_factor_scattering_intensity(
-                        ctypes.c_double(x[i]),
-                        scattering_contributions[f].form_factor_params,
-                    )
+                    ].compute_scattering_contribution(ctypes.c_double(x[i]))
             return y_vals
 
         def wrapped(x, *p):

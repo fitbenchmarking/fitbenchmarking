@@ -1,5 +1,6 @@
 import ctypes
 from os import environ, path, walk
+import numpy as np
 
 SASLIB_PATH = environ["SASFIT_LOCATION"]
 PLUGIN_PATH = path.join(SASLIB_PATH, "plugins")
@@ -316,22 +317,29 @@ class Plugin:
 
 
 class Scattering_Contribution:
-    def __init__(self, label="", structure_factor_approach="monodisperse"):
-        self.label = label
-        self.structure_factor_plugin_name = "None"
-        self.form_factor_plugin_name = "None"
-        self.size_distribution_plugin_name = "None"
-        self.structure_factor_approach = structure_factor_approach
+    
+    def __init__(self, structure_factor_approach = "monodisperse"):
+        sasfit_library = ctypes.CDLL(path.join(SASLIB_PATH,"libsasfit.so"))
+        sasfit_integrate_ctm = sasfit_library.sasfit_integrate_ctm # (start, end, function, params)
+        sasfit_integrate_ctm.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.POINTER(sasfit_plugin_parameters_types)), ctypes.c_int, ctypes.c_double] # ? this line might not even be necessary, as per https://stackoverflow.com/questions/25014191/python-ctypes-function-pointer
+        sasfit_integrate_ctm.restype = ctypes.c_double
+        
+        set_sasfit_integrate_ctm_strategy = sasfit_library.sasfit_set_int_strategy
+        set_sasfit_integrate_ctm_strategy.argtypes = [ctypes.c_int]
 
+
+        self.run_integrator = sasfit_integrate_ctm
+        self.structure_factor_plugin_name = 'None'
+        self.form_factor_plugin_name = 'None'
+        self.size_distribution_plugin_name = 'None'
+        self.structure_factor_approach = structure_factor_approach
+    
     def set_structure_factor_parameters(self, param_array_values):
         param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
         sasfit_param_instance = sasfit_plugin_parameters_types()
         sasfit_param_instance.p = param_array
-        self.form_factor_params = ctypes.cast(
-            ctypes.pointer(sasfit_param_instance),
-            ctypes.POINTER(sasfit_plugin_parameters_types),
-        )
-
+        self.structure_factor_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))       
+    
     def load_structure_factor(self, plugin_name):
         print(f"Loading structure factor: {plugin_name}...")
         self.structure_factor_plugin_name = plugin_name
@@ -339,45 +347,31 @@ class Scattering_Contribution:
         # TODO parse header and assign default param values now
         default_param_values = []
         self.set_structure_factor_parameters(default_param_values)
-        self.structure_factor_scattering_intensity = (
-            structure_factor_plugin.function_signatures["scattering intensity"]
-        )
-
+        self.structure_factor_scattering_intensity = structure_factor_plugin.function_signatures['scattering intensity']
+    
     def set_form_factor_parameters(self, param_array_values):
         param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
         sasfit_param_instance = sasfit_plugin_parameters_types()
-        sasfit_param_instance.p = param_array
-        self.form_factor_params = ctypes.cast(
-            ctypes.pointer(sasfit_param_instance),
-            ctypes.POINTER(sasfit_plugin_parameters_types),
-        )
-
+        sasfit_param_instance.p = param_array  
+        self.form_factor_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))
+        
     def load_form_factor(self, plugin_name):
-        # print(f"Loading form factor: {plugin_name}...")
+        print(f"Loading form factor: {plugin_name}...")
         self.form_factor_plugin_name = plugin_name
         form_factor_plugin = Plugin(plugin_name)
         # TODO parse header and assign default param values now
         default_param_values = []
         self.set_form_factor_parameters(default_param_values)
-        self.form_factor_scattering_intensity = (
-            form_factor_plugin.function_signatures["scattering intensity"]
-        )
-        self.form_factor_scattering_amplitude = (
-            form_factor_plugin.function_signatures["scattering amplitude"]
-        )
-        self.form_factor_volume = form_factor_plugin.function_signatures[
-            "volume"
-        ]
-
+        self.form_factor_scattering_intensity = form_factor_plugin.function_signatures['scattering intensity']
+        self.form_factor_scattering_amplitude = form_factor_plugin.function_signatures['scattering amplitude']
+        self.form_factor_volume = form_factor_plugin.function_signatures['volume']
+        
     def set_size_distribution_parameters(self, param_array_values):
         param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
         sasfit_param_instance = sasfit_plugin_parameters_types()
-        sasfit_param_instance.p = param_array
-        self.form_factor_params = ctypes.cast(
-            ctypes.pointer(sasfit_param_instance),
-            ctypes.POINTER(sasfit_plugin_parameters_types),
-        )
-
+        sasfit_param_instance.p = param_array  
+        self.size_distribution_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))
+    
     def load_size_distribution(self, plugin_name):
         print(f"Loading size distributions: {plugin_name}...")
         self.size_distribution_plugin_name = plugin_name
@@ -385,120 +379,106 @@ class Scattering_Contribution:
         # TODO parse header and assign default param values now
         default_param_values = []
         self.set_size_distribution_parameters(default_param_values)
-        self.size_distribution_scattering_intensity = (
-            size_distribution_plugin.function_signatures[
-                "scattering intensity"
-            ]
-        )
-
+        self.size_distribution_weight_factor = size_distribution_plugin.function_signatures['scattering intensity']
+        self.size_distribution_extras = size_distribution_plugin.function_signatures['volume']
+    
     def set_structure_factor_approach(self, structure_factor_approach):
-        if structure_factor_approach in {"monodisperse"}:
-            self.structure_factor_approach = structure_factor_approach
+        if structure_factor_approach in {"monodisperse", "decoupling approximation", "local monodisperse"}:
+             self.structure_factor_approach = structure_factor_approach
         else:
-            print(
-                f"'{structure_factor_approach}' is an unrecognised approach for"
-                 " including structure factors; defaulting to 'monodisperse'."
-            )
-            self.structure_factor_approach = "monodisperse"
-
-    def construct_scattering_contribution_function(self):
-        match self.structure_factor_approach:
-            case "monodisperse":  # sasfit manual 4.1.1
-                self.scattering_contribution_function = (
-                    self.run_integrator(
-                        0,
-                        inf,
-                        self.size_distribution_scattering_intensity
-                        * self.form_factor_scattering_intensity,
-                        params,
-                    )
-                    * self.structure_factor_scattering_intensity
-                )
-            case "decoupling approximation":  # sasfit manual 4.1.2
-                self.scattering_contribution_function = self.run_integrator(
-                    0,
-                    inf,
-                    (
-                        self.size_distribution_scattering_intensity
-                        * self.form_factor_scattering_intensity
-                    )
-                    + (
-                        (
-                            compute_integral[0, inf](
-                                self.size_distribution_scattering_intensity
-                                * self.form_factor_scattering_amplitude
+             print(f"'{structure_factor_approach}' is an unrecognised approach for including structure factors; defaulting to 'monodisperse'.")
+             self.structure_factor_approach = "monodisperse"
+    
+    def compute_hankel_transformed_scattering_contribution(self, r):
+        #TODO return result = hankel( compute_scattering_contribution(self, q) )
+        pass
+    
+    def compute_scattering_contribution(self, q):
+        if self.form_factor_plugin_name == 'None':
+            print("no form factor specified!")
+            return None
+        else:
+            if self.size_distribution_plugin_name == 'None':
+                # no smearing using a size distribution
+                if self.structure_factor_plugin_name == 'None':
+                    # no structure factor either; just return the FF scattering intensity result
+                    return self.form_factor_scattering_intensity(q, self.form_factor_params)
+                else:
+                    # assume sort-of monodisperse approach without size distribution (sasfit manual 4.1.1)
+                    return self.form_factor_scattering_intensity(q, self.form_factor_params) * self.structure_factor_scattering_intensity(q, self.structure_factor_params)
+            
+            # TODO handle if SD = "Delta" then DONT integrate, just extract & apply scale factor and use specified value as if there were no SD at all
+            
+            else:
+                if self.structure_factor_plugin_name == 'None':
+                    # no structure factor; smear specified FF parameter using the size distribution and return the result (sasfit manual 5.1.1)
+                    return self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )
+                else:
+                    if self.structure_factor_approach == "monodisperse":
+                        # sasfit manual 4.1.1
+                        return self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) ) * self.structure_factor_scattering_intensity(q, self.structure_factor_params)
+                    elif self.structure_factor_approach == "decoupling approximation":
+                        # sasfit manual 4.1.2
+                        return (
+                            self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )
+                            + self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_amplitude, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )**2
+                                / self.run_integrator( 0 , np.inf , self.size_distribution_weight_factor(x, self.size_distribution_params) )
+                                * (self.structure_factor_scattering_intensity(q, self.structure_factor_params) - 1) # sasfit manual 4.1.2 equation 4.3
                             )
-                        )
-                        ** 2
-                        * (self.structure_factor_scattering_intensity - 1)
-                        / integrate[0, inf](
-                            self.size_distribution_scattering_intensity
-                        )
-                    ),
-                    params,
-                )  # crikey!
-            case "local monodisperse approximation":  # sasfit manual 4.1.3
-                self.scattering_contribution_function = self.run_integrator(
-                    0,
-                    inf,
-                    (
-                        self.size_distribution_scattering_intensity
-                        * self.form_factor_scattering_intensity
-                        * self.structure_factor_scattering_intensity
-                    ),
-                    params,
-                )
-            case "partial structure factors":  # sasfit manual 4.1.3
-                self.scattering_contribution_function = self.run_integrator(
-                    0,
-                    inf,
-                    (
-                        self.size_distribution_scattering_intensity
-                        * self.form_factor_scattering_intensity
-                        * self.structure_factor_scattering_intensity
-                    ),
-                    params,
-                )
-            case _:  # otherwise
-                print(
-                    f"'{self.structure_factor_approach}' is an unrecognised approach"
-                     " for including structure factors; try e.g. 'monodisperse'."
-                )
-                self.scattering_contribution = 0.0
+                    elif self.structure_factor_approach == "local monodisperse": # sasfit manual 4.1.3 — the only one that allows smearing a SF param using the SD
+                        return self.run_integrator( 0 , np.inf , self.monodisperse_subsystem(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_volume, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params, self.structure_factor_scattering_intensity, self.structure_factor_params]) ) # sasfit manual 4.1.3 equation 4.5
+    
+    def weighted_form_factor(self, x, parameters_list):
+        # extract nested parameters
+        q = parameters_list[0]
+        index_of_form_factor_param_to_smear = parameters_list[1]
+        form_factor = parameters_list[2]
+        form_factor_params = parameters_list[3]
+        size_distribution_weight_factor = parameters_list[4]
+        size_distribution_params = parameters_list[5]
+        # set specified parameter of form factor to x
+        form_factor_params.p[index_of_form_factor_param_to_smear] = x
+        # compute the result for this q given that parameter set to this x
+        return size_distribution_weight_factor(x, size_distribution_params) * form_factor(q, form_factor_params)
 
-    def compute_form_factor(self, q):
-        return self.form_factor_scattering_intensity(
-            q, self.form_factor_params
-        )
+    def monodisperse_subsystem(self, x, parameters_list):
+        # extract nested parameters
+        q = parameters_list[0]
+        index_of_form_factor_param_to_smear = parameters_list[1]
+        form_factor_scattering_intensity = parameters_list[2]
+        form_factor_volume = parameters_list[3]
+        form_factor_params = parameters_list[4]
+        size_distribution_weight_factor = parameters_list[5]
+        size_distribution_params = parameters_list[6]
+        structure_factor_scattering_intensity = parameters_list[7]
+        # set specified parameter of form factor to x
+        form_factor_params.p[index_of_form_factor_param_to_smear] = x
+        # calculate volume-equivalent-sphere-radius and set it as the first (always!) parameter of structure factor
+        structure_factor_params.p[0] = np.cbrt( form_factor_volume(x, form_factor_params, index_of_form_factor_param_to_smear) * 3.0 / 4.0 / numpy.pi ) # sasfit manual 4.1.3 equation 4.6
+        # compute the result for this q given that parameter
+        return size_distribution_weight_factor(x, size_distribution_params) * form_factor_scattering_intensity(q, form_factor_params) * structure_factor_scattering_intensity(q, structure_factor_params)   
 
+    def plot(self):
+        pass
+    
     def __str__(self):
-        if self.structure_factor_plugin_name == "None":
+        
+        if self.structure_factor_plugin_name == 'None':
             status_string = "Structure factor: none\n"
         else:
-            status_string = (
-                f"Structure factor: {self.structure_factor_plugin_name}\n"
-            )
-            status_string = (
-                status_string
-                + f"Inclusion approach: {self.structure_factor_approach}\n"
-            )
-
-        if self.form_factor_plugin_name == "None":
+            status_string = f"Structure factor: {self.structure_factor_plugin_name}\n"
+            status_string = status_string + f"Inclusion approach: {self.structure_factor_approach}\n"
+       
+        if self.form_factor_plugin_name == 'None':
             status_string = status_string + "Form factor: none\n"
         else:
-            status_string = (
-                status_string
-                + f"Form factor: {self.form_factor_plugin_name}\n"
-            )
-
-        if self.size_distribution_plugin_name == "None":
+            status_string = status_string + f"Form factor: {self.form_factor_plugin_name}\n"
+        
+        if self.size_distribution_plugin_name == 'None':
             status_string = status_string + "Size distribution: none\n"
         else:
-            status_string = (
-                status_string
-                + f"Size distribution: {self.size_distribution_plugin_name}\n"
-            )
-
+            status_string = status_string + f"Size distribution: {self.size_distribution_plugin_name}\n"
+            
         return status_string
 
 
