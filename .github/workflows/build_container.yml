@@ -58,7 +58,7 @@ jobs:
 
     - name: Show image size
       run: |
-        SIZE=$(podman image inspect my-app:${{ github.sha }} --format '{{.Size}}')
+        SIZE=$(podman image inspect fitbenchmarking-extras-${{ matrix.container }}:${{ github.sha }} --format '{{.Size}}')
         echo "Image size: $((SIZE / 1024 / 1024)) MB"
 
 
