@@ -73,6 +73,7 @@ class CompareScatter:
 
             app.clientside_callback(
                 """
+                // This js code should go in a separate js file
                 function(data){
                     if (!data) {
                         return null;
@@ -94,10 +95,8 @@ class CompareScatter:
             # this lets us inject JS into the internals of the iframe
             app.clientside_callback(
                 """
-                // escape the dash stuff
+                // This js code should go in a separate js file
                 function() {
-                
-                    // then run whatever code we want
                     const observer = new MutationObserver(() => {
                     const el = document.getElementById(
                         "compare_scatter_container");
@@ -260,6 +259,7 @@ class CompareScatterView:
                     style={"flex": "1", "min-width": "0"},
                 ),
                 self.legend,
+                # dummy divs needed for callbacks
                 html.Div(id="dummy-click", style={"display": "none"}),
                 html.Div(id="dummy-height", style={"display": "none"}),
             ],
