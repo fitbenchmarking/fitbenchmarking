@@ -56,3 +56,9 @@ jobs:
         tags: ${{ steps.build-image.outputs.tags }}
         registry: ${{ env.IMAGE_REGISTRY }}
 
+    - name: Show image size
+      run: |
+        SIZE=$(podman image inspect my-app:${{ github.sha }} --format '{{.Size}}')
+        echo "Image size: $((SIZE / 1024 / 1024)) MB"
+
+
