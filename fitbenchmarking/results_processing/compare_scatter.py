@@ -71,59 +71,24 @@ class CompareScatter:
                 prevent_initial_call=True,
             )(lambda _, state: self.view.set_focus_for_all_items(True, state))
 
-            app.clientside_callback(
-                """
-                // This js code should go in a separate js file
-                function(data){
-                    if (!data) {
-                        return null;
-                    }
-                    var newpath = data.points?.[0]?.customdata?.[3];
-                    console.log(newpath);
-                    if (typeof(newpath) !== "undefined") {
-                        console.log("emitting");
-                        window.parent.postMessage({path:newpath},"*");
-                    }
-                    return null;
-                }
-                """,
-                Output("dummy-click", "children"),
-                Input("compare_scatter", "clickData"),
+            script_path = (
+                "fitbenchmarking/results_processing/scripts/compare_scatter"
             )
 
-            # TODO: find a better way to do this
-            # this lets us inject JS into the internals of the iframe
-            app.clientside_callback(
-                """
-                // This js code should go in a separate js file
-                function() {
-                    const observer = new MutationObserver(() => {
-                    const el = document.getElementById(
-                        "compare_scatter_container");
+            with open(f"{script_path}/handle_link.js") as file:
+                app.clientside_callback(
+                    file.read(),
+                    Output("dummy-click", "children"),
+                    Input("compare_scatter", "clickData"),
+                )
 
-                    if (el && el.scrollHeight > 0) {
-                        window.parent.postMessage(
-                        {
-                            height: el.scrollHeight,
-                            src: "mutation"
-                        },
-                        "*"
-                        );
-                        observer.disconnect();
-                    }
-                    });
-
-                    observer.observe(document.body, { 
-                        childList: true, subtree: true 
-                    });
-                    return null;
-                }
-                """,
-                Output("dummy-height", "children"),
-                # dummy to suppress no input error, this runs on load anyway
-                Input("compare_scatter", "figure"),
-                prevent_initial_call=False,
-            )
+            with open(f"{script_path}/resize_observer.js") as file:
+                app.clientside_callback(
+                    file.read(),
+                    Output("dummy-height", "children"),
+                    Input("compare_scatter", "figure"),
+                    prevent_initial_call=False,
+                )
 
         else:
             print("warning plot type is:", type(self.view.plot))
