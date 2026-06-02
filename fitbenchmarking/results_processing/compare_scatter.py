@@ -570,23 +570,14 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
-    def get_values_for_axis(self, metric: str, func_kwargs={}) -> list:
-        # in the case of name and normalised values, a function call is
-        # required to retreive the data, so we need to check if we have been
-        # passed an attribute or method name
-        if callable(getattr(self.results[0], metric)):
-            funcs = [getattr(result, metric) for result in self.results]
-            values = [func(**func_kwargs) for func in funcs]
-        else:
-            values = [getattr(result, metric) for result in self.results]
-        return values
-
-    def get_unique_values_for_axis(self, metric: str, func_kwargs={}) -> list:
+    def get_values_for_axis(
+        self, metric: str, func_kwargs={}, unique=False
+    ) -> list:
         # in the case of name and normalised values, a function call is
         # required to retreive the data, so we need to check if we have been
         # passed an attribute or method name
 
-        cache = f"_unique_cache_{metric}"
+        cache = f"_unique_cache_{metric}" if unique else f"_cache_{metric}"
         cache_data = getattr(self, cache, None)
 
         if callable(getattr(self.results[0], metric)):
@@ -601,20 +592,24 @@ class CompareScatterDataModel:
             else:
                 funcs = cache_data
             values = [func(**func_kwargs) for func in funcs]
-            values = list(dict.fromkeys(values))
+            if unique:
+                values = list(dict.fromkeys(values))
         else:
             if cache_data is None:
                 values = [getattr(result, metric) for result in self.results]
-                values = list(dict.fromkeys(values))
+                if unique:
+                    values = list(dict.fromkeys(values))
                 setattr(self, cache, values)
             else:
                 values = cache_data
         return values
 
-    def get_minimizer_names(self):
-        values = [
-            result.modified_minimizer_name(True) for result in self.results
-        ]
+    def get_unique_values_for_axis(self, metric: str, func_kwargs={}) -> list:
+        values = list(
+            dict.fromkeys(
+                self.get_values_for_axis(metric, func_kwargs, unique=True)
+            )
+        )
         return values
 
     def get_hover_text_for_results(self):
