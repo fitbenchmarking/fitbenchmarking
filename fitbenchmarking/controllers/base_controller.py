@@ -146,6 +146,7 @@ class Controller:
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         self.cost_func: CostFunc = cost_func
+
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -157,22 +158,35 @@ class Controller:
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
+
         # Staring Valuess: The list of starting parameters
         self.starting_values = self.problem.starting_values
+
         # Parameter Bounds: List of tuples of lower and upper bounds
         # for each parameter
+        # TODO: would this need updating at all for multifit?
         self.value_ranges = self.problem.value_ranges
+
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
+
         # Minimizer: The current minimizer to use
         self.minimizer = None
+
         # Software: Use a property to get the name of the software from the
         # class
         self._software = ""
 
+        # dataset count > 1 if problem is multifit
+        # self.data_x would need to be a list if multifit
+        self._dataset_count = (
+            len(self.data_x) if isinstance(self.data_x, list) else 1
+        )
+
         # Final Params: The final values for the params from the minimizer
+        # Is it fine to set these to None? Done differently in mantid minimizer
         self.final_params = (
-            None if not self.problem.multifit else [None] * len(self.data_x)
+            None if not self.problem.multifit else [None] * self._dataset_count
         )
 
         # Flag: error handling flag
@@ -194,12 +208,6 @@ class Controller:
 
         # set default chain length for Bayesian minimizers
         self.chain_length = 100000
-
-        # dataset count > 1 if problem is multifit
-        # self.data_x would need to be a list if multifit
-        self._dataset_count = (
-            len(self.data_x) if isinstance(self.data_x, list) else 1
-        )
 
     @property
     def flag(self):
@@ -318,6 +326,8 @@ class Controller:
         """
         self.params_pdfs["scipy_pfit"] = None
         self.params_pdfs["scipy_perr"] = None
+
+        # TODO: needs updating, just looping over data_x ?
         try:
             popt, pcov = curve_fit(
                 self.problem.function,
@@ -502,19 +512,32 @@ class Controller:
         Check whether the selected minimizer has respected
         parameter bounds
         """
-        for count, value in enumerate(self.final_params):
-            if (
-                not self.value_ranges[count][0]
-                <= value
-                <= self.value_ranges[count][1]
-            ):
-                self.flag = 5
+        # TODO: is this the right way of updating this for multifit ?
+        if self.problem.multifit:
+            for index, param_list in enumerate(self.final_params):
+                for param_value in param_list:
+                    if (
+                        not self.value_ranges[index][0]
+                        <= param_value
+                        <= self.value_ranges[index][1]
+                    ):
+                        self.flag = 5
+        else:
+            for index, param in enumerate(self.final_params):
+                if (
+                    not self.value_ranges[index][0]
+                    <= param
+                    <= self.value_ranges[index][1]
+                ):
+                    self.flag = 5
 
     def check_attributes(self):
         """
         A helper function which checks all required attributes are set
         in software controllers
         """
+        # TODO: would this need updating for multifit?
+
         values = {
             "_flag": int,
             "final_params": np.ndarray,
