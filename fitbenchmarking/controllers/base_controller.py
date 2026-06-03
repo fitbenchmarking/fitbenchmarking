@@ -193,6 +193,12 @@ class Controller:
         # set default chain length for Bayesian minimizers
         self.chain_length = 100000
 
+        # dataset count > 1 if problem is multifit
+        # self.data_x would need to be a list if multifit
+        self._dataset_count = (
+            len(self.data_x) if isinstance(self.data_x, list) else 1
+        )
+
     @property
     def flag(self):
         """
@@ -284,8 +290,24 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
-        out = self.cost_func.eval_cost(params=params, **kwargs)
+        # this would cause eval_chisq in MantidController to break,
+        # so we'd need a workaround (i.e. to differentiate between
+        # mantid_multifit and just multifit, maybe just a check
+        # it's not a mantid problem)
+        if self.problem.multifit:
+            out = []
+            for pi, xi, yi, ei in zip(params, x, y, e):
+                kwargs = {
+                    k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
+                }
+                out.append(self.cost_func.eval_cost(params=pi, **kwargs))
+
+        else:
+            kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
+            out = self.cost_func.eval_cost(params=params, **kwargs)
+
+        # out would be a list in case of multifit, but we can handle this
+        # like we handle mantid multifit
         return out
 
     def eval_confidence(self):
