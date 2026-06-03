@@ -171,7 +171,9 @@ class Controller:
         self._software = ""
 
         # Final Params: The final values for the params from the minimizer
-        self.final_params = None
+        self.final_params = (
+            None if not self.problem.multifit else [None] * len(self.data_x)
+        )
 
         # Flag: error handling flag
         self._flag = None
