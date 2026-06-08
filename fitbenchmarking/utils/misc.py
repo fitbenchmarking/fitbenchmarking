@@ -139,6 +139,7 @@ def get_hover_text(result, include_title=False, newline="""\\a """) -> str:
     if include_title:
         hover_text = (
             f"""<b>{result.modified_minimizer_name(with_software=True)}</b>"""
+            f""" | <b>{result.problem_tag}</b>"""
             f"""{newline}"""
             f"""{hover_text}"""
         )
