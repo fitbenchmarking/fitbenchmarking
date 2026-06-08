@@ -1,15 +1,22 @@
+import re
 import time
 import unittest
 from typing import cast
 from unittest.mock import Mock, patch
 
 import numpy as np
-from dash import Dash
+from dash import Dash, dcc, html
 from parameterized import parameterized
+from plotly.validator_cache import ValidatorCache
 
 from fitbenchmarking.results_processing.compare_scatter import (
     CompareScatter,
     CompareScatterDataModel,
+    CompareScatterView,
+)
+from fitbenchmarking.results_processing.test_files.cs_test_data import (
+    LEGEND,
+    PLOT,
 )
 from fitbenchmarking.utils.fitbm_result import FittingResult
 
@@ -192,3 +199,476 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
 
         self.assertEqual(hover_text, [["Hover Text" + "<extra></extra>"]])
+
+
+# tests for the view which do not require a live Dash app
+class CompareScatterViewTests(unittest.TestCase):
+    def test_constructor_sets_valid_symbols(self):
+        view = CompareScatterView()
+        validator = ValidatorCache.get_validator("scatter.marker", "symbol")
+        all_possible_symbols = validator.values[2::3]
+
+        # we dont actually want to specify the exact list here since that would
+        # just be a duplicate of the list in the class, instead we just check
+        # that any filtering was applied
+
+        # every prefix in the list of banned prefixes matches at least one real
+        # prefix returned by the validator
+        for prefix in view.banned_prefixes:
+            self.assertTrue(
+                any(
+                    symbol.startswith(prefix)
+                    for symbol in all_possible_symbols
+                )
+            )
+
+        # every banned prefix is no longer present in the valid symbols
+        self.assertTrue(
+            all(
+                not symbol.startswith(prefix)
+                for prefix in view.banned_prefixes
+                for symbol in view.valid_symbols
+            )
+        )
+
+    def test_sanitize_for_id(self):
+        view = CompareScatterView()
+        sanitized = view.sanitize_for_id("my(test_name) j:best,h:best")
+        self.assertEqual(sanitized, "mytestnamejbesthbest")
+
+    # some of the logic assumes that this is true so we need to test it
+    def test_sanitize_for_id_is_idempotent(self):
+        view = CompareScatterView()
+        sanitized = view.sanitize_for_id("my(test_name) j:best,h:best")
+        self.assertEqual(sanitized, view.sanitize_for_id(sanitized))
+
+    def test_get_isolated_symbol(self):
+        plot_div = CompareScatterView.get_isolated_symbol(
+            "circle", "rgba(0,255,0,1)"
+        )
+        self.assertIsInstance(plot_div, html.Div)
+        self.assertIsInstance(plot_div.children[0], dcc.Graph)
+
+        plot = plot_div.children[0]
+
+        # check that the plot cannot be interacted with
+        self.assertEqual(plot.config, {"staticPlot": True})
+
+        # check that only one trace is added
+        self.assertEqual(len(plot.figure.data), 1)
+
+        # check that the symbol and colour are set correctly
+        self.assertEqual(plot.figure.data[0].marker.color, "rgba(0,255,0,1)")
+        self.assertEqual(plot.figure.data[0].marker.symbol, "circle")
+
+    def test_get_legend_contains_important_details(self):
+        view = CompareScatterView()
+        legend = view.get_legend(
+            symbol_groups=["symbol_group_1", "symbol_group_2"],
+            symbol_map=["cross", "square"],
+            colour_groups=["colour_group_1", "colour_group_2"],
+            colour_map=["rgba(255,0,0,1)", "rgba(0,255,0,1)"],
+        )
+
+        legend_string = str(legend)
+
+        # the legned should contain one example of each colour from the map
+        num_red = len(re.findall("rgba\\(255,0,0,1\\)", legend_string))
+        self.assertEqual(num_red, 1)
+        num_green = len(re.findall("rgba\\(0,255,0,1\\)", legend_string))
+        self.assertEqual(num_green, 1)
+
+        # the legend should contain one circle for each colour
+        num_circle = len(re.findall("circle", legend_string))
+        self.assertEqual(num_circle, 2)
+
+        # the legned should contain one example of each symbol from the map
+        num_cross = len(re.findall("cross", legend_string))
+        self.assertEqual(num_cross, 1)
+        num_square = len(re.findall("square", legend_string))
+        self.assertEqual(num_square, 1)
+
+        # each colour and symbol group should appear twice, once in the data
+        # store, and once as the visible text for the legend
+        num_c_grp_1 = len(re.findall("colour_group_1", legend_string))
+        self.assertEqual(num_c_grp_1, 2)
+        num_c_grp_2 = len(re.findall("colour_group_2", legend_string))
+        self.assertEqual(num_c_grp_2, 2)
+        num_s_grp_1 = len(re.findall("symbol_group_1", legend_string))
+        self.assertEqual(num_s_grp_1, 2)
+        num_s_grp_2 = len(re.findall("symbol_group_2", legend_string))
+        self.assertEqual(num_s_grp_2, 2)
+
+        # convert the legend to a string so that we can check that it contains
+        # the expected information without caring about specific structure
+
+    def test_get_legend_returns_correct_structure(self):
+        # if it is all contained within a div, then the way we insert it into
+        # other parts of the code shouldnt need to change
+        view = CompareScatterView()
+        legend = view.get_legend(
+            symbol_groups=["symbol_group_1", "symbol_group_2"],
+            symbol_map=["cross", "square"],
+            colour_groups=["colour_group_1", "colour_group_2"],
+            colour_map=["rgba(255,0,0,1)", "rgba(0,255,0,1)"],
+        )
+        self.assertIsInstance(legend, html.Div)
+
+        # assert that the legend should be the same structure as expected
+        # note that this test will fail even if the change is intentional, so
+        # test_get_legend_contains_important_details does an extra sanity check
+
+        legend_without_whitespace = re.sub("\\s+", "", str(legend))
+        expected_legend_without_whitespace = re.sub("\\s+", "", str(LEGEND))
+
+        self.assertEqual(
+            legend_without_whitespace,
+            expected_legend_without_whitespace,
+            f"instead of the expected legend we got: {legend!s}",
+        )
+
+    @patch("dash.set_props")
+    def test_set_focus_for_all(self, set_props_mock):
+        pass
+        # initial_states = [True, False]
+        # view = CompareScatterView()
+
+        # view.set_focus_for_all_items(
+        #     True, initial_states
+        # )
+
+    def test_get_plot_has_expected_structure(self):
+        view = CompareScatterView()
+        plot_div = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[0, 1, 2, 3],
+            solvers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
+            problems=["problem1", "problem2", "problem1", "problem2"],
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+        actual_plot_without_whitespace = re.sub("\\s+", "", str(plot_div))
+        expected_plot_without_whitespace = re.sub("\\s+", "", str(PLOT))
+
+        self.assertEqual(
+            actual_plot_without_whitespace, expected_plot_without_whitespace
+        )
+
+    def test_get_plot_has_all_expected_data(self):
+        view = CompareScatterView()
+
+        plot_div = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[0, 1, 2, 3],
+            solvers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
+            problems=["problem1", "problem2", "problem1", "problem2"],
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+        plot_str = re.sub("\\s+", "", str(plot_div))
+
+        self.assertEqual(len(re.findall("test_x_axis", plot_str)), 1)
+        self.assertEqual(len(re.findall("test_y_axis", plot_str)), 1)
+        self.assertEqual(len(re.findall("tooltip_1", plot_str)), 1)
+        self.assertEqual(len(re.findall("tooltip_2", plot_str)), 1)
+        self.assertEqual(len(re.findall("tooltip_3", plot_str)), 1)
+        self.assertEqual(len(re.findall("tooltip_4", plot_str)), 1)
+
+        self.assertEqual(
+            len(
+                re.findall(
+                    '<supstyle="opacity:1"><b>0<\\/b><\\/sup>', plot_str
+                )
+            ),
+            0,
+        )
+
+        self.assertEqual(
+            len(
+                re.findall(
+                    (
+                        '<supstyle="opacity:1"><b>1<\\/b><\\/sup>'
+                        '|<supstyle="opacity:1"><b>2<\\/b><\\/sup>'
+                        '|<supstyle="opacity:1"><b>3<\\/b><\\/sup>'
+                    ),
+                    plot_str,
+                )
+            ),
+            3,
+        )
+
+        # mySolver has one less because it does not generate a toast message
+        # for problem1 as the error flag is 0
+        self.assertEqual(len(re.findall("mySolver", plot_str)), 11)
+        self.assertEqual(len(re.findall("otherSolver", plot_str)), 12)
+
+        self.assertEqual(
+            len(
+                re.findall(
+                    (
+                        "\\/mySolver\\/problem1"
+                        "|\\/mySolver\\/problem2"
+                        "|\\/otherSolver\\/problem1"
+                        "|\\/otherSolver\\/problem2"
+                    ),
+                    plot_str,
+                )
+            ),
+            4,
+        )
+
+    # note: for simplicity only testing ones with error flags here
+    @parameterized.expand(
+        [
+            ("mySolver", "minimizer"),
+            ("otherSolver", "minimizer"),
+            ("problem1", "problem"),
+            ("problem2", "problem"),
+        ]
+    )
+    def test_set_focus_for_group_can_unfocus_group(self, group, group_type):
+        view = CompareScatterView()
+
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        _ = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[1, 1, 1, 1],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        solvers_and_problems = {
+            "minimizer": dict.fromkeys(solvers, True),
+            "problem": dict.fromkeys(problems, True),
+        }
+
+        returned_values = view.update_focus_for_group(
+            group, solvers_and_problems
+        )
+
+        self.assertEqual(len(returned_values), 5)
+
+        plot = returned_values[0]
+        state = returned_values[1]
+        new_style = returned_values[2]
+        all_button_style = returned_values[3]
+        none_button_style = returned_values[4]
+
+        expected_state = solvers_and_problems
+        expected_state[group_type][group] = not expected_state[group_type][
+            group
+        ]
+
+        self.assertDictEqual(state, expected_state)
+        self.assertEqual(new_style, view.inactive_button_style)
+        self.assertEqual(all_button_style, view.inactive_button_style)
+        self.assertEqual(none_button_style, view.inactive_button_style)
+
+        plot_str = str(plot)
+        # one for the legend button and one for the error flag
+        self.assertEqual(len(re.findall("opacity:0.2", plot_str)), 2)
+
+        # one for the marker on the legend and one for the marker on the plot
+        self.assertEqual(len(re.findall("'opacity': 0.2", plot_str)), 2)
+
+    @parameterized.expand(
+        [
+            ("mySolver", "minimizer"),
+            ("otherSolver", "minimizer"),
+            ("problem1", "problem"),
+            ("problem2", "problem"),
+        ]
+    )
+    def test_set_focus_for_group_can_focus_group(self, group, group_type):
+        # we can assume that if test_set_focus_for_group_can_unfocus_group
+        # passed, then running the same again should revert the plot back
+        # to the starting state
+
+        view = CompareScatterView()
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        initial_plot = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[1, 1, 1, 1],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        solvers_and_problems = {
+            "minimizer": dict.fromkeys(solvers, True),
+            "problem": dict.fromkeys(problems, True),
+        }
+
+        # remove the focus (assumed working due to
+        # test_set_focus_for_group_can_unfocus_group passing)
+        _ = view.update_focus_for_group(group, solvers_and_problems)
+
+        # re add the focus
+        returned_values = view.update_focus_for_group(
+            group, solvers_and_problems
+        )
+
+        plot = returned_values[0]
+        state = returned_values[1]
+        new_style = returned_values[2]
+        all_button_style = returned_values[3]
+        none_button_style = returned_values[4]
+
+        self.assertEqual(plot, initial_plot.children[1].figure)
+        self.assertEqual(all_button_style, view.active_button_style)
+        self.assertEqual(none_button_style, view.inactive_button_style)
+        self.assertEqual(new_style, view.active_button_style)
+        self.assertEqual(state, solvers_and_problems)
+
+    @parameterized.expand(
+        [
+            ("mySolver", "minimizer"),
+            ("otherSolver", "minimizer"),
+            ("problem1", "problem"),
+            ("problem2", "problem"),
+        ]
+    )
+    def test_set_focus_for_group_returns_new_state_when_requested(
+        self, group, group_type
+    ):
+        view = CompareScatterView()
+
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        _ = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[0, 1, 2, 3],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        solvers_and_problems = {
+            "minimizer": dict.fromkeys(solvers, True),
+            "problem": dict.fromkeys(problems, True),
+        }
+
+        returned_values = view.update_focus_for_group(
+            group, solvers_and_problems, True
+        )
+
+        self.assertEqual(len(returned_values), 6)
+        new_state = returned_values[5]
+
+        self.assertEqual(new_state, False)
+
+    @parameterized.expand(
+        [
+            (["mySolver"], False, False),
+            (["problem1"], False, False),
+            (["mySolver", "otherSolver"], False, False),
+            (["problem1", "problem2"], False, False),
+            (["mySolver", "otherSolver", "problem1", "problem2"], False, True),
+            (["problem1", "problem2", "problem1", "problem2"], True, False),
+            (
+                ["mySolver", "otherSolver", "mySolver", "otherSolver"],
+                True,
+                False,
+            ),
+        ],
+        name_func=lambda func, num, param: (
+            f"{func.__name__}_{num}_"
+            f"{'_'.join(param.args[0])}_"
+            f"all_{param.args[1]}_none_{param.args[2]}"
+        ),
+    )
+    def test_set_focus_for_group_handles_all_none_button_correctly(
+        self, groups, final_all_active, final_none_active
+    ):
+        view = CompareScatterView()
+
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        _ = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[0, 1, 2, 3],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        solvers_and_problems = {
+            "minimizer": dict.fromkeys(solvers, True),
+            "problem": dict.fromkeys(problems, True),
+        }
+
+        for group in groups:
+            returned = view.update_focus_for_group(group, solvers_and_problems)
+            solvers_and_problems = returned[1]
+
+        expected_all_button_style = (
+            view.active_button_style
+            if final_all_active
+            else view.inactive_button_style
+        )
+        expected_none_button_style = (
+            view.active_button_style
+            if final_none_active
+            else view.inactive_button_style
+        )
+
+        all_button_style = returned[3]
+        none_button_style = returned[4]
+
+        self.assertDictEqual(expected_all_button_style, all_button_style)
+        self.assertDictEqual(expected_none_button_style, none_button_style)
