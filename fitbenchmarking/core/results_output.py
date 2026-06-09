@@ -10,6 +10,7 @@ import re
 import webbrowser
 from shutil import copytree
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
@@ -632,7 +633,11 @@ def open_browser(
         )
 
     if options.run_dash:
-        app = Dash(__name__, suppress_callback_exceptions=True)
+        app = Dash(
+            __name__,
+            suppress_callback_exceptions=True,
+            external_stylesheets=[dbc.themes.BOOTSTRAP],
+        )
         max_solvers = 15
         app = prepare_dash_app_for_performance_profiles(
             app, options, pp_dfs_all_prob_sets, max_solvers
