@@ -684,28 +684,10 @@ class CompareScatterView:
     # some types of symbols (specifically the ones with rotations) repeat
     # too frequently with only minor changes, which reduces readability, so we
     # need to remove them before display
-    @staticmethod
-    def is_banned_symbol(symbol: str):
-        banned_prefixes = [
-            "circle-",  # limited readability
-            "arrow",  # is offset from actual point
-            "triangle-down",  # rotation
-            "triangle-left",  # rotation
-            "triangle-right",  # rotation
-            "triangle-nw",  # rotation
-            "triangle-ne",  # rotation
-            "triangle-sw",  # rotation
-            "triangle-se",  # rotation
-            "hexagon",  # too close to circle at low zoom
-            "octagon",  # too close to circle at low zoom
-            "star-triangle-up",  # rotation
-            "y-down",  # rotation
-            "y-left",  # rotation
-            "y-right",  # rotation
-            "line-ew",  # rotation
-            "line-ns",  # rotation
-        ]
-        return all(not symbol.startswith(prefix) for prefix in banned_prefixes)
+    def is_banned_symbol(self, symbol: str):
+        return all(
+            not symbol.startswith(prefix) for prefix in self.banned_prefixes
+        )
 
     @staticmethod
     def get_symbol_sort_key(symbol: str):
