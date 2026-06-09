@@ -188,7 +188,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
         self.assertEqual(unique_values, cache)
 
     @patch("fitbenchmarking.results_processing.compare_scatter.get_hover_text")
-    def test_get_hover_text_for_results(self, mock_get_hover_text):
+    def test_get_hover_text_for_results(self, mock_get_hover_text: Mock):
         mock_get_hover_text.return_value = "Hover Text"
         model = CompareScatterDataModel(self.single_result_dataset)
 
@@ -326,16 +326,6 @@ class CompareScatterViewTests(unittest.TestCase):
             expected_legend_without_whitespace,
             f"instead of the expected legend we got: {legend!s}",
         )
-
-    @patch("dash.set_props")
-    def test_set_focus_for_all(self, set_props_mock):
-        pass
-        # initial_states = [True, False]
-        # view = CompareScatterView()
-
-        # view.set_focus_for_all_items(
-        #     True, initial_states
-        # )
 
     def test_get_plot_has_expected_structure(self):
         view = CompareScatterView()
@@ -672,3 +662,281 @@ class CompareScatterViewTests(unittest.TestCase):
 
         self.assertDictEqual(expected_all_button_style, all_button_style)
         self.assertDictEqual(expected_none_button_style, none_button_style)
+
+    def test_get_warning_text(self):
+        view = CompareScatterView()
+        minimizers = ["noFails", "someFails", "someFails", "allFails"]
+        flags = [0, 0, 3, 3]
+        warning = view.get_warning_text_for_results(flags, minimizers)
+
+        self.assertIn("noFails", warning)
+        self.assertIn("someFails", warning)
+        self.assertIn("allFails", warning)
+
+        self.assertIsNone(warning["noFails"])
+        self.assertEqual(
+            warning["someFails"],
+            (
+                "Warning: this minimiser failed to run on "
+                "1/2 problems. Only succesful runs"
+                " have been plotted."
+            ),
+        )
+        self.assertEqual(
+            warning["allFails"],
+            (
+                "Warning: this minimiser failed to run on every "
+                "problem and could not be plotted."
+            ),
+        )
+
+    @parameterized.expand(
+        [
+            (0, 10),
+            (5, 10),
+            (10, 10),
+            (0, 1),
+        ]
+    )
+    def test_get_per_minimiser_errors_and_runs_counts(self, errors, runs):
+        view = CompareScatterView()
+        minimizers = ["myBadMinim"] * runs
+        flags = [3] * errors + [0] * (runs - errors)
+        errors_by_minimiser, runs_by_minimiser = (
+            view.get_per_minimiser_errors_and_runs(flags, minimizers)
+        )
+        self.assertIn("myBadMinim", errors_by_minimiser)
+        self.assertIn("myBadMinim", runs_by_minimiser)
+        self.assertEqual(errors_by_minimiser["myBadMinim"], errors)
+        self.assertEqual(runs_by_minimiser["myBadMinim"], runs)
+
+    def test_get_per_minimiser_errors_order_independent(self):
+        view = CompareScatterView()
+        minimizers = ["myBadMinim"] * 3
+        flag_orders = [
+            [3, 0, 0],
+            [0, 3, 0],
+            [0, 0, 3],
+        ]
+        for flag_order in flag_orders:
+            errors_by_minimiser, _ = view.get_per_minimiser_errors_and_runs(
+                flag_order, minimizers
+            )
+            self.assertIn("myBadMinim", errors_by_minimiser)
+            self.assertEqual(errors_by_minimiser["myBadMinim"], 1)
+
+    def test_get_per_minimiser_runs_counts_multiple_minimizers(self):
+        view = CompareScatterView()
+        minimizers = (
+            ["myBadMinim"] * 3 + ["myOkMinim"] * 1 + ["myOtherMinim"] * 6
+        )
+        flags = [0] * 10
+        errors_by_minimiser, runs_by_minimiser = (
+            view.get_per_minimiser_errors_and_runs(flags, minimizers)
+        )
+        self.assertIn("myBadMinim", errors_by_minimiser)
+        self.assertIn("myOkMinim", errors_by_minimiser)
+        self.assertIn("myOtherMinim", errors_by_minimiser)
+        self.assertIn("myBadMinim", runs_by_minimiser)
+        self.assertIn("myOkMinim", runs_by_minimiser)
+        self.assertIn("myOtherMinim", runs_by_minimiser)
+
+        self.assertEqual(runs_by_minimiser["myBadMinim"], 3)
+        self.assertEqual(runs_by_minimiser["myOkMinim"], 1)
+        self.assertEqual(runs_by_minimiser["myOtherMinim"], 6)
+
+    def test_create_warning_toasts(self):
+        view = CompareScatterView()
+        warnings = {
+            "noFails": None,
+            "someFails": "1/2 failed",
+            "allFails": "all failed",
+        }
+        toasts = view.create_warning_toasts(warnings)
+
+        self.assertEqual(len(toasts), 2)
+        self.assertEqual(toasts[0].id, "allFails_toast")
+        self.assertEqual(toasts[0].children, "all failed")
+        self.assertEqual(toasts[1].id, "someFails_toast")
+        self.assertEqual(toasts[1].children, "1/2 failed")
+
+    @parameterized.expand(
+        [
+            (
+                "active_all_false",
+                True,
+                {
+                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "problem": {"problem1": False, "problem2": False},
+                },
+            ),
+            (
+                "active_mixed_states",
+                True,
+                {
+                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "problem": {"problem1": True, "problem2": False},
+                },
+            ),
+            (
+                "active_all_true",
+                True,
+                {
+                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "problem": {"problem1": True, "problem2": True},
+                },
+            ),
+            (
+                "inactive_all_false",
+                False,
+                {
+                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "problem": {"problem1": False, "problem2": False},
+                },
+            ),
+            (
+                "inactive_mixed_states",
+                False,
+                {
+                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "problem": {"problem1": True, "problem2": False},
+                },
+            ),
+            (
+                "inactive_all_true",
+                False,
+                {
+                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "problem": {"problem1": True, "problem2": True},
+                },
+            ),
+        ],
+    )
+    @patch("dash.callback_context.set_props")
+    def test_set_focus_for_all(
+        self, _, new_focus, existing_state, set_props_mock: Mock
+    ):
+        view = CompareScatterView()
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        _ = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[1, 1, 1, 1],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        state, all_button_style, none_button_style, _ = (
+            view.set_focus_for_all_items(new_focus, existing_state)
+        )
+
+        expected_state = {
+            "minimizer": dict.fromkeys(solvers, new_focus),
+            "problem": dict.fromkeys(problems, new_focus),
+        }
+
+        self.assertEqual(state, expected_state)
+
+        if new_focus:
+            self.assertEqual(all_button_style, view.active_button_style)
+            self.assertEqual(none_button_style, view.inactive_button_style)
+        else:
+            self.assertEqual(all_button_style, view.inactive_button_style)
+            self.assertEqual(none_button_style, view.active_button_style)
+
+        set_props_mock.assert_called()
+
+    def test_set_trace_opacity(self):
+        view = CompareScatterView()
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        plot = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[1, 1, 1, 1],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+        trace = plot.children[1].figure.data[0]
+        print(trace)
+        view.set_trace_opacity(trace, 1, 0)
+        self.assertEqual(trace.marker["opacity"], 0)
+        self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
+        view.set_trace_opacity(trace, 0, 1)
+        self.assertEqual(trace.marker["opacity"], 1)
+        self.assertEqual(trace.text, '<sup style="opacity:1"><b>1</b></sup>')
+        view.set_trace_opacity(trace, 1, 0.5)
+        self.assertEqual(trace.marker["opacity"], 0.5)
+        self.assertEqual(trace.text, '<sup style="opacity:0.5"><b>1</b></sup>')
+
+    @parameterized.expand([True, False])
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
+    )
+    def test_focus_trace(self, start_state, mock_trace_opacity: Mock):
+        view = CompareScatterView()
+        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        problems = ["problem1", "problem2", "problem1", "problem2"]
+        _ = view.get_plot(
+            x=[1, 2, 3, 4],
+            y=[1, 2, 3, 4],
+            x_title="test_x_axis",
+            y_title="test_y_axis",
+            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
+            errors=[1, 1, 1, 1],
+            solvers=solvers,
+            problems=problems,
+            report_pages=[
+                "/mySolver/problem1",
+                "/mySolver/problem2",
+                "/otherSolver/problem1",
+                "/otherSolver/problem2",
+            ],
+        )
+
+        expected_state = {
+            "minimizer": dict.fromkeys(solvers, start_state),
+            "problem": dict.fromkeys(problems, start_state),
+        }
+
+        old_opacity = (
+            view.inactive_opacity if start_state else view.active_opacity
+        )
+        new_opacity = (
+            view.active_opacity if start_state else view.inactive_opacity
+        )
+
+        # check that it can be called to focus
+        for i, trace in enumerate(solvers + problems):
+            _ = view.focus_trace(view.plot, expected_state, trace)
+            # should be called once for each trace
+            self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
+
+            self.assertEqual(
+                mock_trace_opacity.call_args[1]["old_opacity"], old_opacity
+            )
+
+            self.assertEqual(
+                mock_trace_opacity.call_args[1]["new_opacity"], new_opacity
+            )
+
+        mock_trace_opacity.assert_called()
