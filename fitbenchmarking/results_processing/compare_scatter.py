@@ -1,5 +1,8 @@
+import inspect
+import os
 import re
 
+import dash_bootstrap_components as dbc
 import numpy as np
 import plotly.colors
 import plotly.express as px
@@ -7,6 +10,7 @@ import plotly.graph_objects as go
 from dash import Dash, Input, Output, State, dcc, html, set_props
 from plotly.validator_cache import ValidatorCache
 
+import fitbenchmarking
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.misc import get_hover_text
 
@@ -31,25 +35,57 @@ class CompareScatter:
         # self.controller = compare_scatter_controller()
         # most of the interface is just get plot from the view
 
+    def item_should_have_warning_toast(self, item):
+        errors, _ = self.view.get_per_minimiser_errors_and_runs(
+            error_flags=self.model.get_values_for_axis("error_flag"),
+            minimizer_names=self.model.get_values_for_axis(
+                "modified_minimizer_name", {"with_software": True}
+            ),
+        )
+        if item in errors:
+            return bool(errors[item])
+        else:
+            return False
+
     def add_callbacks(self, app: Dash, legend_items: list):
         if isinstance(self.view.plot, go.Figure):
-            for legend_item in legend_items:
+            for i, legend_item in enumerate(legend_items):
                 button_id = self.view.sanitize_for_id(legend_item)
-
-                app.callback(
+                button_io: list = [
                     Output("compare_scatter", "figure", allow_duplicate=True),
                     Output("legend-status", "data", True),
                     Output(button_id, "style"),
                     Output("all_button", "style", True),
                     Output("none_button", "style", True),
-                    Input(button_id, "n_clicks"),
-                    State("legend-status", "data"),
-                    prevent_initial_call=True,
-                )(
-                    lambda _, state, group=legend_item: (
-                        self.view.update_focus_for_group(group, state)
-                    )
+                ]
+                has_run_failures = self.item_should_have_warning_toast(
+                    legend_item
                 )
+                if has_run_failures:
+                    button_io.append(
+                        Output(f"{button_id}_toast", "is_open", True)
+                    )
+                button_io.extend(
+                    [
+                        Input(button_id, "n_clicks"),
+                        State("legend-status", "data"),
+                    ]
+                )
+
+                def focus_callback(
+                    _,
+                    state,
+                    return_new_state=has_run_failures,
+                    group=legend_item,
+                ):
+                    self.view.update_focus_for_group(
+                        group, state, return_new_state
+                    )
+
+                app.callback(
+                    button_io,
+                    prevent_initial_call=True,
+                )(focus_callback)
 
             app.callback(
                 Output("legend-status", "data", True),
@@ -71,9 +107,8 @@ class CompareScatter:
                 prevent_initial_call=True,
             )(lambda _, state: self.view.set_focus_for_all_items(True, state))
 
-            script_path = (
-                "fitbenchmarking/results_processing/scripts/compare_scatter"
-            )
+            script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
+            script_path += "/results_processing/scripts/compare_scatter"
 
             with open(f"{script_path}/handle_link.js") as file:
                 app.clientside_callback(
@@ -121,11 +156,11 @@ class CompareScatter:
             report_pages=self.get_fitting_report_urls(),
         )
 
-        legend_items = self.model.get_unique_values_for_axis("problem_tag")
+        legend_items = self.model.get_unique_values_for_axis(
+            "modified_minimizer_name", {"with_software": True}
+        )
         legend_items.extend(
-            self.model.get_unique_values_for_axis(
-                "modified_minimizer_name", {"with_software": True}
-            )
+            self.model.get_unique_values_for_axis("problem_tag")
         )
 
         self.app = self.add_callbacks(self.app, legend_items)
@@ -173,7 +208,7 @@ class CompareScatterView:
             samplepoints=len(dict.fromkeys(solvers)) + 1,
         )
 
-        errors = [
+        error_superscripts = [
             self.active_error_template.format(flag) if flag != 0 else ""
             for flag in errors
         ]
@@ -187,13 +222,15 @@ class CompareScatterView:
             log_x=True,
             log_y=True,
             custom_data=[tooltips, solvers, problems, report_pages],
-            text=errors,
+            text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
 
         plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
-        plot.update_layout(margin={"l": 0, "r": 5, "t": 0, "b": 0})
+        plot.update_layout(margin={"l": 0, "r": 10, "t": 10, "b": 0})
         plot.update_layout(hoverlabel={"bgcolor": "white"})
+        plot.update_layout(scattermode="group", scattergap=0.5)
+
         plot.update_traces(
             hovertemplate="%{customdata[0]}",
             textposition="middle right",
@@ -215,22 +252,103 @@ class CompareScatterView:
         )
         self.legend = legend
 
+        div_contents = [
+            dcc.Store(id="page-load-trigger", data={"loaded": True}),
+            dcc.Graph(
+                figure=self.plot,
+                id="compare_scatter",
+                style={"flex": "1", "min-width": "0"},
+            ),
+            self.legend,
+            # dummy divs needed for callbacks
+            html.Div(id="dummy-click", style={"display": "none"}),
+            html.Div(id="dummy-height", style={"display": "none"}),
+        ]
+
+        warning_messages = self.get_warning_text_for_results(errors, solvers)
+        toasts = self.create_warning_toasts(warning_messages)
+        div_contents.extend(toasts)
+
         return html.Div(
-            [
-                dcc.Store(id="page-load-trigger", data={"loaded": True}),
-                dcc.Graph(
-                    figure=self.plot,
-                    id="compare_scatter",
-                    style={"flex": "1", "min-width": "0"},
-                ),
-                self.legend,
-                # dummy divs needed for callbacks
-                html.Div(id="dummy-click", style={"display": "none"}),
-                html.Div(id="dummy-height", style={"display": "none"}),
-            ],
+            div_contents,
             style={"display": "flex", "overflow": "hidden"},
             id="compare_scatter_container",
         )
+
+    def create_warning_toasts(self, warning_messages_by_minimiser):
+        toasts = []
+        for minimiser in warning_messages_by_minimiser:
+            message = warning_messages_by_minimiser[minimiser]
+            if message is not None:
+                toasts.insert(
+                    0,
+                    dbc.Toast(
+                        message,
+                        id=f"{self.sanitize_for_id(minimiser)}_toast",
+                        header="Warning",
+                        is_open=False,
+                        dismissable=True,
+                        icon="warning",
+                        duration=5000,
+                        style={
+                            "position": "fixed",
+                            "top": 66,
+                            "right": 10,
+                            "width": 350,
+                        },
+                    ),
+                )
+        return toasts
+
+    @staticmethod
+    def calc_range(arr):
+        pad = 0.5
+        smallest_value = np.min(arr)
+        largest_value = np.max(arr)
+        diff = largest_value - smallest_value
+        shift = diff * pad
+        return smallest_value - shift, largest_value + shift
+
+    @staticmethod
+    def get_per_minimiser_errors_and_runs(error_flags, minimizer_names):
+        errors_by_minimiser = dict.fromkeys(minimizer_names, 0)
+        runs_by_minimiser = dict.fromkeys(minimizer_names, 0)
+
+        # create a dict continaing the n fails and runs of each minimiser
+        for i, minimiser in enumerate(minimizer_names):
+            runs_by_minimiser[minimiser] += 1
+            if error_flags[i] == 3:
+                errors_by_minimiser[minimiser] += 1
+
+        return errors_by_minimiser, runs_by_minimiser
+
+    def get_warning_text_for_results(self, error_flags, minimizer_names):
+
+        errors_by_minimiser, runs_by_minimiser = (
+            self.get_per_minimiser_errors_and_runs(
+                error_flags, minimizer_names
+            )
+        )
+        warning_text_by_minimiser = dict.fromkeys(minimizer_names)
+
+        # construct the error text
+        for minimiser in warning_text_by_minimiser:
+            n_failed = errors_by_minimiser[minimiser]
+            n_runs = runs_by_minimiser[minimiser]
+
+            if n_failed:
+                if n_failed == n_runs:
+                    warning_text_by_minimiser[minimiser] = (
+                        "Warning: this minimiser failed to run on every "
+                        "problem and could not be plotted."
+                    )
+                else:
+                    warning_text_by_minimiser[minimiser] = (
+                        f"Warning: this minimiser failed to run on "
+                        f"{n_failed}/{n_runs} problems. Only succesful runs"
+                        " have been plotted."
+                    )
+        return warning_text_by_minimiser
 
     problem_legend = {}
 
@@ -256,7 +374,9 @@ class CompareScatterView:
         )
         return state, all_button_style, none_button_style, plot
 
-    def update_focus_for_group(self, legend_item: str = "", state: dict = {}):
+    def update_focus_for_group(
+        self, legend_item: str = "", state: dict = {}, return_new_state=False
+    ):
 
         all_button_style = None
         none_button_style = None
@@ -282,8 +402,18 @@ class CompareScatterView:
         all_button_style, none_button_style = self.update_all_none_button(
             state
         )
-
-        return plot, state, new_style, all_button_style, none_button_style
+        # return plot, state, new_style, all_button_style, none_button_style
+        if return_new_state:
+            return (
+                plot,
+                state,
+                new_style,
+                all_button_style,
+                none_button_style,
+                new_state,
+            )
+        else:
+            return plot, state, new_style, all_button_style, none_button_style
 
     def update_all_none_button(self, state):
 
@@ -400,29 +530,33 @@ class CompareScatterView:
         problem_legend.append(html.H2("Problem"))
 
         for i, symbol_mapped_value in enumerate(unique_symbol_groups):
-            legend_item = html.Button(
-                [
-                    self.get_isolated_symbol(symbol=symbol_map[i]),
-                    f" - {symbol_mapped_value}",
-                ],
-                style=self.active_button_style,
-                id=self.sanitize_for_id(symbol_mapped_value),
+            id = self.sanitize_for_id(symbol_mapped_value)
+            legend_item = (
+                html.Button(
+                    [
+                        self.get_isolated_symbol(symbol=symbol_map[i]),
+                        f" - {symbol_mapped_value}",
+                    ],
+                    style=self.active_button_style,
+                    id=self.sanitize_for_id(symbol_mapped_value),
+                ),
             )
             legend_status["problem"][symbol_mapped_value] = True
-            problem_legend.append(legend_item)
+            problem_legend.extend(legend_item)
             problem_legend.append(html.Br())
 
         minimiser_legend = []
         minimiser_legend.append(html.H2("Minimizer"))
 
         for i, color_mapped_value in enumerate(unique_colour_groups):
+            id = self.sanitize_for_id(color_mapped_value)
             legend_item = html.Button(
                 [
                     self.get_isolated_symbol(colour=colour_map[i]),
                     f" - {color_mapped_value}",
                 ],
                 style=self.active_button_style,
-                id=self.sanitize_for_id(color_mapped_value),
+                id=id,
             )
             legend_status["minimizer"][color_mapped_value] = True
             minimiser_legend.append(legend_item)
@@ -446,11 +580,6 @@ class CompareScatterView:
                 "align-items": "center",
             },
         )
-
-        # if len(unique_symbol_groups) > len(unique_colour_groups):
-        #     minimiser_legend.append(all_none_buttons)
-        # else:
-        #     problem_legend.append(all_none_buttons)
 
         legend.append(html.Div(problem_legend))
         legend.append(html.Div(minimiser_legend))
@@ -506,19 +635,26 @@ class CompareScatterView:
                 "fixedrange": True,
                 "scaleanchor": "x",
             },
-            margin={"l": 0, "r": 0, "t": 2, "b": 0},
+            margin={"l": 0, "r": 0, "t": 0, "b": 0},
             width=15,
             height=15,
         )
-        return dcc.Graph(figure=fig, config={"staticPlot": True})
+        return html.Div(
+            [dcc.Graph(figure=fig, config={"staticPlot": True})],
+            style={
+                "margin": "0",
+                "position": "relative",
+                "top": "50%",
+                "transform": "translateY(25%)",
+            },
+        )
 
     def get_all_valid_symbols(self):
         validator = ValidatorCache.get_validator("scatter.marker", "symbol")
         # the validator returns values in the format:
         # int(ID), str(ID), str(name)
-        # we only want one of the three to eliminate duplicates, so we select
-        # every third value (starting from the third so that we have the
-        # strings for debugging)
+        # we only the string names, so we select every third value
+        # (starting from the third)
         valid_symbols = validator.values[2::3]
         valid_symbols.sort(key=self.get_symbol_sort_key)
         valid_symbols = list(filter(self.is_banned_symbol, valid_symbols))
