@@ -172,6 +172,26 @@ class CompareScatterView:
     Class to handle the basic plotting of a compare scatter
     """
 
+    banned_prefixes = [
+        "circle-",  # limited readability
+        "arrow",  # is offset from actual point
+        "triangle-down",  # rotation
+        "triangle-left",  # rotation
+        "triangle-right",  # rotation
+        "triangle-nw",  # rotation
+        "triangle-ne",  # rotation
+        "triangle-sw",  # rotation
+        "triangle-se",  # rotation
+        "hexagon",  # too close to circle at low zoom
+        "octagon",  # too close to circle at low zoom
+        "star-triangle-up",  # rotation
+        "y-down",  # rotation
+        "y-left",  # rotation
+        "y-right",  # rotation
+        "line-ew",  # rotation
+        "line-ns",  # rotation
+    ]
+
     # dict of internal Fitting Result attribute names, and the human readable
     # name that should be visible on the user interface
     def __init__(self):
@@ -189,6 +209,7 @@ class CompareScatterView:
         """<b>{0}</b></sup>"""
     )
 
+    # has side effect of setting self.plot
     def get_plot(
         self,
         x,
@@ -239,7 +260,7 @@ class CompareScatterView:
                     "width": 0.6,
                     "color": "#e5ecf6",  # colour of plot background
                 },
-                "size": 7,
+                "size": 13,
             },
             showlegend=False,
         )
@@ -753,8 +774,8 @@ class CompareScatterDataModel:
         text_array = [
             [
                 get_hover_text(result, include_title=True, newline="<br>")
-                + "<extra></extra>"
-            ]  # removes grey box with trace name from plot
+                + "<extra></extra>"  # removes grey box with trace name
+            ]
             for result in self.results
         ]
         return text_array
