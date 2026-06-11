@@ -34,6 +34,7 @@ dependencies = [
     'configparser',
     'codecarbon>=2.5.1,<2.7',
     'dash',
+    'dash_bootstrap_components'
 ]
 
 [project.optional-dependencies]
