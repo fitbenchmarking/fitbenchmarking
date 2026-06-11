@@ -53,7 +53,7 @@ class DashOptionsTests(unittest.TestCase):
     )
     @patch("fitbenchmarking.results_processing.compare_scatter.CompareScatter")
     def test_open_browser_runs_dash_with_correct_port_and_ip(
-        self, mock_run_dash, mock_compare_scatter
+        self, mock_compare_scatter, mock_run_dash
     ):
         """ """
 
