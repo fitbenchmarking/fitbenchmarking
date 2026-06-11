@@ -4,12 +4,11 @@ Test the DASH section for the options file
 
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pandas as pd
 
 from fitbenchmarking.core.results_output import open_browser
-from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.tests.test_options_fitting import (
     BaseFittingOptionTests,
@@ -49,22 +48,24 @@ class DashOptionsTests(unittest.TestCase):
         }
 
     @patch(
-        "dash.Dash.run",
+        "dash.Dash",
     )
-    @patch("fitbenchmarking.results_processing.compare_scatter.CompareScatter")
+    @patch("fitbenchmarking.core.results_output.CompareScatter")
     def test_open_browser_runs_dash_with_correct_port_and_ip(
-        self, mock_compare_scatter, mock_run_dash
+        self, mock_compare_scatter, mock_dash
     ):
         """ """
 
         expected_port = self.options.port
         expected_address = self.options.ip_address
 
-        open_browser(
-            "/dev/null", self.options, self.pp_df, [Mock(spec=FittingResult)]
-        )
+        mock_compare_scatter_instance = mock_compare_scatter.return_value
+        mock_compare_scatter_instance.get_layout.return_value = ([], mock_dash)
 
-        args = mock_run_dash.call_args[1]
+        open_browser("/dev/null", self.options, self.pp_df, [])
+
+        args = mock_dash.run.call_args[1]
+
         self.assertEqual(args["host"], expected_address)
         self.assertEqual(args["port"], expected_port)
 
