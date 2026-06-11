@@ -47,7 +47,7 @@ class CompareScatter:
         else:
             return False
 
-    def add_callbacks(self, app: Dash, legend_items: list):
+    def add_callbacks(self, app: Dash, legend_items: list[str]):
         if isinstance(self.view.plot, go.Figure):
             for i, legend_item in enumerate(legend_items):
                 button_id = self.view.sanitize_for_id(legend_item)
@@ -58,13 +58,16 @@ class CompareScatter:
                     Output("all_button", "style", True),
                     Output("none_button", "style", True),
                 ]
+
                 has_run_failures = self.item_should_have_warning_toast(
                     legend_item
                 )
+
                 if has_run_failures:
                     button_io.append(
                         Output(f"{button_id}_toast", "is_open", True)
                     )
+
                 button_io.extend(
                     [
                         Input(button_id, "n_clicks"),
