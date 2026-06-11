@@ -5,7 +5,8 @@ from typing import cast
 from unittest.mock import Mock, patch
 
 import numpy as np
-from dash import Dash, dcc, html
+import plotly.graph_objects as go
+from dash import Dash, Input, Output, State, dcc, html
 from parameterized import parameterized
 from plotly.validator_cache import ValidatorCache
 
@@ -19,6 +20,7 @@ from fitbenchmarking.results_processing.test_files.cs_test_data import (
     PLOT,
 )
 from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
 
 
 def make_mock_fitting_result(number, alternate_return_value=False):
@@ -877,7 +879,6 @@ class CompareScatterViewTests(unittest.TestCase):
             ],
         )
         trace = plot.children[1].figure.data[0]
-        print(trace)
         view.set_trace_opacity(trace, 1, 0)
         self.assertEqual(trace.marker["opacity"], 0)
         self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
@@ -940,3 +941,221 @@ class CompareScatterViewTests(unittest.TestCase):
             )
 
         mock_trace_opacity.assert_called()
+
+
+class CompareScatterControllerTests(unittest.TestCase):
+    def __init__(self, methodName: str = "runTest") -> None:
+        self.app = Mock(spec=Dash)
+        self.options = Mock(spec=Options)
+        self.test_data = [Mock(spec=FittingResult), Mock(spec=FittingResult)]
+        for mock_result in self.test_data:
+            # we need to set this since the model sorts results by name by
+            # default
+            mock_result.name = "mock_result"
+        super().__init__(methodName)
+
+    def test_constructor_creates_mvc(self):
+        cs = CompareScatter(self.app, self.options, self.test_data)
+        self.assertIsInstance(cs.model, CompareScatterDataModel)
+        self.assertIsInstance(cs.view, CompareScatterView)
+        self.assertEqual(cs.app, self.app)
+        self.assertEqual(cs.options, self.options)
+
+    def test_get_fitting_report_urls(self):
+        cs = CompareScatter(self.app, self.options, self.test_data)
+
+        self.test_data[0].fitting_report_link = "test/support_pages/test_link"
+        self.test_data[1].fitting_report_link = ""
+
+        urls = cs.get_fitting_report_urls()
+
+        self.assertEqual(urls[0], "support_pages/test_link")
+        self.assertEqual(urls[1], "index.html")
+
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatterView.get_per_minimiser_errors_and_runs"
+    )
+    def test_item_should_have_warning_toast(self, mock_errors_and_runs: Mock):
+        self.test_data[0].error_flag = 0
+        self.test_data[1].error_flag = 3
+        self.test_data[0].modified_minimizer_name.return_value = "mock_pass"
+        self.test_data[1].modified_minimizer_name.return_value = "mock_fail"
+
+        mock_errors_and_runs.return_value = (
+            {"mock_pass": 0, "mock_fail": 1},
+            None,
+        )
+
+        cs = CompareScatter(self.app, self.options, self.test_data)
+        self.assertTrue(not cs.item_should_have_warning_toast("mock_pass"))
+        self.assertTrue(cs.item_should_have_warning_toast("mock_fail"))
+
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatterView.get_per_minimiser_errors_and_runs"
+    )
+    def test_add_callbacks_adds_callbacks(self, mock_errors_and_runs: Mock):
+        self.test_data[0].error_flag = 0
+        self.test_data[1].error_flag = 3
+        self.test_data[0].modified_minimizer_name.return_value = "myMinimizer"
+
+        mock_errors_and_runs.return_value = (
+            {"myMinimizer": 0, "testMinimiser": 1},
+            None,
+        )
+
+        cs = CompareScatter(self.app, self.options, self.test_data)
+        cs.view.plot = Mock(spec=go.Figure)
+        cs.add_callbacks(self.app, ["myMinimizer", "testMinimiser"])
+
+        self.assertEqual(self.app.callback.call_count, 4)
+
+        events = self.app.callback.call_args_list
+
+        my_minimizer_callback_args = events[0][0][0]
+        test_minimizer_callback_args = events[1][0][0]
+        none_button_callback_args = events[2][0]
+        all_button_callback_args = events[3][0]
+
+        self.assertEqual(
+            my_minimizer_callback_args[0], Output("compare_scatter", "figure")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[1], Output("legend-status", "data")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[2], Output("myMinimizer", "style")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[3], Output("all_button", "style")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[4], Output("none_button", "style")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[5], Input("myMinimizer", "n_clicks")
+        )
+        self.assertEqual(
+            my_minimizer_callback_args[6], State("legend-status", "data")
+        )
+
+        self.assertEqual(
+            test_minimizer_callback_args[0],
+            Output("compare_scatter", "figure"),
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[1], Output("legend-status", "data")
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[2], Output("testMinimiser", "style")
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[3], Output("all_button", "style")
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[4], Output("none_button", "style")
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[5],
+            Output("testMinimiser_toast", "is_open"),
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[6], Input("testMinimiser", "n_clicks")
+        )
+        self.assertEqual(
+            test_minimizer_callback_args[7], State("legend-status", "data")
+        )
+
+        self.assertEqual(
+            none_button_callback_args[0], Output("legend-status", "data", True)
+        )
+        self.assertEqual(
+            none_button_callback_args[1], Output("all_button", "style", True)
+        )
+        self.assertEqual(
+            none_button_callback_args[2], Output("none_button", "style", True)
+        )
+        self.assertEqual(
+            none_button_callback_args[3],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            none_button_callback_args[4], Input("none_button", "n_clicks")
+        )
+        self.assertEqual(
+            none_button_callback_args[5], State("legend-status", "data")
+        )
+
+        self.assertEqual(
+            all_button_callback_args[0], Output("legend-status", "data", True)
+        )
+        self.assertEqual(
+            all_button_callback_args[1], Output("all_button", "style", True)
+        )
+        self.assertEqual(
+            all_button_callback_args[2], Output("none_button", "style", True)
+        )
+        self.assertEqual(
+            all_button_callback_args[3],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            all_button_callback_args[4], Input("all_button", "n_clicks")
+        )
+        self.assertEqual(
+            all_button_callback_args[5], State("legend-status", "data")
+        )
+
+        self.assertEqual(self.app.clientside_callback.call_count, 2)
+
+        clientside_callback_events = (
+            self.app.clientside_callback.call_args_list
+        )
+        clickthrough_link_callback_args = clientside_callback_events[0][0]
+        resize_observer_callback_args = clientside_callback_events[1][0]
+        # print(clickthrough_link_callback_args)
+        # print(resize_observer_callback_args)
+        self.assertEqual(
+            clickthrough_link_callback_args[1],
+            Output("dummy-click", "children"),
+        )
+        self.assertEqual(
+            clickthrough_link_callback_args[2],
+            Input("compare_scatter", "clickData"),
+        )
+
+        self.assertEqual(
+            resize_observer_callback_args[1],
+            Output("dummy-height", "children"),
+        )
+        self.assertEqual(
+            resize_observer_callback_args[2],
+            Input("compare_scatter", "figure"),
+        )
+
+    def test_get_layout(self):
+        cs = CompareScatter(self.app, self.options, self.test_data)
+        cs.view = Mock(spec=CompareScatterView)
+        cs.view.plot = go.Figure()
+        cs.model = Mock(spec=CompareScatterDataModel)
+        cs.model.get_values_for_axis.return_value = []
+        cs.model.get_unique_values_for_axis.return_value = []
+
+        _, app_returned = cs.get_layout()
+        self.assertEqual(app_returned, self.app)
+
+        call_args = cs.model.get_values_for_axis.call_args_list
+
+        self.assertEqual(call_args[0][0][0], "norm_runtime")
+        self.assertEqual(call_args[1][0][0], "norm_acc")
+        self.assertEqual(call_args[2][0][0], "error_flag")
+        self.assertEqual(call_args[3][0][0], "modified_minimizer_name")
+        self.assertEqual(call_args[3][0][1], {"with_software": True})
+        self.assertEqual(call_args[4][0][0], "problem_tag")
+        self.assertEqual(call_args[5][0][0], "fitting_report_link")
+
+        call_args = cs.model.get_unique_values_for_axis.call_args_list
+        self.assertEqual(call_args[0][0][0], "modified_minimizer_name")
+        self.assertEqual(call_args[0][0][1], {"with_software": True})
+        self.assertEqual(call_args[1][0][0], "problem_tag")
