@@ -8,6 +8,7 @@ import sys
 from collections.abc import Callable
 from contextlib import suppress
 from functools import partialmethod
+from itertools import repeat
 from pathlib import Path
 
 import numpy as np
@@ -186,15 +187,34 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        self.fitting_problem.data_x = data_points[0]["x"]
-        self.fitting_problem.data_y = data_points[0]["y"]
-        if "mask" in data_points[0]:
-            self.fitting_problem.mask = data_points[0]["mask"]
-        self.fitting_problem.data_e = data_points[0].get("e", None)
+        # TODO: this is how it's done in the mantid dev parser,
+        # so this wouldn't work if using mantid
+        if self.fitting_problem.multifit:
+            self.fitting_problem.data_x = [d["x"] for d in data_points]
+            self.fitting_problem.data_y = [d["y"] for d in data_points]
+            self.fitting_problem.data_e = [
+                d.get("e", None) for d in data_points
+            ]
 
-        if fit_ranges and "x" in fit_ranges[0]:
-            self.fitting_problem.start_x = fit_ranges[0]["x"][0]
-            self.fitting_problem.end_x = fit_ranges[0]["x"][1]
+            if not fit_ranges:
+                fit_ranges = list(repeat({}, len(data_points)))
+
+            self.fitting_problem.start_x = [
+                f["x"][0] if "x" in f else None for f in fit_ranges
+            ]
+            self.fitting_problem.end_x = [
+                f["x"][1] if "x" in f else None for f in fit_ranges
+            ]
+        else:
+            self.fitting_problem.data_x = data_points[0]["x"]
+            self.fitting_problem.data_y = data_points[0]["y"]
+            if "mask" in data_points[0]:
+                self.fitting_problem.mask = data_points[0]["mask"]
+            self.fitting_problem.data_e = data_points[0].get("e", None)
+
+            if fit_ranges and "x" in fit_ranges[0]:
+                self.fitting_problem.start_x = fit_ranges[0]["x"][0]
+                self.fitting_problem.end_x = fit_ranges[0]["x"][1]
 
     def _get_plot_scale(self) -> str:
         """
