@@ -685,6 +685,7 @@ class DisplayPageTests(unittest.TestCase):
                 id="warning",
             ),
         ]
+        self.cs_layout = [html.Div()]
 
     def test_layout_returned_when_one_plot(self):
         """
@@ -694,8 +695,9 @@ class DisplayPageTests(unittest.TestCase):
         pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc"
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id="abc",
         )
@@ -716,8 +718,9 @@ class DisplayPageTests(unittest.TestCase):
         pathname = "127.0.0.1:5009/123/NIST_low_difficulty/pp/acc+runtime"
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id="123",
         )
@@ -752,8 +755,9 @@ class DisplayPageTests(unittest.TestCase):
         """
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id=run_id,
         )
@@ -779,6 +783,7 @@ class DisplayPageTests(unittest.TestCase):
             self.layout,
             self.max_solvers,
             run_id="abc",
+            compare_scatter_layout=self.cs_layout,
         )
 
         self.assertDictEqual(
