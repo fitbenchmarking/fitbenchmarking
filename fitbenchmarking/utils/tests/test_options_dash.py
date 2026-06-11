@@ -58,7 +58,7 @@ class DashOptionsTests(unittest.TestCase):
         expected_port = self.options.port
         expected_address = self.options.ip_address
 
-        open_browser("/dev/null", self.options, self.pp_df)
+        open_browser("/dev/null", self.options, self.pp_df, [])
 
         args = mock_run_dash.call_args[1]
         self.assertEqual(args["host"], expected_address)
