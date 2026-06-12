@@ -19,12 +19,13 @@ from fitbenchmarking.utils.misc import get_hover_text
 
 class CompareScatter:
     """
-    Class to handle the data processing for a compare scatter
+    The main interface for the compare scatter, also acts as the MVC controller
+    for the compare scatter.
     """
 
     def __init__(self, app: Dash, options, results=[]):
         """
-        Initialise the compare_scatter class.
+        Initialise the compare_scatter class and MVC components.
         """
         self.results = results
         self.model = CompareScatterDataModel(results)
@@ -36,6 +37,17 @@ class CompareScatter:
         # most of the interface is just get plot from the view
 
     def item_should_have_warning_toast(self, item):
+        """
+        Given a string name of a minimizer, return a bool representing if it
+        failed to complete at least one problem (i.e. it had and error flag of
+        3)
+
+        :param item: the minimizer to check
+        :type str:
+
+        :return: whether that item threw any errors
+        :rtype bool:
+        """
         errors, _ = self.view.get_per_minimiser_errors_and_runs(
             error_flags=self.model.get_values_for_axis("error_flag"),
             minimizer_names=self.model.get_values_for_axis(
@@ -48,6 +60,22 @@ class CompareScatter:
             return False
 
     def add_callbacks(self, app: Dash, legend_items: list[str]):
+        """
+        Given a dash app and a list of legend items, add a callback for each
+         ID to allow it to set the focus of the appropriate traces.
+
+        Also add the required clientside callbacks to resize the iframe which
+        contains the compare scatter at runtime, and to add the handling for
+        the clickthrough links
+
+        :param app: The existing dash app to add the callbacks to
+        :type Dash:
+        :param legend_items: A list of minimizer names or IDs
+        :type list[str]:
+
+        :return: The app with callbacks added
+        :rtype Dash:
+        """
         if isinstance(self.view.plot, go.Figure):
             for i, legend_item in enumerate(legend_items):
                 button_id = self.view.sanitize_for_id(legend_item)
@@ -134,6 +162,11 @@ class CompareScatter:
         return app
 
     def get_fitting_report_urls(self):
+        """
+        Get the fitting report URLs and format as required for use as links
+        :return: List of URLS
+        :rtype list[str]:
+        """
         return [
             "support_pages/" + val.split("support_pages/", 1)[1]
             if val != ""
@@ -142,6 +175,14 @@ class CompareScatter:
         ]
 
     def get_layout(self):
+        """
+        Get the compare scatter and set all of the required callbacks
+
+        :return: The plot Div/List
+        :rtype Div | list[]:
+        :return: The app with callbacks added
+        :rtype Dash:
+        """
         default_x = "norm_runtime"
         default_y = "norm_acc"
 
@@ -172,7 +213,8 @@ class CompareScatter:
 
 class CompareScatterView:
     """
-    Class to handle the basic plotting of a compare scatter
+    Class to handle the basic plotting of a compare scatter, in most cases use
+    the CompareScatter class instead
     """
 
     banned_prefixes = [
@@ -195,9 +237,10 @@ class CompareScatterView:
         "line-ns",  # rotation
     ]
 
-    # dict of internal Fitting Result attribute names, and the human readable
-    # name that should be visible on the user interface
     def __init__(self):
+        """
+        Create the CompareScatterView and set the list of valid symbols
+        """
         self.valid_symbols = self.get_all_valid_symbols()
 
     active_opacity = 1
@@ -212,19 +255,49 @@ class CompareScatterView:
         """<b>{0}</b></sup>"""
     )
 
-    # has side effect of setting self.plot
     def get_plot(
         self,
-        x,
-        y,
-        x_title,
-        y_title,
-        tooltips,
-        errors,
-        solvers,
-        problems,
-        report_pages,
+        x: list[int],
+        y: list[int],
+        x_title: str,
+        y_title: str,
+        tooltips: list[list[str]],
+        errors: list[int],
+        solvers: list[str],
+        problems: list[str],
+        report_pages: list[str],
     ):
+        """
+        Get a div containing the compare scatter and legend.
+        Not that has the side effect of setting self.plot for the class as well
+        as returning the plot in a Div.
+
+        When an argument is a list, it should have the same dimensions and same
+        ordering as the x and y values - i.e. if x = [1,2,3] then tooltips =
+        ["x:1","x:2","x:3"]
+
+        :param x: values to plot on the X axis
+        :type list[int]:
+        :param y: values to plot on the Y axis
+        :type list[int]:
+        :param x_title: title for the X axis
+        :type str:
+        :param y_title: title for the Y axis
+        :type str:
+        :param tooltips: list of text to be used as hover text
+        :type list[list[str]]:
+        :param errors: list of fitting result error flags
+        :type list[int]:
+        :param solvers: list of solver names
+        :type list[str]:
+        :param problems: list of problem names
+        :type list[str]:
+        :param report_pages: list of urls of fitting reports
+        :type list[str]:
+
+        :return Plot: A div containing the plot and legend
+        :rtype html.Div:
+        """
         colour_groups = plotly.colors.sample_colorscale(
             colorscale="mrybm",
             # since the scale is cyclical, we take an extra sample to leave
@@ -300,6 +373,20 @@ class CompareScatterView:
         )
 
     def create_warning_toasts(self, warning_messages_by_minimiser):
+        """
+        Returns an array of dbc.Toasts. Only creates toasts for minimisers with
+        warning messages.
+
+        Each toast will have the returned ID of
+        f"{sanitized_minimiser_name}_toast"
+
+        :param warning_messages_by_minimiser: key: minimiser, value: warning
+        message or None
+        :type dict[str,str|None]:
+
+        :return Toasts: A list containing the created dbc.Toast objects
+        :rtype list[dbc.Toast]:
+        """
         toasts = []
         for minimiser in warning_messages_by_minimiser:
             message = warning_messages_by_minimiser[minimiser]
@@ -325,16 +412,29 @@ class CompareScatterView:
         return toasts
 
     @staticmethod
-    def calc_range(arr):
-        pad = 0.5
-        smallest_value = np.min(arr)
-        largest_value = np.max(arr)
-        diff = largest_value - smallest_value
-        shift = diff * pad
-        return smallest_value - shift, largest_value + shift
-
-    @staticmethod
     def get_per_minimiser_errors_and_runs(error_flags, minimizer_names):
+        """
+        Get two dictionaries, both using minimiser name as the key, the errors
+        dictionary uses the number of runs with an error flag of 3 to calculate
+        the value, and the runs dictionary uses the number of occurences of the
+        minimiser name in the minimizer_names list as the value.
+
+        :param error_flags: list of error flags in same order as minimiser
+        names
+        :type list[int]:
+        :param minimizer_names: list of minimser names, including duplicates (
+            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
+            run of that minimiser
+        :type list[str]:
+
+        :return errors: A dict where the key is the minimiser name, and the
+        value is the number of times that minimiser had an error flag of 3
+        :rtype list[str,int]:
+        :return runs: A dict where the key is the minimiser name, and the
+        value is the number of times that minimiser ran
+        :rtype list[str,int]:
+        """
+
         errors_by_minimiser = dict.fromkeys(minimizer_names, 0)
         runs_by_minimiser = dict.fromkeys(minimizer_names, 0)
 
@@ -347,6 +447,26 @@ class CompareScatterView:
         return errors_by_minimiser, runs_by_minimiser
 
     def get_warning_text_for_results(self, error_flags, minimizer_names):
+        """
+        Get the warning text for a minimizer, which changes depending on its
+        the number of associated error flags with a value of 3.
+
+        When no error flags with a value of 3 are found, it should set the
+        warning text to None, otherwise it should create a string which tells
+        the user what proportion of runs failed.
+
+        :param error_flags: list of error flags in same order as minimiser
+        names
+        :type list[int]:
+        :param minimizer_names: list of minimser names, including duplicates (
+            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
+            run of that minimiser
+        :type list[str]:
+
+        :return warnings: A dict where the key is the minimiser name, and the
+        value is the warning text for that minimiser or None if none is needed
+        :rtype list[str,int]:
+        """
 
         errors_by_minimiser, runs_by_minimiser = (
             self.get_per_minimiser_errors_and_runs(
@@ -377,6 +497,33 @@ class CompareScatterView:
     problem_legend = {}
 
     def set_focus_for_all_items(self, focus, state):
+        """
+        Given a focus value and a dictionary of the state of each legend item
+        set the focus for every point on the plot, return the plot with the new
+        focus set, the updated dictionary with the state of each legend item,
+        and the new style for the all/none buttons (which need to lose focus)
+        whenever not every item is selected.
+
+        the state dictionary should have the following structure:
+        state = {
+            "minimizer": {"minimizer_name":True},
+            "problem": {"problem_name":True},
+        }
+
+        :param focus: The new focus state for all items
+        :type bool:
+        :param state: Dictionary with the structure described above
+        :type dict[str,dict[str,bool]]:
+
+        :return state: the updated state dictionary
+        :rtype dict[str,dict[str,bool]]:
+        :return all_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        :return none_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        :return plot: the plot after the traces have been updated
+        :rtype go.Figure:
+        """
         style = (
             self.active_button_style if focus else self.inactive_button_style
         )
@@ -401,7 +548,38 @@ class CompareScatterView:
     def update_focus_for_group(
         self, legend_item: str = "", state: dict = {}, return_new_state=False
     ):
+        """
+        Given a legend item, toggle the state of the relevant trace and entry
+        in the state dictionary.
 
+        the state dictionary should have the following structure:
+        state = {
+            "minimizer": {"minimizer_name":True},
+            "problem": {"problem_name":True},
+        }
+
+        :param legend_item: The legend item to flip the state of
+        :type str:
+        :param state: Dictionary with the structure described above
+        :type dict[str,dict[str,bool]]:
+        :param return_new_state: The state of the object afer toggling (active
+        = True, inactive = false)
+        :type bool:
+
+        :return state: the updated state dictionary
+        :rtype dict[str,dict[str,bool]]:
+        :return new_style: the updated style for the legend item
+        :rtype dict[str,any]:
+        :return all_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        :return none_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        :return plot: the plot after the traces have been updated
+        :rtype go.Figure:
+        :return new_state: The new state of the legend item (active = True,
+        inactive = false)
+        :rtype bool:
+        """
         all_button_style = None
         none_button_style = None
         new_style = None
@@ -422,11 +600,10 @@ class CompareScatterView:
             else self.inactive_button_style
         )
 
-        plot = self.focus_trace(self.plot, state, legend_item)
-        all_button_style, none_button_style = self.update_all_none_button(
+        plot = self.focus_trace(self.plot, state)
+        all_button_style, none_button_style = self.get_all_none_button_style(
             state
         )
-        # return plot, state, new_style, all_button_style, none_button_style
         if return_new_state:
             return (
                 plot,
@@ -439,8 +616,25 @@ class CompareScatterView:
         else:
             return plot, state, new_style, all_button_style, none_button_style
 
-    def update_all_none_button(self, state):
+    def get_all_none_button_style(self, state):
+        """
+        Given a dictionary of the state of each legend item, return the correct
+        style for the select all and select none buttons.
 
+        The state dict should be in the following format:
+        state = {
+            "minimizer": {"minimizer_name":True},
+            "problem": {"problem_name":True},
+        }
+
+        :param state: Dictionary with the structure described above
+        :type dict[str,dict[str,bool]]:
+
+        :return all_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        :return none_button_style: the updated style for the select all button
+        :rtype dict[str,any]:
+        """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
         )
@@ -460,7 +654,30 @@ class CompareScatterView:
 
         return all_button_style, none_button_style
 
-    def focus_trace(self, plot: go.Figure, state: dict, group: str):
+    def focus_trace(self, plot: go.Figure, state: dict, group: str = ""):
+        """
+        Given a state dictionary, and a plot, set the opacity on each trace
+        of the plot to match the expected opacity for the state in the
+        dictionary.
+
+        if "all" or "none" is provided for the group parameter, then either
+        make all or none of the points use the active opacity.
+
+        the active and inactive opacities are set based on self.active_opacity
+        and self.inactive_opacity
+
+        :param plot: The plot to modify
+        :type go.Figure:
+        :param state: Dictionary of state of each problem, sorted by minimizer
+        , problem
+        :type dict[str,dict[str,bool]]:
+        :param group: The group of points to set visiblity for, either "all" or
+        "none", all other values have no effect
+        :type str:
+
+        :return plot: The modified plot
+        :rtype go.Figure:
+        """
         # we do a "in" check with tracename, since the legendgroup contains
         # both the problem and the solver in the same string
         select_all = group == "all"
@@ -514,6 +731,18 @@ class CompareScatterView:
 
     @staticmethod
     def set_trace_opacity(t, old_opacity, new_opacity):
+        """
+        Given a trace, update the opacity of the text field. The old opacity
+        needs to be provided to match against in the html for the marker text
+
+        :param t: The trace to modify
+        :type:
+        :param old_opacity: the opacity before the change
+        :type int:
+        :param new_opacity: the opacity after the change
+        :type int:
+        """
+
         t.marker.opacity = new_opacity
         marker_text = t.text if t.text is not None else ""
 
@@ -543,6 +772,24 @@ class CompareScatterView:
     }
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
+        """
+        Given a list of items which should be grouped by either symbol or
+        colour, and the colours/ symbols which they should be grouped by
+        create a legend using dash html components, that includes the name
+        of each legend item and an icon representing each hape or colour.
+
+        :param symbol_groups: The values which are used to group by symbol
+        :type list[str]:
+        :param symbol_map: A list of available symbols to use for grouping
+        :type list[str]:
+        :param colour_groups: The values which are used to group by colour
+        :type list[str]:
+        :param colour_map: A list of available colours to use for grouping
+        :type list[str]:
+
+        :return complete_legend: A div containing the created legend
+        :type html.Div:
+        """
 
         unique_symbol_groups = list(dict.fromkeys(symbol_groups))
         unique_colour_groups = list(dict.fromkeys(colour_groups))
@@ -621,10 +868,34 @@ class CompareScatterView:
 
     @staticmethod
     def sanitize_for_id(to_sanitize: str):
+        """
+        removes all non alphanumeric characters from the provided string
+
+        :param to_sanitize: String to sanitize
+        :type str:
+
+        :return sanitized: Sanitized string
+        :rtype str:
+        """
+
         return "".join([char for char in to_sanitize if char.isalnum()])
 
     @staticmethod
     def get_isolated_symbol(symbol="circle-x", colour="rgba(150,150,150,1)"):
+        """
+        Get a html div containing a single point, which is an example of the
+        provided input values. The point is non interactible, intended for
+        use in legends and embeded within other elements.
+
+        :param symbol: Shape to give the point
+        :type str:
+        :param colour: Colour to give the point
+        :type str:
+
+        :return symbol: Div containing the generated symbol
+        :rtype html.Div:
+        """
+
         fig = go.Figure()
         fig.add_trace(
             go.Scatter(
@@ -674,6 +945,17 @@ class CompareScatterView:
         )
 
     def get_all_valid_symbols(self):
+        """
+        Filter the valid list of symbols for a plotly plot to only those which
+        have been determined visually distinct enough to be peresented on the
+        plot.
+
+        Filters according to self.is_banned_symbol.
+
+        :return valid_symbols: list of visually distincy symbol names
+        :rtype list[str]:
+        """
+
         validator = ValidatorCache.get_validator("scatter.marker", "symbol")
         # the validator returns values in the format:
         # int(ID), str(ID), str(name)
@@ -681,19 +963,43 @@ class CompareScatterView:
         # (starting from the third)
         valid_symbols = validator.values[2::3]
         valid_symbols.sort(key=self.get_symbol_sort_key)
-        valid_symbols = list(filter(self.is_banned_symbol, valid_symbols))
+        valid_symbols = list(filter(self.is_valid_symbol, valid_symbols))
         return valid_symbols
 
-    # some types of symbols (specifically the ones with rotations) repeat
-    # too frequently with only minor changes, which reduces readability, so we
-    # need to remove them before display
-    def is_banned_symbol(self, symbol: str):
+    def is_valid_symbol(self, symbol: str):
+        """
+        Some types of symbols (specifically the ones with rotations) repeat
+        too frequently with only minor changes, which reduces readability, so
+        we need to remove them before display. This function filters out
+        rotations and translations as determined by self.banned_prefixes
+
+        :param symbol: Symbol to check
+        :type str:
+
+        :return is_valid: true if the symbol so not banned
+        :rtype bool:
+        """
+
         return all(
             not symbol.startswith(prefix) for prefix in self.banned_prefixes
         )
 
     @staticmethod
     def get_symbol_sort_key(symbol: str):
+        """
+        Given a string, return an int priority. This function has been set up
+        so that solid colour symbols are favourd over open symbols. It can be
+        used to sort a list of symbols into an order based on which suffix
+        they contain.
+
+        :param symbol: The string to check
+        :type str:
+
+        :return ranking: how early it should appear in the sorted list
+        0 being the earliest
+        :rtype int:
+        """
+
         # prefer symbols with solid colours
         suffix_ranking = {"dot": 1, "open": 2, "open-dot": 3}
         for suffix in suffix_ranking:
@@ -704,6 +1010,15 @@ class CompareScatterView:
 
 class CompareScatterDataModel:
     def __init__(self, results: list[FittingResult]):
+        """
+        Initialise the data model for the compare scatter. This class sorts
+        results by default so that the order of plotting does not change a lot
+        between runs.
+
+        :param results: list of Fitting results to use as the basis for this
+        data model
+        :type list[FittingResult]:
+        """
         self.results = results
         # ensure consistent processing between runs
         self.results.sort(key=self.get_sort_key)
@@ -715,6 +1030,27 @@ class CompareScatterDataModel:
     def get_values_for_axis(
         self, metric: str, func_kwargs={}, unique=False
     ) -> list:
+        """
+        Given a string (metric), retreive the value of that metric from each
+        fitting result. Works for attributes and callables (with args able to
+        be passed using func_kwargs).
+
+        Note: this function caches the values provided to it, meaning that
+        repeated calls do not cause signifigant slowdown. In the case of
+        functions, it caches the function - not the return value, this still
+        improves performance, but means that if the function output changes,
+        the returned values are still correct.
+
+
+        :param metric: The metric to get from every result in the model
+        :type str:
+        :param func_kwargs: The arguments to send if the result is callable
+        :type dict:
+        :param unique: Whether to return a list of only unique results or
+        allow the list to include duplicates
+        :type bool:
+        """
+
         # in the case of name and normalised values, a function call is
         # required to retreive the data, so we need to check if we have been
         # passed an attribute or method name
@@ -747,6 +1083,10 @@ class CompareScatterDataModel:
         return values
 
     def get_unique_values_for_axis(self, metric: str, func_kwargs={}) -> list:
+        """
+        Deprecated, use get_values_for_axis(_,_,unique=True)
+        """
+
         values = list(
             dict.fromkeys(
                 self.get_values_for_axis(metric, func_kwargs, unique=True)
@@ -755,6 +1095,14 @@ class CompareScatterDataModel:
         return values
 
     def get_hover_text_for_results(self):
+        """
+        Get the hover text to display above each result and add the required
+        formatting to display nicely on the plot.
+
+        :return hover_text: list of hover text
+        :rtype list[str]:
+        """
+
         # call util, and prepend the metrics being plotted
         text_array = [
             [
