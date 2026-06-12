@@ -200,11 +200,11 @@ class CompareScatter:
             report_pages=self.get_fitting_report_urls(),
         )
 
-        legend_items = self.model.get_unique_values_for_axis(
-            "modified_minimizer_name", {"with_software": True}
+        legend_items = self.model.get_values_for_axis(
+            "modified_minimizer_name", {"with_software": True}, unique=True
         )
         legend_items.extend(
-            self.model.get_unique_values_for_axis("problem_tag")
+            self.model.get_values_for_axis("problem_tag", unique=True)
         )
 
         self.app = self.add_callbacks(self.app, legend_items)
@@ -1080,18 +1080,6 @@ class CompareScatterDataModel:
                 setattr(self, cache, values)
             else:
                 values = cache_data
-        return values
-
-    def get_unique_values_for_axis(self, metric: str, func_kwargs={}) -> list:
-        """
-        Deprecated, use get_values_for_axis(_,_,unique=True)
-        """
-
-        values = list(
-            dict.fromkeys(
-                self.get_values_for_axis(metric, func_kwargs, unique=True)
-            )
-        )
         return values
 
     def get_hover_text_for_results(self):

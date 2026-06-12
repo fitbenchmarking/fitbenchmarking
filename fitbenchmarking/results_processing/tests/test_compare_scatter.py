@@ -178,13 +178,13 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
     def test_get_unique_values_gets_unique_values(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
-        unique_values = model.get_unique_values_for_axis("name")
+        unique_values = model.get_values_for_axis("name", unique=True)
         self.assertEqual(unique_values, ["Result_1"])
 
     def test_get_unique_values_uses_different_cache(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
 
-        unique_values = model.get_unique_values_for_axis("name")
+        unique_values = model.get_values_for_axis("name", unique=True)
         cache = model.__getattribute__("_unique_cache_name")
 
         self.assertEqual(unique_values, cache)
@@ -1140,22 +1140,21 @@ class CompareScatterControllerTests(unittest.TestCase):
         cs.view.plot = go.Figure()
         cs.model = Mock(spec=CompareScatterDataModel)
         cs.model.get_values_for_axis.return_value = []
-        cs.model.get_unique_values_for_axis.return_value = []
 
         _, app_returned = cs.get_layout()
         self.assertEqual(app_returned, self.app)
 
         call_args = cs.model.get_values_for_axis.call_args_list
 
-        self.assertEqual(call_args[0][0][0], "norm_runtime")
-        self.assertEqual(call_args[1][0][0], "norm_acc")
-        self.assertEqual(call_args[2][0][0], "error_flag")
-        self.assertEqual(call_args[3][0][0], "modified_minimizer_name")
-        self.assertEqual(call_args[3][0][1], {"with_software": True})
-        self.assertEqual(call_args[4][0][0], "problem_tag")
-        self.assertEqual(call_args[5][0][0], "fitting_report_link")
-
-        call_args = cs.model.get_unique_values_for_axis.call_args_list
-        self.assertEqual(call_args[0][0][0], "modified_minimizer_name")
-        self.assertEqual(call_args[0][0][1], {"with_software": True})
-        self.assertEqual(call_args[1][0][0], "problem_tag")
+        self.assertEqual(call_args[0].args[0], "norm_runtime")
+        self.assertEqual(call_args[1].args[0], "norm_acc")
+        self.assertEqual(call_args[2].args[0], "error_flag")
+        self.assertEqual(call_args[3].args[0], "modified_minimizer_name")
+        self.assertEqual(call_args[3].args[1], {"with_software": True})
+        self.assertEqual(call_args[4].args[0], "problem_tag")
+        self.assertEqual(call_args[5].args[0], "fitting_report_link")
+        self.assertEqual(call_args[6].args[0], "modified_minimizer_name")
+        self.assertEqual(call_args[6].args[1], {"with_software": True})
+        self.assertEqual(call_args[6].kwargs["unique"], True)
+        self.assertEqual(call_args[7].args[0], "problem_tag")
+        self.assertEqual(call_args[7].kwargs["unique"], True)
