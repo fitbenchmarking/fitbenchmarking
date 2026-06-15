@@ -805,7 +805,7 @@ class CompareScatterView:
             legend_item = (
                 html.Button(
                     [
-                        self.get_isolated_symbol(symbol=symbol_map[i]),
+                        self.get_point(symbol=symbol_map[i]),
                         f" - {symbol_mapped_value}",
                     ],
                     style=self.active_button_style,
@@ -823,7 +823,7 @@ class CompareScatterView:
             id = self.sanitize_for_id(color_mapped_value)
             legend_item = html.Button(
                 [
-                    self.get_isolated_symbol(colour=colour_map[i]),
+                    self.get_point(colour=colour_map[i]),
                     f" - {color_mapped_value}",
                 ],
                 style=self.active_button_style,
@@ -881,7 +881,7 @@ class CompareScatterView:
         return "".join([char for char in to_sanitize if char.isalnum()])
 
     @staticmethod
-    def get_isolated_symbol(symbol="circle-x", colour="rgba(150,150,150,1)"):
+    def get_point(symbol="circle-x", colour="rgba(150,150,150,1)"):
         """
         Get a html div containing a single point, which is an example of the
         provided input values. The point is non interactible, intended for
@@ -1105,26 +1105,3 @@ class CompareScatterDataModel:
             for result in self.results
         ]
         return text_array
-
-
-# TODO: refactorings
-# state dict should be an object really - the type is too complicated to have 0
-# linting or type checking
-# logic needs to be flattened, setting trace opacity is called after multiple
-# layers of functions, call stack = conginitive load
-# functions with multiple return values should be split out into different
-# functions in most cases. if a callback needs it, then it should be defined as
-# follows, to allow us to enforce seperation of concerns
-# lambda : return(
-#   my_func1(),
-#   my_func2()
-# )
-# we need to take a good look at which function in the view should be in the
-# controller, I suspect a lot of the focus logic with state arrays could be
-# moved
-# focus_trace should have better logic for the "group" param, either it should
-# assert or throw a warning or something, im not sure
-# set_trace_opacity needs to set the opacity of the trace, not just the text
-# set_trace_opacity should marshall to json instead of doing regex
-# get_isolated_symbol should be renamed
-# get_values_for_axis cache should be seperate from get values logic
