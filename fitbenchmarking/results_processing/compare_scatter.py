@@ -49,7 +49,7 @@ class CompareScatter:
         :return: whether that item threw any errors
         :rtype bool:
         """
-        errors, _ = self.view.get_per_minimiser_errors_and_runs(
+        errors, _ = self.view.get_per_minimizer_errors_and_runs(
             error_flags=self.model.get_values_for_axis("error_flag"),
             minimizer_names=self.model.get_values_for_axis(
                 "modified_minimizer_name", with_software=True
@@ -222,7 +222,7 @@ class CompareScatter:
             y_title=default_y,
             tooltips=self.model.get_hover_text_for_results(),
             errors=self.model.get_values_for_axis("error_flag"),
-            solvers=self.model.get_values_for_axis(
+            minimizers=self.model.get_values_for_axis(
                 "modified_minimizer_name", with_software=True
             ),
             problems=self.model.get_values_for_axis("problem_tag"),
@@ -292,7 +292,7 @@ class CompareScatterView:
         y_title: str,
         tooltips: list[list[str]],
         errors: list[int],
-        solvers: list[str],
+        minimizers: list[str],
         problems: list[str],
         report_pages: list[str],
     ):
@@ -317,7 +317,7 @@ class CompareScatterView:
         :type list[list[str]]:
         :param errors: list of fitting result error flags
         :type list[int]:
-        :param solvers: list of solver names
+        :param minimizers: list of minimizer names
         :type list[str]:
         :param problems: list of problem names
         :type list[str]:
@@ -331,7 +331,7 @@ class CompareScatterView:
             colorscale="mrybm",
             # since the scale is cyclical, we take an extra sample to leave
             # some space between the first and last colour
-            samplepoints=len(dict.fromkeys(solvers)) + 1,
+            samplepoints=len(dict.fromkeys(minimizers)) + 1,
         )
 
         error_superscripts = [
@@ -342,12 +342,12 @@ class CompareScatterView:
         plot = px.scatter(
             x=x,
             y=y,
-            color=solvers,
+            color=minimizers,
             symbol=problems,
             symbol_sequence=self.valid_symbols,
             log_x=True,
             log_y=True,
-            custom_data=[tooltips, solvers, problems, report_pages],
+            custom_data=[tooltips, minimizers, problems, report_pages],
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
@@ -373,7 +373,7 @@ class CompareScatterView:
         legend = self.get_legend(
             symbol_groups=problems,
             symbol_map=self.valid_symbols,
-            colour_groups=solvers,
+            colour_groups=minimizers,
             colour_map=colour_groups,
         )
         self.legend = legend
@@ -391,7 +391,9 @@ class CompareScatterView:
             html.Div(id="dummy-height", style={"display": "none"}),
         ]
 
-        warning_messages = self.get_warning_text_for_results(errors, solvers)
+        warning_messages = self.get_warning_text_for_results(
+            errors, minimizers
+        )
         toasts = self.create_warning_toasts(warning_messages)
         div_contents.extend(toasts)
 
@@ -401,15 +403,15 @@ class CompareScatterView:
             id="compare_scatter_container",
         )
 
-    def create_warning_toasts(self, warning_messages_by_minimiser):
+    def create_warning_toasts(self, warning_messages_by_minimizer):
         """
-        Returns an array of dbc.Toasts. Only creates toasts for minimisers with
+        Returns an array of dbc.Toasts. Only creates toasts for minimizers with
         warning messages.
 
         Each toast will have the returned ID of
-        f"{sanitized_minimiser_name}_toast"
+        f"{sanitized_minimizer_name}_toast"
 
-        :param warning_messages_by_minimiser: key: minimiser, value: warning
+        :param warning_messages_by_minimizer: key: minimizer, value: warning
         message or None
         :type dict[str,str|None]:
 
@@ -417,14 +419,14 @@ class CompareScatterView:
         :rtype list[dbc.Toast]:
         """
         toasts = []
-        for minimiser in warning_messages_by_minimiser:
-            message = warning_messages_by_minimiser[minimiser]
+        for minimizer in warning_messages_by_minimizer:
+            message = warning_messages_by_minimizer[minimizer]
             if message is not None:
                 toasts.insert(
                     0,
                     dbc.Toast(
                         message,
-                        id=f"{self.sanitize_for_id(minimiser)}_toast",
+                        id=f"{self.sanitize_for_id(minimizer)}_toast",
                         header="Warning",
                         is_open=False,
                         dismissable=True,
@@ -441,39 +443,39 @@ class CompareScatterView:
         return toasts
 
     @staticmethod
-    def get_per_minimiser_errors_and_runs(error_flags, minimizer_names):
+    def get_per_minimizer_errors_and_runs(error_flags, minimizer_names):
         """
-        Get two dictionaries, both using minimiser name as the key, the errors
+        Get two dictionaries, both using minimizer name as the key, the errors
         dictionary uses the number of runs with an error flag of 3 to calculate
         the value, and the runs dictionary uses the number of occurences of the
-        minimiser name in the minimizer_names list as the value.
+        minimizer name in the minimizer_names list as the value.
 
-        :param error_flags: list of error flags in same order as minimiser
+        :param error_flags: list of error flags in same order as minimizer
         names
         :type list[int]:
         :param minimizer_names: list of minimser names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimiser
+            run of that minimizer
         :type list[str]:
 
-        :return errors: A dict where the key is the minimiser name, and the
-        value is the number of times that minimiser had an error flag of 3
+        :return errors: A dict where the key is the minimizer name, and the
+        value is the number of times that minimizer had an error flag of 3
         :rtype list[str,int]:
-        :return runs: A dict where the key is the minimiser name, and the
-        value is the number of times that minimiser ran
+        :return runs: A dict where the key is the minimizer name, and the
+        value is the number of times that minimizer ran
         :rtype list[str,int]:
         """
 
-        errors_by_minimiser = dict.fromkeys(minimizer_names, 0)
-        runs_by_minimiser = dict.fromkeys(minimizer_names, 0)
+        errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
+        runs_by_minimizer = dict.fromkeys(minimizer_names, 0)
 
-        # create a dict continaing the n fails and runs of each minimiser
-        for i, minimiser in enumerate(minimizer_names):
-            runs_by_minimiser[minimiser] += 1
+        # create a dict continaing the n fails and runs of each minimizer
+        for i, minimizer in enumerate(minimizer_names):
+            runs_by_minimizer[minimizer] += 1
             if error_flags[i] == 3:
-                errors_by_minimiser[minimiser] += 1
+                errors_by_minimizer[minimizer] += 1
 
-        return errors_by_minimiser, runs_by_minimiser
+        return errors_by_minimizer, runs_by_minimizer
 
     def get_warning_text_for_results(self, error_flags, minimizer_names):
         """
@@ -484,44 +486,44 @@ class CompareScatterView:
         warning text to None, otherwise it should create a string which tells
         the user what proportion of runs failed.
 
-        :param error_flags: list of error flags in same order as minimiser
+        :param error_flags: list of error flags in same order as minimizer
         names
         :type list[int]:
         :param minimizer_names: list of minimser names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimiser
+            run of that minimizer
         :type list[str]:
 
-        :return warnings: A dict where the key is the minimiser name, and the
-        value is the warning text for that minimiser or None if none is needed
+        :return warnings: A dict where the key is the minimizer name, and the
+        value is the warning text for that minimizer or None if none is needed
         :rtype list[str,int]:
         """
 
-        errors_by_minimiser, runs_by_minimiser = (
-            self.get_per_minimiser_errors_and_runs(
+        errors_by_minimizer, runs_by_minimizer = (
+            self.get_per_minimizer_errors_and_runs(
                 error_flags, minimizer_names
             )
         )
-        warning_text_by_minimiser = dict.fromkeys(minimizer_names)
+        warning_text_by_minimizer = dict.fromkeys(minimizer_names)
 
         # construct the error text
-        for minimiser in warning_text_by_minimiser:
-            n_failed = errors_by_minimiser[minimiser]
-            n_runs = runs_by_minimiser[minimiser]
+        for minimizer in warning_text_by_minimizer:
+            n_failed = errors_by_minimizer[minimizer]
+            n_runs = runs_by_minimizer[minimizer]
 
             if n_failed:
                 if n_failed == n_runs:
-                    warning_text_by_minimiser[minimiser] = (
-                        "Warning: this minimiser failed to run on every "
+                    warning_text_by_minimizer[minimizer] = (
+                        "Warning: this minimizer failed to run on every "
                         "problem and could not be plotted."
                     )
                 else:
-                    warning_text_by_minimiser[minimiser] = (
-                        f"Warning: this minimiser failed to run on "
+                    warning_text_by_minimizer[minimizer] = (
+                        f"Warning: this minimizer failed to run on "
                         f"{n_failed}/{n_runs} problems. Only succesful runs"
                         " have been plotted."
                     )
-        return warning_text_by_minimiser
+        return warning_text_by_minimizer
 
     problem_legend = {}
 
@@ -580,7 +582,7 @@ class CompareScatterView:
     @staticmethod
     def toggle_group_state(group, state):
         """
-        Given either a minimiser or a problem and a state dict in the fromat:
+        Given either a minimizer or a problem and a state dict in the fromat:
         state = {
             "minimizer": {"minimizer_name":True},
             "problem": {"problem_name":True},
@@ -675,7 +677,7 @@ class CompareScatterView:
         :rtype go.Figure:
         """
         # we do a "in" check with tracename, since the legendgroup contains
-        # both the problem and the solver in the same string
+        # both the problem and the minimizer in the same string
 
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
@@ -809,8 +811,8 @@ class CompareScatterView:
             problem_legend.extend(legend_item)
             problem_legend.append(html.Br())
 
-        minimiser_legend = []
-        minimiser_legend.append(html.H2("Minimizer"))
+        minimizer_legend = []
+        minimizer_legend.append(html.H2("Minimizer"))
 
         for i, color_mapped_value in enumerate(unique_colour_groups):
             id = self.sanitize_for_id(color_mapped_value)
@@ -823,8 +825,8 @@ class CompareScatterView:
                 id=id,
             )
             legend_status["minimizer"][color_mapped_value] = True
-            minimiser_legend.append(legend_item)
-            minimiser_legend.append(html.Br())
+            minimizer_legend.append(legend_item)
+            minimizer_legend.append(html.Br())
 
         all_none_buttons = html.Div(
             [
@@ -846,7 +848,7 @@ class CompareScatterView:
         )
 
         legend.append(html.Div(problem_legend))
-        legend.append(html.Div(minimiser_legend))
+        legend.append(html.Div(minimizer_legend))
         legend.append(dcc.Store(id="legend-status", data=legend_status))
 
         complete_legend = html.Div(

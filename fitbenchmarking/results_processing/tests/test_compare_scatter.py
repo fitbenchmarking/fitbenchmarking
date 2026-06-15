@@ -336,7 +336,7 @@ class CompareScatterViewTests(unittest.TestCase):
             y_title="test_y_axis",
             tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
             errors=[0, 1, 2, 3],
-            solvers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
+            minimizers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
             problems=["problem1", "problem2", "problem1", "problem2"],
             report_pages=[
                 "/mySolver/problem1",
@@ -362,7 +362,7 @@ class CompareScatterViewTests(unittest.TestCase):
             y_title="test_y_axis",
             tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
             errors=[0, 1, 2, 3],
-            solvers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
+            minimizers=["mySolver", "mySolver", "otherSolver", "otherSolver"],
             problems=["problem1", "problem2", "problem1", "problem2"],
             report_pages=[
                 "/mySolver/problem1",
@@ -445,7 +445,7 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(group_state, True)
         self.assertEqual(state_dict["problem"]["myProblem"], True)
 
-    def test_toggle_group_state_works_for_minimisers(self):
+    def test_toggle_group_state_works_for_minimizers(self):
         view = CompareScatterView()
 
         default_state_dict = {
@@ -481,7 +481,7 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(
             warning["someFails"],
             (
-                "Warning: this minimiser failed to run on "
+                "Warning: this minimizer failed to run on "
                 "1/2 problems. Only succesful runs"
                 " have been plotted."
             ),
@@ -489,7 +489,7 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(
             warning["allFails"],
             (
-                "Warning: this minimiser failed to run on every "
+                "Warning: this minimizer failed to run on every "
                 "problem and could not be plotted."
             ),
         )
@@ -502,19 +502,19 @@ class CompareScatterViewTests(unittest.TestCase):
             (0, 1),
         ]
     )
-    def test_get_per_minimiser_errors_and_runs_counts(self, errors, runs):
+    def test_get_per_minimizer_errors_and_runs_counts(self, errors, runs):
         view = CompareScatterView()
         minimizers = ["myBadMinim"] * runs
         flags = [3] * errors + [0] * (runs - errors)
-        errors_by_minimiser, runs_by_minimiser = (
-            view.get_per_minimiser_errors_and_runs(flags, minimizers)
+        errors_by_minimizer, runs_by_minimizer = (
+            view.get_per_minimizer_errors_and_runs(flags, minimizers)
         )
-        self.assertIn("myBadMinim", errors_by_minimiser)
-        self.assertIn("myBadMinim", runs_by_minimiser)
-        self.assertEqual(errors_by_minimiser["myBadMinim"], errors)
-        self.assertEqual(runs_by_minimiser["myBadMinim"], runs)
+        self.assertIn("myBadMinim", errors_by_minimizer)
+        self.assertIn("myBadMinim", runs_by_minimizer)
+        self.assertEqual(errors_by_minimizer["myBadMinim"], errors)
+        self.assertEqual(runs_by_minimizer["myBadMinim"], runs)
 
-    def test_get_per_minimiser_errors_order_independent(self):
+    def test_get_per_minimizer_errors_order_independent(self):
         view = CompareScatterView()
         minimizers = ["myBadMinim"] * 3
         flag_orders = [
@@ -523,31 +523,31 @@ class CompareScatterViewTests(unittest.TestCase):
             [0, 0, 3],
         ]
         for flag_order in flag_orders:
-            errors_by_minimiser, _ = view.get_per_minimiser_errors_and_runs(
+            errors_by_minimizer, _ = view.get_per_minimizer_errors_and_runs(
                 flag_order, minimizers
             )
-            self.assertIn("myBadMinim", errors_by_minimiser)
-            self.assertEqual(errors_by_minimiser["myBadMinim"], 1)
+            self.assertIn("myBadMinim", errors_by_minimizer)
+            self.assertEqual(errors_by_minimizer["myBadMinim"], 1)
 
-    def test_get_per_minimiser_runs_counts_multiple_minimizers(self):
+    def test_get_per_minimizer_runs_counts_multiple_minimizers(self):
         view = CompareScatterView()
         minimizers = (
             ["myBadMinim"] * 3 + ["myOkMinim"] * 1 + ["myOtherMinim"] * 6
         )
         flags = [0] * 10
-        errors_by_minimiser, runs_by_minimiser = (
-            view.get_per_minimiser_errors_and_runs(flags, minimizers)
+        errors_by_minimizer, runs_by_minimizer = (
+            view.get_per_minimizer_errors_and_runs(flags, minimizers)
         )
-        self.assertIn("myBadMinim", errors_by_minimiser)
-        self.assertIn("myOkMinim", errors_by_minimiser)
-        self.assertIn("myOtherMinim", errors_by_minimiser)
-        self.assertIn("myBadMinim", runs_by_minimiser)
-        self.assertIn("myOkMinim", runs_by_minimiser)
-        self.assertIn("myOtherMinim", runs_by_minimiser)
+        self.assertIn("myBadMinim", errors_by_minimizer)
+        self.assertIn("myOkMinim", errors_by_minimizer)
+        self.assertIn("myOtherMinim", errors_by_minimizer)
+        self.assertIn("myBadMinim", runs_by_minimizer)
+        self.assertIn("myOkMinim", runs_by_minimizer)
+        self.assertIn("myOtherMinim", runs_by_minimizer)
 
-        self.assertEqual(runs_by_minimiser["myBadMinim"], 3)
-        self.assertEqual(runs_by_minimiser["myOkMinim"], 1)
-        self.assertEqual(runs_by_minimiser["myOtherMinim"], 6)
+        self.assertEqual(runs_by_minimizer["myBadMinim"], 3)
+        self.assertEqual(runs_by_minimizer["myOkMinim"], 1)
+        self.assertEqual(runs_by_minimizer["myOtherMinim"], 6)
 
     def test_create_warning_toasts(self):
         view = CompareScatterView()
@@ -621,7 +621,7 @@ class CompareScatterViewTests(unittest.TestCase):
         self, _, new_focus, existing_state, set_props_mock: Mock
     ):
         view = CompareScatterView()
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
         _ = view.get_plot(
             x=[1, 2, 3, 4],
@@ -630,7 +630,7 @@ class CompareScatterViewTests(unittest.TestCase):
             y_title="test_y_axis",
             tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
             errors=[1, 1, 1, 1],
-            solvers=solvers,
+            minimizers=minimizers,
             problems=problems,
             report_pages=[
                 "/mySolver/problem1",
@@ -645,7 +645,7 @@ class CompareScatterViewTests(unittest.TestCase):
         )
 
         expected_state = {
-            "minimizer": dict.fromkeys(solvers, new_focus),
+            "minimizer": dict.fromkeys(minimizers, new_focus),
             "problem": dict.fromkeys(problems, new_focus),
         }
 
@@ -662,7 +662,7 @@ class CompareScatterViewTests(unittest.TestCase):
 
     def test_set_trace_opacity(self):
         view = CompareScatterView()
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
         plot = view.get_plot(
             x=[1, 2, 3, 4],
@@ -671,7 +671,7 @@ class CompareScatterViewTests(unittest.TestCase):
             y_title="test_y_axis",
             tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
             errors=[1, 1, 1, 1],
-            solvers=solvers,
+            minimizers=minimizers,
             problems=problems,
             report_pages=[
                 "/mySolver/problem1",
@@ -728,7 +728,7 @@ class CompareScatterViewTests(unittest.TestCase):
     )
     def test_apply_state(self, start_state, mock_trace_opacity: Mock):
         view = CompareScatterView()
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
         _ = view.get_plot(
             x=[1, 2, 3, 4],
@@ -737,7 +737,7 @@ class CompareScatterViewTests(unittest.TestCase):
             y_title="test_y_axis",
             tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
             errors=[1, 1, 1, 1],
-            solvers=solvers,
+            minimizers=minimizers,
             problems=problems,
             report_pages=[
                 "/mySolver/problem1",
@@ -748,7 +748,7 @@ class CompareScatterViewTests(unittest.TestCase):
         )
 
         expected_state = {
-            "minimizer": dict.fromkeys(solvers, start_state),
+            "minimizer": dict.fromkeys(minimizers, start_state),
             "problem": dict.fromkeys(problems, start_state),
         }
 
@@ -757,7 +757,7 @@ class CompareScatterViewTests(unittest.TestCase):
         )
 
         # check that it can be called to focus
-        for i, trace in enumerate(solvers + problems):
+        for i, trace in enumerate(minimizers + problems):
             _ = view.apply_state(view.plot, expected_state)
             # should be called once for each trace
             self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
@@ -797,7 +797,7 @@ class CompareScatterControllerTests(unittest.TestCase):
 
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
-        ".CompareScatterView.get_per_minimiser_errors_and_runs"
+        ".CompareScatterView.get_per_minimizer_errors_and_runs"
     )
     def test_item_should_have_warning_toast(self, mock_errors_and_runs: Mock):
         self.test_data[0].error_flag = 0
@@ -816,7 +816,7 @@ class CompareScatterControllerTests(unittest.TestCase):
 
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
-        ".CompareScatterView.get_per_minimiser_errors_and_runs"
+        ".CompareScatterView.get_per_minimizer_errors_and_runs"
     )
     def test_add_callbacks_adds_callbacks(self, mock_errors_and_runs: Mock):
         self.test_data[0].error_flag = 0
