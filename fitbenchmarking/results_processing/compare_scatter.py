@@ -579,6 +579,26 @@ class CompareScatterView:
 
     @staticmethod
     def toggle_group_state(group, state):
+        """
+        Given either a minimiser or a problem and a state dict in the fromat:
+        state = {
+            "minimizer": {"minimizer_name":True},
+            "problem": {"problem_name":True},
+        }
+
+        Invert the current state and return the new state, including the
+        dictionary with the new state now set
+
+        :param group: The group to find in the state dictionary
+        :type str:
+        :param state: The state dictionary to query and modify
+        :type dict:
+
+        :return new_state: The state of the group after toggling
+        :rtype bool:
+        :return new_state_dictionary: State, modified with the updated group
+        :rtype dict:
+        """
         if group in state["problem"]:
             group_state = not state["problem"][group]
             state["problem"][group] = group_state
