@@ -158,8 +158,10 @@ class CompareScatter:
                 )
 
         else:
-            print("warning plot type is:", type(self.view.plot))
-
+            raise ValueError(
+                f"warning plot type is: {type(self.view.plot)} but go.Figure "
+                "was expected"
+            )
         return app
 
     def get_fitting_report_urls(self):
@@ -1106,3 +1108,21 @@ class CompareScatterDataModel:
             for result in self.results
         ]
         return text_array
+
+
+# TODO: refactorings
+# state dict should be an object really - the type is too complicated to have 0
+# linting or type checking
+# logic needs to be flattened, setting trace opacity is called after multiple
+# layers of functions, call stack = conginitive load
+# functions with multiple return values should be split out into different
+# functions in most cases. if a callback needs it, then it should be defined as
+# follows, to allow us to enforce seperation of concerns
+# lambda : return(
+#   my_func1(),
+#   my_func2()
+# )
+# we need to take a good look at which function in the view should be in the
+# controller, I suspect a lot of the focus logic with state arrays could be
+# moved
+# prints should be raises
