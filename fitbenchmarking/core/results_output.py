@@ -24,8 +24,6 @@ from fitbenchmarking.results_processing import (
     problem_summary_page,
     tables,
 )
-
-# from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from fitbenchmarking.results_processing.performance_profiler import (
     DashPerfProfile,
