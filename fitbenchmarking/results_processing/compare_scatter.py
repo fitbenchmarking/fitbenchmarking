@@ -1044,11 +1044,11 @@ class CompareScatterDataModel:
 
         :param metric: The metric to get from every result in the model
         :type str:
-        :param func_kwargs: The arguments to send if the result is callable
-        :type dict:
         :param unique: Whether to return a list of only unique results or
         allow the list to include duplicates
         :type bool:
+        :param func_kwargs: The arguments to send if the result is callable
+        :type dict:
         """
 
         # in the case of name and normalised values, a function call is
@@ -1105,3 +1105,26 @@ class CompareScatterDataModel:
             for result in self.results
         ]
         return text_array
+
+
+# TODO: refactorings
+# state dict should be an object really - the type is too complicated to have 0
+# linting or type checking
+# logic needs to be flattened, setting trace opacity is called after multiple
+# layers of functions, call stack = conginitive load
+# functions with multiple return values should be split out into different
+# functions in most cases. if a callback needs it, then it should be defined as
+# follows, to allow us to enforce seperation of concerns
+# lambda : return(
+#   my_func1(),
+#   my_func2()
+# )
+# we need to take a good look at which function in the view should be in the
+# controller, I suspect a lot of the focus logic with state arrays could be
+# moved
+# focus_trace should have better logic for the "group" param, either it should
+# assert or throw a warning or something, im not sure
+# set_trace_opacity needs to set the opacity of the trace, not just the text
+# set_trace_opacity should marshall to json instead of doing regex
+# get_isolated_symbol should be renamed
+# get_values_for_axis cache should be seperate from get values logic
