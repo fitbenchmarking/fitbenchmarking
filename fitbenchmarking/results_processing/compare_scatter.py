@@ -534,7 +534,7 @@ class CompareScatterView:
                 state[item_type][item] = focus
                 set_props(self.sanitize_for_id(item), {"style": style})
 
-        plot = self.focus_trace(self.plot, state, "all" if focus else "none")
+        plot = self.apply_state(self.plot, state, "all" if focus else "none")
 
         all_button_style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -601,7 +601,7 @@ class CompareScatterView:
             else self.inactive_button_style
         )
 
-        plot = self.focus_trace(self.plot, state)
+        plot = self.apply_state(self.plot, state)
         all_button_style, none_button_style = self.get_all_none_button_style(
             state
         )
@@ -655,14 +655,17 @@ class CompareScatterView:
 
         return all_button_style, none_button_style
 
-    def focus_trace(self, plot: go.Figure, state: dict, group: str = ""):
+    def apply_state(
+        self, plot: go.Figure, state: dict, group: str | None = None
+    ):
         """
         Given a state dictionary, and a plot, set the opacity on each trace
         of the plot to match the expected opacity for the state in the
         dictionary.
 
-        if "all" or "none" is provided for the group parameter, then either
-        make all or none of the points use the active opacity.
+        if "all" or "none" is provided for the group parameter, then act like
+        state was True for everything given the former or False for everything
+        given the latter.
 
         the active and inactive opacities are set based on self.active_opacity
         and self.inactive_opacity
@@ -681,6 +684,14 @@ class CompareScatterView:
         """
         # we do a "in" check with tracename, since the legendgroup contains
         # both the problem and the solver in the same string
+
+        valid_group_types = ["all", "none"]
+        if group is not None and group not in ["all", "none"]:
+            raise ValueError(
+                "Apply state only supports group"
+                f" = {valid_group_types} or None"
+            )
+
         select_all = group == "all"
         deselect_all = group == "none"
 
