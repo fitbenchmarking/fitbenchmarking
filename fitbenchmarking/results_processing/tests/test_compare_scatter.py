@@ -123,7 +123,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
     def test_get_values_for_axis_respects_callable_arguments(self):
         model = CompareScatterDataModel(self.many_result_dataset)
         values = model.get_values_for_axis(
-            "modified_minimizer_name", {"with_software": True}
+            "modified_minimizer_name", with_software=True
         )
         self.assertEqual(
             values,
@@ -170,7 +170,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
         # kwargs do not impact the location of the cache, so this simulates
         # a change in return value without the cache key changing
         values_after_result_change = model.get_values_for_axis(
-            "modified_minimizer_name", {"with_software": True}
+            "modified_minimizer_name", with_software=True
         )
 
         # if we cached the return values, the output would be the same for both
@@ -1150,11 +1150,11 @@ class CompareScatterControllerTests(unittest.TestCase):
         self.assertEqual(call_args[1].args[0], "norm_acc")
         self.assertEqual(call_args[2].args[0], "error_flag")
         self.assertEqual(call_args[3].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[3].args[1], {"with_software": True})
+        self.assertEqual(call_args[3].kwargs["with_software"], True)
         self.assertEqual(call_args[4].args[0], "problem_tag")
         self.assertEqual(call_args[5].args[0], "fitting_report_link")
         self.assertEqual(call_args[6].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[6].args[1], {"with_software": True})
+        self.assertEqual(call_args[6].kwargs["with_software"], True)
         self.assertEqual(call_args[6].kwargs["unique"], True)
         self.assertEqual(call_args[7].args[0], "problem_tag")
         self.assertEqual(call_args[7].kwargs["unique"], True)

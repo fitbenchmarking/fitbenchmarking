@@ -51,7 +51,7 @@ class CompareScatter:
         errors, _ = self.view.get_per_minimiser_errors_and_runs(
             error_flags=self.model.get_values_for_axis("error_flag"),
             minimizer_names=self.model.get_values_for_axis(
-                "modified_minimizer_name", {"with_software": True}
+                "modified_minimizer_name", with_software=True
             ),
         )
         if item in errors:
@@ -194,14 +194,14 @@ class CompareScatter:
             tooltips=self.model.get_hover_text_for_results(),
             errors=self.model.get_values_for_axis("error_flag"),
             solvers=self.model.get_values_for_axis(
-                "modified_minimizer_name", {"with_software": True}
+                "modified_minimizer_name", with_software=True
             ),
             problems=self.model.get_values_for_axis("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
         )
 
         legend_items = self.model.get_values_for_axis(
-            "modified_minimizer_name", {"with_software": True}, unique=True
+            "modified_minimizer_name", unique=True, with_software=True
         )
         legend_items.extend(
             self.model.get_values_for_axis("problem_tag", unique=True)
@@ -1028,7 +1028,7 @@ class CompareScatterDataModel:
         return result.name
 
     def get_values_for_axis(
-        self, metric: str, func_kwargs={}, unique=False
+        self, metric: str, unique=False, **func_kwargs
     ) -> list:
         """
         Given a string (metric), retreive the value of that metric from each
@@ -1073,6 +1073,11 @@ class CompareScatterDataModel:
             if unique:
                 values = list(dict.fromkeys(values))
         else:
+            if func_kwargs:
+                raise TypeError(
+                    f"Attribute {metric} is not callable, but "
+                    "kwargs were provided"
+                )
             if cache_data is None:
                 values = [getattr(result, metric) for result in self.results]
                 if unique:
