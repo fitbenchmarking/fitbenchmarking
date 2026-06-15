@@ -244,10 +244,8 @@ class CompareScatterViewTests(unittest.TestCase):
         sanitized = view.sanitize_for_id("my(test_name) j:best,h:best")
         self.assertEqual(sanitized, view.sanitize_for_id(sanitized))
 
-    def test_get_isolated_symbol(self):
-        plot_div = CompareScatterView.get_isolated_symbol(
-            "circle", "rgba(0,255,0,1)"
-        )
+    def test_get_point(self):
+        plot_div = CompareScatterView.get_point("circle", "rgba(0,255,0,1)")
         self.assertIsInstance(plot_div, html.Div)
         self.assertIsInstance(plot_div.children[0], dcc.Graph)
 
