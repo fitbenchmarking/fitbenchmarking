@@ -306,6 +306,9 @@ class Controller:
         # it's not a mantid problem)
         if self.problem.multifit:
             out = []
+
+            # TODO: This probably needs to be different
+            params = [params for _ in range(self._dataset_count)]
             for pi, xi, yi, ei in zip(params, x, y, e):
                 kwargs = {
                     k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
