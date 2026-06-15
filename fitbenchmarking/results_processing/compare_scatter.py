@@ -717,29 +717,18 @@ class CompareScatterView:
                     visible = False
 
             if visible:
-                self.set_trace_opacity(
-                    t,
-                    old_opacity=self.inactive_opacity,
-                    new_opacity=self.active_opacity,
-                )
+                self.set_trace_opacity(t, self.active_opacity)
             else:
-                self.set_trace_opacity(
-                    t,
-                    old_opacity=self.active_opacity,
-                    new_opacity=self.inactive_opacity,
-                )
+                self.set_trace_opacity(t, self.inactive_opacity)
         return plot
 
     @staticmethod
-    def set_trace_opacity(t, old_opacity, new_opacity):
+    def set_trace_opacity(t, new_opacity):
         """
-        Given a trace, update the opacity of the text field. The old opacity
-        needs to be provided to match against in the html for the marker text
+        Given a trace, update the opacity of the text field and points.
 
         :param t: The trace to modify
         :type:
-        :param old_opacity: the opacity before the change
-        :type int:
         :param new_opacity: the opacity after the change
         :type int:
         """

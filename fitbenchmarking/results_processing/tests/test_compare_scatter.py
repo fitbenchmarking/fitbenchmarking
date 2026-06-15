@@ -877,13 +877,13 @@ class CompareScatterViewTests(unittest.TestCase):
             ],
         )
         trace = plot.children[1].figure.data[0]
-        view.set_trace_opacity(trace, 1, 0)
+        view.set_trace_opacity(trace, 0)
         self.assertEqual(trace.marker["opacity"], 0)
         self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
-        view.set_trace_opacity(trace, 0, 1)
+        view.set_trace_opacity(trace, 1)
         self.assertEqual(trace.marker["opacity"], 1)
         self.assertEqual(trace.text, '<sup style="opacity:1"><b>1</b></sup>')
-        view.set_trace_opacity(trace, 1, 0.5)
+        view.set_trace_opacity(trace, 0.5)
         self.assertEqual(trace.marker["opacity"], 0.5)
         self.assertEqual(trace.text, '<sup style="opacity:0.5"><b>1</b></sup>')
 
@@ -917,9 +917,6 @@ class CompareScatterViewTests(unittest.TestCase):
             "problem": dict.fromkeys(problems, start_state),
         }
 
-        old_opacity = (
-            view.inactive_opacity if start_state else view.active_opacity
-        )
         new_opacity = (
             view.active_opacity if start_state else view.inactive_opacity
         )
@@ -929,14 +926,7 @@ class CompareScatterViewTests(unittest.TestCase):
             _ = view.focus_trace(view.plot, expected_state, trace)
             # should be called once for each trace
             self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
-
-            self.assertEqual(
-                mock_trace_opacity.call_args[1]["old_opacity"], old_opacity
-            )
-
-            self.assertEqual(
-                mock_trace_opacity.call_args[1]["new_opacity"], new_opacity
-            )
+            self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
 
         mock_trace_opacity.assert_called()
 
