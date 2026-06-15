@@ -236,7 +236,10 @@ class FitbenchmarkParser(Parser):
         """
         Sets any additional info for a fitting problem.
         """
-        return
+        if self._is_multifit:
+            self.fitting_problem.additional_info["ties"] = re.findall(
+                r"['\"](.*?)['\"]", self._entries.get("ties", "")
+            )
 
     def _get_data_file(self) -> list:
         """

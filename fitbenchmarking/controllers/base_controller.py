@@ -189,6 +189,10 @@ class Controller:
             None if not self.problem.multifit else [None] * self._dataset_count
         )
 
+        self.ties = None if not self.problem.multifit else self._get_ties_str()
+        # with open("boh.txt", "a+", encoding="utf-8") as f:
+        #     f.write(str(self.ties))
+
         # Flag: error handling flag
         self._flag = None
 
@@ -273,6 +277,21 @@ class Controller:
             raise ControllerAttributeError(
                 "Either minimizer or parameter_set is set to None."
             )
+
+    def _get_ties_str(self) -> str:
+        """
+        Returns the ties string for the problem. This is set in
+        the function definition string passed in if the
+        problem is multifit.
+
+        :return: The string of ties.
+        :rtype: str
+        """
+        return ",".join(
+            f"f{i}.{p}=f0.{p}"
+            for p in self.problem.additional_info["ties"]
+            for i in range(1, self._dataset_count)
+        )
 
     def execute(self):
         """
