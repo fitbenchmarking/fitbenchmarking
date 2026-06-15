@@ -691,6 +691,37 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(trace.marker["opacity"], 0.5)
         self.assertEqual(trace.text, '<sup style="opacity:0.5"><b>1</b></sup>')
 
+    @parameterized.expand(["all", "none"])
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
+    )
+    def test_apply_state_focus(self, select, mock_trace_opacity: Mock):
+        view = CompareScatterView()
+
+        num_traces = 10
+
+        view.plot = Mock(spec=go.Figure)
+        view.plot.data = [Mock(spec=go.Trace)] * num_traces
+
+        start_state = {
+            "minimizer": dict.fromkeys(["test"] * num_traces, True),
+            "problem": dict.fromkeys(["test"] * num_traces, True),
+        }
+
+        new_opacity = (
+            view.active_opacity if select == "all" else view.inactive_opacity
+        )
+
+        # check that it can be called to focus
+        for i in range(num_traces):
+            _ = view.apply_state(view.plot, start_state, select)
+            self.assertEqual(
+                mock_trace_opacity.call_count, (i + 1) * num_traces
+            )
+            self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
+
+        mock_trace_opacity.assert_called()
+
     @parameterized.expand([True, False])
     @patch(
         "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
@@ -727,9 +758,7 @@ class CompareScatterViewTests(unittest.TestCase):
 
         # check that it can be called to focus
         for i, trace in enumerate(solvers + problems):
-            _ = view.apply_state(
-                view.plot, expected_state
-            )  # TODO: add test for all none and error
+            _ = view.apply_state(view.plot, expected_state)
             # should be called once for each trace
             self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
             self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
