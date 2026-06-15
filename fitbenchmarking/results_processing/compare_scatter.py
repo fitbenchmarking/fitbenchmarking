@@ -110,9 +110,35 @@ class CompareScatter:
                     return_new_state=has_run_failures,
                     group=legend_item,
                 ):
-                    self.view.update_focus_for_group(
-                        group, state, return_new_state
+                    new_state, state = self.view.toggle_group_state(
+                        group, state
                     )
+                    new_style = (
+                        self.view.active_button_style
+                        if new_state
+                        else self.view.inactive_button_style
+                    )
+                    plot = self.view.apply_state(self.view.plot, state)
+                    all_button_style, none_button_style = (
+                        self.view.get_all_none_button_style(state)
+                    )
+                    if return_new_state:
+                        return (
+                            plot,
+                            state,
+                            new_style,
+                            all_button_style,
+                            none_button_style,
+                            new_state,
+                        )
+                    else:
+                        return (
+                            plot,
+                            state,
+                            new_style,
+                            all_button_style,
+                            none_button_style,
+                        )
 
                 app.callback(
                     button_io,
@@ -548,76 +574,20 @@ class CompareScatterView:
         )
         return state, all_button_style, none_button_style, plot
 
-    def update_focus_for_group(
-        self, legend_item: str = "", state: dict = {}, return_new_state=False
-    ):
-        """
-        Given a legend item, toggle the state of the relevant trace and entry
-        in the state dictionary.
+    def set_focus_for_group(self, group, state, return_new_state=False):
+        pass
 
-        the state dictionary should have the following structure:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
-
-        :param legend_item: The legend item to flip the state of
-        :type str:
-        :param state: Dictionary with the structure described above
-        :type dict[str,dict[str,bool]]:
-        :param return_new_state: The state of the object afer toggling (active
-        = True, inactive = false)
-        :type bool:
-
-        :return state: the updated state dictionary
-        :rtype dict[str,dict[str,bool]]:
-        :return new_style: the updated style for the legend item
-        :rtype dict[str,any]:
-        :return all_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
-        :return none_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
-        :return plot: the plot after the traces have been updated
-        :rtype go.Figure:
-        :return new_state: The new state of the legend item (active = True,
-        inactive = false)
-        :rtype bool:
-        """
-        all_button_style = None
-        none_button_style = None
-        new_style = None
-
-        new_state = None
-        if legend_item in state["problem"]:
-            new_state = state["problem"][legend_item] = not state["problem"][
-                legend_item
-            ]
+    @staticmethod
+    def toggle_group_state(group, state):
+        if group in state["problem"]:
+            group_state = not state["problem"][group]
+            state["problem"][group] = group_state
+        elif group in state["minimizer"]:
+            group_state = not state["minimizer"][group]
+            state["minimizer"][group] = group_state
         else:
-            new_state = state["minimizer"][legend_item] = not state[
-                "minimizer"
-            ][legend_item]
-
-        new_style = (
-            self.active_button_style
-            if new_state
-            else self.inactive_button_style
-        )
-
-        plot = self.apply_state(self.plot, state)
-        all_button_style, none_button_style = self.get_all_none_button_style(
-            state
-        )
-        if return_new_state:
-            return (
-                plot,
-                state,
-                new_style,
-                all_button_style,
-                none_button_style,
-                new_state,
-            )
-        else:
-            return plot, state, new_style, all_button_style, none_button_style
+            raise ValueError(f"Group '{group}' was not in state '{state}'")
+        return group_state, state
 
     def get_all_none_button_style(self, state):
         """
@@ -690,8 +660,8 @@ class CompareScatterView:
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
             raise ValueError(
-                "Apply state only supports group"
-                f" = {valid_group_types} or None"
+                f"Apply state only supports group = {valid_group_types}or None"
+                ", '{group}' was provided"
             )
 
         select_all = group == "all"
@@ -1108,21 +1078,3 @@ class CompareScatterDataModel:
             for result in self.results
         ]
         return text_array
-
-
-# TODO: refactorings
-# state dict should be an object really - the type is too complicated to have 0
-# linting or type checking
-# logic needs to be flattened, setting trace opacity is called after multiple
-# layers of functions, call stack = conginitive load
-# functions with multiple return values should be split out into different
-# functions in most cases. if a callback needs it, then it should be defined as
-# follows, to allow us to enforce seperation of concerns
-# lambda : return(
-#   my_func1(),
-#   my_func2()
-# )
-# we need to take a good look at which function in the view should be in the
-# controller, I suspect a lot of the focus logic with state arrays could be
-# moved
-# prints should be raises

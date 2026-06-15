@@ -423,245 +423,49 @@ class CompareScatterViewTests(unittest.TestCase):
             4,
         )
 
-    # note: for simplicity only testing ones with error flags here
-    @parameterized.expand(
-        [
-            ("mySolver", "minimizer"),
-            ("otherSolver", "minimizer"),
-            ("problem1", "problem"),
-            ("problem2", "problem"),
-        ]
-    )
-    def test_set_focus_for_group_can_unfocus_group(self, group, group_type):
+    def test_toggle_group_state_works_for_problems(self):
         view = CompareScatterView()
 
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
-        problems = ["problem1", "problem2", "problem1", "problem2"]
-        _ = view.get_plot(
-            x=[1, 2, 3, 4],
-            y=[1, 2, 3, 4],
-            x_title="test_x_axis",
-            y_title="test_y_axis",
-            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
-            errors=[1, 1, 1, 1],
-            solvers=solvers,
-            problems=problems,
-            report_pages=[
-                "/mySolver/problem1",
-                "/mySolver/problem2",
-                "/otherSolver/problem1",
-                "/otherSolver/problem2",
-            ],
-        )
-
-        solvers_and_problems = {
-            "minimizer": dict.fromkeys(solvers, True),
-            "problem": dict.fromkeys(problems, True),
+        default_state_dict = {
+            "minimizer": dict.fromkeys(["mySolver"], True),
+            "problem": dict.fromkeys(["myProblem"], True),
         }
 
-        returned_values = view.update_focus_for_group(
-            group, solvers_and_problems
+        group_state, state_dict = view.toggle_group_state(
+            "myProblem", default_state_dict
         )
 
-        self.assertEqual(len(returned_values), 5)
+        self.assertEqual(group_state, False)
+        self.assertEqual(state_dict["problem"]["myProblem"], False)
 
-        plot = returned_values[0]
-        state = returned_values[1]
-        new_style = returned_values[2]
-        all_button_style = returned_values[3]
-        none_button_style = returned_values[4]
-
-        expected_state = solvers_and_problems
-        expected_state[group_type][group] = not expected_state[group_type][
-            group
-        ]
-
-        self.assertDictEqual(state, expected_state)
-        self.assertEqual(new_style, view.inactive_button_style)
-        self.assertEqual(all_button_style, view.inactive_button_style)
-        self.assertEqual(none_button_style, view.inactive_button_style)
-
-        plot_str = str(plot)
-        # one for the legend button and one for the error flag
-        self.assertEqual(len(re.findall("opacity:0.2", plot_str)), 2)
-
-        # one for the marker on the legend and one for the marker on the plot
-        self.assertEqual(len(re.findall("'opacity': 0.2", plot_str)), 2)
-
-    @parameterized.expand(
-        [
-            ("mySolver", "minimizer"),
-            ("otherSolver", "minimizer"),
-            ("problem1", "problem"),
-            ("problem2", "problem"),
-        ]
-    )
-    def test_set_focus_for_group_can_focus_group(self, group, group_type):
-        # we can assume that if test_set_focus_for_group_can_unfocus_group
-        # passed, then running the same again should revert the plot back
-        # to the starting state
-
-        view = CompareScatterView()
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
-        problems = ["problem1", "problem2", "problem1", "problem2"]
-        initial_plot = view.get_plot(
-            x=[1, 2, 3, 4],
-            y=[1, 2, 3, 4],
-            x_title="test_x_axis",
-            y_title="test_y_axis",
-            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
-            errors=[1, 1, 1, 1],
-            solvers=solvers,
-            problems=problems,
-            report_pages=[
-                "/mySolver/problem1",
-                "/mySolver/problem2",
-                "/otherSolver/problem1",
-                "/otherSolver/problem2",
-            ],
+        group_state, state_dict = view.toggle_group_state(
+            "myProblem", state_dict
         )
 
-        solvers_and_problems = {
-            "minimizer": dict.fromkeys(solvers, True),
-            "problem": dict.fromkeys(problems, True),
-        }
+        self.assertEqual(group_state, True)
+        self.assertEqual(state_dict["problem"]["myProblem"], True)
 
-        # remove the focus (assumed working due to
-        # test_set_focus_for_group_can_unfocus_group passing)
-        _ = view.update_focus_for_group(group, solvers_and_problems)
-
-        # re add the focus
-        returned_values = view.update_focus_for_group(
-            group, solvers_and_problems
-        )
-
-        plot = returned_values[0]
-        state = returned_values[1]
-        new_style = returned_values[2]
-        all_button_style = returned_values[3]
-        none_button_style = returned_values[4]
-
-        self.assertEqual(plot, initial_plot.children[1].figure)
-        self.assertEqual(all_button_style, view.active_button_style)
-        self.assertEqual(none_button_style, view.inactive_button_style)
-        self.assertEqual(new_style, view.active_button_style)
-        self.assertEqual(state, solvers_and_problems)
-
-    @parameterized.expand(
-        [
-            ("mySolver", "minimizer"),
-            ("otherSolver", "minimizer"),
-            ("problem1", "problem"),
-            ("problem2", "problem"),
-        ]
-    )
-    def test_set_focus_for_group_returns_new_state_when_requested(
-        self, group, group_type
-    ):
+    def test_toggle_group_state_works_for_minimisers(self):
         view = CompareScatterView()
 
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
-        problems = ["problem1", "problem2", "problem1", "problem2"]
-        _ = view.get_plot(
-            x=[1, 2, 3, 4],
-            y=[1, 2, 3, 4],
-            x_title="test_x_axis",
-            y_title="test_y_axis",
-            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
-            errors=[0, 1, 2, 3],
-            solvers=solvers,
-            problems=problems,
-            report_pages=[
-                "/mySolver/problem1",
-                "/mySolver/problem2",
-                "/otherSolver/problem1",
-                "/otherSolver/problem2",
-            ],
-        )
-
-        solvers_and_problems = {
-            "minimizer": dict.fromkeys(solvers, True),
-            "problem": dict.fromkeys(problems, True),
+        default_state_dict = {
+            "minimizer": dict.fromkeys(["mySolver"], True),
+            "problem": dict.fromkeys(["myProblem"], True),
         }
 
-        returned_values = view.update_focus_for_group(
-            group, solvers_and_problems, True
+        group_state, state_dict = view.toggle_group_state(
+            "mySolver", default_state_dict
         )
 
-        self.assertEqual(len(returned_values), 6)
-        new_state = returned_values[5]
+        self.assertEqual(group_state, False)
+        self.assertEqual(state_dict["minimizer"]["mySolver"], False)
 
-        self.assertEqual(new_state, False)
-
-    @parameterized.expand(
-        [
-            (["mySolver"], False, False),
-            (["problem1"], False, False),
-            (["mySolver", "otherSolver"], False, False),
-            (["problem1", "problem2"], False, False),
-            (["mySolver", "otherSolver", "problem1", "problem2"], False, True),
-            (["problem1", "problem2", "problem1", "problem2"], True, False),
-            (
-                ["mySolver", "otherSolver", "mySolver", "otherSolver"],
-                True,
-                False,
-            ),
-        ],
-        name_func=lambda func, num, param: (
-            f"{func.__name__}_{num}_"
-            f"{'_'.join(param.args[0])}_"
-            f"all_{param.args[1]}_none_{param.args[2]}"
-        ),
-    )
-    def test_set_focus_for_group_handles_all_none_button_correctly(
-        self, groups, final_all_active, final_none_active
-    ):
-        view = CompareScatterView()
-
-        solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
-        problems = ["problem1", "problem2", "problem1", "problem2"]
-        _ = view.get_plot(
-            x=[1, 2, 3, 4],
-            y=[1, 2, 3, 4],
-            x_title="test_x_axis",
-            y_title="test_y_axis",
-            tooltips=["tooltip_1", "tooltip_2", "tooltip_3", "tooltip_4"],
-            errors=[0, 1, 2, 3],
-            solvers=solvers,
-            problems=problems,
-            report_pages=[
-                "/mySolver/problem1",
-                "/mySolver/problem2",
-                "/otherSolver/problem1",
-                "/otherSolver/problem2",
-            ],
+        group_state, state_dict = view.toggle_group_state(
+            "mySolver", state_dict
         )
 
-        solvers_and_problems = {
-            "minimizer": dict.fromkeys(solvers, True),
-            "problem": dict.fromkeys(problems, True),
-        }
-
-        for group in groups:
-            returned = view.update_focus_for_group(group, solvers_and_problems)
-            solvers_and_problems = returned[1]
-
-        expected_all_button_style = (
-            view.active_button_style
-            if final_all_active
-            else view.inactive_button_style
-        )
-        expected_none_button_style = (
-            view.active_button_style
-            if final_none_active
-            else view.inactive_button_style
-        )
-
-        all_button_style = returned[3]
-        none_button_style = returned[4]
-
-        self.assertDictEqual(expected_all_button_style, all_button_style)
-        self.assertDictEqual(expected_none_button_style, none_button_style)
+        self.assertEqual(group_state, True)
+        self.assertEqual(state_dict["minimizer"]["mySolver"], True)
 
     def test_get_warning_text(self):
         view = CompareScatterView()
@@ -923,7 +727,9 @@ class CompareScatterViewTests(unittest.TestCase):
 
         # check that it can be called to focus
         for i, trace in enumerate(solvers + problems):
-            _ = view.apply_state(view.plot, expected_state, trace)
+            _ = view.apply_state(
+                view.plot, expected_state
+            )  # TODO: add test for all none and error
             # should be called once for each trace
             self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
             self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
