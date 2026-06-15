@@ -151,17 +151,14 @@
                         <div class="content">
                             <script>
                                 window.addEventListener("message", (event) => {
-                                    console.log("caught message");
-                                    console.log(event.data);
+                                    if (!event.isTrusted) return;
+                                    if (!(event.origin === "{{ dash_url }}")) return;
                                     if(event.data?.path){
-                                        console.log("got new path");
                                         window.location.href=event.data.path;
                                     }
                                     if(event.data?.height){
-                                        console.log("height");
                                         document.getElementById("cs_iframe").height = event.data.height + 20;
                                         document.getElementById("cs_iframe_wrapper").height = event.data.height + 20;
-                                        console.log(event.data.height);
                                     }
                                 })
                             </script>
