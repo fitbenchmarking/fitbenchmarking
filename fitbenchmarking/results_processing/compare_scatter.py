@@ -1,6 +1,5 @@
 import inspect
 import os
-import re
 
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -8,6 +7,8 @@ import plotly.colors
 import plotly.express as px
 import plotly.graph_objects as go
 from dash import Dash, Input, Output, State, dcc, html, set_props
+from lxml import etree
+from lxml import html as xml_html
 from plotly.validator_cache import ValidatorCache
 
 import fitbenchmarking
@@ -742,18 +743,18 @@ class CompareScatterView:
         :param new_opacity: the opacity after the change
         :type int:
         """
-
         t.marker.opacity = new_opacity
-        marker_text = t.text if t.text is not None else ""
 
+        if t.text is None or t.text == "":
+            return
+
+        marker_text = t.text
         if isinstance(marker_text, np.ndarray):
-            marker_text = "".join(marker_text)
+            marker_text = marker_text.item()
 
-        t.text = re.sub(
-            f"opacity:{old_opacity}",
-            f"opacity:{new_opacity}",
-            str(marker_text),
-        )
+        html_tree = xml_html.fromstring(marker_text)
+        html_tree.set("style", f"opacity:{new_opacity}")
+        t.text = etree.tostring(html_tree).decode("ascii")
 
     active_button_style = {
         "display": "flex",
