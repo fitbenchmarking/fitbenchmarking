@@ -891,7 +891,7 @@ class CompareScatterViewTests(unittest.TestCase):
     @patch(
         "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
     )
-    def test_focus_trace(self, start_state, mock_trace_opacity: Mock):
+    def test_apply_state(self, start_state, mock_trace_opacity: Mock):
         view = CompareScatterView()
         solvers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
@@ -923,7 +923,7 @@ class CompareScatterViewTests(unittest.TestCase):
 
         # check that it can be called to focus
         for i, trace in enumerate(solvers + problems):
-            _ = view.focus_trace(view.plot, expected_state, trace)
+            _ = view.apply_state(view.plot, expected_state, trace)
             # should be called once for each trace
             self.assertEqual(mock_trace_opacity.call_count, (i + 1) * 4)
             self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
