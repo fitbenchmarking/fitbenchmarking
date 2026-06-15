@@ -937,8 +937,7 @@ class CompareScatterControllerTests(unittest.TestCase):
         )
         clickthrough_link_callback_args = clientside_callback_events[0][0]
         resize_observer_callback_args = clientside_callback_events[1][0]
-        # print(clickthrough_link_callback_args)
-        # print(resize_observer_callback_args)
+
         self.assertEqual(
             clickthrough_link_callback_args[1],
             Output("dummy-click", "children"),

@@ -15,8 +15,6 @@ import fitbenchmarking
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.misc import get_hover_text
 
-# from fitbenchmarking.utils.fitbm_result import FittingResult
-
 
 class CompareScatter:
     """
@@ -33,9 +31,6 @@ class CompareScatter:
         self.view = CompareScatterView()
         self.app = app
         self.options = options
-
-        # self.controller = compare_scatter_controller()
-        # most of the interface is just get plot from the view
 
     def item_should_have_warning_toast(self, item):
         """
@@ -676,8 +671,6 @@ class CompareScatterView:
         :return plot: The modified plot
         :rtype go.Figure:
         """
-        # we do a "in" check with tracename, since the legendgroup contains
-        # both the problem and the minimizer in the same string
 
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
