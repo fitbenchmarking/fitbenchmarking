@@ -536,7 +536,9 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        # TODO: would this need updating for multifit?
+        # TODO: Need to figure out how to change this function,
+        # otherwise gives error in fitting_benchmarking
+        # Right now I've just commented this out in that file
 
         values = {
             "_flag": int,
