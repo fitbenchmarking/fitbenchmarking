@@ -94,7 +94,6 @@ def get_js(options, working_directory):
     js_dict = {
         "dropdown": os.path.join(js_path, "dropdown.js"),
         "table": os.path.join(js_path, "table.js"),
-        "plotly": os.path.join(js_path, "plotly.js"),
     }
 
     return js_dict
