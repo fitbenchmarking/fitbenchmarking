@@ -96,7 +96,6 @@ def get_js(options, working_directory):
         "dropdown": os.path.join(js_path, "dropdown.js"),
         "mathjax": os.path.join(js_path, "tex-mml-chtml.js"),
         "table": os.path.join(js_path, "table.js"),
-        "plotly": os.path.join(js_path, "plotly.js"),
     }
 
     return js_dict
