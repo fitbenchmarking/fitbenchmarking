@@ -49,6 +49,8 @@ are selected, then the union of all valid points are highlighted. If items from
 both columns are selected, then the intersection of the two colums will be 
 highlighted.
 
+Clicking on a point will take you to the fitting report page for that point.
+
 Performance profile
 -------------------
 
