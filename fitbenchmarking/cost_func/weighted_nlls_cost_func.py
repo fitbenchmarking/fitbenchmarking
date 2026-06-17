@@ -41,35 +41,21 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
 
-        if isinstance(x, np.ndarray):
-            if len(x) != len(y) or len(x) != len(e):
-                raise CostFuncError(
-                    "The length of the x, y and e are not "
-                    f"the same, len(x)={len(x)}, len(y)={len(y)}"
-                    f" and len(e)={len(e)}"
-                )
-            result = (y - self.problem.eval_model(params=params, x=x)) / e
+        if len(x) != len(y) or len(x) != len(e):
+            raise CostFuncError(
+                "The length of the x, y and e are not "
+                f"the same, len(x)={len(x)}, len(y)={len(y)}"
+                f" and len(e)={len(e)}"
+            )
 
-            # Flatten in case of a vector function
-            return ravel(result)
+        # in the multifit case, so probably should change this check
+        if isinstance(x, list):
+            y = np.concatenate(y)
+            e = np.concatenate(e)
 
-        elif isinstance(x, list):
-            out = []
-            for xi, yi, ei in zip(x, y, e):
-                if len(xi) != len(yi) or len(xi) != len(ei):
-                    raise CostFuncError(
-                        "The length of the x, y and e are not "
-                        f"the same, len(x)={len(xi)}, len(y)={len(yi)}"
-                        f" and len(e)={len(ei)}"
-                    )
-                result = (
-                    yi - self.problem.eval_model(params=params, x=xi)
-                ) / ei
-                out.append(ravel(result))
-            return np.array(np.concatenate(out))
+        result = (y - self.problem.eval_model(params=params, x=x)) / e
 
-        else:
-            raise ValueError("x is neither an array nor a list")
+        return ravel(result)
 
     def jac_res(self, params, **kwargs):
         """
@@ -85,34 +71,16 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         """
         print("params passed to jac_res: " + str(params))
         e = kwargs.get("e", self.problem.data_e)
-        y = self.problem.data_y
-        x = self.problem.data_x
 
-        if isinstance(e, np.ndarray):
-            jac = self.jacobian.eval(params, **kwargs)
+        if isinstance(e, list):
+            e = np.concatenate(e)
 
-            if issparse(jac):
-                return -jac.transpose().multiply(1 / e).transpose()
+        jac = self.jacobian.eval(params, **kwargs)
 
-            return -jac / e[:, None]
+        if issparse(jac):
+            return -jac.transpose().multiply(1 / e).transpose()
 
-        elif isinstance(e, list):
-            out = []
-            for xi, yi, ei in zip(x, y, e):
-                kwargs = {"x": xi, "y": yi, "e": ei}
-                jac = self.jacobian.eval(params, **kwargs)
-
-                if issparse(jac):
-                    out.append(-jac.transpose().multiply(1 / ei).transpose())
-
-                out.append(-jac / ei[:, None])
-
-            # TODO: need to check with Jari or Jess whether this is the right
-            # way of concatanating jac results
-            return np.concatenate(out, axis=0)
-
-        else:
-            raise ValueError("e is neither an array nor a list")
+        return -jac / e[:, None]
 
     def hes_res(self, params, **kwargs):
         """

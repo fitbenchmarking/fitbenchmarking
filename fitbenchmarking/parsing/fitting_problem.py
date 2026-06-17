@@ -151,15 +151,18 @@ class FittingProblem:
             )
 
         self.timer.check_elapsed_time()
-
-        # try:
-        # if len(kwargs.get("x", self.data_x)) == 1:
-        #     print(kwargs)
-        # except:
-        #     print(kwargs.get("x", self.data_x))
-        #     print(type(kwargs.get("x", self.data_x)))
         x = kwargs.get("x", self.data_x)
-        return self.function(x, *params)
+
+        if isinstance(x, np.ndarray):
+            return self.function(x, *params)
+
+        # Multifit case
+        elif isinstance(x, list):
+            out = [self.function(xi, *params) for xi in x]
+            return np.concatenate(out)
+
+        else:
+            raise ValueError("x is neither an array nor a list")
 
     @property
     def param_names(self):

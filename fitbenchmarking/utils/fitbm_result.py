@@ -83,6 +83,8 @@ class FittingResult:
             self.data_y = problem.data_y[dataset]
             self.data_e = problem.data_e[dataset]
             self.sorted_index = problem.sorted_index[dataset]
+            # controller.final_params needs to be a list of lists
+            # otherwise this returns a single param value rathen than a list
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
@@ -172,6 +174,7 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
+                print("Running init of fitting_result ..")
                 self.r_x = cost_func.eval_r(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
