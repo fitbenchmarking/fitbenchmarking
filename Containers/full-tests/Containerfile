@@ -209,7 +209,7 @@ RUN src/appveyor/4_build.sh || true
 # needed, as well as a few other files
 WORKDIR /
 RUN rm -rf /sasfit/doc /sasfit/examples /sasfit/data /sasfit/plugins/FrolovPoints
-
+ENV SASFIT_LOCATION=/sasfit
 ###########
 # Tidy up #
 ###########
