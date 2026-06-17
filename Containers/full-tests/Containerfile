@@ -30,9 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libegl-dev \
     libxkbcommon-dev \
     dbus \  
-    gsl-bin \
     libgsl-dev \
-    libgsl-dbg \
     swig \
     gfortran \
     lcov \
@@ -153,14 +151,7 @@ RUN pip install --no-cache-dir pycutest
 #################
 
 WORKDIR /
-
-RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.6.4.tar.gz
-RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
-
-WORKDIR /pygsl-2.6.4
-RUN pip install --no-cache-dir .
-WORKDIR /
-RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
+RUN pip install pygsl
 
 #################
 # Install Ceres #
