@@ -151,7 +151,7 @@ RUN pip install --no-cache-dir pycutest
 #################
 
 WORKDIR /
-RUN pip install pygsl
+RUN pip install --no-cache-dir pygsl
 
 #################
 # Install Ceres #
