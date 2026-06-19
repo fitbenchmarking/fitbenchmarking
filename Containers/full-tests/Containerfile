@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # From gsl-bin to swig for pygsl
 # from gfortan to libgdal-dev for RALfit
 # from libgoogle-glog-dev from libtbb-dev for ceres
-# lsb-release for SASfit
+# from lsb-release for SASfit
 RUN apt-get update && apt-get install -y --no-install-recommends\
     python3.12 \
     python3.12-venv \
@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     mpich \
     curl \
     apt-utils \
-    cmake \
     gcc \
     g++ \
     ca-certificates \
@@ -31,9 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libegl-dev \
     libxkbcommon-dev \
     dbus \  
-    gsl-bin \
     libgsl-dev \
-    libgsl-dbg \
     swig \
     gfortran \
     lcov \
@@ -47,6 +44,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
     libeigen3-dev \
     libtbb-dev \
     lsb-release \
+    build-essential \
+    zlib1g-dev \
+    libfftw3-dev \
+    libx11-dev \
+    libboost-all-dev  \
+    libomp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV VIRTUAL_ENV=/opt/venv
@@ -148,14 +151,7 @@ RUN pip install --no-cache-dir pycutest
 #################
 
 WORKDIR /
-
-RUN curl -LsSf -o pygsl.tar.gz https://github.com/pygsl/pygsl/archive/refs/tags/v2.6.4.tar.gz
-RUN tar --no-same-owner --no-same-permissions -xzf pygsl.tar.gz
-
-WORKDIR /pygsl-2.6.4
-RUN pip install --no-cache-dir .
-WORKDIR /
-RUN rm -rf /pygsl-2.6.4 pygsl.tar.gz
+RUN pip install --no-cache-dir pygsl
 
 #################
 # Install Ceres #
@@ -201,13 +197,14 @@ RUN pip install --no-cache-dir theseus-ai --no-build-isolation
 WORKDIR /
 RUN git clone --depth 1 https://github.com/SASfit/SASfit.git sasfit
 WORKDIR /sasfit
-RUN sh src/appveyor/0_install_linux4building.sh
 # "|| true" below is needed to bypass an error which 
 # also occurs locally and can be safely ignored
 RUN src/appveyor/4_build.sh || true
-# The sasfit folder is not being deleted, as "libsasfit.so" is
-# needed and most likely wouldn't work if placed outside that folder
-
+# The sasfit folder is not being deleted completely, as "libsasfit.so" is
+# needed, as well as a few other files
+WORKDIR /
+RUN rm -rf /sasfit/doc /sasfit/examples /sasfit/data /sasfit/plugins/FrolovPoints
+ENV SASFIT_LOCATION=/sasfit
 ###########
 # Tidy up #
 ###########
