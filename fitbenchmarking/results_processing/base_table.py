@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 from pandas.io.formats import style
 
-from fitbenchmarking.utils.misc import get_js
+from fitbenchmarking.utils.misc import get_hover_text, get_js
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
@@ -250,7 +250,7 @@ class Table:
         """
         str_dict = {}
         for k, results in self.sorted_results.items():
-            str_dict[k] = [self.get_hover_text(result) for result in results]
+            str_dict[k] = [get_hover_text(result) for result in results]
         return str_dict.values()
 
     def get_colour_df(self, like_df=None):

@@ -3,6 +3,7 @@ Miscellaneous functions and utilities used in fitting benchmarking.
 """
 
 import glob
+import math
 import os
 
 from fitbenchmarking.utils.exceptions import NoDataError
@@ -98,3 +99,48 @@ def get_js(options, working_directory):
     }
 
     return js_dict
+
+
+@staticmethod
+def get_hover_text(result, include_title=False, newline="""\\a """) -> str:
+    """
+    Generate the tooltip text for a given fitting result.
+    :param result: The result to generate the text for
+    :type result: FittingResult
+    :param include_title: Whether to include the result title in the tooltip
+    :type include_title: bool
+    :param newline: The newline character to use, defaults to CSS style newline
+    used in tables
+    :type newline: str
+
+    :return: The generated tooltip
+    :rtype: str
+    """
+
+    if math.isinf(result.runtime) or math.isinf(result.min_accuracy):
+        return f"Error: {result.status}"
+
+    if result.iteration_count is None or result.iteration_count == 0:
+        iterations = "not available"
+    else:
+        iterations = result.func_evals
+
+    hover_text = (
+        f"""Status: {result.status}"""
+        f"""{newline}Accuracy: {result.accuracy:.4g}"""
+        f"""{newline}{result.runtime_metric.capitalize()}"""
+        f""" runtime: {result.runtime:.4g}"""
+        f"""{newline}Energy usage: {result.energy:.4g}"""
+        f"""{newline}Iterations: {iterations}"""
+        f"""{newline}Function Evaluations: {result.func_evals}"""
+    )
+
+    if include_title:
+        hover_text = (
+            f"""<b>{result.modified_minimizer_name(with_software=True)}</b>"""
+            f""" | <b>{result.problem_tag}</b>"""
+            f"""{newline}"""
+            f"""{hover_text}"""
+        )
+
+    return hover_text

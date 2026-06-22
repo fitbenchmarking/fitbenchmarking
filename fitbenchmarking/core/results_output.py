@@ -10,6 +10,7 @@ import re
 import webbrowser
 from shutil import copytree
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
@@ -23,6 +24,7 @@ from fitbenchmarking.results_processing import (
     problem_summary_page,
     tables,
 )
+from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from fitbenchmarking.results_processing.performance_profiler import (
     DashPerfProfile,
 )
@@ -579,7 +581,9 @@ def create_index_page(
     return output_file
 
 
-def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
+def open_browser(
+    output_file: str, options, pp_dfs_all_prob_sets, results
+) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -627,7 +631,34 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )
 
     if options.run_dash:
-        prepare_dash_app_and_run(options, pp_dfs_all_prob_sets)
+        app = Dash(
+            __name__,
+            suppress_callback_exceptions=True,
+            external_stylesheets=[dbc.themes.BOOTSTRAP],
+        )
+        max_solvers = 15
+        app = prepare_dash_app_for_performance_profiles(
+            app, options, pp_dfs_all_prob_sets, max_solvers
+        )
+        profile_instances_all_groups = create_performace_profile_instances(
+            pp_dfs_all_prob_sets
+        )
+        performance_profile_layout = get_performance_profile_layout()
+        compare_scatter = CompareScatter(app, options, results=results)
+        compare_scatter_layout, app = compare_scatter.get_layout()
+        app.callback(
+            Output("page-content", "children"), [Input("url", "pathname")]
+        )(
+            lambda x: display_page(
+                x,
+                performance_profile_instances_all_groups=profile_instances_all_groups,
+                compare_scatter_layout=compare_scatter_layout,
+                performance_profile_layout=performance_profile_layout,
+                max_solvers=max_solvers,
+                run_id=options.run_id,
+            )
+        )
+        app.run(host=options.ip_address, port=options.port)
 
 
 def update_warning(solvers, max_solvers):
@@ -675,17 +706,21 @@ def check_max_solvers(opts, solvers, max_solvers):
 
 def display_page(
     pathname: str,
-    profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
-    layout: "list",
+    performance_profile_instances_all_groups: dict[
+        str, dict[str, DashPerfProfile]
+    ],
+    performance_profile_layout: "list",
     max_solvers: int,
     run_id: str,
+    compare_scatter_layout: "list",
 ):
     """
     Update the layout of the dash app.
 
     :param pathname: The link to the page with the Dash plot
     :type pathname: str
-    :param profile_instances_all_groups: The data to be plotted
+    :param profile_instances_all_groups: The data to be plotted (formatted as
+    problem set: dict())
     :type profile_instances_all_groups: dict[str[dict]]
     :param layout: Layout of the Dash app
     :type layout: list of dcc or html components
@@ -701,22 +736,88 @@ def display_page(
     try:
         _, plot_id, group, plot, metric_str = pathname.split("/")
     except ValueError:
-        return (
-            "404 Page Error! Path does not have the expected format. "
-            "Please provide it in the following form:  \n"
-            "ip-address:port/run_id/problem_set/plot/performance_profile."
-        )
+        out_msg = [
+            "Path does not have the expected format. "
+            "Please provide it in the following form:",
+            html.Br(),
+            "ip-address:port/run_id/problem_set/plot_type/source_table.",
+            html.Br(),
+            "Please see the following for an example of the expected "
+            "formatting:",
+        ]
+
+        for problem_set in performance_profile_instances_all_groups:
+            for plot in performance_profile_instances_all_groups[problem_set]:
+                out_msg.extend(
+                    [html.Br(), f"/{run_id}/{problem_set}/pp/{plot}"]
+                )
+            out_msg.extend([html.Br(), f"/{run_id}/{problem_set}/cs/_"])
+            all_tables_string = "+".join(
+                list(
+                    performance_profile_instances_all_groups[
+                        problem_set
+                    ].keys()
+                )
+            )
+
+            out_msg.extend(
+                [html.Br(), f"/{run_id}/{problem_set}/pp/{all_tables_string}"]
+            )
+
+        return [html.H2("404 Page Error!"), html.Div(out_msg)]
 
     if run_id != plot_id:
-        return (
-            "404 Page Error! Dash plots are not available for these results."
-            "You can use `fitbenchmarking --load_checkpoint` to fix this."
+        return [
+            html.H2("404 Page Error!"),
+            html.Div(
+                [
+                    "Dash plots are not available for these results. "
+                    "Check that the URL contains the correct run ID and that "
+                    "the current run generated dash plots",
+                    html.Br(),
+                    "You can use `fitbenchmarking --load_checkpoint` to load "
+                    "from a run where dash plots were generated.",
+                    html.Br(),
+                    f"Most recent run ID: {run_id}",
+                ]
+            ),
+        ]
+
+    if plot == "cs":
+        return compare_scatter_layout
+    elif plot == "pp":
+        group_profiles = {}
+        try:
+            group_profiles = performance_profile_instances_all_groups[group]
+        except KeyError:
+            valid_problem_sets = list(
+                performance_profile_instances_all_groups.keys()
+            )
+            return [
+                html.H2("404 Page Error!"),
+                "The problem set was not recognized.",
+                html.Br(),
+                f"Valid names include: {valid_problem_sets}",
+            ]
+        return build_performance_profile_page(
+            group_profiles, performance_profile_layout, metric_str, max_solvers
         )
-    if plot != "pp":
-        return f"404 Page Error! Plot type '{plot}' not available."
+    else:
+        valid_plot_types = {
+            "pp": "performance profile",  # performance profile
+            "cs": "compare scatter",
+        }
+        return [
+            html.H2("404 Page Error!"),
+            f"Plot type '{plot}' not available.",
+            html.Br(),
+            f"valid plot types include: {valid_plot_types}",
+        ]
 
-    group_profiles = profile_instances_all_groups[group]
 
+def build_performance_profile_page(
+    group_profiles, layout, metric_str, max_solvers
+):
     new_layout = layout
 
     try:
@@ -734,20 +835,26 @@ def display_page(
 
             new_layout = [*new_layout, group_profiles[metric].layout()]
     except KeyError:
-        return (
-            "404 Page Error! The path was not recognized. \n"
-            "The path needs to end in a list of table names "
-            "separated by '+'."
-        )
+        return [
+            html.H2("404 Page Error!"),
+            "The path was not recognized.",
+            html.Br(),
+            "The path needs to end in a list of table names separated by '+'.",
+            html.Br(),
+            f"Valid names include: {list(group_profiles.keys())}",
+        ]
 
     opts = group_profiles["acc"].default_opt
 
     layout[1].options = opts
     layout[1].value = [i["label"] for i in opts[:max_solvers]]
+
     return html.Div(new_layout)
 
 
-def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
+def prepare_dash_app_for_performance_profiles(
+    app: Dash, options, pp_dfs_all_prob_sets, max_solvers
+) -> Dash:
     """
     Prepares the Dash app to produce the interactive performance profile
     plots, and calls the function to run it.
@@ -759,7 +866,39 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
     """
 
-    layout = [
+    # Needed to prevent unnecessary warning in the terminal
+    # 'werkzeug' is the name of the logger used by dash
+    log = logging.getLogger("werkzeug")
+    log.disabled = True
+
+    app.layout = html.Div(
+        [
+            dcc.Location(id="url", refresh=False),
+            html.Div(id="page-content", children=[]),
+        ]
+    )
+
+    app = add_perfomance_profile_callbacks(app, max_solvers)
+
+    # Create the callback to handle multiple pages
+    return app
+
+
+def add_perfomance_profile_callbacks(app: Dash, max_solvers):
+    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
+        lambda x: update_warning(x, max_solvers=max_solvers)
+    )
+
+    app.callback(
+        Output("dropdown", "options"),
+        [Input("dropdown", "options"), Input("dropdown", "value")],
+    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
+
+    return app
+
+
+def get_performance_profile_layout():
+    return [
         dcc.RadioItems(
             id="Log axis toggle",
             options=["Log x-axis", "Linear x-axis"],
@@ -802,9 +941,11 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
         ),
     ]
 
+
+def create_performace_profile_instances(pp_dfs_all_prob_sets):
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
-        inst = {
+        profile_instances_all_groups[group] = {
             "acc": DashPerfProfile(
                 profile_name="Accuracy", pp_df=pp_dfs["acc"], group_label=group
             ),
@@ -819,58 +960,4 @@ def prepare_dash_app_and_run(options, pp_dfs_all_prob_sets) -> None:
                 group_label=group,
             ),
         }
-        profile_instances_all_groups[group] = inst
-
-    # Needed to prevent unnecessary warning in the terminal
-    # 'werkzeug' is the name of the logger used by dash
-    log = logging.getLogger("werkzeug")
-    log.disabled = True
-
-    app = Dash(__name__, suppress_callback_exceptions=True)
-
-    app.layout = html.Div(
-        [
-            dcc.Location(id="url", refresh=False),
-            html.Div(id="page-content", children=[]),
-        ]
-    )
-
-    max_solvers = 15
-
-    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
-        lambda x: update_warning(x, max_solvers=max_solvers)
-    )
-
-    app.callback(
-        Output("dropdown", "options"),
-        [Input("dropdown", "options"), Input("dropdown", "value")],
-    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
-
-    # Create the callback to handle multiple pages
-    app.callback(
-        Output("page-content", "children"), [Input("url", "pathname")]
-    )(
-        lambda x: display_page(
-            x,
-            profile_instances_all_groups=profile_instances_all_groups,
-            layout=layout,
-            max_solvers=max_solvers,
-            run_id=options.run_id,
-        )
-    )
-
-    run_dash_app(app=app, host=options.ip_address, port=options.port)
-
-
-def run_dash_app(app, host, port):
-    """
-    Runs the Dash app.
-
-    :param host: The dash app to run
-    :type host: dash.dash.Dash
-    :param host: The ip address where to run the app.
-    :type host: str
-    :param port: The port where to run the app.
-    :type port: str
-    """
-    app.run(host=host, port=port)
+    return profile_instances_all_groups

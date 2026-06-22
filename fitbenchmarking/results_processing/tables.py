@@ -143,6 +143,12 @@ def create_results_tables(
                             f"{options.run_id}/{os.path.basename(group_dir)}/"
                             f"pp/{'+'.join(table.pps)}"
                         ),
+                        cs_dash_url=(
+                            f"http://{options.ip_address}:{options.port}/"
+                            f"{options.run_id}/{os.path.basename(group_dir)}/"
+                            f"cs/_"
+                        ),
+                        dash_url=f"http://{options.ip_address}:{options.port}",
                         cbar=cbar,
                         run_name=run_name,
                         error_message=ERROR_FLAG_MAPPINGS,
