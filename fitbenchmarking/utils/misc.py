@@ -93,7 +93,6 @@ def get_js(options, working_directory):
     js_path = os.path.relpath(local_js_dir, working_directory)
     js_dict = {
         "dropdown": os.path.join(js_path, "dropdown.js"),
-        "mathjax": os.path.join(js_path, "tex-mml-chtml.js"),
         "table": os.path.join(js_path, "table.js"),
     }
 
