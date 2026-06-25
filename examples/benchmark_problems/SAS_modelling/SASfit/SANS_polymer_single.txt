@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'SASfit'
+name = 'SANS Polymer Single'
+description = 'SANS Polymer Single'
+input_file = 'SANS_polymer_single.txt'
+function = 'name=polynom,p0=0.0;name=generalized__Gaussian__coil,Rg=4.0,nu=0.5,I0=1.0'
+fixed_params = 'p1=0.0,p2=0.0,p3=0.0,p4=0.0'
+plot_scale = 'loglog'

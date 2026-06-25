@@ -115,7 +115,8 @@ exclude = [
     "benchmark_problems",
     "fonts",
     "test_files",
-    "templates"
+    "templates",
+    "SASStudio_functions.py"
 ]
 line-length = 79
 

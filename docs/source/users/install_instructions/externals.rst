@@ -117,3 +117,10 @@ Theseus is used as a fitting software in FitBenchmarking, and is called via thes
 module which requries pytorch
 
 Install instructions can be found on the `Theseus Github page <https://github.com/facebookresearch/theseus#getting-started/>`__
+
+SASfit
+------
+
+SASfit is used to parse SAS problems which use SASfit plugins to define the model function.
+
+Install instructions can be found on the `SASfit GitHub page <https://github.com/SASfit/SASfit?tab=readme-ov-file#building-from-source>`_.
