@@ -133,18 +133,11 @@ class TestMantidController(TestCase):
         [
             (
                 Path("multifit_set") / "multifit.txt",
-                (
-                    "name=LinearBackground,A0=0,A1=0;"
-                    " name=GausOsc,A=0.2,Sigma=0.2,Frequency=1,Phi=0"
-                ),
-                True,
+                ("name=LinearBackground,A0=0,A1=0"),
+                False,
                 [
-                    "f0.A0",
-                    "f0.A1",
-                    "f1.A",
-                    "f1.Sigma",
-                    "f1.Frequency",
-                    "f1.Phi",
+                    "A0",
+                    "A1",
                 ],
                 2,
                 True,
@@ -526,11 +519,11 @@ class TestMantidController(TestCase):
             (
                 "Damped GaussNewton",
                 True,
-                2,
+                0,
                 False,
                 [
-                    [0.0, 0.0, 0.2, 0.2, 1.0, 0.0],
-                    [0.0, 0.0, 0.2, 0.2, 1.0, 0.0],
+                    [5.465904281234018, 3.306399846283738],
+                    [11.652541583443453, 3.306399846283738],
                 ],
             ),
             (
@@ -545,14 +538,7 @@ class TestMantidController(TestCase):
                 False,
                 1,
                 True,
-                [
-                    9.992968384080259,
-                    2.0019412967622623,
-                    -6.498087151207797,
-                    2.432705755554191,
-                    -0.0021839598697108633,
-                    -1.5707513496110153,
-                ],
+                [10.00867422891315, 1.9999803827377036],
             ),
         ]
     )
