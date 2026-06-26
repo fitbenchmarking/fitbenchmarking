@@ -11,7 +11,8 @@
 FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks. FitBenchmarking is cross platform and we support Windows, Linux and Mac OS. For questions, feature requests or any other inquiries, please open an issue on GitHub.
 
 - [Installation Instructions](https://fitbenchmarking.readthedocs.io/en/latest/users/install_instructions/index.html)
- > [!IMPORTANT] Please ensure that you are using the latest version of FitBenchmarking in order to stay up to date with security fixes.
+ > [!NOTE]
+ > Please ensure that you are using the latest version of FitBenchmarking in order to stay up to date with security fixes.
 - [User Documentation & Example Usage](https://fitbenchmarking.readthedocs.io/en/latest/users/index.html)
 - [Community Guidelines](https://fitbenchmarking.readthedocs.io/en/latest/contributors/guidelines.html)
 - Automated Tests are [run via GitHub Actions](https://github.com/fitbenchmarking/fitbenchmarking/actions), please see [our documentation](https://fitbenchmarking.readthedocs.io/en/latest/users/tests.html) for more information.
