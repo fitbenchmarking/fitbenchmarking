@@ -712,7 +712,7 @@ def display_page(
     performance_profile_layout: list,
     max_solvers: int,
     run_id: str,
-    compare_scatter_layout: list,
+    compare_scatter_layout: list | html.Div,
 ):
     """
     Update the layout of the dash app.
