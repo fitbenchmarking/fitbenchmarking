@@ -1018,13 +1018,13 @@ class CompareScatterDataModel:
         self, metric: str, unique=False, **func_kwargs
     ) -> list:
         """
-        Given a string (metric), retreive the value of that metric from each
+        Given a string (metric), retrieve the value of that metric from each
         fitting result. Works for attributes and callables (with args able to
         be passed using func_kwargs).
 
         Note: this function caches the values provided to it, meaning that
-        repeated calls do not cause signifigant slowdown. In the case of
-        functions, it caches the function - not the return value, this still
+        repeated calls do not cause significant slowdown. In the case of
+        functions, it caches the function - not the return value. This still
         improves performance, but means that if the function output changes,
         the returned values are still correct.
 
