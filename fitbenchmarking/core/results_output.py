@@ -636,10 +636,19 @@ def open_browser(
             suppress_callback_exceptions=True,
             external_stylesheets=[dbc.themes.BOOTSTRAP],
         )
-        max_solvers = 15
-        app = prepare_dash_app_for_performance_profiles(
-            app, options, pp_dfs_all_prob_sets, max_solvers
+        log = logging.getLogger("werkzeug")
+        log.disabled = True
+
+        app.layout = html.Div(
+            [
+                dcc.Location(id="url", refresh=False),
+                html.Div(id="page-content", children=[]),
+            ]
         )
+
+        max_solvers = 15
+
+        app = add_perfomance_profile_callbacks(app, max_solvers)
         profile_instances_all_groups = create_performace_profile_instances(
             pp_dfs_all_prob_sets
         )
@@ -850,38 +859,6 @@ def build_performance_profile_page(
     layout[1].value = [i["label"] for i in opts[:max_solvers]]
 
     return html.Div(new_layout)
-
-
-def prepare_dash_app_for_performance_profiles(
-    app: Dash, options, pp_dfs_all_prob_sets, max_solvers
-) -> Dash:
-    """
-    Prepares the Dash app to produce the interactive performance profile
-    plots, and calls the function to run it.
-
-    :param options: The user options for the benchmark.
-    :type options: fitbenchmarking.utils.options.Options
-    :param pp_dfs_all_prob_sets: For each problem set, data to create
-                                 dash plots.
-    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
-    """
-
-    # Needed to prevent unnecessary warning in the terminal
-    # 'werkzeug' is the name of the logger used by dash
-    log = logging.getLogger("werkzeug")
-    log.disabled = True
-
-    app.layout = html.Div(
-        [
-            dcc.Location(id="url", refresh=False),
-            html.Div(id="page-content", children=[]),
-        ]
-    )
-
-    app = add_perfomance_profile_callbacks(app, max_solvers)
-
-    # Create the callback to handle multiple pages
-    return app
 
 
 def add_perfomance_profile_callbacks(app: Dash, max_solvers):
