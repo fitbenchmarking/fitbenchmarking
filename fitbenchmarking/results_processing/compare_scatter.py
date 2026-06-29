@@ -261,12 +261,6 @@ class CompareScatterView:
         "line-ns",  # rotation
     ]
 
-    def __init__(self):
-        """
-        Create the CompareScatterView and set the list of valid symbols
-        """
-        self.valid_symbols = self.get_all_valid_symbols()
-
     active_opacity = 1
     inactive_opacity = 0.2
 
@@ -274,10 +268,35 @@ class CompareScatterView:
         f"""<sup style="opacity:{active_opacity}">"""
         """<b>{0}</b></sup>"""
     )
+
     inactive_error_template = (
         f"""<sup style="opacity:{inactive_opacity}">"""
         """<b>{0}</b></sup>"""
     )
+
+    problem_legend = {}
+
+    active_button_style = {
+        "display": "flex",
+        "background-color": "white",
+        "border": "none",
+        "opacity": 1,
+        "text-align": "left",
+    }
+
+    inactive_button_style = {
+        "display": "flex",
+        "background-color": "white",
+        "border": "none",
+        "opacity": 0.5,
+        "text-align": "left",
+    }
+
+    def __init__(self):
+        """
+        Create the CompareScatterView and set the list of valid symbols
+        """
+        self.valid_symbols = self.get_all_valid_symbols()
 
     def get_plot(
         self,
@@ -293,8 +312,8 @@ class CompareScatterView:
     ):
         """
         Get a div containing the compare scatter and legend.
-        Note that it has the side effect of setting self.plot for the class as well
-        as returning the plot in a Div.
+        Note that it has the side effect of setting self.plot for the class as
+        well as returning the plot in a Div.
 
         When an argument is a list, it should have the same dimensions and same
         ordering as the x and y values - i.e. if x = [1,2,3] then tooltips =
@@ -520,8 +539,6 @@ class CompareScatterView:
                     )
         return warning_text_by_minimizer
 
-    problem_legend = {}
-
     def set_focus_for_all_items(self, focus, state):
         """
         Given a focus value and a dictionary of the state of each legend item
@@ -742,22 +759,6 @@ class CompareScatterView:
         html_tree = xml_html.fromstring(marker_text)
         html_tree.set("style", f"opacity:{new_opacity}")
         t.text = etree.tostring(html_tree).decode("ascii")
-
-    active_button_style = {
-        "display": "flex",
-        "background-color": "white",
-        "border": "none",
-        "opacity": 1,
-        "text-align": "left",
-    }
-
-    inactive_button_style = {
-        "display": "flex",
-        "background-color": "white",
-        "border": "none",
-        "opacity": 0.5,
-        "text-align": "left",
-    }
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
