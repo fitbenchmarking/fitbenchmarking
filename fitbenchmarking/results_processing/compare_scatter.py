@@ -804,8 +804,7 @@ class CompareScatterView:
             problem_legend.extend(legend_item)
             problem_legend.append(html.Br())
 
-        minimizer_legend = []
-        minimizer_legend.append(html.H2("Minimizer"))
+        minimizer_legend = [html.H2("Minimizer")]
 
         for i, color_mapped_value in enumerate(unique_colour_groups):
             id = self.sanitize_for_id(color_mapped_value)
