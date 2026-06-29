@@ -293,7 +293,7 @@ class CompareScatterView:
     ):
         """
         Get a div containing the compare scatter and legend.
-        Not that has the side effect of setting self.plot for the class as well
+        Note that it has the side effect of setting self.plot for the class as well
         as returning the plot in a Div.
 
         When an argument is a list, it should have the same dimensions and same
