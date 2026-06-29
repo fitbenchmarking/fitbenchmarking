@@ -874,6 +874,11 @@ class CompareScatterView:
         provided input values. The point is non interactible, intended for
         use in legends and embeded within other elements.
 
+        This is needed because plotly does not expose the shape objects for use
+        in situations like these, which means that the only way we can display
+        a single with a specific symbol (such as you would see on the legend)
+        is to actually plot it on a graph.
+
         :param symbol: Shape to give the point
         :type str:
         :param colour: Colour to give the point
