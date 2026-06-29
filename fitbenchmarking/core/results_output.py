@@ -709,10 +709,10 @@ def display_page(
     performance_profile_instances_all_groups: dict[
         str, dict[str, DashPerfProfile]
     ],
-    performance_profile_layout: "list",
+    performance_profile_layout: list,
     max_solvers: int,
     run_id: str,
-    compare_scatter_layout: "list",
+    compare_scatter_layout: list,
 ):
     """
     Update the layout of the dash app.
