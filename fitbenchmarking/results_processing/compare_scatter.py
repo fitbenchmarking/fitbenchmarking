@@ -40,10 +40,10 @@ class CompareScatter:
         3)
 
         :param item: the minimizer to check
-        :type str:
+        :type item: str
 
         :return: whether that item threw any errors
-        :rtype bool:
+        :rtype: bool
         """
         errors, _ = self.view.get_per_minimizer_errors_and_runs(
             error_flags=self.model.get_values_for_axis("error_flag"),
@@ -66,12 +66,12 @@ class CompareScatter:
         the clickthrough links
 
         :param app: The existing dash app to add the callbacks to
-        :type Dash:
+        :type app: Dash
         :param legend_items: A list of minimizer names or IDs
-        :type list[str]:
+        :type legend_items: list[str]
 
         :return: The app with callbacks added
-        :rtype Dash:
+        :rtype: Dash
         """
         if isinstance(self.view.plot, go.Figure):
             for i, legend_item in enumerate(legend_items):
@@ -321,26 +321,26 @@ class CompareScatterView:
         ["x:1","x:2","x:3"]
 
         :param x: values to plot on the X axis
-        :type list[int]:
+        :type x: list[int]
         :param y: values to plot on the Y axis
-        :type list[int]:
+        :type y: list[int]
         :param x_title: title for the X axis
-        :type str:
+        :type x_title: str
         :param y_title: title for the Y axis
-        :type str:
+        :type y_title: str
         :param tooltips: list of text to be used as hover text
-        :type list[list[str]]:
+        :type tooltips: list[list[str]]
         :param errors: list of fitting result error flags
-        :type list[int]:
+        :type errors: list[int]
         :param minimizers: list of minimizer names
-        :type list[str]:
+        :type minimizers: list[str]
         :param problems: list of problem names
-        :type list[str]:
+        :type problems: list[str]
         :param report_pages: list of urls of fitting reports
-        :type list[str]:
+        :type report_pages: list[str]
 
-        :return Plot: A div containing the plot and legend
-        :rtype html.Div:
+        :return: Returns a div containing the plot and legend
+        :rtype: html.Div
         """
         colour_groups = plotly.colors.sample_colorscale(
             colorscale="mrybm",
@@ -428,10 +428,10 @@ class CompareScatterView:
 
         :param warning_messages_by_minimizer: key: minimizer, value: warning
         message or None
-        :type dict[str,str|None]:
+        :type warning_messages_by_minimizer: dict[str,str|None]
 
-        :return Toasts: A list containing the created dbc.Toast objects
-        :rtype list[dbc.Toast]:
+        :return: A list containing the created dbc.Toast objects
+        :rtype: list[dbc.Toast]
         """
         toasts = []
         for minimizer in warning_messages_by_minimizer:
@@ -467,18 +467,18 @@ class CompareScatterView:
 
         :param error_flags: list of error flags in same order as minimizer
         names
-        :type list[int]:
+        :type error_flags: list[int]
         :param minimizer_names: list of minimser names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
             run of that minimizer
-        :type list[str]:
+        :type minimizer_names: list[str]
 
         :return errors: A dict where the key is the minimizer name, and the
         value is the number of times that minimizer had an error flag of 3
-        :rtype list[str,int]:
+        :rtype errors: list[str,int]
         :return runs: A dict where the key is the minimizer name, and the
         value is the number of times that minimizer ran
-        :rtype list[str,int]:
+        :rtype runs:list[str,int]:
         """
 
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
@@ -503,15 +503,15 @@ class CompareScatterView:
 
         :param error_flags: list of error flags in same order as minimizer
         names
-        :type list[int]:
+        :type error_flags: list[int]
         :param minimizer_names: list of minimser names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
             run of that minimizer
-        :type list[str]:
+        :type minimizer_names: list[str]
 
-        :return warnings: A dict where the key is the minimizer name, and the
+        :return: A dict where the key is the minimizer name, and the
         value is the warning text for that minimizer or None if none is needed
-        :rtype list[str,int]:
+        :rtype: list[str,int]
         """
 
         errors_by_minimizer, runs_by_minimizer = (
@@ -555,18 +555,18 @@ class CompareScatterView:
         }
 
         :param focus: The new focus state for all items
-        :type bool:
+        :type focus: bool
         :param state: Dictionary with the structure described above
-        :type dict[str,dict[str,bool]]:
+        :type state: dict[str,dict[str,bool]]:
 
         :return state: the updated state dictionary
-        :rtype dict[str,dict[str,bool]]:
+        :rtype state: dict[str,dict[str,bool]]
         :return all_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
+        :rtype all_button_style: dict[str,any]
         :return none_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
+        :rtype none_button_style: dict[str,any]
         :return plot: the plot after the traces have been updated
-        :rtype go.Figure:
+        :rtype plot: go.Figure
         """
         style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -605,14 +605,14 @@ class CompareScatterView:
         dictionary with the new state now set
 
         :param group: The group to find in the state dictionary
-        :type str:
+        :type group: str
         :param state: The state dictionary to query and modify
-        :type dict:
+        :type state: dict
 
         :return new_state: The state of the group after toggling
-        :rtype bool:
+        :rtype new_state: bool
         :return new_state_dictionary: State, modified with the updated group
-        :rtype dict:
+        :rtype new_state_dictionary: dict
         """
         if group in state["problem"]:
             group_state = not state["problem"][group]
@@ -636,12 +636,12 @@ class CompareScatterView:
         }
 
         :param state: Dictionary with the structure described above
-        :type dict[str,dict[str,bool]]:
+        :type state: dict[str,dict[str,bool]]
 
         :return all_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
+        :rtype all_button_style: dict[str,any]
         :return none_button_style: the updated style for the select all button
-        :rtype dict[str,any]:
+        :rtype none_button_style: dict[str,any]
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
@@ -678,16 +678,16 @@ class CompareScatterView:
         and self.inactive_opacity
 
         :param plot: The plot to modify
-        :type go.Figure:
+        :type plot: go.Figure
         :param state: Dictionary of state of each problem, sorted by minimizer
         , problem
-        :type dict[str,dict[str,bool]]:
+        :type state: dict[str,dict[str,bool]]
         :param group: The group of points to set visiblity for, either "all" or
         "none", all other values have no effect
-        :type str:
+        :type group: str
 
-        :return plot: The modified plot
-        :rtype go.Figure:
+        :return: The modified plot
+        :rtype: go.Figure
         """
 
         valid_group_types = ["all", "none"]
@@ -744,9 +744,9 @@ class CompareScatterView:
         Given a trace, update the opacity of the text field and points.
 
         :param t: The trace to modify
-        :type:
+        :type t: plotly trace
         :param new_opacity: the opacity after the change
-        :type int:
+        :type new_opacity: int
         """
         t.marker.opacity = new_opacity
 
@@ -769,16 +769,16 @@ class CompareScatterView:
         of each legend item and an icon representing each hape or colour.
 
         :param symbol_groups: The values which are used to group by symbol
-        :type list[str]:
+        :type symbol_groups: list[str]
         :param symbol_map: A list of available symbols to use for grouping
-        :type list[str]:
+        :type symbol_map: list[str]
         :param colour_groups: The values which are used to group by colour
-        :type list[str]:
+        :type colour_groups: list[str]
         :param colour_map: A list of available colours to use for grouping
-        :type list[str]:
+        :type colour_map: list[str]
 
-        :return complete_legend: A div containing the created legend
-        :type html.Div:
+        :return: A div containing the created legend
+        :rtype: html.Div
         """
 
         unique_symbol_groups = list(dict.fromkeys(symbol_groups))
@@ -787,27 +787,25 @@ class CompareScatterView:
         legend = []
         legend_status = {"minimizer": {}, "problem": {}}
 
-        problem_legend = []
-        problem_legend.append(html.H3("Problem"))
+        problem_legend: list = [html.H3("Problem")]
 
         for i, symbol_mapped_value in enumerate(unique_symbol_groups):
             id = self.sanitize_for_id(symbol_mapped_value)
 
-            legend_item = (
-                html.Button(
-                    [
-                        self.get_point(symbol=symbol_map[i]),
-                        symbol_mapped_value,
-                    ],
-                    style=self.active_button_style,
-                    id=self.sanitize_for_id(symbol_mapped_value),
-                ),
+            legend_item = html.Button(
+                [
+                    self.get_point(symbol=symbol_map[i]),
+                    symbol_mapped_value,
+                ],
+                style=self.active_button_style,
+                id=self.sanitize_for_id(symbol_mapped_value),
             )
+
             legend_status["problem"][symbol_mapped_value] = True
-            problem_legend.extend(legend_item)
+            problem_legend.append(legend_item)
             problem_legend.append(html.Br())
 
-        minimizer_legend = [html.H3("Minimizer")]
+        minimizer_legend: list = [html.H3("Minimizer")]
 
         for i, color_mapped_value in enumerate(unique_colour_groups):
             id = self.sanitize_for_id(color_mapped_value)
@@ -869,10 +867,10 @@ class CompareScatterView:
         removes all non alphanumeric characters from the provided string
 
         :param to_sanitize: String to sanitize
-        :type str:
+        :type to_sanitize: str
 
-        :return sanitized: Sanitized string
-        :rtype str:
+        :return: Sanitized string
+        :rtype: str
         """
 
         return "".join([char for char in to_sanitize if char.isalnum()])
@@ -890,12 +888,12 @@ class CompareScatterView:
         is to actually plot it on a graph.
 
         :param symbol: Shape to give the point
-        :type str:
+        :type symbol: str
         :param colour: Colour to give the point
-        :type str:
+        :type colour: str
 
-        :return symbol: Div containing the generated symbol
-        :rtype html.Div:
+        :return: Div containing the generated symbol
+        :rtype: html.Div
         """
 
         fig = go.Figure()
@@ -955,7 +953,7 @@ class CompareScatterView:
         Filters according to self.is_banned_symbol.
 
         :return valid_symbols: list of visually distincy symbol names
-        :rtype list[str]:
+        :rtype: list[str]:
         """
 
         validator = ValidatorCache.get_validator("scatter.marker", "symbol")
@@ -976,10 +974,10 @@ class CompareScatterView:
         rotations and translations as determined by self.banned_prefixes
 
         :param symbol: Symbol to check
-        :type str:
+        :type symbol: str
 
-        :return is_valid: true if the symbol so not banned
-        :rtype bool:
+        :return: returns true if the symbol so not banned
+        :rtype: bool
         """
 
         return all(
@@ -995,11 +993,11 @@ class CompareScatterView:
         they contain.
 
         :param symbol: The string to check
-        :type str:
+        :type symbol: str
 
-        :return ranking: how early it should appear in the sorted list
-        0 being the earliest
-        :rtype int:
+        :return: a number representing how early it should appear in the sorted
+        list 0 being the earliest
+        :rtype: int
         """
 
         # prefer symbols with solid colours
@@ -1019,7 +1017,7 @@ class CompareScatterDataModel:
 
         :param results: list of Fitting results to use as the basis for this
         data model
-        :type list[FittingResult]:
+        :type results: list[FittingResult]
         """
         self.results = results
         # ensure consistent processing between runs
@@ -1045,12 +1043,12 @@ class CompareScatterDataModel:
 
 
         :param metric: The metric to get from every result in the model
-        :type str:
+        :type metric: str
         :param unique: Whether to return a list of only unique results or
         allow the list to include duplicates
-        :type bool:
+        :type unique: bool
         :param func_kwargs: The arguments to send if the result is callable
-        :type dict:
+        :type func_kwargs: dict
         """
 
         # in the case of name and normalised values, a function call is
