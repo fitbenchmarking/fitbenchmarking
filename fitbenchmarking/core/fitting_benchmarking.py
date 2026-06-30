@@ -342,8 +342,8 @@ class Fit:
                 and controller.software != "mantid"
             ):
                 LOGGER.info(
-                    "Multifit being initialised for another "
-                    "minim of the same software"
+                    "Multifit being initialised for minimizer "
+                    "%s", minimizer
                 )
                 param_dict = controller.starting_values[0]
                 controller.par_names = list(param_dict.keys())
