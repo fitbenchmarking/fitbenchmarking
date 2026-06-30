@@ -343,6 +343,20 @@ class Fit:
         minimizer_failed, results = [], []
 
         for minimizer in minimizers:
+
+            if (
+                controller.problem.multifit
+                and controller.software != "mantid"
+            ):
+                LOGGER.info(
+                    "Multifit being initialised for another "
+                    "minim of the same software"
+                )
+                param_dict = controller.starting_values[0]
+                controller.par_names = list(param_dict.keys())
+                controller.problem._param_names = controller.par_names
+                print(controller.problem.param_names)
+
             controller.minimizer = minimizer
             minimizer_check = True
             LOGGER.info("%sMinimizer: %s", self._logger_prefix * 4, minimizer)
@@ -535,6 +549,9 @@ class Fit:
                         )
                         results.append(result)
                         self._checkpointer.add_result(result)
+                    
+                    # print('results[0] at end of fitting_benchmarking:', results[0])
+                    # print('results[1] at end of fitting_benchmarking:', results[1])
                 else:
                     result = fitbm_result.FittingResult(**result_args)
                     results.append(result)
@@ -589,6 +606,10 @@ class Fit:
                     controller.multifit_cleanup()
                 # TODO: this function needs fixing for multifit to work
                 controller.check_attributes()
+                print(
+                    'controller.final_params before eval_chisq', 
+                    str(controller.final_params)
+                )
 
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
@@ -617,6 +638,13 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e,
                 )
+                # THIS DOESNT GET PRINTED
+                # so the error is in controller.eval_chisq
+                print(
+                    'controller.final_params after eval_chisq', 
+                    str(controller.final_params)
+                )
+
             else:
                 conf = controller.eval_confidence()
                 accuracy = 1 / conf if conf != 0 else np.inf
@@ -635,6 +663,7 @@ class Fit:
             LOGGER.warning(str(ex))
             controller.flag = 7
         except Exception as ex:
+            print('Getting exception in fitting_benchmarking: ', str(ex))
             LOGGER.warning(str(ex))
 
             # Note: Handle all exceptions as general exception to cover case
@@ -666,6 +695,10 @@ class Fit:
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)
+            )
+            print(
+                'Setting controller.final_params to None '
+                'because controller.flag is one of [3, 6, 7]'
             )
 
             accuracy = (
