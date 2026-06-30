@@ -1,5 +1,6 @@
 import inspect
 import os
+import re
 
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -397,7 +398,7 @@ class CompareScatterView:
             dcc.Graph(
                 figure=self.plot,
                 id="compare_scatter",
-                style={"flex": "1", "min-width": "0"},
+                style={"flex": "1", "min-width": "66vw"},
             ),
             self.legend,
             # dummy divs needed for callbacks
@@ -787,15 +788,16 @@ class CompareScatterView:
         legend_status = {"minimizer": {}, "problem": {}}
 
         problem_legend = []
-        problem_legend.append(html.H2("Problem"))
+        problem_legend.append(html.H3("Problem"))
 
         for i, symbol_mapped_value in enumerate(unique_symbol_groups):
             id = self.sanitize_for_id(symbol_mapped_value)
+
             legend_item = (
                 html.Button(
                     [
                         self.get_point(symbol=symbol_map[i]),
-                        f" - {symbol_mapped_value}",
+                        symbol_mapped_value,
                     ],
                     style=self.active_button_style,
                     id=self.sanitize_for_id(symbol_mapped_value),
@@ -805,14 +807,21 @@ class CompareScatterView:
             problem_legend.extend(legend_item)
             problem_legend.append(html.Br())
 
-        minimizer_legend = [html.H2("Minimizer")]
+        minimizer_legend = [html.H3("Minimizer")]
 
         for i, color_mapped_value in enumerate(unique_colour_groups):
             id = self.sanitize_for_id(color_mapped_value)
+
+            item_title = []
+            for section in re.split(r"(j:|h:)", color_mapped_value):
+                if re.match(r"(j:|h:)", section) is not None:
+                    item_title.append(html.Br())
+                item_title.append(section)
+
             legend_item = html.Button(
                 [
                     self.get_point(colour=colour_map[i]),
-                    f" - {color_mapped_value}",
+                    *item_title,
                 ],
                 style=self.active_button_style,
                 id=id,
@@ -846,7 +855,7 @@ class CompareScatterView:
 
         complete_legend = html.Div(
             [
-                html.Div(legend, style={"display": "flex"}),
+                html.Div(legend, style={"display": "flex", "gap": "10px"}),
                 html.Div(all_none_buttons),
             ],
             id="compare_scatter_legend",
@@ -931,9 +940,9 @@ class CompareScatterView:
             [dcc.Graph(figure=fig, config={"staticPlot": True})],
             style={
                 "margin": "0",
-                "position": "relative",
-                "top": "50%",
-                "transform": "translateY(25%)",
+                "display": "flex",
+                "align-items": "center",
+                "justify-content": "center",
             },
         )
 
