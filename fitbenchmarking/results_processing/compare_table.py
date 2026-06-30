@@ -19,6 +19,7 @@ class CompareTable(Table):
 
     """
 
+    has_cs = True
     name = "compare"
     colour_template = "background-image: linear-gradient({0},{0},{1},{1})"
     cbar_title = (

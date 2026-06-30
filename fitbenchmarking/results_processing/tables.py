@@ -133,6 +133,7 @@ def create_results_tables(
                         table_description=description[suffix],
                         table_format=table_format,
                         result_name=table.table_title,
+                        has_cs=table.has_cs,
                         has_pp=bool(table.pps),
                         pp_filenames=[
                             os.path.relpath(table.pp_locations[p], group_dir)

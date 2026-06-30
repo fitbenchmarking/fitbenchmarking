@@ -43,6 +43,7 @@ class Table:
 
     __metaclass__ = ABCMeta
     name = None
+    has_cs = False
     output_string_type = {
         "abs": "{:.4g}",
         "rel": "{:.4g}",
