@@ -57,14 +57,24 @@ class BaseNLLSCostFunc(CostFunc):
         raise NotImplementedError
 
     def eval_r(self, params, **kwargs):
-        if self.problem.multifit:
+
+        if self.problem.multifit :
             r = []
 
             # when this is executed in eval_chisq, kwargs.get("x") is a list of 
             # 141 numbers while self.problem.data_x is a list of two such lists.
-            # Also I'm not sure params here is right, where this gets called in 
-            # eval_chisq
-            dataset_count = len(kwargs.get("x", self.problem.data_x)) 
+            # I'm not sure this is the right way of doing this, runs but gets 
+            # unknown exception
+
+            if kwargs.get("x") is not None:
+
+                if isinstance(kwargs.get("x")[0], list):
+                    dataset_count = len(kwargs.get("x"))
+                else:
+                    dataset_count = 1
+                    
+            else:
+                dataset_count = len((self.problem.data_x)) 
             
 
             print('dataset_count in eval_r: ', dataset_count)
