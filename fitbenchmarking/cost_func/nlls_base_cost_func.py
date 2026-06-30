@@ -44,7 +44,7 @@ class BaseNLLSCostFunc(CostFunc):
         self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate residuals used in Least-Squares problems
 
@@ -55,6 +55,36 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: numpy array
         """
         raise NotImplementedError
+
+    def eval_r(self, params, **kwargs):
+        if self.problem.multifit:
+            r = []
+            dataset_count = len(kwargs.get("x", self.problem.data_x))
+            # print(dataset_count)
+            # print("params passed to eval_r")
+            # print(params)
+            # print(self.problem.param_names)
+            param_dict = dict(zip(self.problem.param_names, params))
+            for d in range(dataset_count):
+                single_dataset_params = []
+                for k, v in param_dict.items():
+                    if k.startswith(f"d{d}.") or k.startswith(f"shared."):
+                        single_dataset_params.append(v)
+
+                kwargs["x"] = self.problem.data_x[d]
+                kwargs["y"] = self.problem.data_y[d]
+                kwargs["e"] = self.problem.data_e[d]
+                # print("single_dataset_params")
+                # print(single_dataset_params)
+                r_single = self.eval_r_single_dataset(
+                    params=single_dataset_params, **kwargs
+                )
+
+                r.extend(r_single)
+        else:
+            r = self.eval_r_single_dataset(params, **kwargs)
+
+        return r
 
     def eval_cost(self, params, **kwargs):
         """

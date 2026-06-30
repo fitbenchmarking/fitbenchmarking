@@ -26,7 +26,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`\\frac{y_i - f(x_i, p)}{e_i}`
 
@@ -36,7 +36,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :return: The residuals for the data points at the given parameters
         :rtype: numpy array
         """
-        print("params passed to eval_r: " + str(params))
+        # print("params passed to eval_r: " + str(params))
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
@@ -47,11 +47,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
                 f"the same, len(x)={len(x)}, len(y)={len(y)}"
                 f" and len(e)={len(e)}"
             )
-
-        # in the multifit case, so probably should change this check
-        if isinstance(x, list):
-            y = np.concatenate(y)
-            e = np.concatenate(e)
 
         result = (y - self.problem.eval_model(params=params, x=x)) / e
 
@@ -69,9 +64,11 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
-        print("params passed to jac_res: " + str(params))
+        # print("params passed to jac_res: " + str(params))
         e = kwargs.get("e", self.problem.data_e)
 
+        # for multifit problems, e is a list of arrays, one for each dataset.
+        # We need to concatenate them into a single array.
         if isinstance(e, list):
             e = np.concatenate(e)
 
