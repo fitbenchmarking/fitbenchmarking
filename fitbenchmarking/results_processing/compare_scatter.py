@@ -73,116 +73,109 @@ class CompareScatter:
         :return: The app with callbacks added
         :rtype: Dash
         """
-        if isinstance(self.view.plot, go.Figure):
-            for i, legend_item in enumerate(legend_items):
-                button_id = self.view.sanitize_for_id(legend_item)
-                button_io: list = [
-                    Output("compare_scatter", "figure", allow_duplicate=True),
-                    Output("legend-status", "data", True),
-                    Output(button_id, "style"),
-                    Output("all_button", "style", True),
-                    Output("none_button", "style", True),
-                ]
-
-                has_run_failures = self.item_should_have_warning_toast(
-                    legend_item
-                )
-
-                if has_run_failures:
-                    button_io.append(
-                        Output(f"{button_id}_toast", "is_open", True)
-                    )
-
-                button_io.extend(
-                    [
-                        Input(button_id, "n_clicks"),
-                        State("legend-status", "data"),
-                    ]
-                )
-
-                def focus_callback(
-                    _,
-                    state,
-                    return_new_state=has_run_failures,
-                    group=legend_item,
-                ):
-                    new_state, state = self.view.toggle_group_state(
-                        group, state
-                    )
-                    new_style = (
-                        self.view.active_button_style
-                        if new_state
-                        else self.view.inactive_button_style
-                    )
-                    plot = self.view.apply_state(self.view.plot, state)
-                    all_button_style, none_button_style = (
-                        self.view.get_all_none_button_style(state)
-                    )
-                    if return_new_state:
-                        return (
-                            plot,
-                            state,
-                            new_style,
-                            all_button_style,
-                            none_button_style,
-                            new_state,
-                        )
-                    else:
-                        return (
-                            plot,
-                            state,
-                            new_style,
-                            all_button_style,
-                            none_button_style,
-                        )
-
-                app.callback(
-                    button_io,
-                    prevent_initial_call=True,
-                )(focus_callback)
-
-            app.callback(
-                Output("legend-status", "data", True),
-                Output("all_button", "style", True),
-                Output("none_button", "style", True),
-                Output("compare_scatter", "figure", True),
-                Input("none_button", "n_clicks"),
-                State("legend-status", "data"),
-                prevent_initial_call=True,
-            )(lambda _, state: self.view.set_focus_for_all_items(False, state))
-
-            app.callback(
-                Output("legend-status", "data", True),
-                Output("all_button", "style", True),
-                Output("none_button", "style", True),
-                Output("compare_scatter", "figure", True),
-                Input("all_button", "n_clicks"),
-                State("legend-status", "data"),
-                prevent_initial_call=True,
-            )(lambda _, state: self.view.set_focus_for_all_items(True, state))
-
-            script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
-            script_path += "/results_processing/scripts/compare_scatter"
-
-            with open(f"{script_path}/handle_link.js") as file:
-                app.clientside_callback(
-                    file.read(),
-                    Output("dummy-click", "children"),
-                    Input("compare_scatter", "clickData"),
-                )
-
-            with open(f"{script_path}/resize_observer.js") as file:
-                app.clientside_callback(
-                    file.read(),
-                    Output("dummy-height", "children"),
-                    Input("compare_scatter", "figure"),
-                    prevent_initial_call=False,
-                )
-
-        else:
+        if not isinstance(self.view.plot, go.Figure):
             raise ValueError(
                 f"warning plot type is: {type(self.view.plot)} but go.Figure "
                 "was expected"
+            )
+
+        for i, legend_item in enumerate(legend_items):
+            button_id = self.view.sanitize_for_id(legend_item)
+            button_io: list = [
+                Output("compare_scatter", "figure", allow_duplicate=True),
+                Output("legend-status", "data", True),
+                Output(button_id, "style"),
+                Output("all_button", "style", True),
+                Output("none_button", "style", True),
+            ]
+
+            has_run_failures = self.item_should_have_warning_toast(legend_item)
+
+            if has_run_failures:
+                button_io.append(Output(f"{button_id}_toast", "is_open", True))
+
+            button_io.extend(
+                [
+                    Input(button_id, "n_clicks"),
+                    State("legend-status", "data"),
+                ]
+            )
+
+            def focus_callback(
+                _,
+                state,
+                return_new_state=has_run_failures,
+                group=legend_item,
+            ):
+                new_state, state = self.view.toggle_group_state(group, state)
+                new_style = (
+                    self.view.active_button_style
+                    if new_state
+                    else self.view.inactive_button_style
+                )
+                plot = self.view.apply_state(self.view.plot, state)
+                all_button_style, none_button_style = (
+                    self.view.get_all_none_button_style(state)
+                )
+                if return_new_state:
+                    return (
+                        plot,
+                        state,
+                        new_style,
+                        all_button_style,
+                        none_button_style,
+                        new_state,
+                    )
+                else:
+                    return (
+                        plot,
+                        state,
+                        new_style,
+                        all_button_style,
+                        none_button_style,
+                    )
+
+            app.callback(
+                button_io,
+                prevent_initial_call=True,
+            )(focus_callback)
+
+        app.callback(
+            Output("legend-status", "data", True),
+            Output("all_button", "style", True),
+            Output("none_button", "style", True),
+            Output("compare_scatter", "figure", True),
+            Input("none_button", "n_clicks"),
+            State("legend-status", "data"),
+            prevent_initial_call=True,
+        )(lambda _, state: self.view.set_focus_for_all_items(False, state))
+
+        app.callback(
+            Output("legend-status", "data", True),
+            Output("all_button", "style", True),
+            Output("none_button", "style", True),
+            Output("compare_scatter", "figure", True),
+            Input("all_button", "n_clicks"),
+            State("legend-status", "data"),
+            prevent_initial_call=True,
+        )(lambda _, state: self.view.set_focus_for_all_items(True, state))
+
+        script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
+        script_path += "/results_processing/scripts/compare_scatter"
+
+        with open(f"{script_path}/handle_link.js") as file:
+            app.clientside_callback(
+                file.read(),
+                Output("dummy-click", "children"),
+                Input("compare_scatter", "clickData"),
+            )
+
+        with open(f"{script_path}/resize_observer.js") as file:
+            app.clientside_callback(
+                file.read(),
+                Output("dummy-height", "children"),
+                Input("compare_scatter", "figure"),
+                prevent_initial_call=False,
             )
         return app
 
