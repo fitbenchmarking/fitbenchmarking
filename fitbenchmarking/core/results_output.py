@@ -650,7 +650,7 @@ def open_browser(
         max_solvers = 15
 
         app = add_perfomance_profile_callbacks(app, max_solvers)
-        profile_instances_all_groups = create_performace_profile_instances(
+        profile_instances_all_groups = create_performance_profile_instances(
             pp_dfs_all_prob_sets
         )
         performance_profile_layout = get_performance_profile_layout()
@@ -920,7 +920,7 @@ def get_performance_profile_layout():
     ]
 
 
-def create_performace_profile_instances(pp_dfs_all_prob_sets):
+def create_performance_profile_instances(pp_dfs_all_prob_sets):
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
         profile_instances_all_groups[group] = {
