@@ -303,6 +303,13 @@ class Fit:
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
+                LOGGER.info(controller.problem.multifit)
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    LOGGER.info("calling multifit init")
+                    controller.multifit_init()
 
             controller.parameter_set = self._start_values_index
 
@@ -561,6 +568,8 @@ class Fit:
             with self._grabbed_output:
                 controller.validate()
                 controller.prepare()
+                LOGGER.info("initial params")
+                LOGGER.info(controller.initial_params)
                 if tracker:
                     tracker.start_task()
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
@@ -573,8 +582,13 @@ class Fit:
                         num_runs, 1
                     )
                 controller.cleanup()
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    controller.multifit_cleanup()
                 # TODO: this function needs fixing for multifit to work
-                # controller.check_attributes()
+                controller.check_attributes()
 
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time

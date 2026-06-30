@@ -254,6 +254,65 @@ class Controller:
         self._validate_hessian()
         self._validate_problem_format()
 
+    def multifit_init(self):
+        """
+        Construct parameter array for multifit problems. Also temporaily
+        set problem._param_names to match the new parameter array.
+        """
+
+        params = self.starting_values[0]
+        print(params)
+        shared_params = self.problem.additional_info["ties"]
+        param_dict = {}
+
+        for k, v in params.items():
+            if k in shared_params:
+                param_dict[f"shared.{k}"] = v
+            else:
+                for i in range(self._dataset_count):
+                    param_dict[f"d{i}.{k}"] = v
+
+        print([param_dict])
+        self.starting_values = [param_dict]
+        self.par_names = list(param_dict.keys())
+        self.problem._param_names = self.par_names
+        print(self.problem.param_names)
+
+    def multifit_cleanup(self):
+        """
+        Map the final parameters to a list of lists, with each sublist
+        containing the final parameters for each dataset. Also reset
+        problem._param_names to the original parameter names.
+        """
+        # create a list of lists of final params for each dataset
+        final_params = self.final_params
+        param_dict = dict(zip(self.problem.param_names, final_params))
+        print("param dict")
+        print(param_dict)
+        lists_of_final_params = [[] for _ in range(self._dataset_count)]
+
+        for d in range(self._dataset_count):
+            for k, v in param_dict.items():
+                if k.startswith(f"d{d}.") or k.startswith("shared."):
+                    lists_of_final_params[d].append(v)
+
+        print("lists_of_final_params")
+        print(lists_of_final_params)
+        self.final_params = lists_of_final_params
+
+        # remove all the d0, d1, ... and shared. prefixes
+        # from the parameter names
+        single_dataset_param_names = [
+            self.problem.param_names[i].split(".")[1]
+            for i in range(len(self.problem.param_names))
+        ]
+        self.problem._param_names = list(
+            dict.fromkeys(single_dataset_param_names)
+        )
+        print("single_dataset_param_names")
+        print(self.problem._param_names)
+        self.par_names = self.problem.param_names
+
     def prepare(self, skip_setup=False):
         """
         Check that function and minimizer have been set.
@@ -317,11 +376,10 @@ class Controller:
         # so we'd need a workaround (i.e. to differentiate between
         # mantid_multifit and just multifit, maybe just a check
         # it's not a mantid problem)
-        if self.problem.multifit:
+        if self.problem.multifit and self.software != "mantid":
             out = []
 
             # TODO: This probably needs to be different
-            params = [params for _ in range(self._dataset_count)]
             for pi, xi, yi, ei in zip(params, x, y, e):
                 kwargs = {
                     k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
