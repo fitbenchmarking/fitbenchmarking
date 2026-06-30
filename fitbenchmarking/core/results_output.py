@@ -593,6 +593,8 @@ def open_browser(
     :param pp_dfs_all_prob_sets: For each problem set, data to create
                                  dash plots.
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
+    :param results: A list of every fitting result generated
+    :type results: list[FittingResult]
     """
     use_url = False
     # On Mac, need prefix for webbrowser
