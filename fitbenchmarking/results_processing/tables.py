@@ -121,7 +121,7 @@ def create_results_tables(
                         dropdown_style=css["dropdown"],
                         table_style=css["table"],
                         dropdown_js=js["dropdown"],
-                        mathjax=js["mathjax"],
+                        mathjax="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
                         table_js=js["table"],
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
