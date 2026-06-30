@@ -377,10 +377,8 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        # this would cause eval_chisq in MantidController to break,
-        # so we'd need a workaround (i.e. to differentiate between
-        # mantid_multifit and just multifit, maybe just a check
-        # it's not a mantid problem)
+        print('params passed to eval_chisq: ', str(params))
+
         if self.problem.multifit and self.software != "mantid":
             out = []
 

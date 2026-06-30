@@ -59,11 +59,25 @@ class BaseNLLSCostFunc(CostFunc):
     def eval_r(self, params, **kwargs):
         if self.problem.multifit:
             r = []
-            dataset_count = len(kwargs.get("x", self.problem.data_x))
-            # print(dataset_count)
-            # print("params passed to eval_r")
-            # print(params)
-            # print(self.problem.param_names)
+
+            # when this is executed in eval_chisq, kwargs.get("x") is a list of 
+            # 141 numbers while self.problem.data_x is a list of two such lists.
+            # Also I'm not sure params here is right, where this gets called in 
+            # eval_chisq
+            dataset_count = len(kwargs.get("x", self.problem.data_x)) 
+            
+
+            print('dataset_count in eval_r: ', dataset_count)
+            # print('kwargs.get("x"): ', kwargs.get("x"))
+
+            print('Type of self.problem.data_x', type(self.problem.data_x))
+            print('Len of self.problem.data_x:', len(self.problem.data_x))
+            print('Type of self.problem.data_x[0]', type(self.problem.data_x[0]))
+            print('Size of self.problem.data_x[0]', self.problem.data_x[0].size)
+
+            print("params passed to eval_r")
+            print(params)
+
             param_dict = dict(zip(self.problem.param_names, params))
             for d in range(dataset_count):
                 single_dataset_params = []
@@ -84,6 +98,7 @@ class BaseNLLSCostFunc(CostFunc):
         else:
             r = self.eval_r_single_dataset(params, **kwargs)
 
+        print('Finished eval_r')
         return r
 
     def eval_cost(self, params, **kwargs):
