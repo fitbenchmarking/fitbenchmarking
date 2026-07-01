@@ -266,6 +266,9 @@ class Controller:
         set problem._param_names to match the new parameter array.
         """
 
+        # save starting values for an individual dataset for fitting report
+        self._save_starting_values_per_dataset = self.starting_values
+
         params = self.starting_values[0]
         print(params)
         shared_params = self.problem.additional_info["ties"]
@@ -317,6 +320,11 @@ class Controller:
         print("single_dataset_param_names")
         print(self.problem._param_names)
         self.par_names = self.problem.param_names
+
+        print(list(self._save_starting_values_per_dataset[0].values()))
+        self.initial_params = list(
+            self._save_starting_values_per_dataset[0].values()
+        )
 
     def prepare(self, skip_setup=False):
         """
@@ -377,7 +385,7 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        print('params passed to eval_chisq: ', str(params))
+        print("params passed to eval_chisq: ", str(params))
 
         if self.problem.multifit and self.software != "mantid":
             out = []
