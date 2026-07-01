@@ -756,10 +756,10 @@ class CompareScatterView:
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
-        Given a list of items which should be grouped by either symbol or
-        colour, and the colours/ symbols which they should be grouped by
-        create a legend using dash html components, that includes the name
-        of each legend item and an icon representing each hape or colour.
+        Receives a list of items which should be grouped by either symbol or
+        colour and the colours/symbols they should be grouped by.
+        Creates a legend using dash html components, that includes the name
+        of each legend item and an icon representing each shape or colour.
 
         :param symbol_groups: The values which are used to group by symbol
         :type symbol_groups: list[str]
