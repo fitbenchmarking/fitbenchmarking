@@ -20,9 +20,15 @@ from fitbenchmarking.utils.misc import get_hover_text
 class CompareScatter:
     """
     The compare scatter plots every fitting result on a dash plot.
-    The legend can be clicked to focus and unfocus different items from the
-    plot, and each point can be clicked to navigate to the relevant fitting
-    result.
+    Note: The comparison scatter plot will only function while dash is running.
+
+    The comparison scatter has a two column legend. If only items from one
+    column are selected, then the union of all valid points are highlighted.
+    If items from both columns are selected, then the intersection of the two
+    columns will be highlighted.
+
+    Clicking on a point will take you to the fitting report page for that
+    point.
     """
 
     def __init__(self, app: Dash, options, results=[]):
