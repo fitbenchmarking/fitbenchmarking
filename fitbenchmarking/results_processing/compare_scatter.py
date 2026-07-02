@@ -885,8 +885,8 @@ class CompareScatterView:
 
         This is needed because plotly does not expose the shape objects for use
         in situations like these, which means that the only way we can display
-        a single with a specific symbol (such as you would see on the legend)
-        is to actually plot it on a graph.
+        a single point with a specific symbol (such as you would see on the
+        legend) is to actually plot it on a graph.
 
         :param symbol: Shape to give the point
         :type symbol: str
