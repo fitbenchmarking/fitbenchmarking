@@ -434,7 +434,7 @@ class CompareScatterView:
         f"{sanitized_minimizer_name}_toast"
 
         :param warning_messages_by_minimizer: key: minimizer, value: warning
-        message or None
+            message or None
         :type warning_messages_by_minimizer: dict[str,str|None]
 
         :return: A list containing the created dbc.Toast objects
@@ -473,7 +473,7 @@ class CompareScatterView:
         the minimizer name in the minimizer_names list as the value.
 
         :param error_flags: list of error flags in same order as minimizer
-        names
+            names
         :type error_flags: list[int]
         :param minimizer_names: list of minimizer names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
@@ -510,7 +510,7 @@ class CompareScatterView:
         the user what proportion of runs failed.
 
         :param error_flags: list of error flags in same order as minimizer
-        names
+            names
         :type error_flags: list[int]
         :param minimizer_names: list of minimizer names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
@@ -687,10 +687,10 @@ class CompareScatterView:
         :param plot: The plot to modify
         :type plot: go.Figure
         :param state: Dictionary of state of each problem, sorted by minimizer
-        , problem
+            , problem
         :type state: dict[str,dict[str,bool]]
         :param group: The group of points to set visibility for, either "all"
-        or "none", all other values have no effect
+            or "none", all other values have no effect
         :type group: str
 
         :return: The modified plot
@@ -1023,7 +1023,7 @@ class CompareScatterDataModel:
         between runs.
 
         :param results: list of Fitting results to use as the basis for this
-        data model
+            data model
         :type results: list[FittingResult]
         """
         self.results = results
@@ -1052,7 +1052,7 @@ class CompareScatterDataModel:
         :param metric: The metric to get from every result in the model
         :type metric: str
         :param unique: Whether to return a list of only unique results or
-        allow the list to include duplicates
+            allow the list to include duplicates
         :type unique: bool
         :param func_kwargs: The arguments to send if the result is callable
         :type func_kwargs: dict
