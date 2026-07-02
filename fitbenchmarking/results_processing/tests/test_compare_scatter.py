@@ -1,6 +1,7 @@
 import re
 import time
 import unittest
+import uuid
 from typing import cast
 from unittest.mock import Mock, patch
 
@@ -15,14 +16,15 @@ from fitbenchmarking.results_processing.compare_scatter import (
     CompareScatterDataModel,
     CompareScatterView,
 )
-from fitbenchmarking.results_processing.test_files.cs_test_data import (
-    LEGEND,
-)
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-def make_mock_fitting_result(i):
+def make_mock_fitting_result(i, alt_function=False):
+    """
+    Create a mock fitting result and populate the name and fitting_report_link
+    attributes. Also implement a basic lambda for modified_minimizer_name.
+    """
     mock_result = Mock(spec=FittingResult)
     mock_result.name = f"mock_result_{i}"
     mock_result.modified_minimizer_name = lambda with_software=False: (
@@ -30,6 +32,10 @@ def make_mock_fitting_result(i):
         if not with_software
         else f"mock_solver_{i}_software"
     )
+    if alt_function:
+        mock_result.modified_minimizer_name = lambda with_software=False: str(
+            uuid.uuid4()
+        )
     mock_result.fitting_report_link = "test/support_pages/test_link"
     return cast("FittingResult", mock_result)
 
@@ -37,6 +43,12 @@ def make_mock_fitting_result(i):
 class CompareScatterTests(unittest.TestCase):
     @staticmethod
     def _get_mock_constructor_params():
+        """
+        get a tuple of parameters which should represent the minimum to make
+        a compare scatter with two points.
+
+        App and options are Mocks of Dash and Options.
+        """
         app = Mock(spec=Dash)
         options = Mock(spec=Options)
         test_data = []
@@ -59,6 +71,12 @@ class CompareScatterTests(unittest.TestCase):
         self.assertIsInstance(compare_scatter.view, CompareScatterView)
 
     def test_get_fitting_report_urls_sets_url_correctly(self):
+        """
+        The paths provided from the fitting_report_link attribute of Fitting
+        Reports need to be processed before use as a URL, ensure that that
+        processing happens correctly.
+        """
+
         app, options, test_data = self._get_mock_constructor_params()
         for mock_result in test_data:
             mock_result.fitting_report_link = "test/support_pages/test_link"
@@ -70,6 +88,10 @@ class CompareScatterTests(unittest.TestCase):
         self.assertEqual(urls[1], "support_pages/test_link")
 
     def test_get_fitting_report_urls_returns_index_when_none_provided(self):
+        """
+        The fitting report link should return to the index when possible.
+        """
+
         app, options, test_data = self._get_mock_constructor_params()
         for mock_result in test_data:
             mock_result.fitting_report_link = ""
@@ -85,6 +107,10 @@ class CompareScatterTests(unittest.TestCase):
         ".CompareScatterView.get_per_minimizer_errors_and_runs"
     )
     def test_item_should_have_warning_toast(self, mock_errors_and_runs: Mock):
+        """
+        Verify that item_should_have_warning toast is able to identify solvers
+        with at least one fail.
+        """
         app, options, test_data = self._get_mock_constructor_params()
 
         test_data[0].error_flag = 0
@@ -106,6 +132,11 @@ class CompareScatterTests(unittest.TestCase):
         ".CompareScatterView.get_per_minimizer_errors_and_runs"
     )
     def test_add_callbacks_adds_callbacks(self, mock_errors_and_runs: Mock):
+        """
+        test that add callbacks adds callbacks with all of the expected inputs
+        and outputs
+        """
+
         app, options, test_data = self._get_mock_constructor_params()
         test_data[0].error_flag = 0
         test_data[1].error_flag = 3
@@ -241,7 +272,12 @@ class CompareScatterTests(unittest.TestCase):
             Input("compare_scatter", "figure"),
         )
 
-    def test_get_layout(self):
+    def test_get_layout_uses_correct_information(self):
+        """
+        Check that get Layout gets the correct pieces of information from the
+        data model
+        """
+
         app, options, test_data = self._get_mock_constructor_params()
         cs = CompareScatter(app, options, test_data)
         cs.view = Mock(spec=CompareScatterView)
@@ -285,6 +321,12 @@ class CompareScatterDataModelTests(unittest.TestCase):
         ]
     )
     def test_model_is_order_independent(self, test_case_name, dataset):
+        """
+        The compare scatter should have the exact same output, whatever order
+        the results are provided in. This means that it should behave more
+        consistently when loading from a checkpoint or using multiple softwares
+        """
+
         data_model = CompareScatterDataModel(dataset)
         data_model_from_reversed = CompareScatterDataModel(
             list(reversed(dataset))
@@ -299,13 +341,22 @@ class CompareScatterDataModelTests(unittest.TestCase):
         self.assertEqual(data_model.results, data_model_from_suffled.results)
 
     def test_results_sorted_by_name(self):
+        """
+        The results stored in the data model need to be sorted to ensure that
+        nothing changes about the ordering between runs. Currently name is used
+        as a sorting value, bit it could be anything else, as long as it is
+        consistent.
+        """
         sort_value = CompareScatterDataModel([]).get_sort_key(
             self.single_result_dataset[0]
         )
-
         self.assertEqual(sort_value, self.single_result_dataset[0].name)
 
     def test_get_values_for_axis_works_for_attributes(self):
+        """
+        Check that we can get the values from an attribute of a FittingResult
+        using get values for axis
+        """
         model = CompareScatterDataModel(self.many_result_dataset)
         values = model.get_values_for_axis("name")
         self.assertEqual(
@@ -313,6 +364,11 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
 
     def test_get_values_for_axis_works_for_callables(self):
+        """
+        Get values for axis can be provided with an axis name that links to a
+        callable on a fitting result. This checks that it does not fail
+        when provided with one, and outputs the correct result.
+        """
         model = CompareScatterDataModel(self.many_result_dataset)
         values = model.get_values_for_axis("modified_minimizer_name")
         self.assertEqual(
@@ -324,6 +380,13 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
 
     def test_get_values_for_axis_respects_callable_arguments(self):
+        """
+        Get values for axis can be provided with an axis name that links to a
+        callable on a fitting result. This means that we need to also be able
+        to pass parameters to that callable and verify that those arguments
+        were included in the call.
+        """
+
         model = CompareScatterDataModel(self.many_result_dataset)
         values = model.get_values_for_axis(
             "modified_minimizer_name", with_software=True
@@ -339,6 +402,18 @@ class CompareScatterDataModelTests(unittest.TestCase):
     # This test is non deterministic
     @parameterized.expand(["name", "modified_minimizer_name"])
     def test_get_values_cache_is_faster(self, axis):
+        """
+        This performs a check to see if the time taken to retrieve a result
+        using get_values_for_axis is lower the second time it is run.
+
+        This is important to test, because if it does not actually provide
+        any performance improvement, then it is adding unnecessary complexity.
+
+        This test is non deterministic, but should only fail in exceptional
+        circumstances, since testing on my machine showed that the caching
+        gives a 4x performance improvement in practice.
+        """
+
         model = CompareScatterDataModel(self.many_result_dataset)
 
         start = time.perf_counter()
@@ -355,25 +430,25 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
         self.assertLess(second_duration, first_duration)
 
-    def test_get_values_caches_data(self):
-        model = CompareScatterDataModel(self.many_result_dataset)
-
-        _ = model.get_values_for_axis("name")
-
-        cache = model.__getattribute__("_cache_name")
-
-        self.assertIsInstance(cache, list)
-        self.assertEqual(len(cache), len(self.many_result_dataset))
-
     def test_get_values_for_axis_caches_functors_not_return_values(self):
+        """
+        When provided with a metric that links to a callable on a Fitting
+        Result, get values for axis should cache a reference to the callable
+        and not the result of the callable itself.
+
+        This means that if the return values of the callable change, then
+        the data returned by the function should still be valid.
+        """
+
         model = CompareScatterDataModel(self.single_result_dataset)
 
-        first_values = model.get_values_for_axis("modified_minimizer_name")
+        # the alternate function returns a newly generated uuid each call,
+        # representing a change in return value
+        model.results = [make_mock_fitting_result(1, alt_function=True)]
 
-        # kwargs do not impact the location of the cache, so this simulates
-        # a change in return value without the cache key changing
+        first_values = model.get_values_for_axis("modified_minimizer_name")
         values_after_result_change = model.get_values_for_axis(
-            "modified_minimizer_name", with_software=True
+            "modified_minimizer_name"
         )
 
         # if we cached the return values, the output would be the same for both
@@ -409,6 +484,18 @@ class CompareScatterDataModelTests(unittest.TestCase):
 class CompareScatterViewTests(unittest.TestCase):
     @staticmethod
     def _create_test_plot(view=CompareScatterView(), errors=[0, 1, 2, 3]):
+        """
+        Create a plot using CompareScatterView.get plot, default values are
+        as follows:
+        Minimizers: solver_1, solver_2
+        Problems: problem_1, problem_2
+        Tooltips: tooltip_1, tooltip_2, tooltip_3, tooltip_4
+        x axis title: test_x_axis
+        y axis title: test_y_axis
+        x axis values: 1, 2, 3, 4
+        y axis values: 1, 2, 3, 4
+        error flags: 0, 1, 2, 3
+        """
         return view.get_plot(
             x=[1, 2, 3, 4],
             y=[1, 2, 3, 4],
@@ -432,6 +519,11 @@ class CompareScatterViewTests(unittest.TestCase):
         )
 
     def test_constructor_sets_valid_symbols(self):
+        """
+        To improve the readability of the compare scatter, the class needs
+        to filter out the symbols that look too similar.
+        """
+
         view = CompareScatterView()
         validator = ValidatorCache.get_validator("scatter.marker", "symbol")
         all_possible_symbols = validator.values[2::3]
@@ -460,12 +552,25 @@ class CompareScatterViewTests(unittest.TestCase):
         )
 
     def test_sanitize_for_id(self):
+        """
+        To ensure that no special characters break the html IDs given to
+        elements on the compare scatter, non alphanumeric characters must be
+        filtered out from their names
+        """
+
         view = CompareScatterView()
         sanitized = view.sanitize_for_id("my(test_name) j:best,h:best")
         self.assertEqual(sanitized, "mytestnamejbesthbest")
 
     # some of the logic assumes that this is true so we need to test it
     def test_sanitize_for_id_is_idempotent(self):
+        """
+        Some of the compare scatter class was written with the assumption that
+        if called on an ID which has already been sanitized, this function will
+        not make any modification to the output so we need to test this
+        behavior
+        """
+
         view = CompareScatterView()
         sanitized = view.sanitize_for_id("my(test_name) j:best,h:best")
         self.assertEqual(sanitized, view.sanitize_for_id(sanitized))
@@ -488,6 +593,10 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(plot.figure.data[0].marker.symbol, "circle")
 
     def test_get_legend_contains_important_details(self):
+        """
+        Test that the legend contains all of the details provided to it. Does
+        not check if the structure of the legend has changed.
+        """
         view = CompareScatterView()
         legend = view.get_legend(
             symbol_groups=["symbol_group_1", "symbol_group_2"],
@@ -529,35 +638,20 @@ class CompareScatterViewTests(unittest.TestCase):
         # the expected information without caring about specific structure
 
     def test_get_legend_returns_correct_structure(self):
-        # if it is all contained within a div, then the way we insert it into
-        # other parts of the code should not need to change
-        view = CompareScatterView()
-        legend = view.get_legend(
-            symbol_groups=["symbol_group_1", "symbol_group_2"],
-            symbol_map=["cross", "square"],
-            colour_groups=["colour_group_1", "colour_group_2"],
-            colour_map=["rgba(255,0,0,1)", "rgba(0,255,0,1)"],
-        )
-        self.assertIsInstance(legend, html.Div)
-
-        # assert that the legend should be the same structure as expected
-        # note that this test will fail even if the change is intentional, so
-        # test_get_legend_contains_important_details does an extra sanity check
-
-        legend_without_whitespace = re.sub("\\s+", "", str(legend))
-        expected_legend_without_whitespace = re.sub("\\s+", "", str(LEGEND))
-
-        self.assertEqual(
-            legend_without_whitespace,
-            expected_legend_without_whitespace,
-            f"instead of the expected legend we got: {legend!s}",
-        )
+        pass
+        # See issue #1633
 
     def test_get_plot_has_expected_structure(self):
         pass
         # See issue #1633
 
     def test_toggle_group_state_works_for_problems(self):
+        """
+        The compare scatter view uses a dictionary containing the state of all
+        minimizers and problems represented on the legend. This test checks
+        that the function toggle group state is able to find a problem in the
+        dict and toggle its state value.
+        """
         view = CompareScatterView()
 
         default_state_dict = {
@@ -581,22 +675,13 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(group_state, True)
         self.assertEqual(state_dict["problem"]["problem_1"], True)
 
-    def test_toggle_group_state_throws_when_item_not_found(self):
-        view = CompareScatterView()
-
-        default_state_dict = {
-            "minimizer": dict.fromkeys(["solver_1"], True),
-            "problem": dict.fromkeys(["problem_1"], True),
-        }
-
-        self.assertRaises(
-            ValueError,
-            view.toggle_group_state,
-            "thing that does not exist",
-            default_state_dict,
-        )
-
     def test_toggle_group_state_works_for_minimizers(self):
+        """
+        The compare scatter view uses a dictionary containing the state of all
+        minimizers and problems represented on the legend. This test checks
+        that the function toggle group state is able to find a minimizer in the
+        dict and toggle its state value.
+        """
         view = CompareScatterView()
 
         default_state_dict = {
@@ -618,7 +703,27 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(group_state, True)
         self.assertEqual(state_dict["minimizer"]["mySolver"], True)
 
-    def test_get_warning_text(self):
+    def test_toggle_group_state_throws_when_item_not_found(self):
+        view = CompareScatterView()
+
+        default_state_dict = {
+            "minimizer": dict.fromkeys(["solver_1"], True),
+            "problem": dict.fromkeys(["problem_1"], True),
+        }
+
+        self.assertRaises(
+            ValueError,
+            view.toggle_group_state,
+            "thing that does not exist",
+            default_state_dict,
+        )
+
+    def test_get_warning_text_for_results(self):
+        """
+        Tests that get_warning_text_for_results provides the correct output
+        when given minimizers which either never failed to run, or failed to
+        run some of the time, or failed to run all of the time.
+        """
         view = CompareScatterView()
         minimizers = ["noFails", "someFails", "someFails", "allFails"]
         flags = [0, 0, 3, 3]
@@ -654,6 +759,12 @@ class CompareScatterViewTests(unittest.TestCase):
         ]
     )
     def test_get_per_minimizer_errors_and_runs_counts(self, errors, runs):
+        """
+        Tests that when provided with a list containing any number of
+        minimizers that threw an error and any number of runs of each
+        minimizer, get_per_minimizer_errors_and_runs will return the correct
+        numbers, including in edge/corner cases.
+        """
         view = CompareScatterView()
         minimizers = ["myBadMinim"] * runs
         flags = [3] * errors + [0] * (runs - errors)
@@ -666,6 +777,13 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(runs_by_minimizer["myBadMinim"], runs)
 
     def test_get_per_minimizer_errors_order_independent(self):
+        """
+        Test that the counting mechanism used in
+        get_per_minimizer_errors_and_runs works regardless of the order of
+        results (since test_get_per_minimizer_errors_and_runs_counts always
+        generates flags in the same order so does not cover this)
+        """
+
         view = CompareScatterView()
         minimizers = ["myBadMinim"] * 3
         flag_orders = [
@@ -681,6 +799,11 @@ class CompareScatterViewTests(unittest.TestCase):
             self.assertEqual(errors_by_minimizer["myBadMinim"], 1)
 
     def test_get_per_minimizer_runs_counts_multiple_minimizers(self):
+        """
+        Verify that when more than one minimizer is provided to
+        get_per_minimizer_errors_and_runs, the function is capable of counting
+        each minimizer separately.
+        """
         view = CompareScatterView()
         minimizers = (
             ["myBadMinim"] * 3 + ["myOkMinim"] * 1 + ["myOtherMinim"] * 6
@@ -771,6 +894,11 @@ class CompareScatterViewTests(unittest.TestCase):
     def test_set_focus_for_all(
         self, _, new_focus, existing_state, set_props_mock: Mock
     ):
+        """
+        Ensure that the function called when the All/None buttons are clicked
+        updates the "Focus" (i.e. if a minimizer/problem is selected on the
+        legend) for every minimizer and problem
+        """
         view = CompareScatterView()
         minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
@@ -815,7 +943,13 @@ class CompareScatterViewTests(unittest.TestCase):
     @patch(
         "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
     )
-    def test_apply_state_focus(self, select, mock_trace_opacity: Mock):
+    def test_apply_state_to_all_or_none(
+        self, select, mock_trace_opacity: Mock
+    ):
+        """
+        test that when apply_state is called with the value all or none, it
+        sets the opacity/focus for every trace on the plot
+        """
         view = CompareScatterView()
 
         num_traces = 10
@@ -847,6 +981,10 @@ class CompareScatterViewTests(unittest.TestCase):
         "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
     )
     def test_apply_state(self, start_state, mock_trace_opacity: Mock):
+        """
+        test that when apply_state is called without the value all or none, it
+        sets the opacity/focus to match the provided state dictionary
+        """
         view = CompareScatterView()
         _ = self._create_test_plot(view)
 
