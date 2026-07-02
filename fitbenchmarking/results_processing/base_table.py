@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from pandas.io.formats import style
 
-from fitbenchmarking.utils.misc import get_hover_text, get_js
+from fitbenchmarking.utils.misc import get_hover_text
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
