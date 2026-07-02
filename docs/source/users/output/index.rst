@@ -38,19 +38,6 @@ This can be set in the option file using the
 The :ref:`local_min` table is formatted differently, and doesn't use this
 convention.
 
-Comparison scatter
--------------------
-
-Below the table there is a comparison scatter plot.
-The comparison scatter plot will only function while dash is running.
-
-The comparison scatter has a two column legend. If only items from one column
-are selected, then the union of all valid points are highlighted. If items from
-both columns are selected, then the intersection of the two colums will be 
-highlighted.
-
-Clicking on a point will take you to the fitting report page for that point.
-
 Performance profile
 -------------------
 
