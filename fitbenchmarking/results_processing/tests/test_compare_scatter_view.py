@@ -433,10 +433,11 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
         minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
-        _ = self._create_test_plot(view)
 
+        plot = self._create_test_plot(view)
+        print(plot)
         state, all_button_style, none_button_style, _ = (
-            view.set_focus_for_all_items(new_focus, existing_state)
+            view.set_focus_for_all_items(plot, new_focus, existing_state)
         )
 
         expected_state = {

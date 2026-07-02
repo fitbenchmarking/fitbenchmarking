@@ -19,8 +19,10 @@ from fitbenchmarking.utils.misc import get_hover_text
 
 class CompareScatter:
     """
-    The main interface for the compare scatter, also acts as the MVC controller
-    for the compare scatter.
+    The compare scatter plots every fitting result on a dash plot.
+    The legend can be clicked to focus and unfocus different items from the
+    plot, and each point can be clicked to navigate to the relevant fitting
+    result.
     """
 
     def __init__(self, app: Dash, options, results=[]):
@@ -56,7 +58,9 @@ class CompareScatter:
         else:
             return False
 
-    def add_callbacks(self, app: Dash, legend_items: list[str]):
+    def add_callbacks(
+        self, plot: html.Div, app: Dash, legend_items: list[str]
+    ):
         """
         Given a dash app and a list of legend items, add a callback for each
          ID to allow it to set the focus of the appropriate traces.
@@ -149,8 +153,10 @@ class CompareScatter:
             State("legend-status", "data"),
             prevent_initial_call=True,
         )(
-            lambda _, state: self.view.set_focus_for_all_items(False, state)
-        )  # TODO: pass in plot here so we have no side effects in set focus
+            lambda _, state: self.view.set_focus_for_all_items(
+                plot, False, state
+            )
+        )
 
         app.callback(
             Output("legend-status", "data", True),
@@ -160,7 +166,11 @@ class CompareScatter:
             Input("all_button", "n_clicks"),
             State("legend-status", "data"),
             prevent_initial_call=True,
-        )(lambda _, state: self.view.set_focus_for_all_items(True, state))
+        )(
+            lambda _, state: self.view.set_focus_for_all_items(
+                plot, True, state
+            )
+        )
 
         script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
         script_path += "/results_processing/scripts/compare_scatter"
@@ -227,7 +237,7 @@ class CompareScatter:
             self.model.get_values_for_axis("problem_tag", unique=True)
         )
 
-        self.app = self.add_callbacks(self.app, legend_items)
+        self.app = self.add_callbacks(plot, self.app, legend_items)
         return plot, self.app
 
 
@@ -532,7 +542,7 @@ class CompareScatterView:
                     )
         return warning_text_by_minimizer
 
-    def set_focus_for_all_items(self, focus, state):
+    def set_focus_for_all_items(self, plot_div, focus, state):
         """
         Given a focus value and a dictionary of the state of each legend item
         set the focus for every point on the plot, return the plot with the new
@@ -569,7 +579,9 @@ class CompareScatterView:
                 state[item_type][item] = focus
                 set_props(self.sanitize_for_id(item), {"style": style})
 
-        plot = self.apply_state(self.plot, state, "all" if focus else "none")
+        plot = self.apply_state(
+            plot_div.children[1].figure, state, "all" if focus else "none"
+        )
 
         all_button_style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -580,9 +592,6 @@ class CompareScatterView:
             else self.inactive_button_style
         )
         return state, all_button_style, none_button_style, plot
-
-    def set_focus_for_group(self, group, state, return_new_state=False):
-        pass
 
     @staticmethod
     def toggle_group_state(group, state):
