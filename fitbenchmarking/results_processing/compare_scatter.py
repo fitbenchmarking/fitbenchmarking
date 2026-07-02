@@ -236,12 +236,12 @@ class CompareScatter:
             report_pages=self.get_fitting_report_urls(),
         )
 
-        legend_items = self.model.get_values_for_axis(
-            "modified_minimizer_name", unique=True, with_software=True
-        )
-        legend_items.extend(
-            self.model.get_values_for_axis("problem_tag", unique=True)
-        )
+        legend_items = [
+            *self.model.get_values_for_axis(
+                "modified_minimizer_name", unique=True, with_software=True
+            ),
+            *self.model.get_values_for_axis("problem_tag", unique=True),
+        ]
 
         self.app = self.add_callbacks(plot, self.app, legend_items)
         return plot, self.app
