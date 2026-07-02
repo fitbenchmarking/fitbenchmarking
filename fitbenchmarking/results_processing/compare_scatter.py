@@ -857,9 +857,11 @@ class CompareScatterView:
             },
         )
 
-        legend.append(html.Div(problem_legend))
-        legend.append(html.Div(minimizer_legend))
-        legend.append(dcc.Store(id="legend-status", data=legend_status))
+        legend = [
+            html.Div(problem_legend),
+            html.Div(minimizer_legend),
+            dcc.Store(id="legend-status", data=legend_status),
+        ]
 
         complete_legend = html.Div(
             [
