@@ -794,7 +794,6 @@ class CompareScatterView:
         unique_symbol_groups = list(dict.fromkeys(symbol_groups))
         unique_colour_groups = list(dict.fromkeys(colour_groups))
 
-        legend = []
         legend_status = {"minimizer": {}, "problem": {}}
 
         problem_legend: list = [html.H3("Problem")]
