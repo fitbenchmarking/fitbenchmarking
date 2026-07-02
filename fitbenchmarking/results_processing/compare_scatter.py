@@ -148,7 +148,9 @@ class CompareScatter:
             Input("none_button", "n_clicks"),
             State("legend-status", "data"),
             prevent_initial_call=True,
-        )(lambda _, state: self.view.set_focus_for_all_items(False, state))
+        )(
+            lambda _, state: self.view.set_focus_for_all_items(False, state)
+        )  # TODO: pass in plot here so we have no side effects in set focus
 
         app.callback(
             Output("legend-status", "data", True),
@@ -268,8 +270,6 @@ class CompareScatterView:
         """<b>{0}</b></sup>"""
     )
 
-    problem_legend = {}
-
     active_button_style = {
         "display": "flex",
         "background-color": "white",
@@ -347,7 +347,7 @@ class CompareScatterView:
             for flag in errors
         ]
 
-        plot = px.scatter(
+        self.plot = px.scatter(
             x=x,
             y=y,
             color=minimizers,
@@ -360,12 +360,11 @@ class CompareScatterView:
             color_discrete_sequence=colour_groups,
         )
 
-        plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
-        plot.update_layout(margin={"l": 0, "r": 10, "t": 10, "b": 0})
-        plot.update_layout(hoverlabel={"bgcolor": "white"})
-        plot.update_layout(scattermode="group", scattergap=0.5)
-
-        plot.update_traces(
+        self.plot.update_layout(xaxis_title=x_title, yaxis_title=y_title)
+        self.plot.update_layout(margin={"l": 0, "r": 10, "t": 10, "b": 0})
+        self.plot.update_layout(hoverlabel={"bgcolor": "white"})
+        self.plot.update_layout(scattermode="group", scattergap=0.5)
+        self.plot.update_traces(
             hovertemplate="%{customdata[0]}",
             textposition="middle right",
             marker={
@@ -377,14 +376,13 @@ class CompareScatterView:
             },
             showlegend=False,
         )
-        self.plot = plot
+
         legend = self.get_legend(
             symbol_groups=problems,
             symbol_map=self.valid_symbols,
             colour_groups=minimizers,
             colour_map=colour_groups,
         )
-        self.legend = legend
 
         div_contents = [
             dcc.Store(id="page-load-trigger", data={"loaded": True}),
@@ -393,7 +391,7 @@ class CompareScatterView:
                 id="compare_scatter",
                 style={"flex": "1", "min-width": "66vw"},
             ),
-            self.legend,
+            legend,
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
             html.Div(id="dummy-height", style={"display": "none"}),
@@ -466,12 +464,13 @@ class CompareScatterView:
             run of that minimizer
         :type minimizer_names: list[str]
 
+
         :return errors: A dict where the key is the minimizer name, and the
         value is the number of times that minimizer had an error flag of 3
-        :rtype errors: list[str,int]
+        :rtype errors: dict[str,int]
         :return runs: A dict where the key is the minimizer name, and the
         value is the number of times that minimizer ran
-        :rtype runs:list[str,int]:
+        :rtype runs: dict[str,int]:
         """
 
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
@@ -564,7 +563,7 @@ class CompareScatterView:
         style = (
             self.active_button_style if focus else self.inactive_button_style
         )
-        plot = self.plot
+
         for item_type in state:
             for item in state[item_type]:
                 state[item_type][item] = focus
