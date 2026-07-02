@@ -269,7 +269,7 @@ class CompareScatterViewTests(unittest.TestCase):
             warning["someFails"],
             (
                 "Warning: this minimizer failed to run on "
-                "1/2 problems. Only succesful runs"
+                "1/2 problems. Only successful runs"
                 " have been plotted."
             ),
         )

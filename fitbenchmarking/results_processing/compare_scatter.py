@@ -453,13 +453,13 @@ class CompareScatterView:
         """
         Get two dictionaries, both using minimizer name as the key, the errors
         dictionary uses the number of runs with an error flag of 3 to calculate
-        the value, and the runs dictionary uses the number of occurences of the
-        minimizer name in the minimizer_names list as the value.
+        the value, and the runs dictionary uses the number of occurrences of
+        the minimizer name in the minimizer_names list as the value.
 
         :param error_flags: list of error flags in same order as minimizer
         names
         :type error_flags: list[int]
-        :param minimizer_names: list of minimser names, including duplicates (
+        :param minimizer_names: list of minimizer names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
             run of that minimizer
         :type minimizer_names: list[str]
@@ -476,7 +476,7 @@ class CompareScatterView:
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
         runs_by_minimizer = dict.fromkeys(minimizer_names, 0)
 
-        # create a dict continaing the n fails and runs of each minimizer
+        # create a dict containing the n fails and runs of each minimizer
         for i, minimizer in enumerate(minimizer_names):
             runs_by_minimizer[minimizer] += 1
             if error_flags[i] == 3:
@@ -496,7 +496,7 @@ class CompareScatterView:
         :param error_flags: list of error flags in same order as minimizer
         names
         :type error_flags: list[int]
-        :param minimizer_names: list of minimser names, including duplicates (
+        :param minimizer_names: list of minimizer names, including duplicates (
             e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
             run of that minimizer
         :type minimizer_names: list[str]
@@ -527,7 +527,7 @@ class CompareScatterView:
                 else:
                     warning_text_by_minimizer[minimizer] = (
                         f"Warning: this minimizer failed to run on "
-                        f"{n_failed}/{n_runs} problems. Only succesful runs"
+                        f"{n_failed}/{n_runs} problems. Only successful runs"
                         " have been plotted."
                     )
         return warning_text_by_minimizer
@@ -587,7 +587,7 @@ class CompareScatterView:
     @staticmethod
     def toggle_group_state(group, state):
         """
-        Given either a minimizer or a problem and a state dict in the fromat:
+        Given either a minimizer or a problem and a state dict in the format:
         state = {
             "minimizer": {"minimizer_name":True},
             "problem": {"problem_name":True},
@@ -674,8 +674,8 @@ class CompareScatterView:
         :param state: Dictionary of state of each problem, sorted by minimizer
         , problem
         :type state: dict[str,dict[str,bool]]
-        :param group: The group of points to set visiblity for, either "all" or
-        "none", all other values have no effect
+        :param group: The group of points to set visibility for, either "all"
+        or "none", all other values have no effect
         :type group: str
 
         :return: The modified plot
@@ -871,8 +871,8 @@ class CompareScatterView:
     def get_point(symbol="circle-x", colour="rgba(150,150,150,1)"):
         """
         Get a html div containing a single point, which is an example of the
-        provided input values. The point is non interactible, intended for
-        use in legends and embeded within other elements.
+        provided input values. The point is non intractable, intended for
+        use in legends and embedded within other elements.
 
         This is needed because plotly does not expose the shape objects for use
         in situations like these, which means that the only way we can display
@@ -939,12 +939,12 @@ class CompareScatterView:
     def get_all_valid_symbols(self):
         """
         Filter the valid list of symbols for a plotly plot to only those which
-        have been determined visually distinct enough to be peresented on the
+        have been determined visually distinct enough to be presented on the
         plot.
 
         Filters according to self.is_banned_symbol.
 
-        :return valid_symbols: list of visually distincy symbol names
+        :return valid_symbols: list of visually distinct symbol names
         :rtype: list[str]:
         """
 
@@ -980,7 +980,7 @@ class CompareScatterView:
     def get_symbol_sort_key(symbol: str):
         """
         Given a string, return an int priority. This function has been set up
-        so that solid colour symbols are favourd over open symbols. It can be
+        so that solid colour symbols are favoured over open symbols. It can be
         used to sort a list of symbols into an order based on which suffix
         they contain.
 
@@ -1043,8 +1043,8 @@ class CompareScatterDataModel:
         :type func_kwargs: dict
         """
 
-        # in the case of name and normalised values, a function call is
-        # required to retreive the data, so we need to check if we have been
+        # in the case of name and normalized values, a function call is
+        # required to retrieve the data, so we need to check if we have been
         # passed an attribute or method name
 
         cache = f"_unique_cache_{metric}" if unique else f"_cache_{metric}"

@@ -40,14 +40,14 @@ class CompareScatterDataModelTests(unittest.TestCase):
         data_model_from_reversed = CompareScatterDataModel(
             list(reversed(dataset))
         )
-        data_model_from_suffled = CompareScatterDataModel(
+        data_model_from_shuffled = CompareScatterDataModel(
             np.random.Generator(np.random.PCG64())
             .permutation(dataset)
             .tolist()
         )
 
         self.assertEqual(data_model.results, data_model_from_reversed.results)
-        self.assertEqual(data_model.results, data_model_from_suffled.results)
+        self.assertEqual(data_model.results, data_model_from_shuffled.results)
 
     def test_results_sorted_by_name(self):
         """
