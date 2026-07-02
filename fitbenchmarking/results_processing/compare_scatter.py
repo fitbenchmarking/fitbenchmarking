@@ -562,6 +562,9 @@ class CompareScatterView:
             "problem": {"problem_name":True},
         }
 
+        Here focus has been used to mean whether a minimizer is selected or not
+        on the legend
+
         :param focus: The new focus state for all items
         :type focus: bool
         :param state: Dictionary with the structure described above
