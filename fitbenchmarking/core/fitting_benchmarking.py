@@ -588,12 +588,8 @@ class Fit:
                     and controller.software != "mantid"
                 ):
                     controller.multifit_cleanup()
-                # TODO: does this function needs changing in the multifit case?
+                # TODO: does check_attributes need changing in multifit case?
                 controller.check_attributes()
-                print(
-                    "controller.final_params before eval_chisq",
-                    str(controller.final_params),
-                )
 
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
@@ -622,11 +618,6 @@ class Fit:
                     y=controller.data_y,
                     e=controller.data_e,
                 )
-                print(
-                    "controller.final_params after eval_chisq",
-                    str(controller.final_params),
-                )
-
             else:
                 conf = controller.eval_confidence()
                 accuracy = 1 / conf if conf != 0 else np.inf
