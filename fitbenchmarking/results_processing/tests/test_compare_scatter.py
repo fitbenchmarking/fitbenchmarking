@@ -285,15 +285,26 @@ class CompareScatterTests(unittest.TestCase):
 
         call_args = cs.model.get_values.call_args_list
 
-        self.assertEqual(call_args[0].args[0], "norm_runtime")
-        self.assertEqual(call_args[1].args[0], "norm_acc")
-        self.assertEqual(call_args[2].args[0], "error_flag")
-        self.assertEqual(call_args[3].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[3].kwargs["with_software"], True)
-        self.assertEqual(call_args[4].args[0], "problem_tag")
-        self.assertEqual(call_args[5].args[0], "fitting_report_link")
-        self.assertEqual(call_args[6].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[6].kwargs["with_software"], True)
-        self.assertEqual(call_args[6].kwargs["unique"], True)
-        self.assertEqual(call_args[7].args[0], "problem_tag")
+        self.assertEqual(call_args[0].args[0], "hover_text")
+        self.assertEqual(call_args[0].kwargs["style"], "html")
+        self.assertEqual(call_args[0].kwargs["include_title"], True)
+
+        self.assertEqual(call_args[1].args[0], "norm_runtime")
+
+        self.assertEqual(call_args[2].args[0], "norm_acc")
+
+        self.assertEqual(call_args[3].args[0], "error_flag")
+
+        self.assertEqual(call_args[4].args[0], "modified_minimizer_name")
+        self.assertEqual(call_args[4].kwargs["with_software"], True)
+
+        self.assertEqual(call_args[5].args[0], "problem_tag")
+
+        self.assertEqual(call_args[6].args[0], "fitting_report_link")
+
+        self.assertEqual(call_args[7].args[0], "modified_minimizer_name")
+        self.assertEqual(call_args[7].kwargs["with_software"], True)
         self.assertEqual(call_args[7].kwargs["unique"], True)
+
+        self.assertEqual(call_args[8].args[0], "problem_tag")
+        self.assertEqual(call_args[8].kwargs["unique"], True)
