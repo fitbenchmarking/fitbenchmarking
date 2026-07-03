@@ -48,15 +48,12 @@ class FitbenchmarkParser(Parser):
 
         self._parsed_func = self._parse_function()
 
-        # This should still be fine for determining if multifit
         self.fitting_problem.multifit = self._is_multifit()
         self.fitting_problem.multistart = self._is_multistart()
 
         self.fitting_problem.name = self._entries["name"]
         self.fitting_problem.description = self._entries["description"]
 
-        # I believe this should work in the multifit case for any software
-        # (not just mantid) and therefore return a list of data_x
         data_points = [self._get_data_points(p) for p in self._get_data_file()]
 
         self.fitting_problem.function = self._create_function()
@@ -187,8 +184,7 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        # TODO: this is how it's done in the mantid dev parser,
-        # so this wouldn't work if using mantid
+        # TODO: do we need a check to run this only if software not mantid?
         if self.fitting_problem.multifit:
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]

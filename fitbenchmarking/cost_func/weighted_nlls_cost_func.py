@@ -36,7 +36,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :return: The residuals for the data points at the given parameters
         :rtype: numpy array
         """
-        # print("params passed to eval_r: " + str(params))
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
@@ -64,7 +63,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :return: evaluated Jacobian of the residual at each x, y pair
         :rtype: a list of 1D numpy arrays
         """
-        # print("params passed to jac_res: " + str(params))
         e = kwargs.get("e", self.problem.data_e)
 
         # for multifit problems, e is a list of arrays, one for each dataset.
