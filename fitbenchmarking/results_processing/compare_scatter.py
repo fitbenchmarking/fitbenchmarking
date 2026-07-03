@@ -14,7 +14,6 @@ from plotly.validator_cache import ValidatorCache
 
 import fitbenchmarking
 from fitbenchmarking.utils.fitbm_result import FittingResult
-from fitbenchmarking.utils.misc import get_hover_text
 
 
 class CompareScatter:
@@ -222,12 +221,21 @@ class CompareScatter:
         default_x = "norm_runtime"
         default_y = "norm_acc"
 
+        # hover text needs to have the <extra/> tag to remove the grey box
+        # that would normally show the trace name
+        hover_text = [
+            text + "<extra><extra/>"
+            for text in self.model.get_values_for_axis(
+                "hover_text", include_title=True, style="html"
+            )
+        ]
+
         plot = self.view.get_plot(
             x=self.model.get_values_for_axis(default_x),
             x_title=default_x,
             y=self.model.get_values_for_axis(default_y),
             y_title=default_y,
-            tooltips=self.model.get_hover_text_for_results(),
+            tooltips=hover_text,
             errors=self.model.get_values_for_axis("error_flag"),
             minimizers=self.model.get_values_for_axis(
                 "modified_minimizer_name", with_software=True
@@ -1062,7 +1070,7 @@ class CompareScatterDataModel:
         :param unique: Whether to return a list of only unique results or
             allow the list to include duplicates
         :type unique: bool
-        :param func_kwargs: The arguments to send if the result is callable
+        :param func_kwargs: The arguments to send if the metric is callable
         :type func_kwargs: dict
         """
 
@@ -1071,6 +1079,7 @@ class CompareScatterDataModel:
         # passed an attribute or method name
 
         cache = f"_unique_cache_{metric}" if unique else f"_cache_{metric}"
+
         cache_data = getattr(self, cache, None)
 
         if callable(getattr(self.results[0], metric)):
@@ -1101,22 +1110,3 @@ class CompareScatterDataModel:
             else:
                 values = cache_data
         return values
-
-    def get_hover_text_for_results(self):
-        """
-        Get the hover text to display above each result and add the required
-        formatting to display nicely on the plot.
-
-        :return: list of hover text
-        :rtype list[str]:
-        """
-
-        # call util, and prepend the metrics being plotted
-        text_array = [
-            [
-                get_hover_text(result, include_title=True, newline="<br>")
-                + "<extra></extra>"  # removes grey box with trace name
-            ]
-            for result in self.results
-        ]
-        return text_array
