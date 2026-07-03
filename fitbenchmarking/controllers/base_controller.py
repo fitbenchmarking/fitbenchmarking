@@ -602,7 +602,6 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-
         values = {
             "_flag": int,
             "final_params": np.ndarray,

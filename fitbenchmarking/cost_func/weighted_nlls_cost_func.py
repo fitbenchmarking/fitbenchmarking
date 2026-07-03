@@ -65,8 +65,8 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         """
         e = kwargs.get("e", self.problem.data_e)
 
-        # for multifit problems, e is a list of arrays, one for each dataset.
-        # We need to concatenate them into a single array.
+        # for multifit problems, e is a list of arrays, one for each
+        # dataset, so we need to concatenate them into a single array
         if isinstance(e, list):
             e = np.concatenate(e)
 
