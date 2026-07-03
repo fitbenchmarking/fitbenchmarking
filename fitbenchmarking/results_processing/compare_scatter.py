@@ -53,8 +53,8 @@ class CompareScatter:
         :rtype: bool
         """
         errors, _ = self.view.get_per_minimizer_errors_and_runs(
-            error_flags=self.model.get_values_for_axis("error_flag"),
-            minimizer_names=self.model.get_values_for_axis(
+            error_flags=self.model.get_values("error_flag"),
+            minimizer_names=self.model.get_values(
                 "modified_minimizer_name", with_software=True
             ),
         )
@@ -206,7 +206,7 @@ class CompareScatter:
             "support_pages/" + val.split("support_pages/", 1)[1]
             if val != ""
             else "index.html"
-            for val in self.model.get_values_for_axis("fitting_report_link")
+            for val in self.model.get_values("fitting_report_link")
         ]
 
     def get_layout(self):
@@ -225,30 +225,30 @@ class CompareScatter:
         # that would normally show the trace name
         hover_text = [
             text + "<extra><extra/>"
-            for text in self.model.get_values_for_axis(
+            for text in self.model.get_values(
                 "hover_text", include_title=True, style="html"
             )
         ]
 
         plot = self.view.get_plot(
-            x=self.model.get_values_for_axis(default_x),
+            x=self.model.get_values(default_x),
             x_title=default_x,
-            y=self.model.get_values_for_axis(default_y),
+            y=self.model.get_values(default_y),
             y_title=default_y,
             tooltips=hover_text,
-            errors=self.model.get_values_for_axis("error_flag"),
-            minimizers=self.model.get_values_for_axis(
+            errors=self.model.get_values("error_flag"),
+            minimizers=self.model.get_values(
                 "modified_minimizer_name", with_software=True
             ),
-            problems=self.model.get_values_for_axis("problem_tag"),
+            problems=self.model.get_values("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
         )
 
         legend_items = [
-            *self.model.get_values_for_axis(
+            *self.model.get_values(
                 "modified_minimizer_name", unique=True, with_software=True
             ),
-            *self.model.get_values_for_axis("problem_tag", unique=True),
+            *self.model.get_values("problem_tag", unique=True),
         ]
 
         self.app = self.add_callbacks(plot, self.app, legend_items)
@@ -1050,13 +1050,11 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
-    def get_values_for_axis(
-        self, metric: str, unique=False, **func_kwargs
-    ) -> list:
+    def get_values(self, attribute: str, unique=False, **func_kwargs) -> list:
         """
-        Given a string (metric), retrieve the value of that metric from each
-        fitting result. Works for attributes and callables (with args able to
-        be passed using func_kwargs).
+        Given the name of an attribute or method, retrieve the value of that
+        attribute/method from each fitting result. Arguments can be passed to
+        methods using func_kwargs.
 
         Note: this function caches the values provided to it, meaning that
         repeated calls do not cause significant slowdown. In the case of
@@ -1065,30 +1063,37 @@ class CompareScatterDataModel:
         the returned values are still correct.
 
 
-        :param metric: The metric to get from every result in the model
-        :type metric: str
+        :param attribute: The attribute/method to get from every result stored
+            in the data model
+        :type attribute: str
         :param unique: Whether to return a list of only unique results or
             allow the list to include duplicates
         :type unique: bool
         :param func_kwargs: The arguments to send if the metric is callable
         :type func_kwargs: dict
+
+        :return: List of values retrieved, presented in the order that the
+            items appear in the model
+        :rtype: list[any]
         """
 
         # in the case of name and normalized values, a function call is
         # required to retrieve the data, so we need to check if we have been
         # passed an attribute or method name
 
-        cache = f"_unique_cache_{metric}" if unique else f"_cache_{metric}"
+        cache = (
+            f"_unique_cache_{attribute}" if unique else f"_cache_{attribute}"
+        )
 
         cache_data = getattr(self, cache, None)
 
-        if callable(getattr(self.results[0], metric)):
+        if callable(getattr(self.results[0], attribute)):
             funcs = []
             # we cache the functions, not the data, as function output might
             # be expected to change
             if cache_data is None:
                 for result in self.results:
-                    func = getattr(result, metric)
+                    func = getattr(result, attribute)
                     funcs.append(func)
                 setattr(self, cache, funcs)
             else:
@@ -1099,11 +1104,13 @@ class CompareScatterDataModel:
         else:
             if func_kwargs:
                 raise TypeError(
-                    f"Attribute {metric} is not callable, but "
+                    f"Attribute {attribute} is not callable, but "
                     "kwargs were provided"
                 )
             if cache_data is None:
-                values = [getattr(result, metric) for result in self.results]
+                values = [
+                    getattr(result, attribute) for result in self.results
+                ]
                 if unique:
                     values = list(dict.fromkeys(values))
                 setattr(self, cache, values)
