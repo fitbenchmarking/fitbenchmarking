@@ -481,12 +481,13 @@ class CompareScatterView:
         :type minimizer_names: list[str]
 
 
-        :return errors: A dict where the key is the minimizer name, and the
-        value is the number of times that minimizer had an error flag of 3
-        :rtype errors: dict[str,int]
-        :return runs: A dict where the key is the minimizer name, and the
-        value is the number of times that minimizer ran
-        :rtype runs: dict[str,int]:
+        :return:
+            errors: A dict where the key is the minimizer name, and the \n
+            value is the number of times that minimizer had an error flag of 3
+            \n
+            runs: A dict where the key is the minimizer name, and the
+            value is the number of times that minimizer ran
+        :rtype runs: tuple[dict[str,int],dict[str,int]]:
         """
 
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
@@ -570,14 +571,17 @@ class CompareScatterView:
         :param state: Dictionary with the structure described above
         :type state: dict[str,dict[str,bool]]:
 
-        :return state: the updated state dictionary
-        :rtype state: dict[str,dict[str,bool]]
-        :return all_button_style: the updated style for the select all button
-        :rtype all_button_style: dict[str,any]
-        :return none_button_style: the updated style for the select all button
-        :rtype none_button_style: dict[str,any]
-        :return plot: the plot after the traces have been updated
-        :rtype plot: go.Figure
+        :return:
+            state: the updated state dictionary \n
+            all_button_style: the updated style for the select all button \n
+            none_button_style: the updated style for the select all button \n
+            plot: the plot after the traces have been updated \n
+        :rtype: tuple[
+            dict[str,dict[str,bool]],
+            dict[str,any],
+            dict[str,any],
+            go.Figure
+        ]
         """
         style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -619,10 +623,10 @@ class CompareScatterView:
         :param state: The state dictionary to query and modify
         :type state: dict
 
-        :return new_state: The state of the group after toggling
-        :rtype new_state: bool
-        :return new_state_dictionary: State, modified with the updated group
-        :rtype new_state_dictionary: dict
+        :return:
+            new_state: The state of the group after toggling \n
+            new_state_dictionary: State, modified with the updated group
+        :rtype: tuple[bool, dict]
         """
         if group in state["problem"]:
             group_state = not state["problem"][group]
@@ -648,10 +652,10 @@ class CompareScatterView:
         :param state: Dictionary with the structure described above
         :type state: dict[str,dict[str,bool]]
 
-        :return all_button_style: the updated style for the select all button
-        :rtype all_button_style: dict[str,any]
-        :return none_button_style: the updated style for the select all button
-        :rtype none_button_style: dict[str,any]
+        :return:
+            all_button_style: the updated style for the select all button\n
+            none_button_style: the updated style for the select all button
+        :rtype: tuple[dict[str,any],] dict[str,any]]
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
@@ -963,7 +967,7 @@ class CompareScatterView:
 
         Filters according to self.is_banned_symbol.
 
-        :return valid_symbols: list of visually distinct symbol names
+        :return: list of visually distinct symbol names
         :rtype: list[str]:
         """
 
@@ -1103,7 +1107,7 @@ class CompareScatterDataModel:
         Get the hover text to display above each result and add the required
         formatting to display nicely on the plot.
 
-        :return hover_text: list of hover text
+        :return: list of hover text
         :rtype list[str]:
         """
 
