@@ -146,7 +146,6 @@ class Controller:
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         self.cost_func: CostFunc = cost_func
-
         # Problem: The problem object from parsing
         self.problem = self.cost_func.problem
 
@@ -158,40 +157,31 @@ class Controller:
 
         # Initial Params: The starting values for params when fitting
         self.initial_params = None
-
         # Staring Valuess: The list of starting parameters
         self.starting_values = self.problem.starting_values
-
         # Parameter Bounds: List of tuples of lower and upper bounds
         # for each parameter
         # TODO: would this need updating at all for multifit?
         self.value_ranges = self.problem.value_ranges
-
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
-
         # Minimizer: The current minimizer to use
         self.minimizer = None
-
         # Software: Use a property to get the name of the software from the
         # class
         self._software = ""
 
         # dataset count > 1 if problem is multifit
-        # self.data_x would need to be a list if multifit
         self._dataset_count = (
             len(self.data_x) if isinstance(self.data_x, list) else 1
         )
 
         # Final Params: The final values for the params from the minimizer
-        # Is it fine to set these to None? Done differently in mantid minimizer
         self.final_params = (
             None if not self.problem.multifit else [None] * self._dataset_count
         )
 
         self.ties = None if not self.problem.multifit else self._get_ties_str()
-        # with open("boh.txt", "a+", encoding="utf-8") as f:
-        #     f.write(str(self.ties))
 
         # Flag: error handling flag
         self._flag = None
@@ -262,7 +252,7 @@ class Controller:
 
     def multifit_init(self):
         """
-        Construct parameter array for multifit problems. Also temporaily
+        Construct parameter array for multifit problems. Also temporarily
         set problem._param_names to match the new parameter array.
         """
 
@@ -309,7 +299,8 @@ class Controller:
         print(lists_of_final_params)
         self.final_params = lists_of_final_params
 
-        # remove all the d0, d1, ... and shared. prefixes from the parameter names
+        # remove all the d0, d1, ... and shared. prefixes 
+        # from the parameter names
         single_dataset_param_names = [
             self.problem.param_names[i].split(".")[1]
             for i in range(len(self.problem.param_names))
@@ -390,7 +381,6 @@ class Controller:
         if self.problem.multifit and self.software != "mantid":
             out = []
 
-            # TODO: This probably needs to be different
             for pi, xi, yi, ei in zip(params, x, y, e):
                 kwargs = {
                     k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
@@ -401,8 +391,6 @@ class Controller:
             kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
             out = self.cost_func.eval_cost(params=params, **kwargs)
 
-        # out would be a list in case of multifit, but we can handle this
-        # like we handle mantid multifit
         return out
 
     def eval_confidence(self):
@@ -412,7 +400,6 @@ class Controller:
         self.params_pdfs["scipy_pfit"] = None
         self.params_pdfs["scipy_perr"] = None
 
-        # TODO: needs updating, just looping over data_x ?
         try:
             popt, pcov = curve_fit(
                 self.problem.function,
@@ -621,9 +608,6 @@ class Controller:
         A helper function which checks all required attributes are set
         in software controllers
         """
-        # TODO: Need to figure out how to change this function,
-        # otherwise gives error in fitting_benchmarking
-        # Right now I've just commented this out in that file
 
         values = {
             "_flag": int,

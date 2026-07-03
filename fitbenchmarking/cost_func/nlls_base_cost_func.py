@@ -57,34 +57,19 @@ class BaseNLLSCostFunc(CostFunc):
         raise NotImplementedError
 
     def eval_r(self, params, **kwargs):
-
-        if self.problem.multifit :
+        if self.problem.multifit:
             r = []
 
-            # when this is executed in eval_chisq, kwargs.get("x") is a list of 
-            # 141 numbers while self.problem.data_x is a list of two such lists.
-            # I'm not sure this is the right way of doing this, runs but gets 
-            # unknown exception
-
             if kwargs.get("x") is not None:
-
                 if isinstance(kwargs.get("x")[0], list):
                     dataset_count = len(kwargs.get("x"))
                 else:
                     dataset_count = 1
-                    
+
             else:
-                dataset_count = len((self.problem.data_x)) 
-            
+                dataset_count = len(self.problem.data_x)
 
-            print('dataset_count in eval_r: ', dataset_count)
-            # print('kwargs.get("x"): ', kwargs.get("x"))
-
-            print('Type of self.problem.data_x', type(self.problem.data_x))
-            print('Len of self.problem.data_x:', len(self.problem.data_x))
-            print('Type of self.problem.data_x[0]', type(self.problem.data_x[0]))
-            print('Size of self.problem.data_x[0]', self.problem.data_x[0].size)
-
+            print("dataset_count in eval_r: ", dataset_count)
             print("params passed to eval_r")
             print(params)
 
@@ -92,7 +77,7 @@ class BaseNLLSCostFunc(CostFunc):
             for d in range(dataset_count):
                 single_dataset_params = []
                 for k, v in param_dict.items():
-                    if k.startswith(f"d{d}.") or k.startswith(f"shared."):
+                    if k.startswith(f"d{d}.") or k.startswith("shared."):
                         single_dataset_params.append(v)
 
                 kwargs["x"] = self.problem.data_x[d]
@@ -108,7 +93,6 @@ class BaseNLLSCostFunc(CostFunc):
         else:
             r = self.eval_r_single_dataset(params, **kwargs)
 
-        print('Finished eval_r')
         return r
 
     def eval_cost(self, params, **kwargs):

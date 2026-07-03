@@ -194,8 +194,8 @@ def _create_summary_page(
     n_params = results[0].get_n_parameters()
     list_params = n_params < 100
     print(
-        'results[0].fin_function_params in create_summary_page: ',
-        results[0].fin_function_params
+        "results[0].fin_function_params in create_summary_page: ",
+        results[0].fin_function_params,
     )
 
     with open(file_path, "w", encoding="utf-8") as fh:

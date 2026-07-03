@@ -83,8 +83,6 @@ class FittingResult:
             self.data_y = problem.data_y[dataset]
             self.data_e = problem.data_e[dataset]
             self.sorted_index = problem.sorted_index[dataset]
-            # controller.final_params needs to be a list of lists
-            # otherwise this returns a single param value rathen than a list
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
