@@ -184,9 +184,8 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        # TODO: needs running with mantid to check the second part
-        # of this if condition is needed here
-        if self.fitting_problem.multifit and self.software != "mantid":
+        # TODO: do we need to check that software not mantid here?
+        if self.fitting_problem.multifit:
             self.fitting_problem.data_x = [d["x"] for d in data_points]
             self.fitting_problem.data_y = [d["y"] for d in data_points]
             self.fitting_problem.data_e = [
