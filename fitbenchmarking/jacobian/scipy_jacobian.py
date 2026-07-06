@@ -69,6 +69,7 @@ class Scipy(Jacobian):
                 )
 
         def func_wrapper(params, **kwargs):
+            print("Len of params passed to eval_model  ", len(params))
             eval_model = self.problem.eval_model(params, **kwargs)
             return eval_model.ravel()
 

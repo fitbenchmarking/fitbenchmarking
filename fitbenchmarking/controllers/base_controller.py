@@ -300,7 +300,7 @@ class Controller:
         print(lists_of_final_params)
         self.final_params = lists_of_final_params
 
-        # remove all the d0, d1, ... and shared. prefixes 
+        # remove all the d0, d1, ... and shared. prefixes
         # from the parameter names
         single_dataset_param_names = [
             self.problem.param_names[i].split(".")[1]
@@ -379,7 +379,7 @@ class Controller:
         """
         print("params passed to eval_chisq: ", str(params))
 
-        # In the mantid multifit case, this is done within the  
+        # In the mantid multifit case, this is done within the
         # mantid controller
         if self.problem.multifit and self.software != "mantid":
             out = []
