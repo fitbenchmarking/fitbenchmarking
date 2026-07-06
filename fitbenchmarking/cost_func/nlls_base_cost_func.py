@@ -61,8 +61,15 @@ class BaseNLLSCostFunc(CostFunc):
             r = []
 
             if kwargs.get("x") is not None:
+
+                # Within the multifit case, kwargs.get("x") will appear
+                # in different forms, depending on the function that is 
+                # calling eval_r
                 if isinstance(kwargs.get("x")[0], list):
                     dataset_count = len(kwargs.get("x"))
+                
+                # kwargs.get("x") does not contain lists, then we 
+                # assume we are currently dealing with a single dataset
                 else:
                     dataset_count = 1
 

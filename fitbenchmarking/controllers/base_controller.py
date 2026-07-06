@@ -180,6 +180,7 @@ class Controller:
             None if not self.problem.multifit else [None] * self._dataset_count
         )
 
+        # Get ties in the multifit case
         self.ties = None if not self.problem.multifit else self._get_ties_str()
 
         # Flag: error handling flag
@@ -372,6 +373,8 @@ class Controller:
         """
         print("params passed to eval_chisq: ", str(params))
 
+        # In the mantid multifit case, this is done within the  
+        # mantid controller
         if self.problem.multifit and self.software != "mantid":
             out = []
 
