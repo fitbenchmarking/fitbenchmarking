@@ -173,7 +173,7 @@ class FittingResult:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
                 print("Running init of fitting_result ..")
-                self.r_x = cost_func.eval_r(
+                self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
