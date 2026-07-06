@@ -158,7 +158,25 @@ class FittingProblem:
 
         # Multifit case
         elif isinstance(x, list):
-            out = [self.function(xi, *params) for xi in x]
+            print("params passed to eval_model: ", str(params))
+
+            # Split params into list of lists
+            dataset_count = len(x)
+            param_dict = dict(zip(self.param_names, params))
+            lists_of_params = [[] for _ in range(dataset_count)]
+
+            for d in range(dataset_count):
+                for k, v in param_dict.items():
+                    if k.startswith(f"d{d}.") or k.startswith("shared."):
+                        lists_of_params[d].append(v)
+
+            print("list of params built in eval_model: ", str(lists_of_params))
+
+            # Call self.function on each xi (and params for that xi)
+            out = []
+            for i in range(len(x)):
+                out.append(self.function(x[i], *list(lists_of_params[i])))
+
             return np.concatenate(out)
 
         else:
