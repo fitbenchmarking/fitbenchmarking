@@ -30,7 +30,7 @@ from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.misc import get_css
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.write_files import write_file
 
@@ -494,7 +494,6 @@ def create_problem_level_index(
     :params config: Dictionary containing env config
     :type config: dict
     """
-    js = get_js(options, group_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
@@ -512,7 +511,7 @@ def create_problem_level_index(
             template.render(
                 css_style_sheet=css["main"],
                 custom_style=css["custom"],
-                mathjax=js["mathjax"],
+                mathjax="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
                 group_name=group_name,
                 table_type=names,
                 links=links,

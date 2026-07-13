@@ -18,8 +18,6 @@ import numpy as np
 import pandas as pd
 from pandas.io.formats import style
 
-from fitbenchmarking.utils.misc import get_js
-
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
     "rel": "Relative values are displayed in the table.",
@@ -643,8 +641,9 @@ class Table:
                         " a problem ``rel = abs / 1e-10``."
                     )
             descrip = descrip.replace(":ref:", "")
-            js = get_js(self.options, self.group_dir)
-            docsettings = {"math_output": "MathJax " + js["mathjax"]}
+            docsettings = {
+                "math_output": "MathJax https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
+            }
             description_page = docutils.core.publish_parts(
                 descrip, writer_name="html", settings_overrides=docsettings
             )

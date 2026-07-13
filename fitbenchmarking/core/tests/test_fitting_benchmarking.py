@@ -146,6 +146,62 @@ def set_up_controller(file, options):
     return controller
 
 
+class InitializeEmissionsTrackingTests(unittest.TestCase):
+    """
+    Tests that the Emissions Tracking object is set
+    up correctly when the Fit class is initialized
+    """
+
+    def test_no_emissions_tracking(self):
+        """
+        Check that _emissions_tracker is set to none when the energy_usage
+        table option is not selected.
+        """
+        options = Options(
+            additional_options={
+                "table_type": ["acc", "runtime", "compare", "local_min"],
+            }
+        )
+        cp = Checkpoint(options)
+
+        fit = Fit(options=options, data_dir="test", checkpointer=cp)
+        assert fit._emissions_tracker is None
+
+    @patch("fitbenchmarking.core.fitting_benchmarking.EmissionsTracker")
+    def test_emissions_tracking_initialized(self, emissions_mock):
+        """
+        Check that _emissions_tracker is set up when the energy_usage
+        table option is selected
+        """
+        options = Options()
+        cp = Checkpoint(options)
+
+        _ = Fit(options=options, data_dir="test", checkpointer=cp)
+        assert emissions_mock.call_count == 1
+
+    @patch("fitbenchmarking.core.fitting_benchmarking.EmissionsTracker")
+    @patch("fitbenchmarking.core.fitting_benchmarking.platform.system")
+    def test_emissions_tracking_log_output_on_mac(self, sys_mock, _):
+        """
+        Check that log message is output when initiating the _emissions_tracker
+        object on a mac
+        """
+        options = Options()
+        cp = Checkpoint(options)
+        sys_mock.return_value = "Darwin"
+
+        with self.assertLogs(LOGGER, level="INFO") as log:
+            _ = Fit(options=options, data_dir="test", checkpointer=cp)
+            self.assertTrue(
+                (
+                    "Please be aware that you may be prompted by "
+                    "CodeCarbon to provide a password to give sudo rights "
+                    "so that the powermetrics tool can be used."
+                )
+                in log.output[0]
+            )
+
+
 class PerformFitTests(unittest.TestCase):
     """
     Verifies the output of the _perform_fit method
@@ -295,6 +351,66 @@ class PerformFitTests(unittest.TestCase):
         fit = Fit(options=self.options, data_dir="test6", checkpointer=self.cp)
         _ = fit._perform_fit(controller)
         assert mock.call_count == 1
+
+    def test_perform_fit_emissions_tracker_started_and_stopped(self):
+        """
+        This test checks that emissions_tracker.start_task() and
+        emissions_tracker.stop_task() are both called once
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = "Nelder-Mead"
+        fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
+        tracker = fit._emissions_tracker
+
+        with (
+            patch.object(
+                tracker,
+                "start_task",
+                wraps=tracker.start_task,
+            ) as start_task_check,
+            patch.object(
+                tracker,
+                "stop_task",
+                wraps=tracker.stop_task,
+            ) as stop_task_check,
+        ):
+            fit._perform_fit(controller)
+
+            assert start_task_check.call_count == 1
+            assert stop_task_check.call_count == 1
+
+    @patch("fitbenchmarking.controllers.base_controller.Controller.execute")
+    def test_perform_fit_emissions_tracker_started_and_stopped_on_exception(
+        self, mock
+    ):
+        """
+        This test checks that emissions_tracker.start_task() and
+        emissions_tracker.stop_task() are both called once when an
+        exception is raised during the fit
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = "Nelder-Mead"
+        fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
+        tracker = fit._emissions_tracker
+
+        mock.side_effect = exceptions.FitBenchmarkException
+
+        with (
+            patch.object(
+                tracker,
+                "start_task",
+                wraps=tracker.start_task,
+            ) as start_task_check,
+            patch.object(
+                tracker,
+                "stop_task",
+                wraps=tracker.stop_task,
+            ) as stop_task_check,
+        ):
+            fit._perform_fit(controller)
+
+            assert start_task_check.call_count == 1
+            assert stop_task_check.call_count == 1
 
 
 class HessianTests(unittest.TestCase):
@@ -974,3 +1090,27 @@ class BenchmarkTests(unittest.TestCase):
         assert not unselected_minimizers
         assert mock_starting_values.call_count == 2
         assert mock_problem_files.call_count == 1
+
+    def test_emissions_tracker_stopped(self):
+        """
+        Verify that the emissions tracker is stopped only once
+        """
+        tracker = self.fit._emissions_tracker
+
+        with patch.object(tracker, "stop", wraps=tracker.stop) as stop_check:
+            self.fit.benchmark()
+            stop_check.assert_called_once()
+
+    @patch(f"{FITTING_DIR}.parse_problem_file")
+    def test_emissions_tracker_stopped_on_exception(
+        self, mock_parse_problem_file
+    ):
+        """
+        Verify that the emissions tracker still gets stopped when
+        an exception is raised
+        """
+        tracker = self.fit._emissions_tracker
+        mock_parse_problem_file.side_effect = exceptions.FitBenchmarkException
+        with patch.object(tracker, "stop", wraps=tracker.stop) as stop_check:
+            self.fit.benchmark()
+            stop_check.assert_called_once()
