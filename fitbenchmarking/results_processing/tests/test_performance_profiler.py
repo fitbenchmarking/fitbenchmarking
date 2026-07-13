@@ -3,6 +3,7 @@ Tests for the performance profiler file.
 """
 
 import inspect
+import json
 import os
 import re
 import unittest
@@ -19,7 +20,6 @@ import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
-from fitbenchmarking.results_processing.plots import Plot
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
@@ -299,22 +299,14 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test that create_plot_and_df returns the correct plot.
         """
-        output_plot_path = self.temp_result + "/pp_offline_plot.html"
         expected_plot_path = (
-            self.expected_results_dir + "/pp_offline_plot.html"
+            self.expected_results_dir + "/pp_offline_plot.json"
         )
+        with open(expected_plot_path) as f:
+            expected_figure = json.load(f)
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
-
-        Plot.write_html_with_link_plotlyjs(
-            fig=plot,
-            figures_dir="",
-            htmlfile=output_plot_path,
-            options=self.options,
-        )
-
-        diff = diff_between_htmls(expected_plot_path, output_plot_path)
-        self.assertListEqual([], diff)
+        self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_create_df_returns_correct_df(self):
         """
@@ -496,19 +488,11 @@ class DashPerfProfileTests(unittest.TestCase):
             x_axis_scale="Log x-axis", solvers=selected_solvers[:3]
         )
 
-        output_plot_path = self.temp_result + "/obtained_plot.html"
+        expected_plot_path = self.expected_results_dir + "/dash_plot.json"
+        with open(expected_plot_path) as f:
+            expected_figure = json.load(f)
 
-        Plot.write_html_with_link_plotlyjs(
-            fig=output_fig,
-            figures_dir="",
-            htmlfile=output_plot_path,
-            options=self.options,
-        )
-
-        expected_plot_path = self.expected_results_dir + "/dash_plot.html"
-
-        diff = diff_between_htmls(expected_plot_path, output_plot_path)
-        self.assertListEqual([], diff)
+        self.assertEqual(output_fig.to_dict(), expected_figure)
 
     def test_prepare_data(self):
         """
