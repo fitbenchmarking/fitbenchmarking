@@ -92,6 +92,7 @@ omit = [
     '*/horace_parser.py',
     '*/sscanss_parser.py',
     '*/matlab_engine.py',
+    '*/SASStudio_functions.py',
 ]
 
 [tool.hatch.build]
