@@ -1,12 +1,18 @@
+"""
+SASStudio functions to load and call SASfit plugins from Python.
+
+Copyright (C) 2026 The Science and Technology Facilities Council (STFC)
+Author: Jase Tennyson Taylor (STFC)
+"""
+
 import ctypes
 from os import environ, path, walk
-import numpy as np
+import platform
 
 SASLIB_PATH = environ["SASFIT_LOCATION"]
 PLUGIN_PATH = path.join(SASLIB_PATH, "plugins")
 
 MAXPAR = 50  # from sasfit_constants.h
-
 
 # "param" structure from sasfit_function.h
 class sasfit_plugin_parameters_types(ctypes.Structure):
@@ -91,18 +97,11 @@ class Plugin:
 
         self.function_signatures = {}
 
-        # TODO:
-        # Search through all DLLs and python files for a matching plugin name
-        # - some DLLs contain multiple (related) plugins in one file, hence 
-        #   the need to search through all DLLs
-        # - python plugins should be 1-plugin-per-file, with filename
-        #   matching the plugin name
-
         requested_function_name = None
 
         (base, extension) = path.splitext(requested_plugin_name)
-        # search for a C .dll filename
-        if (extension == ".so") and path.exists(
+        # search for a C .so, .dll, or .dylib filename
+        if (extension in [".so", ".dll",".dylib"]) and path.exists(
             path.join(PLUGIN_PATH, f"libsasfit_{requested_plugin_name}")
         ):
             self.plugin_file_path = path.join(
@@ -113,37 +112,25 @@ class Plugin:
                  " found; loading..."
             )
             plugin_language = "c"
-        # search for a python .py filename
-        elif (extension == ".py") and path.exists(
-            path.join(PLUGIN_PATH, f"libsasfit_{requested_plugin_name}")
-        ):
-            print(
-                f"...plugin file saslib_{requested_plugin_name}"
-                 " found; loading..."
-            )
-            plugin_language = "python"
         elif extension == "":
-            # search for a C .dll filename
+            if platform.system() == "Windows":
+                extension = ".dll"
+            elif platform.system() == "Linux":
+                extension = ".so"
+            elif platform.system() == "Darwin":
+                extension = ".dylib"
+        
             if path.exists(
-                path.join(PLUGIN_PATH, f"libsasfit_{requested_plugin_name}.so")
+                path.join(PLUGIN_PATH, f"libsasfit_{requested_plugin_name}{extension}")
             ):
                 self.plugin_file_path = path.join(
-                    PLUGIN_PATH, f"libsasfit_{requested_plugin_name}.so"
+                    PLUGIN_PATH, f"libsasfit_{requested_plugin_name}{extension}"
                 )
                 print(
-                    f"...plugin file libsasfit_{requested_plugin_name}.so"
+                    f"...plugin file libsasfit_{requested_plugin_name}{extension}"
                      " found; loading..."
                 )
                 plugin_language = "c"
-            # search for a python .py filename
-            elif path.exists(
-                path.join(PLUGIN_PATH, f"saslib_{requested_plugin_name}.py")
-            ):
-                print(
-                    f"...plugin file saslib_{requested_plugin_name}.py"
-                     " found; loading..."
-                )
-                plugin_language = "python"
             # search through all C headers in case this plugin has been
             # implemented alongside lots of others inside a different
             # single dll, e.g. with azimuthal.dll
@@ -177,7 +164,7 @@ class Plugin:
                                         ):
                                             self.plugin_file_path = path.join(
                                                 PLUGIN_PATH,
-                                                f"lib{each_filename.split('.')[0]}.so",
+                                                f"lib{each_filename.split('.')[0]}{extension}",
                                             )
                                             requested_function_name = (
                                                 requested_plugin_name
@@ -199,9 +186,7 @@ class Plugin:
         if plugin_language == "c":
             # import dll
             if path.exists(self.plugin_file_path):
-                imported_library_object = safely_load_dll(
-                    self.plugin_file_path
-                )  # ctypes.CDLL(self.plugin_file_path)
+                imported_library_object = ctypes.CDLL(self.plugin_file_path)
             else:
                 print(f"...plugin file {self.plugin_file_path} NOT FOUND!")
 
@@ -284,237 +269,30 @@ class Plugin:
             ]
             self.function_signatures["volume"].restype = ctypes.c_double
 
-        elif plugin_language == "python":
-            command_string = f"""from plugins.saslib_{requested_plugin_name} import scattering_intensity
-            from plugins.saslib_{requested_plugin_name} import scattering_amplitude
-            from plugins.saslib_{requested_plugin_name} import volume"""
-            exec(command_string, globals())
-            self.function_signatures["scattering intensity"] = (
-                scattering_intensity
-            )
-            self.function_signatures["scattering amplitude"] = (
-                scattering_amplitude
-            )
-            self.function_signatures["volume"] = volume
-
-    #     def set_parameters(self, param_array_values):
-    #         #param_array_values = [10.0, 0.5, 1.0, 1e-4]
-    #         param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
-    #         sasfit_param_instance = sasfit_plugin_parameters_types()
-    #         sasfit_param_instance.p = param_array
-    #         params_ptr = ctypes.cast(ctypes.pointer(sasfit_param_instance),
-    #                       ctypes.POINTER(sasfit_parameters_types))
-    #
-    #     def set_single_parameter(self, parameter_name, parameter_value):
-    #         pass
-    #
-    #     def load_parameters_from_file(self, filename):
-    #         pass
-
-    def __str__(self):  # invoked by print()
-        return ""
-        return str(self.function_signatures, "\n", self.parameters_description)
-
-
 class Scattering_Contribution:
-    
-    def __init__(self, structure_factor_approach = "monodisperse"):
-        sasfit_library = ctypes.CDLL(path.join(SASLIB_PATH,"libsasfit.so"))
-        sasfit_integrate_ctm = sasfit_library.sasfit_integrate_ctm # (start, end, function, params)
-        sasfit_integrate_ctm.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.POINTER(sasfit_plugin_parameters_types)), ctypes.c_int, ctypes.c_double] # ? this line might not even be necessary, as per https://stackoverflow.com/questions/25014191/python-ctypes-function-pointer
-        sasfit_integrate_ctm.restype = ctypes.c_double
-        
-        set_sasfit_integrate_ctm_strategy = sasfit_library.sasfit_set_int_strategy
-        set_sasfit_integrate_ctm_strategy.argtypes = [ctypes.c_int]
+    def __init__(self, label=""):
+        self.label = label
+        self.form_factor_plugin_name = "None"
 
-
-        self.run_integrator = sasfit_integrate_ctm
-        self.structure_factor_plugin_name = 'None'
-        self.form_factor_plugin_name = 'None'
-        self.size_distribution_plugin_name = 'None'
-        self.structure_factor_approach = structure_factor_approach
-    
-    def set_structure_factor_parameters(self, param_array_values):
-        param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
-        sasfit_param_instance = sasfit_plugin_parameters_types()
-        sasfit_param_instance.p = param_array
-        self.structure_factor_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))       
-    
-    def load_structure_factor(self, plugin_name):
-        print(f"Loading structure factor: {plugin_name}...")
-        self.structure_factor_plugin_name = plugin_name
-        structure_factor_plugin = Plugin(plugin_name)
-        # TODO parse header and assign default param values now
-        default_param_values = []
-        self.set_structure_factor_parameters(default_param_values)
-        self.structure_factor_scattering_intensity = structure_factor_plugin.function_signatures['scattering intensity']
-    
     def set_form_factor_parameters(self, param_array_values):
         param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
         sasfit_param_instance = sasfit_plugin_parameters_types()
-        sasfit_param_instance.p = param_array  
-        self.form_factor_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))
-        
+        sasfit_param_instance.p = param_array
+        self.form_factor_params = ctypes.cast(
+            ctypes.pointer(sasfit_param_instance),
+            ctypes.POINTER(sasfit_plugin_parameters_types),
+        )
+
     def load_form_factor(self, plugin_name):
-        print(f"Loading form factor: {plugin_name}...")
+        # print(f"Loading form factor: {plugin_name}...")
         self.form_factor_plugin_name = plugin_name
         form_factor_plugin = Plugin(plugin_name)
-        # TODO parse header and assign default param values now
-        default_param_values = []
-        self.set_form_factor_parameters(default_param_values)
-        self.form_factor_scattering_intensity = form_factor_plugin.function_signatures['scattering intensity']
-        self.form_factor_scattering_amplitude = form_factor_plugin.function_signatures['scattering amplitude']
-        self.form_factor_volume = form_factor_plugin.function_signatures['volume']
-        
-    def set_size_distribution_parameters(self, param_array_values):
-        param_array = (ctypes.c_double * MAXPAR)(*param_array_values)
-        sasfit_param_instance = sasfit_plugin_parameters_types()
-        sasfit_param_instance.p = param_array  
-        self.size_distribution_params = ctypes.cast(ctypes.pointer(sasfit_param_instance), ctypes.POINTER(sasfit_plugin_parameters_types))
-    
-    def load_size_distribution(self, plugin_name):
-        print(f"Loading size distributions: {plugin_name}...")
-        self.size_distribution_plugin_name = plugin_name
-        size_distribution_plugin = Plugin(plugin_name)
-        # TODO parse header and assign default param values now
-        default_param_values = []
-        self.set_size_distribution_parameters(default_param_values)
-        self.size_distribution_weight_factor = size_distribution_plugin.function_signatures['scattering intensity']
-        self.size_distribution_extras = size_distribution_plugin.function_signatures['volume']
-    
-    def set_structure_factor_approach(self, structure_factor_approach):
-        if structure_factor_approach in {"monodisperse", "decoupling approximation", "local monodisperse"}:
-             self.structure_factor_approach = structure_factor_approach
-        else:
-             print(f"'{structure_factor_approach}' is an unrecognised approach for including structure factors; defaulting to 'monodisperse'.")
-             self.structure_factor_approach = "monodisperse"
-    
-    def compute_hankel_transformed_scattering_contribution(self, r):
-        #TODO return result = hankel( compute_scattering_contribution(self, q) )
-        pass
-    
-    def compute_scattering_contribution(self, q):
-        if self.form_factor_plugin_name == 'None':
-            print("no form factor specified!")
-            return None
-        else:
-            if self.size_distribution_plugin_name == 'None':
-                # no smearing using a size distribution
-                if self.structure_factor_plugin_name == 'None':
-                    # no structure factor either; just return the FF scattering intensity result
-                    return self.form_factor_scattering_intensity(q, self.form_factor_params)
-                else:
-                    # assume sort-of monodisperse approach without size distribution (sasfit manual 4.1.1)
-                    return self.form_factor_scattering_intensity(q, self.form_factor_params) * self.structure_factor_scattering_intensity(q, self.structure_factor_params)
-            
-            # TODO handle if SD = "Delta" then DONT integrate, just extract & apply scale factor and use specified value as if there were no SD at all
-            
-            else:
-                if self.structure_factor_plugin_name == 'None':
-                    # no structure factor; smear specified FF parameter using the size distribution and return the result (sasfit manual 5.1.1)
-                    return self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )
-                else:
-                    if self.structure_factor_approach == "monodisperse":
-                        # sasfit manual 4.1.1
-                        return self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) ) * self.structure_factor_scattering_intensity(q, self.structure_factor_params)
-                    elif self.structure_factor_approach == "decoupling approximation":
-                        # sasfit manual 4.1.2
-                        return (
-                            self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )
-                            + self.run_integrator( 0 , np.inf , self.weighted_form_factor(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_amplitude, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params]) )**2
-                                / self.run_integrator( 0 , np.inf , self.size_distribution_weight_factor(x, self.size_distribution_params) )
-                                * (self.structure_factor_scattering_intensity(q, self.structure_factor_params) - 1) # sasfit manual 4.1.2 equation 4.3
-                            )
-                    elif self.structure_factor_approach == "local monodisperse": # sasfit manual 4.1.3 — the only one that allows smearing a SF param using the SD
-                        return self.run_integrator( 0 , np.inf , self.monodisperse_subsystem(x, [q, index_of_form_factor_param_to_smear, self.form_factor_scattering_intensity, self.form_factor_volume, self.form_factor_params, self.size_distribution_weight_factor, self.size_distribution_params, self.structure_factor_scattering_intensity, self.structure_factor_params]) ) # sasfit manual 4.1.3 equation 4.5
-    
-    def weighted_form_factor(self, x, parameters_list):
-        # extract nested parameters
-        q = parameters_list[0]
-        index_of_form_factor_param_to_smear = parameters_list[1]
-        form_factor = parameters_list[2]
-        form_factor_params = parameters_list[3]
-        size_distribution_weight_factor = parameters_list[4]
-        size_distribution_params = parameters_list[5]
-        # set specified parameter of form factor to x
-        form_factor_params.p[index_of_form_factor_param_to_smear] = x
-        # compute the result for this q given that parameter set to this x
-        return size_distribution_weight_factor(x, size_distribution_params) * form_factor(q, form_factor_params)
-
-    def monodisperse_subsystem(self, x, parameters_list):
-        # extract nested parameters
-        q = parameters_list[0]
-        index_of_form_factor_param_to_smear = parameters_list[1]
-        form_factor_scattering_intensity = parameters_list[2]
-        form_factor_volume = parameters_list[3]
-        form_factor_params = parameters_list[4]
-        size_distribution_weight_factor = parameters_list[5]
-        size_distribution_params = parameters_list[6]
-        structure_factor_scattering_intensity = parameters_list[7]
-        # set specified parameter of form factor to x
-        form_factor_params.p[index_of_form_factor_param_to_smear] = x
-        # calculate volume-equivalent-sphere-radius and set it as the first (always!) parameter of structure factor
-        structure_factor_params.p[0] = np.cbrt( form_factor_volume(x, form_factor_params, index_of_form_factor_param_to_smear) * 3.0 / 4.0 / numpy.pi ) # sasfit manual 4.1.3 equation 4.6
-        # compute the result for this q given that parameter
-        return size_distribution_weight_factor(x, size_distribution_params) * form_factor_scattering_intensity(q, form_factor_params) * structure_factor_scattering_intensity(q, structure_factor_params)   
-
-    def plot(self):
-        pass
-    
-    def __str__(self):
-        
-        if self.structure_factor_plugin_name == 'None':
-            status_string = "Structure factor: none\n"
-        else:
-            status_string = f"Structure factor: {self.structure_factor_plugin_name}\n"
-            status_string = status_string + f"Inclusion approach: {self.structure_factor_approach}\n"
-       
-        if self.form_factor_plugin_name == 'None':
-            status_string = status_string + "Form factor: none\n"
-        else:
-            status_string = status_string + f"Form factor: {self.form_factor_plugin_name}\n"
-        
-        if self.size_distribution_plugin_name == 'None':
-            status_string = status_string + "Size distribution: none\n"
-        else:
-            status_string = status_string + f"Size distribution: {self.size_distribution_plugin_name}\n"
-            
-        return status_string
-
-
-def safely_load_dll(dll_path):
-    # # list dlls depended upon
-    # dependency_list = pefile.PE(dll_path).DIRECTORY_ENTRY_IMPORT
-    # # list dlls already in memory
-    # dlls_in_memory = psutil.Process( getpid() ).memory_maps()
-
-    # # for each dependency...
-    # for each_dependency in dependency_list:
-    #     # get its name as a string
-    #     this_dependency_name = each_dependency.dll.decode()
-    #     # presume it's not loaded yet
-    #     this_dependency_loaded = False
-    #     # for each dll already loaded...
-    #     for each_dll_in_memory in dlls_in_memory:
-    #         # get its name as a string
-    #         this_dll_in_memory_name = path.basename(each_dll_in_memory.path)
-    #         # compare this dependency with each dll already in memory
-    #         if this_dependency_name == this_dll_in_memory_name:
-    #             # found it!
-    #             this_dependency_loaded = True
-    #             # so stop searching for it
-    #             break
-    #     # ...if not, recursively load the missing dependency
-    #     if this_dependency_loaded == False:
-    #         sasfit_library_path = path.join(SASLIB_PATH, this_dependency_name)
-    #         plugin_library_path = path.join(PLUGIN_PATH, this_dependency_name)
-    #         # try looking in sasfitlib root folder first
-    #         if path.exists(sasfit_library_path):
-    #             this_dependency_handle = safely_load_dll(sasfit_library_path)
-    #         # next try looking in plugins folder
-    #         elif path.exists(plugin_library_path):
-    #             this_dependency_handle = safely_load_dll(plugin_library_path)
-
-    # reaching this point means any & all dependencies are already loaded into memory, so go ahead and load this
-    dll_handle = ctypes.CDLL(dll_path)
-    return dll_handle
+        self.form_factor_scattering_intensity = (
+            form_factor_plugin.function_signatures["scattering intensity"]
+        )
+        self.form_factor_scattering_amplitude = (
+            form_factor_plugin.function_signatures["scattering amplitude"]
+        )
+        self.form_factor_volume = form_factor_plugin.function_signatures[
+            "volume"
+        ]

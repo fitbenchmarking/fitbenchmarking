@@ -29,17 +29,12 @@ class SASfitParser(FitbenchmarkParser):
         :rtype: callable
         """
 
-        # check if any size distributions are specified
-        if "size_dists" in self._entries:
-            size_dists = self._entries["size_dists"].split(",")
-        else:
-            size_dists = ["None"] * len(self._parsed_func)
-
         functions_to_call = []
         all_param_names = []
         scattering_contributions = {}
         param_names = {}
-        for i, func in enumerate(self._parsed_func):
+        # loop over each SASfit plugin included in the problem definition file
+        for _, func in enumerate(self._parsed_func):
             func_name = func["name"].replace("__", " ")
             functions_to_call.append(func_name)
             sasfit_plugin = Plugin(func_name)
@@ -50,14 +45,6 @@ class SASfitParser(FitbenchmarkParser):
             all_param_names.extend(func_param_names)
             scattering_contributions[func_name] = Scattering_Contribution()
             scattering_contributions[func_name].load_form_factor(func_name)
-            if size_dists[i] != "None":
-                scattering_contributions[func_name].load_size_distribution(
-                    size_dists[i]
-                )
-            else:
-                scattering_contributions[
-                    func_name
-                ].size_distribution_plugin_name = "None"
 
         all_param_values = [
             {
@@ -68,6 +55,7 @@ class SASfitParser(FitbenchmarkParser):
             }
         ][0]
 
+        # set fixed parameters that shouldn't be fitted
         fixed_params = (
             self._parse_fixed_params()[0]
             if "fixed_params" in self._entries
@@ -97,9 +85,14 @@ class SASfitParser(FitbenchmarkParser):
                 for i in range(len(x)):
                     y_vals[i] += scattering_contributions[
                         f
-                    ].compute_scattering_contribution(ctypes.c_double(x[i]))
+                    ].form_factor_scattering_intensity(
+                        ctypes.c_double(x[i]),
+                        scattering_contributions[f].form_factor_params,
+                    )
             return y_vals
 
+        # wrap the function to update the parameter dictionary with
+        # the current values of the parameters being fitted
         def wrapped(x, *p):
             update_dict = dict(zip(starting_params.keys(), p))
             all_param_values.update(update_dict)
