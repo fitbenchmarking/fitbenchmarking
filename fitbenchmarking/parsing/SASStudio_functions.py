@@ -284,9 +284,13 @@ class Scattering_Contribution:
         )
 
     def load_form_factor(self, plugin_name):
-        # print(f"Loading form factor: {plugin_name}...")
         self.form_factor_plugin_name = plugin_name
         form_factor_plugin = Plugin(plugin_name)
+
+        print("plugin =", plugin_name)
+        print("signatures =", form_factor_plugin.function_signatures)
+        print("keys =", list(form_factor_plugin.function_signatures.keys()))
+
         self.form_factor_scattering_intensity = (
             form_factor_plugin.function_signatures["scattering intensity"]
         )
