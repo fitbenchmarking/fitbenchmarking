@@ -297,13 +297,14 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_plot_returns_correct_plot(self):
         """
-        Test that create_plot_and_df returns the correct plot.
+        Test create_plot returns the correct performance profile plot,
+        by comparing against the saved json file.
         """
         expected_plot_path = (
             self.expected_results_dir + "/pp_offline_plot.json"
         )
-        with open(expected_plot_path) as f:
-            expected_figure = json.load(f)
+        with open(expected_plot_path) as expected_plot_file:
+            expected_figure = json.load(expected_plot_file)
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
         self.assertEqual(plot.to_dict(), expected_figure)
@@ -480,19 +481,20 @@ class DashPerfProfileTests(unittest.TestCase):
 
     def test_create_graph_returns_expected_plot(self):
         """
-        Test create_graph returns the expected plot.
+        Test create_graph returns the expected performance profile plot,
+        by comparing against the saved json file.
         """
 
         selected_solvers = self.data.columns
-        output_fig = self.perf_profile.create_graph(
+        plot = self.perf_profile.create_graph(
             x_axis_scale="Log x-axis", solvers=selected_solvers[:3]
         )
 
         expected_plot_path = self.expected_results_dir + "/dash_plot.json"
-        with open(expected_plot_path) as f:
-            expected_figure = json.load(f)
+        with open(expected_plot_path) as expected_plot_file:
+            expected_figure = json.load(expected_plot_file)
 
-        self.assertEqual(output_fig.to_dict(), expected_figure)
+        self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_prepare_data(self):
         """
