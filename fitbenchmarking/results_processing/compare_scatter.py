@@ -64,7 +64,7 @@ class CompareScatter:
             return False
 
     def add_callbacks(
-        self, plot: html.Div, app: Dash, legend_items: list[str]
+        self, plot: go.Figure, app: Dash, legend_items: list[str]
     ):
         """
         Given a dash app and a list of legend items, add a callback for each
@@ -82,12 +82,6 @@ class CompareScatter:
         :return: The app with callbacks added
         :rtype: Dash
         """
-        if not isinstance(self.view.plot, go.Figure):
-            raise ValueError(
-                f"warning plot type is: {type(self.view.plot)} but go.Figure "
-                "was expected"
-            )
-
         for i, legend_item in enumerate(legend_items):
             button_id = self.view.sanitize_for_id(legend_item)
             button_io: list = [
@@ -158,8 +152,8 @@ class CompareScatter:
             State("legend-status", "data"),
             prevent_initial_call=True,
         )(
-            lambda _, state: self.view.set_focus_for_all_items(
-                plot, False, state
+            lambda _, state, plot=self.view.plot: (
+                self.view.set_focus_for_all_items(plot, False, state)
             )
         )
 
@@ -172,8 +166,8 @@ class CompareScatter:
             State("legend-status", "data"),
             prevent_initial_call=True,
         )(
-            lambda _, state: self.view.set_focus_for_all_items(
-                plot, True, state
+            lambda _, state, plot=self.view.plot: (
+                self.view.set_focus_for_all_items(plot, True, state)
             )
         )
 
@@ -251,7 +245,7 @@ class CompareScatter:
             *self.model.get_values("problem_tag", unique=True),
         ]
 
-        self.app = self.add_callbacks(plot, self.app, legend_items)
+        self.app = self.add_callbacks(self.view.plot, self.app, legend_items)
         return plot, self.app
 
 
@@ -557,7 +551,7 @@ class CompareScatterView:
                     )
         return warning_text_by_minimizer
 
-    def set_focus_for_all_items(self, plot_div, focus, state):
+    def set_focus_for_all_items(self, plot: go.Figure, focus, state):
         """
         Given a focus value and a dictionary of the state of each legend item
         set the focus for every point on the plot, return the plot with the new
@@ -600,9 +594,7 @@ class CompareScatterView:
                 state[item_type][item] = focus
                 set_props(self.sanitize_for_id(item), {"style": style})
 
-        plot = self.apply_state(
-            plot_div.children[1].figure, state, "all" if focus else "none"
-        )
+        plot = self.apply_state(plot, state, "all" if focus else "none")
 
         all_button_style = (
             self.active_button_style if focus else self.inactive_button_style

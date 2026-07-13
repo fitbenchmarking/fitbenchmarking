@@ -434,10 +434,15 @@ class CompareScatterViewTests(unittest.TestCase):
         minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
         problems = ["problem1", "problem2", "problem1", "problem2"]
 
-        plot = self._create_test_plot(view)
-        print(plot)
+        view.plot = Mock(spec=go.Figure)
+
+        # there should be one trace for each problem on each minimiser
+        view.plot.data = [go.Scatter()] * (len(minimizers) * len(problems))
+        for mock_trace in view.plot.data:
+            mock_trace.marker = {"opacity": 1}
+
         state, all_button_style, none_button_style, _ = (
-            view.set_focus_for_all_items(plot, new_focus, existing_state)
+            view.set_focus_for_all_items(view.plot, new_focus, existing_state)
         )
 
         expected_state = {
