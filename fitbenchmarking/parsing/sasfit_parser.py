@@ -30,11 +30,13 @@ class SASfitParser(FitbenchmarkParser):
         """
 
         functions_to_call = []
-        all_param_names = []
         scattering_contributions = {}
         param_names = {}
+
         # loop over each SASfit plugin included in the problem definition file
-        for _, func in enumerate(self._parsed_func):
+        for func in self._parsed_func:
+            # some SASfit functions have spaces in their names, but the
+            # problem definition file uses double underscores instead of spaces
             func_name = func["name"].replace("__", " ")
             functions_to_call.append(func_name)
             sasfit_plugin = Plugin(func_name)
@@ -42,61 +44,47 @@ class SASfitParser(FitbenchmarkParser):
                 sasfit_plugin.parameter_descriptions.keys()
             )
             param_names[func_name] = func_param_names
-            all_param_names.extend(func_param_names)
             scattering_contributions[func_name] = Scattering_Contribution()
             scattering_contributions[func_name].load_form_factor(func_name)
 
-        all_param_values = [
-            {
-                key: val
-                for f in self._parsed_func
-                for key, val in f.items()
-                if key not in self._PARAM_IGNORE_LIST
-            }
-        ][0]
-
-        # set fixed parameters that shouldn't be fitted
+        # parse fixed params to create dict of all params
+        # to be passed to the fit function
         fixed_params = (
             self._parse_fixed_params()[0]
             if "fixed_params" in self._entries
             else {}
         )
-        all_param_values |= fixed_params
-        is_fixed = [param in fixed_params for param in all_param_names]
-
-        all_params = [
-            (n, all_param_values[n], is_fixed[i])
-            for i, n in enumerate(all_param_names)
-        ]
-        starting_params = {
-            name: value for name, value, fixed in all_params if not fixed
-        }
-        self._starting_values = [starting_params]
+        params_to_fit_dict = self._get_starting_values()[0]
+        all_params_dict = params_to_fit_dict | fixed_params
 
         def fitFunction(x, *p):
             x = np.atleast_1d(x)
-            param_dict = dict(zip(all_param_values.keys(), p))
+            updated_params_dict = dict(zip(all_params_dict.keys(), p))
             y_vals = np.zeros(len(x))
-            for f in functions_to_call:
-                f_params = [param_dict[name] for name in param_names[f]]
-                scattering_contributions[f].set_form_factor_parameters(
+            for plugin in functions_to_call:
+                f_params = [
+                    updated_params_dict[name] for name in param_names[plugin]
+                ]
+                scattering_contributions[plugin].set_form_factor_parameters(
                     np.array(f_params)
                 )
-                for i in range(len(x)):
+                # SASfit functions are not vectorized,
+                # so we need to loop over the x values
+                for i, x_val in enumerate(x):
                     y_vals[i] += scattering_contributions[
-                        f
+                        plugin
                     ].form_factor_scattering_intensity(
-                        ctypes.c_double(x[i]),
-                        scattering_contributions[f].form_factor_params,
+                        ctypes.c_double(x_val),
+                        scattering_contributions[plugin].form_factor_params,
                     )
             return y_vals
 
         # wrap the function to update the parameter dictionary with
         # the current values of the parameters being fitted
         def wrapped(x, *p):
-            update_dict = dict(zip(starting_params.keys(), p))
-            all_param_values.update(update_dict)
-            return fitFunction(x, *all_param_values.values())
+            update_dict = dict(zip(params_to_fit_dict.keys(), p))
+            all_params_dict.update(update_dict)
+            return fitFunction(x, *all_params_dict.values())
 
         return wrapped
 
@@ -107,7 +95,7 @@ class SASfitParser(FitbenchmarkParser):
 
         Returns:
             list[dict]: a list of a dictionary containing keys
-            and fixed values of the selected fixed parameters"
+            and fixed values of the selected fixed parameters.
         """
         return self._parse_string("fixed_params")
 
@@ -118,4 +106,18 @@ class SASfitParser(FitbenchmarkParser):
         :return: The starting values for the problem.
         :rtype: list
         """
-        return self._starting_values
+        fixed_params = (
+            self._parse_fixed_params()[0]
+            if "fixed_params" in self._entries
+            else {}
+        )
+        # ensure that starting values only contains parameters that
+        # are not included in the fixed_params list
+        return [
+            {
+                k: v
+                for func in self._parsed_func
+                for k, v in func.items()
+                if k not in self._PARAM_IGNORE_LIST and k not in fixed_params
+            }
+        ]
