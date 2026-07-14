@@ -3,11 +3,22 @@ This file implements a parser for the SASfit data format.
 """
 
 import ctypes
+import os
 import typing
 
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
+from fitbenchmarking.utils.exceptions import ParsingError
+
+# check that SASFIT_LOCATION environment variable is set
+# before importing SASStudio functions
+if "SASFIT_LOCATION" not in os.environ:
+    raise ParsingError(
+        "SASFIT_LOCATION environment variable is not set."
+        " Please set it to the location of the SASfit installation."
+    )
+
 from fitbenchmarking.parsing.SASStudio_functions import (
     Plugin,
     Scattering_Contribution,
