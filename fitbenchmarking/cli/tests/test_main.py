@@ -242,7 +242,7 @@ class TestMain(TestCase):
     def test_cli_options_do_not_have_side_effects(self, _, option_mapping):
         """
         Test that when cli options are parsed, all of the other options are
-        returned with their default value preseved.
+        returned with their default value preserved.
         """
 
         # Get all of the default values
