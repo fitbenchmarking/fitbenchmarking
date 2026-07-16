@@ -171,6 +171,14 @@ class TestMain(TestCase):
 
     @dataclass
     class OptionMapping:
+        """
+        Dataclass to cleanly map expected input values to expected output
+        values to allow parameterized testing of every valid mapping.
+
+        This was chosen over a tuple as it allows us to reference attributes
+        by name as opposed to by index.
+        """
+
         cli_key: str
         cli_value: bool | str
         expected_output_key: str
