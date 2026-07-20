@@ -348,7 +348,10 @@ class Fit:
                 )
                 param_dict = controller.starting_values[0]
                 controller.par_names = list(param_dict.keys())
-                controller.problem._param_names = controller.par_names
+
+                # ruff complains about modifying private attributes,
+                # but this is needed here, so needs to be fixed
+                controller.problem._param_names = controller.par_names  # noqa: SLF001
 
             controller.minimizer = minimizer
             minimizer_check = True

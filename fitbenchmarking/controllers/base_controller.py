@@ -267,7 +267,10 @@ class Controller:
 
         self.starting_values = [param_dict]
         self.par_names = list(param_dict.keys())
-        self.problem._param_names = self.par_names
+
+        # ruff complains about modifying private attributes,
+        # but this is needed here, so needs to be fixed
+        self.problem._param_names = self.par_names  # noqa: SLF001
 
     def multifit_cleanup(self):
         """
@@ -282,7 +285,7 @@ class Controller:
 
         for d in range(self._dataset_count):
             for k, v in param_dict.items():
-                if k.startswith(f"d{d}.") or k.startswith("shared."):
+                if k.startswith((f"d{d}.", "shared.")):
                     lists_of_final_params[d].append(v)
 
         self.final_params = lists_of_final_params
@@ -293,7 +296,7 @@ class Controller:
             self.problem.param_names[i].split(".")[1]
             for i in range(len(self.problem.param_names))
         ]
-        self.problem._param_names = list(
+        self.problem._param_names = list(  # noqa: SLF001
             dict.fromkeys(single_dataset_param_names)
         )
 

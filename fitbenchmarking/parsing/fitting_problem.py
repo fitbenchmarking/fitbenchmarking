@@ -165,13 +165,14 @@ class FittingProblem:
 
             for d in range(dataset_count):
                 for k, v in param_dict.items():
-                    if k.startswith(f"d{d}.") or k.startswith("shared."):
+                    if k.startswith((f"d{d}.", "shared.")):
                         lists_of_params[d].append(v)
 
             # Call self.function on each xi (and params for that xi)
-            out = []
-            for i in range(len(x)):
-                out.append(self.function(x[i], *list(lists_of_params[i])))
+            out = [
+                self.function(xi, *params)
+                for xi, params in zip(x, lists_of_params)
+            ]
 
             return np.concatenate(out)
 

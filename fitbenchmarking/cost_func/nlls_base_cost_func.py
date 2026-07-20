@@ -57,7 +57,6 @@ class BaseNLLSCostFunc(CostFunc):
         raise NotImplementedError
 
     def eval_r(self, params, **kwargs):
-
         """
         Calculates residuals used in Least-Squares problems.
         Handles both the multifit case (fitting multiple datasets)
@@ -91,7 +90,7 @@ class BaseNLLSCostFunc(CostFunc):
             for d in range(dataset_count):
                 single_dataset_params = []
                 for k, v in param_dict.items():
-                    if k.startswith(f"d{d}.") or k.startswith("shared."):
+                    if k.startswith((f"d{d}.", "shared.")):
                         single_dataset_params.append(v)
 
                 kwargs["x"] = self.problem.data_x[d]
