@@ -707,8 +707,8 @@ class CompareScatterView:
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
             raise ValueError(
-                f"Apply state only supports group = {valid_group_types}or None"
-                ", '{group}' was provided"
+                f"Apply state only supports group = {valid_group_types} or None, "
+                f"'{group}' was provided"
             )
 
         select_all = group == "all"
