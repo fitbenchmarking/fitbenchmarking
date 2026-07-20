@@ -1,6 +1,7 @@
 import unittest
 import uuid
 from typing import cast
+from unittest import mock
 from unittest.mock import Mock, patch
 
 import plotly.graph_objects as go
@@ -15,7 +16,7 @@ from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
-def make_mock_fitting_result(i, alt_function=False):
+def make_mock_fitting_result(i, alternate_minimizer_name_output=False):
     """
     Create a mock fitting result and populate the name and fitting_report_link
     attributes. Also implement a basic lambda for modified_minimizer_name.
@@ -27,7 +28,10 @@ def make_mock_fitting_result(i, alt_function=False):
         if not with_software
         else f"mock_solver_{i}_software"
     )
-    if alt_function:
+
+    # alternate_minimizer_name_output is used to change the output of
+    # modified_minimizer_name
+    if alternate_minimizer_name_output:
         mock_result.modified_minimizer_name = lambda with_software=False: str(
             uuid.uuid4()
         )
@@ -282,28 +286,18 @@ class CompareScatterTests(unittest.TestCase):
         _, app_returned = cs.get_layout()
         self.assertEqual(app_returned, app)
 
-        call_args = cs.model.get_values_from_results.call_args_list
-
-        self.assertEqual(call_args[0].args[0], "hover_text")
-        self.assertEqual(call_args[0].kwargs["style"], "html")
-        self.assertEqual(call_args[0].kwargs["include_title"], True)
-
-        self.assertEqual(call_args[1].args[0], "norm_runtime")
-
-        self.assertEqual(call_args[2].args[0], "norm_acc")
-
-        self.assertEqual(call_args[3].args[0], "error_flag")
-
-        self.assertEqual(call_args[4].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[4].kwargs["with_software"], True)
-
-        self.assertEqual(call_args[5].args[0], "problem_tag")
-
-        self.assertEqual(call_args[6].args[0], "fitting_report_link")
-
-        self.assertEqual(call_args[7].args[0], "modified_minimizer_name")
-        self.assertEqual(call_args[7].kwargs["with_software"], True)
-        self.assertEqual(call_args[7].kwargs["unique"], True)
-
-        self.assertEqual(call_args[8].args[0], "problem_tag")
-        self.assertEqual(call_args[8].kwargs["unique"], True)
+        cs.model.get_values_from_results.assert_has_calls(
+            [
+                mock.call("hover_text", style="html", include_title=True),
+                mock.call("norm_runtime"),
+                mock.call("norm_acc"),
+                mock.call("error_flag"),
+                mock.call("modified_minimizer_name", with_software=True),
+                mock.call("problem_tag"),
+                mock.call("fitting_report_link"),
+                mock.call(
+                    "modified_minimizer_name", with_software=True, unique=True
+                ),
+                mock.call("problem_tag", unique=True),
+            ]
+        )
