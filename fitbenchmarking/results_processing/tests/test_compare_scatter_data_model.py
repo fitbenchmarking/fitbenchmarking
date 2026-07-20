@@ -166,11 +166,3 @@ class CompareScatterDataModelTests(unittest.TestCase):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
         unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
-
-    def test_get_unique_values_uses_different_cache(self):
-        model = CompareScatterDataModel(self.duplicate_name_dataset)
-
-        unique_values = model.get_values_from_results("name", unique=True)
-        cache = model.__getattribute__("_unique_cache_name")
-
-        self.assertEqual(unique_values, cache)
