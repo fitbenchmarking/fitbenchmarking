@@ -53,8 +53,8 @@ class CompareScatter:
         :rtype: bool
         """
         errors, _ = self.view.get_per_minimizer_errors_and_runs(
-            error_flags=self.model.get_values("error_flag"),
-            minimizer_names=self.model.get_values(
+            error_flags=self.model.get_values_from_results("error_flag"),
+            minimizer_names=self.model.get_values_from_results(
                 "modified_minimizer_name", with_software=True
             ),
         )
@@ -200,7 +200,9 @@ class CompareScatter:
             "support_pages/" + val.split("support_pages/", 1)[1]
             if val != ""
             else "index.html"
-            for val in self.model.get_values("fitting_report_link")
+            for val in self.model.get_values_from_results(
+                "fitting_report_link"
+            )
         ]
 
     def get_layout(self):
@@ -219,30 +221,30 @@ class CompareScatter:
         # that would normally show the trace name
         hover_text = [
             text + "<extra><extra/>"
-            for text in self.model.get_values(
+            for text in self.model.get_values_from_results(
                 "hover_text", include_title=True, style="html"
             )
         ]
 
         plot = self.view.get_plot(
-            x=self.model.get_values(default_x),
+            x=self.model.get_values_from_results(default_x),
             x_title=default_x,
-            y=self.model.get_values(default_y),
+            y=self.model.get_values_from_results(default_y),
             y_title=default_y,
             tooltips=hover_text,
-            errors=self.model.get_values("error_flag"),
-            minimizers=self.model.get_values(
+            errors=self.model.get_values_from_results("error_flag"),
+            minimizers=self.model.get_values_from_results(
                 "modified_minimizer_name", with_software=True
             ),
-            problems=self.model.get_values("problem_tag"),
+            problems=self.model.get_values_from_results("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
         )
 
         legend_items = [
-            *self.model.get_values(
+            *self.model.get_values_from_results(
                 "modified_minimizer_name", unique=True, with_software=True
             ),
-            *self.model.get_values("problem_tag", unique=True),
+            *self.model.get_values_from_results("problem_tag", unique=True),
         ]
 
         self.app = self.add_callbacks(self.view.plot, self.app, legend_items)
@@ -1042,7 +1044,9 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
-    def get_values(self, attribute: str, unique=False, **func_kwargs) -> list:
+    def get_values_from_results(
+        self, attribute: str, unique=False, **func_kwargs
+    ) -> list:
         """
         Given the name of an attribute or method, retrieve the value of that
         attribute/method from each fitting result. Arguments can be passed to

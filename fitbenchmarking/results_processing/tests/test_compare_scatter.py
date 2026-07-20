@@ -279,12 +279,12 @@ class CompareScatterTests(unittest.TestCase):
         cs.view = Mock(spec=CompareScatterView)
         cs.view.plot = go.Figure()
         cs.model = Mock(spec=CompareScatterDataModel)
-        cs.model.get_values.return_value = []
+        cs.model.get_values_from_results.return_value = []
 
         _, app_returned = cs.get_layout()
         self.assertEqual(app_returned, app)
 
-        call_args = cs.model.get_values.call_args_list
+        call_args = cs.model.get_values_from_results.call_args_list
 
         self.assertEqual(call_args[0].args[0], "hover_text")
         self.assertEqual(call_args[0].kwargs["style"], "html")

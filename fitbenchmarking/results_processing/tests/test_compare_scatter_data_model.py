@@ -60,25 +60,25 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
         self.assertEqual(sort_value, self.single_result_dataset[0].name)
 
-    def test_get_values_works_for_attributes(self):
+    def test_get_values_from_results_works_for_attributes(self):
         """
         Check that we can get the values from an attribute of a FittingResult
-        using get_values
+        using get_values_from_results
         """
         model = CompareScatterDataModel(self.many_result_dataset)
-        values = model.get_values("name")
+        values = model.get_values_from_results("name")
         self.assertEqual(
             values, [result.name for result in self.many_result_dataset]
         )
 
-    def test_get_values_works_for_callables(self):
+    def test_get_values_from_results_works_for_callables(self):
         """
         Get values for axis can be provided with an axis name that links to a
         callable on a fitting result. This checks that it does not fail
         when provided with one, and outputs the correct result.
         """
         model = CompareScatterDataModel(self.many_result_dataset)
-        values = model.get_values("modified_minimizer_name")
+        values = model.get_values_from_results("modified_minimizer_name")
         self.assertEqual(
             values,
             [
@@ -87,7 +87,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
             ],
         )
 
-    def test_get_values_respects_callable_arguments(self):
+    def test_get_values_from_results_respects_callable_arguments(self):
         """
         Get values for axis can be provided with an axis name that links to a
         callable on a fitting result. This means that we need to also be able
@@ -96,7 +96,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
         """
 
         model = CompareScatterDataModel(self.many_result_dataset)
-        values = model.get_values(
+        values = model.get_values_from_results(
             "modified_minimizer_name", with_software=True
         )
         self.assertEqual(
@@ -109,10 +109,10 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
     # This test is non deterministic
     @parameterized.expand(["name", "modified_minimizer_name"])
-    def test_get_values_cache_is_faster(self, axis):
+    def test_get_values_from_results_cache_is_faster(self, axis):
         """
         This performs a check to see if the time taken to retrieve a result
-        using get_values is lower the second time it is run.
+        using get_values_from_results is lower the second time it is run.
 
         This is important to test, because if it does not actually provide
         any performance improvement, then it is adding unnecessary complexity.
@@ -125,24 +125,24 @@ class CompareScatterDataModelTests(unittest.TestCase):
         model = CompareScatterDataModel(self.many_result_dataset)
 
         start = time.perf_counter()
-        _ = model.get_values(axis)
+        _ = model.get_values_from_results(axis)
         end = time.perf_counter()
 
         first_duration = end - start
 
         start = time.perf_counter()
-        _ = model.get_values(axis)
+        _ = model.get_values_from_results(axis)
         end = time.perf_counter()
 
         second_duration = end - start
 
         self.assertLess(second_duration, first_duration)
 
-    def test_get_values_caches_functors_not_return_values(self):
+    def test_get_values_from_results_caches_functors_not_return_values(self):
         """
         When provided with a metric that links to a callable on a Fitting
-        Result, get_values should cache a reference to the callable
-        and not the result of the callable itself.
+        Result, get_values_from_results should cache a reference to the
+        callable and not the result of the callable itself.
 
         This means that if the return values of the callable change, then
         the data returned by the function should still be valid.
@@ -154,8 +154,8 @@ class CompareScatterDataModelTests(unittest.TestCase):
         # representing a change in return value
         model.results = [make_mock_fitting_result(1, alt_function=True)]
 
-        first_values = model.get_values("modified_minimizer_name")
-        values_after_result_change = model.get_values(
+        first_values = model.get_values_from_results("modified_minimizer_name")
+        values_after_result_change = model.get_values_from_results(
             "modified_minimizer_name"
         )
 
@@ -164,13 +164,13 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
     def test_get_unique_values_gets_unique_values(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
-        unique_values = model.get_values("name", unique=True)
+        unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
 
     def test_get_unique_values_uses_different_cache(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
 
-        unique_values = model.get_values("name", unique=True)
+        unique_values = model.get_values_from_results("name", unique=True)
         cache = model.__getattribute__("_unique_cache_name")
 
         self.assertEqual(unique_values, cache)
