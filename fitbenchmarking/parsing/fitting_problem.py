@@ -98,7 +98,7 @@ class FittingProblem:
         self.additional_info = {}
 
         # Used to check if a problem is using multifit.
-        self.multifit = None
+        self.multifit = False
 
         # Used to check if a problem will be used down the line for
         # varying starting conditions analysis.
