@@ -73,8 +73,8 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
     def test_get_values_from_results_works_for_callables(self):
         """
-        Get values for axis can be provided with an axis name that links to a
-        callable on a fitting result. This checks that it does not fail
+        get_values_from_results can be provided with an axis name that links to
+        a callable on a fitting result. This checks that it does not fail
         when provided with one, and outputs the correct result.
         """
         model = CompareScatterDataModel(self.many_result_dataset)
@@ -89,10 +89,10 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
     def test_get_values_from_results_respects_callable_arguments(self):
         """
-        Get values for axis can be provided with an axis name that links to a
-        callable on a fitting result. This means that we need to also be able
-        to pass parameters to that callable and verify that those arguments
-        were included in the call.
+        get_values_from_results for axis can be provided with an axis name that
+        links to a callable on a fitting result. This means that we need to
+        also be able to pass parameters to that callable and verify that those
+        arguments were included in the call.
         """
 
         model = CompareScatterDataModel(self.many_result_dataset)
