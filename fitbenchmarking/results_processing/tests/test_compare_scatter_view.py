@@ -107,13 +107,19 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(sanitized, view.sanitize_for_id(sanitized))
 
     def test_get_point(self):
+        """
+        get_point is used to return the example points which are used for the
+        values in the legend. Since they are intended to just be demonstrators
+        for the colour and shape selected, they shouldn't be able to be
+        interacted with, as that could make the buttons act in unexpected ways.
+        """
+
         plot_div = CompareScatterView.get_point("circle", "rgba(0,255,0,1)")
         self.assertIsInstance(plot_div, html.Div)
         self.assertIsInstance(plot_div.children[0], dcc.Graph)
 
         plot = plot_div.children[0]
 
-        # check that the plot cannot be interacted with
         self.assertEqual(plot.config, {"staticPlot": True})
 
         # check that only one trace is added
