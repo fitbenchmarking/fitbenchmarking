@@ -303,7 +303,6 @@ class Fit:
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
-                LOGGER.info(controller.problem.multifit)
                 if (
                     controller.problem.multifit
                     and controller.software != "mantid"
@@ -578,8 +577,6 @@ class Fit:
             with self._grabbed_output:
                 controller.validate()
                 controller.prepare()
-                LOGGER.info("initial params")
-                LOGGER.info(controller.initial_params)
                 if tracker:
                     tracker.start_task()
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
