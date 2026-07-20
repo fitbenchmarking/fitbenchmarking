@@ -57,6 +57,18 @@ class BaseNLLSCostFunc(CostFunc):
         raise NotImplementedError
 
     def eval_r(self, params, **kwargs):
+
+        """
+        Calculates residuals used in Least-Squares problems.
+        Handles both the multifit case (fitting multiple datasets)
+        and other cases.
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+
+        :return: The residuals for the datapoints at the given parameters
+        :rtype: np.array
+        """
         if self.problem.multifit:
             r = []
 
