@@ -175,7 +175,6 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                print("Running init of fitting_result ..")
                 self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )

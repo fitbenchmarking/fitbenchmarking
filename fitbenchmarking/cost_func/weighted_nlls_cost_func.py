@@ -39,14 +39,12 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
         y = kwargs.get("y", self.problem.data_y)
         e = kwargs.get("e", self.problem.data_e)
-
         if len(x) != len(y) or len(x) != len(e):
             raise CostFuncError(
                 "The length of the x, y and e are not "
                 f"the same, len(x)={len(x)}, len(y)={len(y)}"
                 f" and len(e)={len(e)}"
             )
-
         result = (y - self.problem.eval_model(params=params, x=x)) / e
 
         return ravel(result)

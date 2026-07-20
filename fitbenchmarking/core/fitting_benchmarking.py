@@ -349,7 +349,6 @@ class Fit:
                 param_dict = controller.starting_values[0]
                 controller.par_names = list(param_dict.keys())
                 controller.problem._param_names = controller.par_names
-                print(controller.problem.param_names)
 
             controller.minimizer = minimizer
             minimizer_check = True
@@ -543,7 +542,6 @@ class Fit:
                         )
                         results.append(result)
                         self._checkpointer.add_result(result)
-
                 else:
                     result = fitbm_result.FittingResult(**result_args)
                     results.append(result)

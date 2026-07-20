@@ -363,8 +363,6 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        print("params passed to eval_chisq: ", str(params))
-
         # In the mantid multifit case, this is done within the
         # mantid controller
         if self.problem.multifit and self.software != "mantid":

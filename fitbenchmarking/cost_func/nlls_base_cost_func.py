@@ -75,10 +75,6 @@ class BaseNLLSCostFunc(CostFunc):
             else:
                 dataset_count = len(self.problem.data_x)
 
-            print("dataset_count in eval_r: ", dataset_count)
-            print("params passed to eval_r")
-            print(params)
-
             param_dict = dict(zip(self.problem.param_names, params))
             for d in range(dataset_count):
                 single_dataset_params = []
@@ -89,8 +85,7 @@ class BaseNLLSCostFunc(CostFunc):
                 kwargs["x"] = self.problem.data_x[d]
                 kwargs["y"] = self.problem.data_y[d]
                 kwargs["e"] = self.problem.data_e[d]
-                # print("single_dataset_params")
-                # print(single_dataset_params)
+
                 r_single = self.eval_r_single_dataset(
                     params=single_dataset_params, **kwargs
                 )
