@@ -255,7 +255,6 @@ class Controller:
         self._save_starting_values_per_dataset = self.starting_values
 
         params = self.starting_values[0]
-        print(params)
         shared_params = self.problem.additional_info["ties"]
         param_dict = {}
 
@@ -266,11 +265,9 @@ class Controller:
                 for i in range(self._dataset_count):
                     param_dict[f"d{i}.{k}"] = v
 
-        print([param_dict])
         self.starting_values = [param_dict]
         self.par_names = list(param_dict.keys())
         self.problem._param_names = self.par_names
-        print(self.problem.param_names)
 
     def multifit_cleanup(self):
         """
@@ -281,8 +278,6 @@ class Controller:
         # create a list of lists of final params for each dataset
         final_params = self.final_params
         param_dict = dict(zip(self.problem.param_names, final_params))
-        print("param dict")
-        print(param_dict)
         lists_of_final_params = [[] for _ in range(self._dataset_count)]
 
         for d in range(self._dataset_count):
@@ -290,8 +285,6 @@ class Controller:
                 if k.startswith(f"d{d}.") or k.startswith("shared."):
                     lists_of_final_params[d].append(v)
 
-        print("lists_of_final_params")
-        print(lists_of_final_params)
         self.final_params = lists_of_final_params
 
         # remove all the d0, d1, ... and shared. prefixes
@@ -303,8 +296,7 @@ class Controller:
         self.problem._param_names = list(
             dict.fromkeys(single_dataset_param_names)
         )
-        print("single_dataset_param_names")
-        print(self.problem._param_names)
+
         self.par_names = self.problem.param_names
 
         print(list(self._save_starting_values_per_dataset[0].values()))
