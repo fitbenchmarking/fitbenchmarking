@@ -48,8 +48,6 @@ class CompareScatterTests(unittest.TestCase):
         options = Mock(spec=Options)
         test_data = []
         for i in range(2):
-            # we need to set this since the model tries to access the name for
-            # sorting
             mock_result = make_mock_fitting_result(i)
             test_data.append(mock_result)
 
