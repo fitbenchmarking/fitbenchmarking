@@ -152,7 +152,9 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
         # the alternate function returns a newly generated uuid each call,
         # representing a change in return value
-        model.results = [make_mock_fitting_result(1, alt_function=True)]
+        model.results = [
+            make_mock_fitting_result(1, alternate_minimizer_name_output=True)
+        ]
 
         first_values = model.get_values_from_results("modified_minimizer_name")
         values_after_result_change = model.get_values_from_results(
