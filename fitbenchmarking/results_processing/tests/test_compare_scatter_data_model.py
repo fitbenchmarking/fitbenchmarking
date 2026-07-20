@@ -162,7 +162,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
         # if we cached the return values, the output would be the same for both
         self.assertNotEqual(first_values, values_after_result_change)
 
-    def test_get_unique_values_gets_unique_values(self):
+    def test_get_values_from_results_gets_unique_values_if_specified(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
         unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
