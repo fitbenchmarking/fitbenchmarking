@@ -84,9 +84,12 @@ class CompareScatterTests(unittest.TestCase):
         self.assertEqual(urls[0], "support_pages/test_link")
         self.assertEqual(urls[1], "support_pages/test_link")
 
-    def test_get_fitting_report_urls_returns_index_when_none_provided(self):
+    def test_get_fitting_report_urls_returns_index_page_when_none_provided(
+        self,
+    ):
         """
-        The fitting report link should return to the index when possible.
+        The fitting report should return to the index when no report link could
+        be found for the result
         """
 
         app, options, test_data = self._get_mock_constructor_params()
