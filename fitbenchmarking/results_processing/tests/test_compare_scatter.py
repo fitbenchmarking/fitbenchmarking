@@ -125,8 +125,6 @@ class CompareScatterTests(unittest.TestCase):
         self.assertFalse(cs.item_should_have_warning_toast("mock_solver_0"))
         self.assertTrue(cs.item_should_have_warning_toast("mock_solver_1"))
 
-    # TODO: split this into one per callback - should include the following:
-    # all button, none button, mock, testMinimiser, clickthrough link,
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
         ".CompareScatterView.get_per_minimizer_errors_and_runs"
