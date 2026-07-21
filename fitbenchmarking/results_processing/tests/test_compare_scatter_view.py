@@ -1,5 +1,6 @@
 import re
 import unittest
+from unittest import mock
 from unittest.mock import Mock, patch
 
 import plotly.graph_objects as go
@@ -501,8 +502,8 @@ class CompareScatterViewTests(unittest.TestCase):
         view.plot.data = [Mock(spec=go.Trace)] * num_traces
 
         start_state = {
-            "minimizer": dict.fromkeys(["test"] * num_traces, True),
-            "problem": dict.fromkeys(["test"] * num_traces, True),
+            "minimizer": {"test": True},
+            "problem": {"test": True},
         }
 
         new_opacity = (
@@ -515,9 +516,10 @@ class CompareScatterViewTests(unittest.TestCase):
             self.assertEqual(
                 mock_trace_opacity.call_count, (i + 1) * num_traces
             )
-            self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
-
-        mock_trace_opacity.assert_called()
+            self.assertEqual(
+                mock_trace_opacity.call_args,
+                mock.call(view.plot.data[i], new_opacity),
+            )
 
     @parameterized.expand([True, False])
     @patch(
