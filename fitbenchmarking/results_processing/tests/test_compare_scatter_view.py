@@ -510,7 +510,6 @@ class CompareScatterViewTests(unittest.TestCase):
             view.active_opacity if select == "all" else view.inactive_opacity
         )
 
-        # check that it can be called to focus
         for i in range(num_traces):
             _ = view.apply_state(view.plot, start_state, select)
             self.assertEqual(
