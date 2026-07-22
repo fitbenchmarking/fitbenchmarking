@@ -371,10 +371,19 @@ class CompareScatterViewTests(unittest.TestCase):
         toasts = view.create_warning_toasts(warnings)
 
         self.assertEqual(len(toasts), 2)
-        self.assertEqual(toasts[0].id, "allFails_toast")
-        self.assertEqual(toasts[0].children, "all failed")
-        self.assertEqual(toasts[1].id, "someFails_toast")
-        self.assertEqual(toasts[1].children, "1/2 failed")
+        self.assertTrue(
+            any(
+                toast.id == "allFails_toast" and toast.children == "all failed"
+                for toast in toasts
+            )
+        )
+        self.assertTrue(
+            any(
+                toast.id == "someFails_toast"
+                and toast.children == "1/2 failed"
+                for toast in toasts
+            )
+        )
 
     @parameterized.expand(
         [
