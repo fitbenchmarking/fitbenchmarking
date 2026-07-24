@@ -448,6 +448,47 @@ class BaseControllerTests(TestCase):
         software = controller.software
         assert software == "my_dummy_software"
 
+    def test_multifit_init(self):
+        """
+        Test multifit_init builds the combined parameter array,
+        prefixing tied parameters with 'shared.' and per-dataset
+        parameters with 'd<i>.'
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+
+        controller.multifit_init()
+
+        expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
+        assert controller.starting_values == [expected]
+        assert controller.par_names == list(expected.keys())
+        assert controller.problem.param_names == list(expected.keys())
+        assert controller._save_starting_values_per_dataset == [
+            {"A0": 0.0, "A1": 1.0}
+        ]
+
+    def test_multifit_cleanup(self):
+        """
+        Test multifit_cleanup maps the final params onto a list
+        of lists (one per dataset) and resets the parameter names
+        to their original (unprefixed) form
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem._param_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        # Each dataset keeps its own params plus the shared (tied) params
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.problem.param_names == ["A0", "A1"]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+
 
 @run_for_test_types(TEST_TYPE, "default", "all")
 class DefaultControllerTests(TestCase):
