@@ -508,7 +508,7 @@ class CompareScatterViewTests(unittest.TestCase):
         num_traces = 10
 
         view.plot = Mock(spec=go.Figure)
-        view.plot.data = [Mock(spec=go.Trace)] * num_traces
+        view.plot.data = [Mock(spec=go.Scatter) for _ in range(num_traces)]
 
         start_state = {
             "minimizer": {"test": True},
@@ -519,15 +519,14 @@ class CompareScatterViewTests(unittest.TestCase):
             view.active_opacity if select == "all" else view.inactive_opacity
         )
 
-        for i in range(num_traces):
-            _ = view.apply_state(view.plot, start_state, select)
-            self.assertEqual(
-                mock_trace_opacity.call_count, (i + 1) * num_traces
-            )
-            self.assertEqual(
-                mock_trace_opacity.call_args,
-                mock.call(view.plot.data[i], new_opacity),
-            )
+        _ = view.apply_state(view.plot, start_state, select)
+
+        mock_trace_opacity.assert_has_calls(
+            [
+                mock.call(view.plot.data[i], new_opacity)
+                for i in range(num_traces)
+            ]
+        )
 
     @parameterized.expand([True, False])
     @patch(
