@@ -2,11 +2,14 @@
 Implements the base non-linear least squares cost function
 """
 
+import re
 from abc import abstractmethod
 
 from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
+_MULTIFIT_PREFIX = re.compile(r"(d\d+|shared)\.")
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -68,7 +71,9 @@ class BaseNLLSCostFunc(CostFunc):
         :return: The residuals for the datapoints at the given parameters
         :rtype: np.array
         """
-        if self.problem.multifit:
+        if self.problem.multifit and any(
+            _MULTIFIT_PREFIX.match(name) for name in self.problem.param_names
+        ):
             r = []
 
             if kwargs.get("x") is not None:
