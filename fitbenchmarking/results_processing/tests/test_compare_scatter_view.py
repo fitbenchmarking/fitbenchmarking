@@ -172,9 +172,6 @@ class CompareScatterViewTests(unittest.TestCase):
         num_s_grp_2 = len(re.findall("symbol_group_2", legend_string))
         self.assertEqual(num_s_grp_2, 2)
 
-        # convert the legend to a string so that we can check that it contains
-        # the expected information without caring about specific structure
-
     def test_get_legend_returns_correct_structure(self):
         pass
         # See issue #1633
