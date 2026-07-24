@@ -232,10 +232,17 @@ class FitbenchmarkParser(Parser):
         """
         Sets any additional info for a fitting problem.
         """
-        if self._is_multifit:
-            self.fitting_problem.additional_info["ties"] = re.findall(
+        # At parse time all the software the user wants to use are there,
+        # which could include mantid too, so we can't make distinctions at
+        # this stage. The ties are therefore stored under both keys the
+        # controllers may read ("ties" for non-mantid, "mantid_ties" for
+        # mantid), since the same problem can be fit by either.
+        if self._is_multifit():
+            ties = re.findall(
                 r"['\"](.*?)['\"]", self._entries.get("ties", "")
             )
+            self.fitting_problem.additional_info["ties"] = ties
+            self.fitting_problem.additional_info["mantid_ties"] = ties
 
     def _get_data_file(self) -> list:
         """
