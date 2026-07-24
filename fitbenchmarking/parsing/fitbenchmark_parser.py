@@ -237,7 +237,7 @@ class FitbenchmarkParser(Parser):
         # this stage. The ties are therefore stored under both keys the
         # controllers may read ("ties" for non-mantid, "mantid_ties" for
         # mantid), since the same problem can be fit by either.
-        if self._is_multifit():
+        if self.fitting_problem.multifit:
             ties = re.findall(
                 r"['\"](.*?)['\"]", self._entries.get("ties", "")
             )
