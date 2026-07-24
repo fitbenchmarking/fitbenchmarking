@@ -489,6 +489,70 @@ class BaseControllerTests(TestCase):
         assert controller.par_names == ["A0", "A1"]
         assert controller.initial_params == [0.0, 1.0]
 
+    def test_get_ties_str(self):
+        """
+        Test _get_ties_str builds the mantid style ties string,
+        tying each dataset's shared params back to the first dataset
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 3
+        controller.problem.additional_info["ties"] = ["A0", "A1"]
+
+        assert controller._get_ties_str() == (
+            "f1.A0=f0.A0,f2.A0=f0.A0,f1.A1=f0.A1,f2.A1=f0.A1"
+        )
+
+    def test_eval_chisq_multifit(self):
+        """
+        Test eval_chisq evaluates the cost for each dataset
+        separately and returns a list of results in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+
+        params = [[1.0], [2.0]]
+        x = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        y = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        e = [np.array([1.0, 1.0]), np.array([1.0, 1.0])]
+
+        with patch.object(
+            controller.cost_func, "eval_cost", side_effect=[10, 20]
+        ) as mock:
+            result = controller.eval_chisq(params=params, x=x, y=y, e=e)
+
+        assert result == [10, 20]
+        assert mock.call_count == 2
+
+    def test_check_bounds_respected_multifit_true(self):
+        """
+        Test that no error flag is set when the final params of every
+        dataset respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.value_ranges = [(0, 10), (0, 10)]
+        controller.final_params = [[1, 2], [3, 4]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 0
+
+    def test_check_bounds_respected_multifit_false(self):
+        """
+        Test that the correct error flag is set when the final params of
+        a dataset do not respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.value_ranges = [(0, 10), (0, 10)]
+        controller.final_params = [[1, 2], [3, 40]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 5
+
 
 @run_for_test_types(TEST_TYPE, "default", "all")
 class DefaultControllerTests(TestCase):
