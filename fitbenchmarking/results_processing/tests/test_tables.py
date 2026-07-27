@@ -165,7 +165,7 @@ class GenerateTableTests(unittest.TestCase):
             if act_line != exp_line:
                 diff.append([i, exp_line, act_line])
         if diff:
-            print(
+            print(  # noqa: T201
                 f"Comparing against {expected}\n"
                 + "\n".join(
                     [
@@ -176,9 +176,9 @@ class GenerateTableTests(unittest.TestCase):
                     ]
                 )
             )
-            print("\n==\n")
-            print("Output generated (also saved as actual.out):")
-            print(achieved)
+            print("\n==\n")  # noqa: T201
+            print("Output generated (also saved as actual.out):")  # noqa: T201
+            print(achieved)  # noqa: T201
             with open("actual.out", "w", encoding="utf-8") as outfile:
                 outfile.write(achieved)
         self.assertListEqual([], diff)
