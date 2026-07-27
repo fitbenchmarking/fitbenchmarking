@@ -6,8 +6,11 @@ import platform
 import sys
 import unittest
 
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.output_grabber import OutputGrabber
+
+LOGGER = get_logger()
 
 
 class OutputGrabberTests(unittest.TestCase):
@@ -28,8 +31,8 @@ class OutputGrabberTests(unittest.TestCase):
 
         output = OutputGrabber(self.options)
         with output:
-            print(output_string, end="")
-            print(error_string, end="", file=sys.stderr)
+            print(output_string, end="")  # noqa: T201
+            print(error_string, end="", file=sys.stderr)  # noqa: T201
 
         # The output grabber is not enabled for windows
         if self.plt != "Windows":
@@ -44,8 +47,8 @@ class OutputGrabberTests(unittest.TestCase):
 
         output = OutputGrabber(self.options)
         with output:
-            print(output_string, end="")
-            print(error_string, end="", file=sys.stderr)
+            print(output_string, end="")  # noqa: T201
+            print(error_string, end="", file=sys.stderr)  # noqa: T201
 
         # The output grabber is not enabled for windows
         if self.plt != "Windows":
