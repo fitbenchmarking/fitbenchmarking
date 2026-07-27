@@ -16,7 +16,10 @@ from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -223,11 +226,11 @@ def diff_result(actual, expected):
         )
     )
     if diff:
-        print("\n==\n")
-        print("Output generated (also saved as actual.out):")
+        LOGGER.error("\n==\n")
+        LOGGER.error("Output generated (also saved as actual.out):")
         with open("actual.out", "w", encoding="utf-8") as outfile:
             for line in actual:
-                print(line)
+                LOGGER.error(line)
                 outfile.write(line)
     return diff, msg
 

@@ -316,10 +316,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f"{key} not equal!")
+                    LOGGER.info("%s not equal!", key)
                     return False
             else:
-                print(f"No attr {key}")
+                LOGGER.info("No attr %s", key)
                 return False
         return True
 

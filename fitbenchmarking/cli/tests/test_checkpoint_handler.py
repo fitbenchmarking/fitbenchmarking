@@ -17,6 +17,9 @@ from fitbenchmarking.cli.checkpoint_handler import (
     merge_problems,
     merge_results,
 )
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 class TestGenerateReport(TestCase):
@@ -68,10 +71,10 @@ class TestGenerateReport(TestCase):
             options["results_dir"] = results_dir
             generate_report(additional_options=options)
 
-            print(f"Files in {results_dir} ({results})")
+            LOGGER.info("Files in %s (%s)", results_dir, results)
             for filename in results.iterdir():
-                print(filename)
-            print("Done")
+                LOGGER.info(filename)
+            LOGGER.info("Done")
 
             for e in expected:
                 with self.subTest(f'Testing existance of "{e}"'):

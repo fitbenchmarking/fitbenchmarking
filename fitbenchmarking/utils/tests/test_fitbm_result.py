@@ -119,7 +119,7 @@ class FitbmResultTests(unittest.TestCase):
             zip(str(self.result).splitlines(), expected.splitlines())
         ):
             if r != e:
-                print(f"Issue on line {i}:\n>{r}\n<{e}")
+                LOGGER.error("Issue on line %s:\n>%s\n<%s", i, r, e)
         self.assertEqual(str(self.result), expected)
 
     def test_init_with_dataset_id(self):

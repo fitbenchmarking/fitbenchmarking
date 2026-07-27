@@ -21,7 +21,10 @@ from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
 from fitbenchmarking.utils.checkpoint import Checkpoint
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import Options
+
+LOGGER = get_logger()
 
 
 def load_mock_results():
@@ -92,16 +95,18 @@ def diff_between_htmls(expected_plot_path, output_plot_path):
             diff.append([i, exp_line, act_line])
 
     if diff:
-        print(
-            f"Comparing {output_plot_path} against {expected_plot_path}\n"
-            + "\n".join(
+        LOGGER.error(
+            "Comparing %s against %s\n%s",
+            output_plot_path,
+            expected_plot_path,
+            "\n".join(
                 [
                     f"== Line {change[0]} ==\n"
                     f"Expected :{change[1]}\n"
                     f"Actual   :{change[2]}"
                     for change in diff
                 ]
-            )
+            ),
         )
 
     return diff
