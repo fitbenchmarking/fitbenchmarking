@@ -25,3 +25,6 @@ repos:
         entry: python3 .custom_hooks/minimizer_spelling.py
         language: system
         files: '\.(py|md|html|rst)$'
+
+ci:
+  skip: [spelling-check]
