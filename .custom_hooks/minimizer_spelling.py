@@ -3,12 +3,15 @@
 from pathlib import Path
 import sys
 
-INVALID_WORDS = frozenset({"minimiser", "solver"})
+INVALID_WORDS = frozenset({"minimiser", "solver"}) # ignore: spelling
 VALID_SPELLING = "minimizer"
 
 
 def find_invalid_word(line: str) -> tuple[int, str] | None:
     lowercase_text = line.lower()
+
+    if "ignore: spelling".casefold() in lowercase_text:
+        return None
 
     for word in INVALID_WORDS:
         index = lowercase_text.find(word)
@@ -42,11 +45,6 @@ def main() -> None:
     listed in INVALID_WORDS.
 
     Exits with status code 1 if an invalid word is found, otherwise 0.
-
-    Examples that should trigger the check:
-
-        //minimiser
-        my_var = self.get_minimiser()
     """
     for filename in sys.argv[1:]:
         try:
