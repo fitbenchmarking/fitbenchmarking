@@ -185,9 +185,11 @@ class GenerateTableTests(unittest.TestCase):
             [],
             differences,
             msg=(
-                """\n\n"""
-                f"""actual output saved in {out_file_dir}\n"""
-                f"""full diff saved in {diff_file_dir}"""
+                "\n\n"
+                "The output provided did not match the expected output from:"
+                f" {expected_output_file}\n"
+                f"The actual output has been saved in {out_file_dir}\n"
+                f"full diff saved in {diff_file_dir}"
             ),
         )
 
