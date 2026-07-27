@@ -1,6 +1,7 @@
 import inspect
 import os
 import re
+from dataclasses import dataclass
 
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -1023,19 +1024,11 @@ class CompareScatterView:
         return 0
 
 
+@dataclass(frozen=True)
 class CompareScatterDataModel:
-    def __init__(self, results: list[FittingResult]):
-        """
-        Initialise the data model for the compare scatter. This class sorts
-        results by default so that the order of plotting does not change a lot
-        between runs.
+    results: list[FittingResult]
 
-        :param results: list of Fitting results to use as the basis for this
-            data model
-        :type results: list[FittingResult]
-        """
-        self.results = results
-        # ensure consistent processing between runs
+    def __post_init__(self):
         self.results.sort(key=self.get_sort_key)
 
     @staticmethod
@@ -1049,13 +1042,6 @@ class CompareScatterDataModel:
         Given the name of an attribute or method, retrieve the value of that
         attribute/method from each fitting result. Arguments can be passed to
         methods using func_kwargs.
-
-        Note: this function caches the values provided to it, meaning that
-        repeated calls do not cause significant slowdown. In the case of
-        functions, it caches the function - not the return value. This still
-        improves performance, but means that if the function output changes,
-        the returned values are still correct.
-
 
         :param attribute: The attribute/method to get from every result stored
             in the data model
@@ -1075,39 +1061,22 @@ class CompareScatterDataModel:
         # required to retrieve the data, so we need to check if we have been
         # passed an attribute or method name
 
-        cache = (
-            f"_unique_cache_{attribute}" if unique else f"_cache_{attribute}"
-        )
-
-        cache_data = getattr(self, cache, None)
-
+        values = []
         if callable(getattr(self.results[0], attribute)):
-            funcs = []
-            # we cache the functions, not the data, as function output might
-            # be expected to change
-            if cache_data is None:
-                for result in self.results:
-                    func = getattr(result, attribute)
-                    funcs.append(func)
-                setattr(self, cache, funcs)
-            else:
-                funcs = cache_data
-            values = [func(**func_kwargs) for func in funcs]
+            for result in self.results:
+                func = getattr(result, attribute)
+                values.append(func(**func_kwargs))
             if unique:
                 values = list(dict.fromkeys(values))
+
         else:
             if func_kwargs:
                 raise TypeError(
                     f"Attribute {attribute} is not callable, but "
                     "kwargs were provided"
                 )
-            if cache_data is None:
-                values = [
-                    getattr(result, attribute) for result in self.results
-                ]
-                if unique:
-                    values = list(dict.fromkeys(values))
-                setattr(self, cache, values)
-            else:
-                values = cache_data
+
+            values = [getattr(result, attribute) for result in self.results]
+            if unique:
+                values = list(dict.fromkeys(values))
         return values

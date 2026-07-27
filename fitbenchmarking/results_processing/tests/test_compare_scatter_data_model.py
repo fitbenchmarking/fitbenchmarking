@@ -1,4 +1,3 @@
-import time
 import unittest
 
 import numpy as np
@@ -15,7 +14,7 @@ from fitbenchmarking.results_processing.tests.test_compare_scatter import (
 class CompareScatterDataModelTests(unittest.TestCase):
     empty_data = []
     single_result_dataset = [make_mock_fitting_result(1)]
-    many_result_dataset = [make_mock_fitting_result(i) for i in range(100)]
+    many_result_dataset = [make_mock_fitting_result(i) for i in range(10)]
     duplicate_name_dataset = [
         make_mock_fitting_result(1),
         make_mock_fitting_result(1),
@@ -106,63 +105,6 @@ class CompareScatterDataModelTests(unittest.TestCase):
                 for result in self.many_result_dataset
             ],
         )
-
-    # This test is non deterministic
-    @parameterized.expand(["name", "modified_minimizer_name"])
-    def test_get_values_from_results_cache_is_faster(self, axis):
-        """
-        This performs a check to see if the time taken to retrieve a result
-        using get_values_from_results is lower the second time it is run.
-
-        This is important to test, because if it does not actually provide
-        any performance improvement, then it is adding unnecessary complexity.
-
-        This test is non deterministic, but should only fail in exceptional
-        circumstances, since testing on my machine showed that the caching
-        gives a 4x performance improvement in practice.
-        """
-
-        model = CompareScatterDataModel(self.many_result_dataset)
-
-        start = time.perf_counter()
-        _ = model.get_values_from_results(axis)
-        end = time.perf_counter()
-
-        first_duration = end - start
-
-        start = time.perf_counter()
-        _ = model.get_values_from_results(axis)
-        end = time.perf_counter()
-
-        second_duration = end - start
-
-        self.assertLess(second_duration, first_duration)
-
-    def test_get_values_from_results_caches_functors_not_return_values(self):
-        """
-        When provided with a metric that links to a callable on a Fitting
-        Result, get_values_from_results should cache a reference to the
-        callable and not the result of the callable itself.
-
-        This means that if the return values of the callable change, then
-        the data returned by the function should still be valid.
-        """
-
-        model = CompareScatterDataModel(self.single_result_dataset)
-
-        # the alternate function returns a newly generated uuid each call,
-        # representing a change in return value
-        model.results = [
-            make_mock_fitting_result(1, alternate_minimizer_name_output=True)
-        ]
-
-        first_values = model.get_values_from_results("modified_minimizer_name")
-        values_after_result_change = model.get_values_from_results(
-            "modified_minimizer_name"
-        )
-
-        # if we cached the return values, the output would be the same for both
-        self.assertNotEqual(first_values, values_after_result_change)
 
     def test_get_values_from_results_gets_unique_values_if_specified(self):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
