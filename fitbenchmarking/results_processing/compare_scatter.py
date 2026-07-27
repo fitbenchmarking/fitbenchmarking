@@ -720,6 +720,12 @@ class CompareScatterView:
             elif select_all:
                 visible = True
             else:
+                assert type(t) is go.Scatter
+                # uses type: ignore here because plotly defines customdata as
+                # a list[float], but in our case it is a list[list[str]]
+                # The documentation (linked below) shows how using customadata
+                # to store information other than floats is idiomatic.
+                # https://plotly.com/python/hover-text-and-formatting/
                 minimizer = t.customdata[0][1]  # type: ignore
                 problem = t.customdata[0][2]  # type: ignore
                 if (
