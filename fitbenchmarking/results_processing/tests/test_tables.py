@@ -164,26 +164,24 @@ class GenerateTableTests(unittest.TestCase):
         out_file_dir = os.getcwd() + "/actual.out"
         diff_file_dir = os.getcwd() + "/actual.diff"
 
-        diff = difflib.unified_diff(
-            expected_output,
-            actual_output.splitlines(keepends=True),
-            fromfile=expected_output_file,
-            tofile=out_file_dir,
+        diff = list(
+            difflib.unified_diff(
+                expected_output,
+                actual_output.splitlines(keepends=True),
+                fromfile=expected_output_file,
+                tofile=out_file_dir,
+            )
         )
 
-        differences = []
-        for i, diff_block in enumerate(diff):
-            differences.append(diff_block)
-
-        if len(differences) > 0:
+        if len(diff) > 0:
             with open("actual.out", "w", encoding="utf-8") as out_file:
                 out_file.write(actual_output)
             with open("actual.diff", "w", encoding="utf-8") as diff_file:
-                diff_file.write("".join(differences))
+                diff_file.write("".join(diff))
 
         self.assertListEqual(
             [],
-            differences,
+            diff,
             msg=(
                 "\n\n"
                 "The output provided did not match the expected output from:"
