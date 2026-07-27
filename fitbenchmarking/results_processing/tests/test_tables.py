@@ -144,15 +144,16 @@ class GenerateTableTests(unittest.TestCase):
 
     def compare_files(self, expected_output_file: str, actual_output: str):
         """
-        Compares two files line by line
+        Compares two files line by line, if they do not match, output a git
+        style unified diff to actual.diff and the actual output to actual.out
 
-        :param expected: imported HTML output from expected results in
-                         fitbenchmarking/results_processing/tests/
-                         expected_results
-        :type expected: str
-        :param achieved: HTML generated using generate_table in
-                         fitbenchmarking.results_processing.tables
-        :type achieved: str
+        :param expected_output_file: path to a file containing the expected
+        output. Typically found at results_processing/tests/expected_results
+        :type expected_output_file: str
+
+        :param actual_output: a string containing the actual output generated
+        when the test was run.
+        :type actual_output: str
         """
 
         with open(expected_output_file, encoding="utf-8") as f:
