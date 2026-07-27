@@ -175,10 +175,11 @@ class GenerateTableTests(unittest.TestCase):
         for i, diff_block in enumerate(diff):
             differences.append(diff_block)
 
-        with open("actual.out", "w", encoding="utf-8") as out_file:
-            out_file.write(actual_output)
-        with open("actual.diff", "w", encoding="utf-8") as diff_file:
-            diff_file.write("".join(differences))
+        if len(differences) > 0:
+            with open("actual.out", "w", encoding="utf-8") as out_file:
+                out_file.write(actual_output)
+            with open("actual.diff", "w", encoding="utf-8") as diff_file:
+                diff_file.write("".join(differences))
 
         self.assertListEqual(
             [],
