@@ -63,9 +63,7 @@ class CompareScatter:
         else:
             return False
 
-    def add_callbacks(
-        self, plot: go.Figure, app: Dash, legend_items: list[str]
-    ):
+    def add_callbacks(self, plot: go.Figure, legend_items: list[str]):
         """
         Given a dash app and a list of legend items, add a callback for each
          ID to allow it to set the focus of the appropriate traces.
@@ -74,13 +72,8 @@ class CompareScatter:
         contains the compare scatter at runtime, and to add the handling for
         the clickthrough links
 
-        :param app: The existing dash app to add the callbacks to
-        :type app: Dash
         :param legend_items: A list of minimizer names or IDs
         :type legend_items: list[str]
-
-        :return: The app with callbacks added
-        :rtype: Dash
         """
         for i, legend_item in enumerate(legend_items):
             button_id = self.view.sanitize_for_id(legend_item)
@@ -138,12 +131,12 @@ class CompareScatter:
                         none_button_style,
                     )
 
-            app.callback(
+            self.app.callback(
                 button_io,
                 prevent_initial_call=True,
             )(focus_callback)
 
-        app.callback(
+        self.app.callback(
             Output("legend-status", "data", True),
             Output("all_button", "style", True),
             Output("none_button", "style", True),
@@ -157,7 +150,7 @@ class CompareScatter:
             )
         )
 
-        app.callback(
+        self.app.callback(
             Output("legend-status", "data", True),
             Output("all_button", "style", True),
             Output("none_button", "style", True),
@@ -175,20 +168,19 @@ class CompareScatter:
         script_path += "/results_processing/scripts/compare_scatter"
 
         with open(f"{script_path}/handle_link.js") as file:
-            app.clientside_callback(
+            self.app.clientside_callback(
                 file.read(),
                 Output("dummy-click", "children"),
                 Input("compare_scatter", "clickData"),
             )
 
         with open(f"{script_path}/resize_observer.js") as file:
-            app.clientside_callback(
+            self.app.clientside_callback(
                 file.read(),
                 Output("dummy-height", "children"),
                 Input("compare_scatter", "figure"),
                 prevent_initial_call=False,
             )
-        return app
 
     def get_fitting_report_urls(self):
         """
@@ -247,7 +239,7 @@ class CompareScatter:
             *self.model.get_values_from_results("problem_tag", unique=True),
         ]
 
-        self.app = self.add_callbacks(self.view.plot, self.app, legend_items)
+        self.add_callbacks(self.view.plot, legend_items)
         return plot, self.app
 
 

@@ -147,7 +147,7 @@ class CompareScatterTests(unittest.TestCase):
         cs = CompareScatter(app, options, test_data)
         cs.view.plot = Mock(spec=go.Figure())
 
-        cs.add_callbacks(cs.view.plot, app, ["mock_solver_0", "mock_solver_1"])
+        cs.add_callbacks(cs.view.plot, ["mock_solver_0", "mock_solver_1"])
 
         self.assertEqual(app.callback.call_count, 4)
 
