@@ -2,6 +2,7 @@
 Table tests
 """
 
+import difflib
 import inspect
 import os
 import shutil
@@ -46,6 +47,8 @@ class GenerateTableTests(unittest.TestCase):
     Class that tests the generate_table function within
     fitbenchmarking.results_processing.tables
     """
+
+    maxDiff = None
 
     def setUp(self):
         """
@@ -139,7 +142,7 @@ class GenerateTableTests(unittest.TestCase):
         ):
             self.compare_files(expected_file, html[dropdown_name])
 
-    def compare_files(self, expected, achieved):
+    def compare_files(self, expected_output_file: str, actual_output: str):
         """
         Compares two files line by line
 
@@ -151,37 +154,41 @@ class GenerateTableTests(unittest.TestCase):
                          fitbenchmarking.results_processing.tables
         :type achieved: str
         """
-        with open(expected, encoding="utf-8") as f:
-            exp_lines = f.readlines()
 
-        diff = []
-        for i, (act_line, exp_line) in enumerate(
-            zip(achieved.splitlines(), exp_lines)
-        ):
-            exp_line = "" if exp_line is None else exp_line.strip("\n")
-            act_line = "" if act_line is None else act_line.strip("\n")
-            # to pass on windows need to first do this before comparing
-            act_line = act_line.replace('href="..\\', 'href="../')
-            if act_line != exp_line:
-                diff.append([i, exp_line, act_line])
-        if diff:
-            print(
-                f"Comparing against {expected}\n"
-                + "\n".join(
-                    [
-                        f"== Line {change[0]} ==\n"
-                        f"Expected :{change[1]}\n"
-                        f"Actual   :{change[2]}"
-                        for change in diff
-                    ]
-                )
-            )
-            print("\n==\n")
-            print("Output generated (also saved as actual.out):")
-            print(achieved)
-            with open("actual.out", "w", encoding="utf-8") as outfile:
-                outfile.write(achieved)
-        self.assertListEqual([], diff)
+        with open(expected_output_file, encoding="utf-8") as f:
+            expected_output = f.readlines()
+
+        actual_output = actual_output.replace('href="..\\', 'href="../')
+        # to pass on windows need to first do this before comparing
+
+        out_file_dir = os.getcwd() + "/actual.out"
+        diff_file_dir = os.getcwd() + "/actual.diff"
+
+        diff = difflib.unified_diff(
+            expected_output,
+            actual_output.splitlines(keepends=True),
+            fromfile=expected_output_file,
+            tofile=out_file_dir,
+        )
+
+        differences = []
+        for i, diff_block in enumerate(diff):
+            differences.append(diff_block)
+
+        with open("actual.out", "w", encoding="utf-8") as out_file:
+            out_file.write(actual_output)
+        with open("actual.diff", "w", encoding="utf-8") as diff_file:
+            diff_file.write("".join(differences))
+
+        self.assertListEqual(
+            [],
+            differences,
+            msg=(
+                """\n\n"""
+                f"""actual output saved in {out_file_dir}\n"""
+                f"""full diff saved in {diff_file_dir}"""
+            ),
+        )
 
 
 class CreateResultsTableTests(unittest.TestCase):
