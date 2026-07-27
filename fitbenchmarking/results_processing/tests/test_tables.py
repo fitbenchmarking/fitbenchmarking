@@ -158,8 +158,8 @@ class GenerateTableTests(unittest.TestCase):
         with open(expected_output_file, encoding="utf-8") as f:
             expected_output = f.readlines()
 
-        actual_output = actual_output.replace('href="..\\', 'href="../')
         # to pass on windows need to first do this before comparing
+        actual_output = actual_output.replace('href="..\\', 'href="../')
 
         out_file_dir = os.getcwd() + "/actual.out"
         diff_file_dir = os.getcwd() + "/actual.diff"
