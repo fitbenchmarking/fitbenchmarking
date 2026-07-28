@@ -14,4 +14,5 @@ docs/source/contributors/module_index
 .vscode/
 .eggs/
 *.out
+*.diff
 powermetrics_log.txt
