@@ -15,4 +15,5 @@ docs/source/contributors/module_index
 .eggs/
 .custom_hooks/
 *.out
+*.diff
 powermetrics_log.txt
