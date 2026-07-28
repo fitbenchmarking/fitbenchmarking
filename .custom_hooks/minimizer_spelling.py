@@ -5,12 +5,12 @@ import sys
 
 INVALID_WORDS = frozenset({"minimiser", "solver"}) # ignore: spelling
 VALID_SPELLING = "minimizer"
-
+IGNORE_STRING = "# ignore: spelling"
 
 def find_invalid_word(line: str) -> tuple[int, str] | None:
     lowercase_text = line.lower()
 
-    if "ignore: spelling".casefold() in lowercase_text:
+    if IGNORE_STRING.casefold() in lowercase_text:
         return None
 
     for word in INVALID_WORDS:
@@ -35,6 +35,7 @@ def process_file(file_contents: str, filename: str) -> str | None:
                 f"{line_num}: {line_text}\n"
                 f"{' ' * (len(str(line_num)) + 2 + word_start)}"
                 f"{'^' * len(invalid_word)}\n"
+                f"Add '{IGNORE_STRING}' to the line above to skip this check"
             )
 
     return None
