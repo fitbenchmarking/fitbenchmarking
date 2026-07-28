@@ -126,6 +126,7 @@ select = [
     "UP", # pyupgrade
     "I", # isort
     "NPY", # numpy
+    "N", # pep8-naming
     "PERF", # perflint
     "LOG", # flake8-logging
     "ICN", # flake8-import-conventions
