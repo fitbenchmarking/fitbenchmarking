@@ -5,6 +5,7 @@ Table tests
 import difflib
 import inspect
 import os
+import platform
 import shutil
 import unittest
 from inspect import getfile
@@ -157,18 +158,23 @@ class GenerateTableTests(unittest.TestCase):
         """
 
         with open(expected_output_file, encoding="utf-8") as f:
-            expected_output = f.readlines()
-
-        # to pass on windows need to first do this before comparing
-        actual_output = actual_output.replace('href="..\\', 'href="../')
+            expected_output_lines = f.readlines()
 
         out_file_dir = os.getcwd() + "/actual.out"
         diff_file_dir = os.getcwd() + "/actual.diff"
 
+        # test files are generated on a Linux system, we need to make some
+        # edits before running any comparisons if we are on windows
+        if platform.system() == "Windows":
+            actual_output = actual_output.replace('href="..\\', 'href="../')
+            actual_output = actual_output.replace("\r\n", "\n")
+
+        actual_output_lines = actual_output.splitlines(keepends=True)
+
         diff = list(
             difflib.unified_diff(
-                expected_output,
-                actual_output.splitlines(keepends=True),
+                expected_output_lines,
+                actual_output_lines,
                 fromfile=expected_output_file,
                 tofile=out_file_dir,
             )
