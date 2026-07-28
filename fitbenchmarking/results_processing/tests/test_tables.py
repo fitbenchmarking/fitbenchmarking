@@ -199,7 +199,6 @@ class GenerateTableTests(unittest.TestCase):
         )
 
 
-
 class CreateResultsTableTests(unittest.TestCase):
     """
     Class that tests the generate_table function within
