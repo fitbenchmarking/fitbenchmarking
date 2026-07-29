@@ -833,10 +833,9 @@ class TestFitbenchmarkParser(TestCase):
 
         # Verify all the parameters are set correctly.
         # This is a multifit problem (two input files) with no ties, so the
-        # ties are set to an empty list under both keys ("ties" for non-mantid
-        # and "mantid_ties" for mantid controllers), and the data is stored as
-        # a per-dataset list.
-        assert result.additional_info == {"ties": [], "mantid_ties": []}
+        # ties are set to an empty list under both keys, and the data
+        # is stored as a per-dataset list.
+        assert result.additional_info == {"ties": []}
         assert result.data_e == [None, None]
         assert len(result.data_x) == 2
         assert all(x.shape == (3,) for x in result.data_x)

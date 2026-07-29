@@ -39,8 +39,6 @@ class MantidDevParser(FitbenchmarkParser):
         """
         Sets any additional info for a fitting problem.
         """
-        # The base parser sets the ties under both "ties" and "mantid_ties",
-        # so a mantid-format problem can also be fit by non-mantid software.
         super()._set_additional_info()
 
     def _dense_jacobian(self) -> Callable | None:

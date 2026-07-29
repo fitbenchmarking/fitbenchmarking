@@ -307,7 +307,6 @@ class Fit:
                     controller.problem.multifit
                     and controller.software != "mantid"
                 ):
-                    LOGGER.info("calling multifit init")
                     controller.multifit_init()
 
             controller.parameter_set = self._start_values_index
@@ -343,9 +342,6 @@ class Fit:
 
         for minimizer in minimizers:
             if controller.problem.multifit and controller.software != "mantid":
-                LOGGER.info(
-                    "Multifit being initialised for minimizer %s", minimizer
-                )
                 param_dict = controller.starting_values[0]
                 controller.par_names = list(param_dict.keys())
 

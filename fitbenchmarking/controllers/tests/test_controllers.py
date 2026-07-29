@@ -489,19 +489,6 @@ class BaseControllerTests(TestCase):
         assert controller.par_names == ["A0", "A1"]
         assert controller.initial_params == [0.0, 1.0]
 
-    def test_get_ties_str(self):
-        """
-        Test _get_ties_str builds the mantid style ties string,
-        tying each dataset's shared params back to the first dataset
-        """
-        controller = DummyController(self.cost_func)
-        controller._dataset_count = 3
-        controller.problem.additional_info["ties"] = ["A0", "A1"]
-
-        assert controller._get_ties_str() == (
-            "f1.A0=f0.A0,f2.A0=f0.A0,f1.A1=f0.A1,f2.A1=f0.A1"
-        )
-
     def test_eval_chisq_multifit(self):
         """
         Test eval_chisq evaluates the cost for each dataset

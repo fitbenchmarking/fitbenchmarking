@@ -180,9 +180,6 @@ class Controller:
             None if not self.problem.multifit else [None] * self._dataset_count
         )
 
-        # Get ties in the multifit case
-        self.ties = None if not self.problem.multifit else self._get_ties_str()
-
         # Flag: error handling flag
         self._flag = None
 
@@ -293,7 +290,7 @@ class Controller:
         # remove all the d0, d1, ... and shared. prefixes
         # from the parameter names
         single_dataset_param_names = [
-            self.problem.param_names[i].split(".")[1]
+            self.problem.param_names[i].split(".", 1)[1]
             for i in range(len(self.problem.param_names))
         ]
         self.problem._param_names = list(  # noqa: SLF001
@@ -301,8 +298,6 @@ class Controller:
         )
 
         self.par_names = self.problem.param_names
-
-        print(list(self._save_starting_values_per_dataset[0].values()))
         self.initial_params = list(
             self._save_starting_values_per_dataset[0].values()
         )
@@ -324,21 +319,6 @@ class Controller:
             raise ControllerAttributeError(
                 "Either minimizer or parameter_set is set to None."
             )
-
-    def _get_ties_str(self) -> str:
-        """
-        Returns the ties string for the problem. This is set in
-        the function definition string passed in if the
-        problem is multifit.
-
-        :return: The string of ties.
-        :rtype: str
-        """
-        return ",".join(
-            f"f{i}.{p}=f0.{p}"
-            for p in self.problem.additional_info["ties"]
-            for i in range(1, self._dataset_count)
-        )
 
     def execute(self):
         """
