@@ -244,8 +244,7 @@ class Controller:
 
     def multifit_init(self):
         """
-        Construct parameter array for multifit problems. Also temporarily
-        set problem._param_names to match the new parameter array.
+        Construct parameter array for multifit problems.
         """
 
         # save starting values for an individual dataset for fitting report
@@ -264,20 +263,16 @@ class Controller:
 
         self.starting_values = [param_dict]
         self.par_names = list(param_dict.keys())
-
-        # ruff complains about modifying private attributes,
-        # but this is needed here, so needs to be fixed
-        self.problem._param_names = self.par_names  # noqa: SLF001
+        self.problem.multifit_param_names = self.par_names
 
     def multifit_cleanup(self):
         """
         Map the final parameters to a list of lists, with each sublist
-        containing the final parameters for each dataset. Also reset
-        problem._param_names to the original parameter names.
+        containing the final parameters for each dataset.
         """
         # create a list of lists of final params for each dataset
         final_params = self.final_params
-        param_dict = dict(zip(self.problem.param_names, final_params))
+        param_dict = dict(zip(self.par_names, final_params))
         lists_of_final_params = [[] for _ in range(self._dataset_count)]
 
         for d in range(self._dataset_count):
@@ -290,14 +285,11 @@ class Controller:
         # remove all the d0, d1, ... and shared. prefixes
         # from the parameter names
         single_dataset_param_names = [
-            self.problem.param_names[i].split(".", 1)[1]
-            for i in range(len(self.problem.param_names))
+            self.par_names[i].split(".", 1)[1]
+            for i in range(len(self.par_names))
         ]
-        self.problem._param_names = list(  # noqa: SLF001
-            dict.fromkeys(single_dataset_param_names)
-        )
 
-        self.par_names = self.problem.param_names
+        self.par_names = list(dict.fromkeys(single_dataset_param_names))
         self.initial_params = list(
             self._save_starting_values_per_dataset[0].values()
         )

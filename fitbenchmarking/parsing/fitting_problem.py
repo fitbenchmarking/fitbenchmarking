@@ -100,6 +100,10 @@ class FittingProblem:
         # Used to check if a problem is using multifit.
         self.multifit = False
 
+        # Used to set multifit parameter names for all minimizers
+        # other than mantid
+        self.multifit_param_names = None
+
         # Used to check if a problem will be used down the line for
         # varying starting conditions analysis.
         self.multistart = None
@@ -160,7 +164,7 @@ class FittingProblem:
         elif isinstance(x, list):
             # Split params into list of lists
             dataset_count = len(x)
-            param_dict = dict(zip(self.param_names, params))
+            param_dict = dict(zip(self.multifit_param_names, params))
             lists_of_params = [[] for _ in range(dataset_count)]
 
             for d in range(dataset_count):

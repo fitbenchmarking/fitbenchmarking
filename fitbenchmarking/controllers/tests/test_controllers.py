@@ -464,7 +464,6 @@ class BaseControllerTests(TestCase):
         expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
         assert controller.starting_values == [expected]
         assert controller.par_names == list(expected.keys())
-        assert controller.problem.param_names == list(expected.keys())
         assert controller._save_starting_values_per_dataset == [
             {"A0": 0.0, "A1": 1.0}
         ]
@@ -478,14 +477,13 @@ class BaseControllerTests(TestCase):
         controller = DummyController(self.cost_func)
         controller._dataset_count = 2
         controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
-        controller.problem._param_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
         controller.final_params = [10.0, 20.0, 5.0]
 
         controller.multifit_cleanup()
 
         # Each dataset keeps its own params plus the shared (tied) params
         assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
-        assert controller.problem.param_names == ["A0", "A1"]
         assert controller.par_names == ["A0", "A1"]
         assert controller.initial_params == [0.0, 1.0]
 

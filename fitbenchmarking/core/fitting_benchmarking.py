@@ -341,14 +341,6 @@ class Fit:
         minimizer_failed, results = [], []
 
         for minimizer in minimizers:
-            if controller.problem.multifit and controller.software != "mantid":
-                param_dict = controller.starting_values[0]
-                controller.par_names = list(param_dict.keys())
-
-                # ruff complains about modifying private attributes,
-                # but this is needed here, so needs to be fixed
-                controller.problem._param_names = controller.par_names  # noqa: SLF001
-
             controller.minimizer = minimizer
             minimizer_check = True
             LOGGER.info("%sMinimizer: %s", self._logger_prefix * 4, minimizer)

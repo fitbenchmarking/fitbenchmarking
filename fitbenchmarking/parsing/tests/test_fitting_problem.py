@@ -127,7 +127,7 @@ class TestFittingProblem(TestCase):
         fitting_problem.multifit = True
         fitting_problem.function = lambda x, p1, p2: x + p1 + p2
         # d0.p1=5, d1.p1=100, shared.p2=1000
-        fitting_problem._param_names = [  # noqa: SLF001
+        fitting_problem.multifit_param_names = [
             "d0.p1",
             "d1.p1",
             "shared.p2",

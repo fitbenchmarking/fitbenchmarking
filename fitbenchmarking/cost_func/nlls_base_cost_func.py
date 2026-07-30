@@ -71,8 +71,13 @@ class BaseNLLSCostFunc(CostFunc):
         :return: The residuals for the datapoints at the given parameters
         :rtype: np.array
         """
-        if self.problem.multifit and any(
-            _MULTIFIT_PREFIX.match(name) for name in self.problem.param_names
+        if (
+            self.problem.multifit
+            and self.problem.multifit_param_names is not None
+            and any(
+                _MULTIFIT_PREFIX.match(name)
+                for name in self.problem.multifit_param_names
+            )
         ):
             r = []
 
@@ -91,7 +96,7 @@ class BaseNLLSCostFunc(CostFunc):
             else:
                 dataset_count = len(self.problem.data_x)
 
-            param_dict = dict(zip(self.problem.param_names, params))
+            param_dict = dict(zip(self.problem.multifit_param_names, params))
             for d in range(dataset_count):
                 single_dataset_params = []
                 for k, v in param_dict.items():

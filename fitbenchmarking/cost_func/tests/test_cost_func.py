@@ -279,7 +279,7 @@ class TestWeightedNLLSCostFunc(TestCase):
         fitting_problem.multifit = True
         fitting_problem.function = lambda x, p1: x + p1
         # d0.p1=5, d1.p1=100
-        fitting_problem._param_names = ["d0.p1", "d1.p1"]  # noqa: SLF001
+        fitting_problem.multifit_param_names = ["d0.p1", "d1.p1"]
         fitting_problem.data_x = [
             np.array([1.0, 2.0]),
             np.array([3.0, 4.0]),
