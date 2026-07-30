@@ -727,6 +727,8 @@ class DefaultControllerTests(TestCase):
         controller = ControllerFactory.create_controller(controller_name)
         self.cost_func.param_names = ["b.1", "b@2", "b-3", "b_4"]
         control = controller(self.cost_func)
+        control.initial_params = [1, 2, 3, 4]
+        control.setup()
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
