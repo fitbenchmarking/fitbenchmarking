@@ -254,12 +254,26 @@ class Controller:
         shared_params = self.problem.additional_info["ties"]
         param_dict = {}
 
-        for k, v in params.items():
+        # value_ranges is a per-parameter list of (lb, ub) tuples aligned
+        # with the original parameter order. When bounds are set, expand
+        # them alongside the param array so they stay aligned with the new
+        # (shared./d<i>.) parameters. The original per-parameter bounds
+        # are restored in multifit_cleanup.
+        self._save_value_ranges = self.value_ranges
+        bounds = self.value_ranges or [None] * len(params)
+        expanded_value_ranges = []
+
+        for (k, v), vr in zip(params.items(), bounds):
             if k in shared_params:
                 param_dict[f"shared.{k}"] = v
+                expanded_value_ranges.append(vr)
             else:
                 for i in range(self._dataset_count):
                     param_dict[f"d{i}.{k}"] = v
+                    expanded_value_ranges.append(vr)
+
+        if self.value_ranges is not None:
+            self.value_ranges = expanded_value_ranges
 
         self.starting_values = [param_dict]
         self.par_names = list(param_dict.keys())
@@ -293,6 +307,10 @@ class Controller:
         self.initial_params = list(
             self._save_starting_values_per_dataset[0].values()
         )
+
+        # restore the original per-parameter bounds so that the post-fit
+        # check_bounds_respected lines up with final_params
+        self.value_ranges = self._save_value_ranges
 
     def prepare(self, skip_setup=False):
         """
@@ -546,10 +564,12 @@ class Controller:
         Check whether the selected minimizer has respected
         parameter bounds
         """
-        # TODO: is this the right way of updating this for multifit ?
         if self.problem.multifit:
-            for index, param_list in enumerate(self.final_params):
-                for param_value in param_list:
+            # final_params is a list of per-dataset param lists, each in
+            # the original paramorder, so value_ranges is indexed by the
+            # param position within a dataset
+            for param_list in self.final_params:
+                for index, param_value in enumerate(param_list):
                     if (
                         not self.value_ranges[index][0]
                         <= param_value

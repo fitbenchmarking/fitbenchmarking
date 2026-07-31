@@ -458,6 +458,8 @@ class BaseControllerTests(TestCase):
         controller._dataset_count = 2
         controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
         controller.problem.additional_info["ties"] = ["A1"]
+        # Bounds are per-parameter, aligned with the original parameter order.
+        controller.value_ranges = [(0, 5), (10, 20)]
 
         controller.multifit_init()
 
@@ -467,6 +469,26 @@ class BaseControllerTests(TestCase):
         assert controller._save_starting_values_per_dataset == [
             {"A0": 0.0, "A1": 1.0}
         ]
+        # The free parameter's bounds are repeated per dataset and the tied
+        # parameter's bounds appear once, matching the expanded param order.
+        assert controller.value_ranges == [(0, 5), (0, 5), (10, 20)]
+        assert controller._save_value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_init_no_bounds(self):
+        """
+        Test multifit_init leaves value_ranges as None when no
+        bounds are set
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+        controller.value_ranges = None
+
+        controller.multifit_init()
+
+        assert controller.value_ranges is None
+        assert controller._save_value_ranges is None
 
     def test_multifit_cleanup(self):
         """
@@ -479,6 +501,10 @@ class BaseControllerTests(TestCase):
         controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
         controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
         controller.final_params = [10.0, 20.0, 5.0]
+        # The expanded bounds (as built by multifit_init) and the original
+        # per-parameter bounds that should be restored.
+        controller.value_ranges = [(0, 5), (0, 5), (10, 20)]
+        controller._save_value_ranges = [(0, 5), (10, 20)]
 
         controller.multifit_cleanup()
 
@@ -486,6 +512,8 @@ class BaseControllerTests(TestCase):
         assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
         assert controller.par_names == ["A0", "A1"]
         assert controller.initial_params == [0.0, 1.0]
+        # Bounds are restored to the original per-parameter form
+        assert controller.value_ranges == [(0, 5), (10, 20)]
 
     def test_eval_chisq_multifit(self):
         """
@@ -515,8 +543,10 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.problem.multifit = True
-        controller.value_ranges = [(0, 10), (0, 10)]
-        controller.final_params = [[1, 2], [3, 4]]
+        # Asymmetric bounds so that indexing by parameter position (correct)
+        # differs from indexing by dataset (the previous bug).
+        controller.value_ranges = [(0, 10), (100, 200)]
+        controller.final_params = [[1, 150], [3, 150]]
         controller.flag = 0
 
         controller.check_bounds_respected()
@@ -530,8 +560,10 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller.problem.multifit = True
-        controller.value_ranges = [(0, 10), (0, 10)]
-        controller.final_params = [[1, 2], [3, 40]]
+        controller.value_ranges = [(0, 10), (100, 200)]
+        # The first parameter of the second dataset (300) is out of its
+        # bounds (0, 10).
+        controller.final_params = [[1, 150], [300, 150]]
         controller.flag = 0
 
         controller.check_bounds_respected()
