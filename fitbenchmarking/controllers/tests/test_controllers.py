@@ -492,21 +492,33 @@ class BaseControllerTests(TestCase):
         assert controller.value_ranges is None
         assert controller._save_value_ranges is None
 
+    def _setup_cleanup_controller(self):
+        """
+        Create a controller for a two dataset multifit problem, in the state
+        it would be left in by multifit_init.
+
+        :return: A controller ready for multifit_cleanup to be called on
+        :rtype: DummyController
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
+        controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller.problem.multifit_param_names = controller.par_names
+        # The expanded bounds (as built by multifit_init) and the original
+        # per-parameter bounds that should be restored.
+        controller.value_ranges = [(0, 5), (0, 5), (10, 20)]
+        controller._save_value_ranges = [(0, 5), (10, 20)]
+        return controller
+
     def test_multifit_cleanup(self):
         """
         Test multifit_cleanup maps the final params onto a list
         of lists (one per dataset) and resets the parameter names
         to their original (unprefixed) form
         """
-        controller = DummyController(self.cost_func)
-        controller._dataset_count = 2
-        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
-        controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller = self._setup_cleanup_controller()
         controller.final_params = [10.0, 20.0, 5.0]
-        # The expanded bounds (as built by multifit_init) and the original
-        # per-parameter bounds that should be restored.
-        controller.value_ranges = [(0, 5), (0, 5), (10, 20)]
-        controller._save_value_ranges = [(0, 5), (10, 20)]
 
         controller.multifit_cleanup()
 
@@ -516,6 +528,39 @@ class BaseControllerTests(TestCase):
         assert controller.initial_params == [0.0, 1.0]
         # Bounds are restored to the original per-parameter form
         assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_failed_fit(self):
+        """
+        Test multifit_cleanup restores the single dataset parameter names
+        and initial params when the fit failed, so that the failure can be
+        reported for each dataset
+        """
+        controller = self._setup_cleanup_controller()
+        # A fit which failed leaves the final params unset
+        controller.final_params = [None, None]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [None, None]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+        assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_after_previous_fit(self):
+        """
+        Test multifit_cleanup uses the combined parameter names held on the
+        problem, so that it still works when a previous fit (e.g. with
+        another minimizer) has already reduced par_names
+        """
+        controller = self._setup_cleanup_controller()
+        # par_names as left behind by the cleanup of a previous fit
+        controller.par_names = ["A0", "A1"]
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.par_names == ["A0", "A1"]
 
     def test_eval_chisq_multifit(self):
         """

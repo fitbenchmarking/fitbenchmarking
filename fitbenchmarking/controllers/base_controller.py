@@ -286,24 +286,29 @@ class Controller:
         """
         Map the final parameters to a list of lists, with each sublist
         containing the final parameters for each dataset.
+        This also runs when a fit has failed, so it must cope with the
+        final parameters not having been set.
         """
+        combined_par_names = self.problem.multifit_param_names
+
         # create a list of lists of final params for each dataset
-        final_params = self.final_params
-        param_dict = dict(zip(self.par_names, final_params))
-        lists_of_final_params = [[] for _ in range(self._dataset_count)]
+        if self.final_params is not None and not any(
+            p is None for p in self.final_params
+        ):
+            param_dict = dict(zip(combined_par_names, self.final_params))
+            lists_of_final_params = [[] for _ in range(self._dataset_count)]
 
-        for d in range(self._dataset_count):
-            for k, v in param_dict.items():
-                if k.startswith((f"d{d}.", "shared.")):
-                    lists_of_final_params[d].append(v)
+            for d in range(self._dataset_count):
+                for k, v in param_dict.items():
+                    if k.startswith((f"d{d}.", "shared.")):
+                        lists_of_final_params[d].append(v)
 
-        self.final_params = lists_of_final_params
+            self.final_params = lists_of_final_params
 
         # remove all the d0, d1, ... and shared. prefixes
         # from the parameter names
         single_dataset_param_names = [
-            self.par_names[i].split(".", 1)[1]
-            for i in range(len(self.par_names))
+            name.split(".", 1)[1] for name in combined_par_names
         ]
 
         self.par_names = list(dict.fromkeys(single_dataset_param_names))

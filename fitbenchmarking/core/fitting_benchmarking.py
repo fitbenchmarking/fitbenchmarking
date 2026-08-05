@@ -560,6 +560,7 @@ class Fit:
         num_runs = self._options.num_runs
         energy = np.nan
         tracker = self._emissions_tracker
+        tracker_started = False
         tracker_stopped = False
 
         try:
@@ -568,6 +569,7 @@ class Fit:
                 controller.prepare()
                 if tracker:
                     tracker.start_task()
+                    tracker_started = True
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
@@ -650,15 +652,30 @@ class Fit:
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
 
-        # ensure emissions tracker has been stopped if energy not set
-        if self._emissions_tracker and not tracker_stopped:
+        # Ensure emissions tracker has been stopped if energy not set. The
+        # task is only stopped if it was started, as the fit may have raised
+        # (e.g. a validation error) before it was started.
+        if self._emissions_tracker and tracker_started and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
+            multi_fit = controller.problem.multifit
+
+            # The fit failed, so multifit_cleanup has not run yet. Running it
+            # here splits the combined problem back into its datasets, so
+            # that the parameter names, initial params and bounds are
+            # reported per dataset as they are for a successful fit.
+            if multi_fit and controller.software != "mantid":
+                controller.multifit_cleanup()
+
+            # A validation error is raised before the controller is prepared,
+            # so initial_params (needed to report the result) have not been set
+            if controller.initial_params is None:
+                controller.prepare(skip_setup=True)
+
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
             energy = np.inf
-            multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)
