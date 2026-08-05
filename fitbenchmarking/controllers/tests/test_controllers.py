@@ -25,6 +25,8 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
 from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -569,6 +571,72 @@ class BaseControllerTests(TestCase):
         controller.check_bounds_respected()
 
         assert controller.flag == 5
+
+    def test_validate_multifit_analytic_jacobian(self):
+        """
+        Test that an analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_best_available_jacobian(self):
+        """
+        Test that a 'best_available' Jacobian which resolves to the
+        analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = BestAvailable(controller.problem)
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_analytic_jacobian_not_multifit(self):
+        """
+        Test that an analytic Jacobian is accepted when the problem is
+        not a multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        controller.validate()
+
+    def test_validate_multifit_mcmc_minimizer(self):
+        """
+        Test that an MCMC minimizer is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "dream"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_supported_options(self):
+        """
+        Test that a numerical Jacobian and a non MCMC minimizer are
+        accepted in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "lm-scipy"
+
+        controller.validate()
 
 
 @run_for_test_types(TEST_TYPE, "default", "all")
