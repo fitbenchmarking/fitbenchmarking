@@ -8,11 +8,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.optimize import curve_fit
 
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.utils.exceptions import (
     ControllerAttributeError,
     IncompatibleHessianError,
     IncompatibleJacobianError,
     IncompatibleMinimizerError,
+    IncompatibleMultifitError,
     IncompatibleProblemError,
     MissingBoundsError,
     UnknownMinimizerError,
@@ -241,6 +243,7 @@ class Controller:
         self._validate_jacobian()
         self._validate_hessian()
         self._validate_problem_format()
+        self._validate_multifit()
 
     def multifit_init(self):
         """
@@ -476,6 +479,34 @@ class Controller:
             raise IncompatibleProblemError(
                 f"{self.problem.format} problems cannot be used with "
                 f"{self.software} controllers."
+            )
+
+    def _validate_multifit(self):
+        """
+        Validates that the selected options are supported for MultiFit
+        problems. Analytic Jacobians and MCMC minimizers are not
+        available for MultiFit yet, so an exception is raised for these.
+        """
+        if not self.problem.multifit:
+            return
+
+        jacobian = self.cost_func.jacobian
+        # 'best_available' wraps an Analytic jacobian when the problem
+        # provides one, so check the jacobian it delegates to.
+        sub_jac = getattr(jacobian, "sub_jac", jacobian)
+        if isinstance(sub_jac, Analytic):
+            raise IncompatibleMultifitError(
+                f"The '{jacobian.name()}' Jacobian is not available for "
+                "MultiFit problems yet, as it uses the analytic Jacobian "
+                "of the problem. Please select a numerical Jacobian "
+                "method."
+            )
+
+        if self.minimizer in self.algorithm_check.get("MCMC", []):
+            raise IncompatibleMultifitError(
+                f"The selected minimizer, {self.minimizer}, is an MCMC "
+                "minimizer. MCMC minimizers are not available for "
+                "MultiFit problems yet."
             )
 
     def validate_minimizer(self, minimizer, algorithm_type):
