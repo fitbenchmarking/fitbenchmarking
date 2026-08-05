@@ -134,7 +134,8 @@ A MultiFit problem is reported as one row per dataset in the output tables
 against the data in the corresponding input file.
 
 .. note::
-   MultiFit problems can be run with all supported minimizers.
+   MultiFit problems can be run with all supported minimizers, with the
+   exception of MCMC minimizers (see the warning below).
 
    Ties are a Mantid concept, so for other softwares FitBenchmarking
    assembles an equivalent single fitting problem: the parameters listed in
@@ -145,9 +146,19 @@ against the data in the corresponding input file.
    way for every software.
 
 .. warning::
-   Mantid's :ref:`analytic Jacobian <analytic-jac>` is not available for
-   MultiFit problems. A numerical Jacobian will be used instead
-   (see :ref:`jacobian_option`).
+   :ref:`Analytic Jacobians <analytic-jac>` are not available for MultiFit
+   problems yet. Mantid does not provide an analytic Jacobian for MultiFit
+   problems, so a numerical Jacobian is used instead
+   (see :ref:`jacobian_option`). If the problem itself defines an analytic
+   Jacobian, then selecting the ``analytic`` (or ``best_available``)
+   Jacobian method for a MultiFit problem is reported as a failed run with
+   the status "Validation of the provided options failed".
+
+.. warning::
+   MCMC minimizers (e.g. ``FABADA``, ``dream``, ``emcee`` and
+   ``paraDram_sampler``) are not available for MultiFit problems yet.
+   Selecting one for a MultiFit problem is reported as a failed run with
+   the status "Validation of the provided options failed".
 
 .. warning::
    The ``ties`` entry only accepts parameter names, which are then shared
