@@ -51,7 +51,7 @@ minuit = ['iminuit>=2.0']
 nlopt = ['nlopt']
 numdifftools = ['numdifftools']
 paramonte = ['paramonte']
-SAS = ['sasmodels', "tinycc;platform_system=='Windows'"]
+SAS = ['sasmodels==1.0.12', "tinycc;platform_system=='Windows'"]
 dev = [
     'pytest',
     'pytest-cov>=4.0.0',
