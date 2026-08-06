@@ -3,8 +3,13 @@ This file implements a parser for the SASfit data format.
 """
 
 import ctypes
+import importlib.util
 import os
+import re
+import sys
 import typing
+from itertools import repeat
+from pathlib import Path
 
 import numpy as np
 
@@ -28,18 +33,154 @@ from fitbenchmarking.parsing.SASStudio_functions import (
 class SASfitParser(FitbenchmarkParser):
     """
     Parser for a SASfit problem definition file.
+
+    Two styles of ``function`` entry are supported:
+
+    * a series of SASfit plugin names and their parameters, e.g.
+      ``function = 'name=polynom,p0=0.0;name=Gaussian__coil,Rg=4.0'``
+    * a single python module, named the same way, e.g.
+      ``function = 'name=functions/multifit.py,Rg=4.0'``, where the name is
+      a path relative to the problem definition file. This is intended for
+      models which cannot easily be expressed as a sum of SASfit plugins,
+      such as fits where a size distribution, a form factor and a
+      structure factor are combined across several datasets.
     """
 
     _PARAM_IGNORE_LIST = ["name"]
+
+    def __init__(self, filename, options):
+        super().__init__(filename, options)
+
+        # populated by ``_load_function_module`` when the ``function`` entry
+        # points at a python module rather than a list of SASfit plugins
+        self._function_module = None
+
+    def _is_python_function(self) -> bool:
+        """
+        Returns true if the ``function`` entry names a python module rather
+        than a set of SASfit plugins.
+
+        :raises ParsingError: If a python module is combined with any other
+                              function.
+        :return: True if the function is defined in a python module.
+        :rtype: bool
+        """
+        names = [str(func.get("name", "")) for func in self._parsed_func or []]
+        modules = [name for name in names if name.endswith(".py")]
+
+        if modules and len(names) > 1:
+            raise ParsingError(
+                f"The function module '{modules[0]}' cannot be combined with "
+                "other functions; it must be the only one in the 'function' "
+                "entry of the problem definition file."
+            )
+        return bool(modules)
+
+    def _load_function_module(self):
+        """
+        Import the python module named by the ``function`` entry. The path is
+        taken to be relative to the directory holding the problem definition
+        file.
+
+        :raises ParsingError: If the module cannot be found or imported.
+        :return: The imported module
+        :rtype: ModuleType
+        """
+        if self._function_module is not None:
+            return self._function_module
+
+        module_path = (
+            Path(self._filename).parent / self._parsed_func[0]["name"]
+        )
+        if not module_path.is_file():
+            raise ParsingError(
+                f"Could not find the function module '{module_path}' "
+                "given in the problem definition file."
+            )
+
+        spec = importlib.util.spec_from_file_location(
+            module_path.stem, module_path
+        )
+        if spec is None or spec.loader is None:
+            raise ParsingError(f"Could not import '{module_path}'.")
+
+        module = importlib.util.module_from_spec(spec)
+        # register the module so that dataclasses/pickling inside it behave
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+
+        if not hasattr(module, "fit_function"):
+            raise ParsingError(
+                f"The function module '{module_path}' must define a "
+                "'fit_function(x, **params)' callable."
+            )
+
+        self._function_module = module
+        return module
+
+    def _get_equation(self) -> str:
+        """
+        Returns the equation in the problem definition file.
+
+        :return: The equation in the problem definition file.
+        :rtype: str
+        """
+        if self._is_python_function():
+            module = self._load_function_module()
+            return getattr(module, "equation", super()._get_equation())
+        return super()._get_equation()
 
     def _create_function(self) -> typing.Callable:
         """
         Creates callable function for a SASfit problem.
 
+        The same function describes every dataset of a multifit problem; what
+        differs between the datasets is the values of the parameters it is
+        given.
+
         :return: A callable function
         :rtype: callable
         """
+        if self._is_python_function():
+            return self._create_function_from_module()
+        return self._create_function_from_plugins()
 
+    def _create_function_from_module(self) -> typing.Callable:
+        """
+        Creates a callable function from the ``fit_function`` of the python
+        module named in the ``function`` entry.
+
+        As for the plugins, the parameters are the ones named in the
+        ``function`` entry, and those in ``fixed_params`` are held at the
+        value given there. They are passed on to ``fit_function`` by name.
+
+        :return: A callable function
+        :rtype: callable
+        """
+        fit_function = self._load_function_module().fit_function
+
+        fixed_params = (
+            self._parse_fixed_params()[0]
+            if "fixed_params" in self._entries
+            else {}
+        )
+        params_to_fit_dict = self._get_starting_values()[0]
+        all_params_dict = params_to_fit_dict | fixed_params
+
+        def wrapped(x, *p):
+            params = all_params_dict | dict(zip(params_to_fit_dict, p))
+            return fit_function(x, **params)
+
+        return wrapped
+
+    def _create_function_from_plugins(self) -> typing.Callable:
+        """
+        Creates callable function from the SASfit plugins named in the
+        ``function`` entry of the problem definition file.
+
+        :return: A callable function
+        :rtype: callable
+        """
         functions_to_call = []
         scattering_contributions = {}
         param_names = {}
@@ -132,3 +273,42 @@ class SASfitParser(FitbenchmarkParser):
                 if k not in self._PARAM_IGNORE_LIST and k not in fixed_params
             }
         ]
+
+    def _set_data_points(self, data_points: list, fit_ranges: list) -> None:
+        """
+        Sets the data points and fit range data in the fitting problem.
+
+        A problem with several input files keeps one entry per dataset, the
+        same shape the mantid parser uses for a multifit.
+
+        :param data_points: A list of data points.
+        :type data_points: list
+        :param fit_ranges: A list of fit ranges.
+        :type fit_ranges: list
+        """
+        if not self._is_multifit():
+            super()._set_data_points(data_points, fit_ranges)
+            return
+
+        self.fitting_problem.data_x = [d["x"] for d in data_points]
+        self.fitting_problem.data_y = [d["y"] for d in data_points]
+        self.fitting_problem.data_e = [d.get("e", None) for d in data_points]
+
+        if not fit_ranges:
+            fit_ranges = list(repeat({}, len(data_points)))
+
+        self.fitting_problem.start_x = [
+            f["x"][0] if "x" in f else None for f in fit_ranges
+        ]
+        self.fitting_problem.end_x = [
+            f["x"][1] if "x" in f else None for f in fit_ranges
+        ]
+
+    def _set_additional_info(self) -> None:
+        """
+        Sets any additional info for a fitting problem.
+        """
+        if self.fitting_problem.multifit:
+            self.fitting_problem.additional_info["ties"] = re.findall(
+                r"['\"](.*?)['\"]", self._entries.get("ties", "")
+            )

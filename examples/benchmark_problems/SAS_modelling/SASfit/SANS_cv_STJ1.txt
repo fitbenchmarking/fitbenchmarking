@@ -1,0 +1,8 @@
+# FitBenchmark Problem
+software = 'SASfit'
+name = 'SANS cv STJ1'
+description = 'SANS contrast variation experiment'
+input_file = 'STJ1_18e-6.txt'#,'STJ1_19e-6.txt','STJ1_20e-6.txt','STJ1_21e-6.txt','STJ1_22e-6.txt','STJ1_23e-6.txt','STJ1_24e-6.txt','STJ1_25e-6.txt','STJ1_29e-6.txt']
+function = 'name=functions/SANS_cv_STJ1_fit_func.py,N=3.01725,s=0.133386,mu=32.0203,dR=2.88683,eta_core=2.38789,x_solv=0.610765,eta_solv=1.8,p0=0.671694'
+#ties = ['N','s','mu','dR','eta_core','x_solv']
+plot_scale = 'loglog'

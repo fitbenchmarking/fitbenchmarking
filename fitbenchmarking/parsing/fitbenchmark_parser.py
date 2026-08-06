@@ -215,6 +215,24 @@ class FitbenchmarkParser(Parser):
         """
         return
 
+    def _get_input_file_names(self) -> list:
+        """
+        Get the data file name(s) listed in the 'input_file' entry of a
+        FitBenchmark definition file. A single entry gives a list of one
+        name, a bracketed entry gives one name per quoted item.
+
+        This is kept separate from the multifit check so that parsers which
+        combine several input files into a single dataset can still find
+        their data files.
+
+        :return: The data file names
+        :rtype: list<str>
+        """
+        if self._entries["input_file"].startswith("["):
+            pattern = r"['\"]\s*([^'\"]+)\s*['\"]"
+            return re.findall(pattern, self._entries["input_file"])
+        return [self._entries["input_file"]]
+
     def _get_data_file(self) -> list:
         """
         Find/create the (full) path to a data_file(s) specified in a
@@ -224,11 +242,7 @@ class FitbenchmarkParser(Parser):
         :return: (full) path to a data file. Return None if not found
         :rtype: list<str>
         """
-        if self._is_multifit():
-            pattern = r"['\"]\s*([^'\"]+)\s*['\"]"
-            files = re.findall(pattern, self._entries["input_file"])
-        else:
-            files = [self._entries["input_file"]]
+        files = self._get_input_file_names()
 
         search_path = Path(self._filename).parent
         subdirs = [d for d in search_path.iterdir() if d.is_dir()]
