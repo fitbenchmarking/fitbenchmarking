@@ -53,6 +53,32 @@ In order to add a new controller, you will need to:
    - .. autoattribute:: fitbenchmarking.controllers.base_controller.Controller.hessian_enabled_solvers()
                :noindex: 
 
+   .. note::
+      To support Multifit problems, a controller should
+      take the parameters it fits from ``self.par_names``,
+      ``self.initial_params`` and ``self.value_ranges``, rather than from
+      ``self.problem.param_names`` and ``self.problem.value_ranges``.
+
+      For a MultiFit problem, FitBenchmarking fits all datasets at the same
+      time by combining them into a single problem, in which the tied
+      parameters occur once and the remaining parameters are repeated once
+      per dataset. These are set up before ``setup()`` is called by
+
+       -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.multifit_init()
+                  :noindex:
+
+      and the results are mapped back onto the individual datasets after
+      ``cleanup()`` has been called by
+
+       -  .. automethod:: fitbenchmarking.controllers.base_controller.Controller.multifit_cleanup()
+                  :noindex:
+
+      A controller which uses the attributes above therefore does not need
+      to handle MultiFit problems itself. The exception is the
+      :class:`~fitbenchmarking.controllers.mantid_controller.MantidController`,
+      which uses Mantid's own MultiFit implementation and so is left
+      untouched by these two methods.
+
 3. Add the new software to the default options, following the instructions in
    :ref:`options_extend`.
 

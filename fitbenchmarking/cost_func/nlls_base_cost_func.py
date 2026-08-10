@@ -2,11 +2,14 @@
 Implements the base non-linear least squares cost function
 """
 
+import re
 from abc import abstractmethod
 
 from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
+_MULTIFIT_PREFIX = re.compile(r"(d\d+|shared)\.")
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -44,7 +47,7 @@ class BaseNLLSCostFunc(CostFunc):
         self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate residuals used in Least-Squares problems
 
@@ -55,6 +58,64 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: numpy array
         """
         raise NotImplementedError
+
+    def eval_r(self, params, **kwargs):
+        """
+        Calculates residuals used in Least-Squares problems.
+        Handles both the multifit case (fitting multiple datasets)
+        and other cases.
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+
+        :return: The residuals for the datapoints at the given parameters
+        :rtype: np.array
+        """
+        if (
+            self.problem.multifit
+            and self.problem.multifit_param_names is not None
+            and any(
+                _MULTIFIT_PREFIX.match(name)
+                for name in self.problem.multifit_param_names
+            )
+        ):
+            r = []
+
+            if kwargs.get("x") is not None:
+                # Within the multifit case, kwargs.get("x") will appear
+                # in different forms, depending on the function that is
+                # calling eval_r
+                if isinstance(kwargs.get("x")[0], list):
+                    dataset_count = len(kwargs.get("x"))
+
+                # kwargs.get("x") does not contain lists, then we
+                # assume we are currently dealing with a single dataset
+                else:
+                    dataset_count = 1
+
+            else:
+                dataset_count = len(self.problem.data_x)
+
+            param_dict = dict(zip(self.problem.multifit_param_names, params))
+            for d in range(dataset_count):
+                single_dataset_params = []
+                for k, v in param_dict.items():
+                    if k.startswith((f"d{d}.", "shared.")):
+                        single_dataset_params.append(v)
+
+                kwargs["x"] = self.problem.data_x[d]
+                kwargs["y"] = self.problem.data_y[d]
+                kwargs["e"] = self.problem.data_e[d]
+
+                r_single = self.eval_r_single_dataset(
+                    params=single_dataset_params, **kwargs
+                )
+
+                r.extend(r_single)
+        else:
+            r = self.eval_r_single_dataset(params, **kwargs)
+
+        return r
 
     def eval_cost(self, params, **kwargs):
         """

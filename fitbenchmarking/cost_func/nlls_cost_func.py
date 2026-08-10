@@ -24,7 +24,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`y_i - f(x_i, p)`
 

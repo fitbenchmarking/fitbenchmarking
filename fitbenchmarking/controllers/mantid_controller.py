@@ -167,7 +167,7 @@ class MantidController(Controller):
         """
         return ",".join(
             f"f{i}.{p}=f0.{p}"
-            for p in self.problem.additional_info["mantid_ties"]
+            for p in self.problem.additional_info["ties"]
             for i in range(1, self._dataset_count)
         )
 

@@ -32,6 +32,11 @@ have priority over the analytic derivative provided by the format.
 
     Mantid may return an approximate jacobian, however we are unable to determine when this is the case.
 
+.. warning::
+
+    Analytic jacobians are not available for MultiFit problems yet
+    (see :ref:`mantid_file`). A numerical jacobian should be used instead.
+
 .. _scipy-jac:
 
 SciPy (:code:`scipy`)

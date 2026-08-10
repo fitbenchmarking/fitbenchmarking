@@ -831,13 +831,18 @@ class TestFitbenchmarkParser(TestCase):
         self.parser._PARAM_IGNORE_LIST = ["name"]
         result = self.parser.parse()
 
-        # Verify all the parameters are set correctly
-        assert not result.additional_info
-        assert not result.data_e
-        assert result.data_x.shape == (3,)
-        assert result.data_y.shape == (3, 2)
+        # Verify all the parameters are set correctly.
+        # This is a multifit problem (two input files) with no ties, so the
+        # ties are set to an empty list under both keys, and the data
+        # is stored as a per-dataset list.
+        assert result.additional_info == {"ties": []}
+        assert result.data_e == [None, None]
+        assert len(result.data_x) == 2
+        assert all(x.shape == (3,) for x in result.data_x)
+        assert len(result.data_y) == 2
+        assert all(y.shape == (3, 2) for y in result.data_y)
         assert result.description == "Test Parse"
-        assert not result.end_x
+        assert result.end_x == [None, None]
         assert result.equation == "LinearBackground"
         assert result.format == "mantid"
         assert result.function == ["mock_function"]
@@ -851,5 +856,5 @@ class TestFitbenchmarkParser(TestCase):
         assert result.plot_scale == "linear"
         assert not result.sorted_index
         assert not result.sparse_jacobian
-        assert not result.start_x
+        assert result.start_x == [None, None]
         assert result.value_ranges == [(1.0, 10.0), (1.0, 5.0)]

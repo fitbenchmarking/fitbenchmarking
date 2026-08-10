@@ -175,7 +175,7 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(
+                self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:

@@ -30,7 +30,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
 
     """
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`\\sqrt{y_i} - \\sqrt{f(x_i, p)}`
 
