@@ -54,9 +54,7 @@ class GalahadController(Controller):
         """
         super().__init__(cost_func)
 
-        self._num_vars = len(self.cost_func.problem.param_names)
         self._hessian: Callable = self._noop
-        self._initial_params_array = np.zeros(self._num_vars)
         self._module = arc
         self._jacobian = self.cost_func.jac_cost
         self._P = self._eval_hes_res_product
@@ -68,6 +66,8 @@ class GalahadController(Controller):
         """
         Setup problem ready to be run with GALAHAD
         """
+        self._num_vars = len(self.par_names)
+        self._initial_params_array = np.zeros(self._num_vars)
         minimizer: str = self.minimizer
 
         # Ground work for supporting variants with tuned parameters
