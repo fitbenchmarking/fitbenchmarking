@@ -64,7 +64,6 @@ class CreateDirsTests(unittest.TestCase):
         Test that the right css files are returned
         """
         options = Options()
-        LOGGER.info(options.results_dir)
         test_dir = os.path.join(options.results_dir, "foo")
 
         expected_css_dir = os.path.join("..", "css")
