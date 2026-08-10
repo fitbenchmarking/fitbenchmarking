@@ -8,11 +8,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.optimize import curve_fit
 
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.utils.exceptions import (
     ControllerAttributeError,
     IncompatibleHessianError,
     IncompatibleJacobianError,
     IncompatibleMinimizerError,
+    IncompatibleMultifitError,
     IncompatibleProblemError,
     MissingBoundsError,
     UnknownMinimizerError,
@@ -169,8 +171,15 @@ class Controller:
         # class
         self._software = ""
 
+        # dataset count > 1 if problem is multifit
+        self._dataset_count = (
+            len(self.data_x) if isinstance(self.data_x, list) else 1
+        )
+
         # Final Params: The final values for the params from the minimizer
-        self.final_params = None
+        self.final_params = (
+            None if not self.problem.multifit else [None] * self._dataset_count
+        )
 
         # Flag: error handling flag
         self._flag = None
@@ -233,6 +242,82 @@ class Controller:
         self._validate_jacobian()
         self._validate_hessian()
         self._validate_problem_format()
+        self._validate_multifit()
+
+    def multifit_init(self):
+        """
+        Construct parameter array for multifit problems.
+        """
+
+        # save starting values for an individual dataset for fitting report
+        self._save_starting_values_per_dataset = self.starting_values
+
+        params = self.starting_values[0]
+        shared_params = self.problem.additional_info["ties"]
+        param_dict = {}
+
+        # value_ranges is a per-parameter list of (lb, ub) tuples aligned
+        # with the original parameter order. When bounds are set, expand
+        # them alongside the param array so they stay aligned with the new
+        # (shared./d<i>.) parameters. The original per-parameter bounds
+        # are restored in multifit_cleanup.
+        self._save_value_ranges = self.value_ranges
+        bounds = self.value_ranges or [None] * len(params)
+        expanded_value_ranges = []
+
+        for (k, v), vr in zip(params.items(), bounds):
+            if k in shared_params:
+                param_dict[f"shared.{k}"] = v
+                expanded_value_ranges.append(vr)
+            else:
+                for i in range(self._dataset_count):
+                    param_dict[f"d{i}.{k}"] = v
+                    expanded_value_ranges.append(vr)
+
+        if self.value_ranges is not None:
+            self.value_ranges = expanded_value_ranges
+
+        self.starting_values = [param_dict]
+        self.par_names = list(param_dict.keys())
+        self.problem.multifit_param_names = self.par_names
+
+    def multifit_cleanup(self):
+        """
+        Map the final parameters to a list of lists, with each sublist
+        containing the final parameters for each dataset.
+        This also runs when a fit has failed, so it must cope with the
+        final parameters not having been set.
+        """
+        combined_par_names = self.problem.multifit_param_names
+
+        # create a list of lists of final params for each dataset
+        if self.final_params is not None and not any(
+            p is None for p in self.final_params
+        ):
+            param_dict = dict(zip(combined_par_names, self.final_params))
+            lists_of_final_params = [[] for _ in range(self._dataset_count)]
+
+            for d in range(self._dataset_count):
+                for k, v in param_dict.items():
+                    if k.startswith((f"d{d}.", "shared.")):
+                        lists_of_final_params[d].append(v)
+
+            self.final_params = lists_of_final_params
+
+        # remove all the d0, d1, ... and shared. prefixes
+        # from the parameter names
+        single_dataset_param_names = [
+            name.split(".", 1)[1] for name in combined_par_names
+        ]
+
+        self.par_names = list(dict.fromkeys(single_dataset_param_names))
+        self.initial_params = list(
+            self._save_starting_values_per_dataset[0].values()
+        )
+
+        # restore the original per-parameter bounds so that the post-fit
+        # check_bounds_respected lines up with final_params
+        self.value_ranges = self._save_value_ranges
 
     def prepare(self, skip_setup=False):
         """
@@ -278,8 +363,21 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
-        out = self.cost_func.eval_cost(params=params, **kwargs)
+        # In the mantid multifit case, this is done within the
+        # mantid controller
+        if self.problem.multifit and self.software != "mantid":
+            out = []
+
+            for pi, xi, yi, ei in zip(params, x, y, e):
+                kwargs = {
+                    k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
+                }
+                out.append(self.cost_func.eval_cost(params=pi, **kwargs))
+
+        else:
+            kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
+            out = self.cost_func.eval_cost(params=params, **kwargs)
+
         return out
 
     def eval_confidence(self):
@@ -288,6 +386,7 @@ class Controller:
         """
         self.params_pdfs["scipy_pfit"] = None
         self.params_pdfs["scipy_perr"] = None
+
         try:
             popt, pcov = curve_fit(
                 self.problem.function,
@@ -386,6 +485,34 @@ class Controller:
                 f"{self.software} controllers."
             )
 
+    def _validate_multifit(self):
+        """
+        Validates that the selected options are supported for MultiFit
+        problems. Analytic Jacobians and MCMC minimizers are not
+        available for MultiFit yet, so an exception is raised for these.
+        """
+        if not self.problem.multifit:
+            return
+
+        jacobian = self.cost_func.jacobian
+        # 'best_available' wraps an Analytic jacobian when the problem
+        # provides one, so check the jacobian it delegates to.
+        sub_jac = getattr(jacobian, "sub_jac", jacobian)
+        if isinstance(sub_jac, Analytic):
+            raise IncompatibleMultifitError(
+                f"The '{jacobian.name()}' Jacobian is not available for "
+                "MultiFit problems yet, as it uses the analytic Jacobian "
+                "of the problem. Please select a numerical Jacobian "
+                "method."
+            )
+
+        if self.minimizer in self.algorithm_check.get("MCMC", []):
+            raise IncompatibleMultifitError(
+                f"The selected minimizer, {self.minimizer}, is an MCMC "
+                "minimizer. MCMC minimizers are not available for "
+                "MultiFit problems yet."
+            )
+
     def validate_minimizer(self, minimizer, algorithm_type):
         """
         Helper function which checks that the selected minimizer from the
@@ -472,13 +599,26 @@ class Controller:
         Check whether the selected minimizer has respected
         parameter bounds
         """
-        for count, value in enumerate(self.final_params):
-            if (
-                not self.value_ranges[count][0]
-                <= value
-                <= self.value_ranges[count][1]
-            ):
-                self.flag = 5
+        if self.problem.multifit:
+            # final_params is a list of per-dataset param lists, each in
+            # the original paramorder, so value_ranges is indexed by the
+            # param position within a dataset
+            for param_list in self.final_params:
+                for index, param_value in enumerate(param_list):
+                    if (
+                        not self.value_ranges[index][0]
+                        <= param_value
+                        <= self.value_ranges[index][1]
+                    ):
+                        self.flag = 5
+        else:
+            for index, param in enumerate(self.final_params):
+                if (
+                    not self.value_ranges[index][0]
+                    <= param
+                    <= self.value_ranges[index][1]
+                ):
+                    self.flag = 5
 
     def check_attributes(self):
         """

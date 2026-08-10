@@ -33,6 +33,15 @@ The following list details all cases where we are aware of a possible bias:
   expressions are not supported. If you need this feature please get in touch
   with the development team with your use case.
 
+- **Running MultiFit problems with software other than Mantid.**
+
+  Mantid fits MultiFit problems with its own MultiFit implementation, while for
+  all other softwares FitBenchmarking builds a single fitting problem in which
+  the tied parameters are shared and the residuals of all datasets are
+  concatenated (see :ref:`mantid_file`). Although the two approaches solve the
+  same problem, the minimizers are not given identical problems, so you should
+  account for this when interpreting the results obtained in this case.
+
 - **Running Mantid problems with Matlab fitting software.**
 
   To run problems with Matlab fitting software through FitBenchmarking, within
