@@ -132,6 +132,7 @@ select = [
     "SIM", # flake8-simplify
     "C4", # flake8-comprehensions
     "TCH", # flake8-type-checking
+    "T20", # flake8-print
     "G", # flake8-logging-format
     "PIE", # flake8-pie
     "SLF", # flake8-self
@@ -151,6 +152,8 @@ ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 "fitbenchmarking/results_processing/tests/test_plots.py" = ["SLF001"]
 "fitbenchmarking/parsing/tests/test_mantid_parsers.py" = ["SLF001"]
 "fitbenchmarking/controllers/tests/test_mantid_controller.py" = ["SLF001"]
+"**/tests/*.py" = ["T20"]
+"**/systests/*.py" = ["T20"]
 
 [tool.ruff.format]
 quote-style = "double"
