@@ -342,8 +342,7 @@ class TestJacobianClass(TestCase):
             self.fitting_problem.data_y,
             self.params,
         )
-        LOGGER.info(str(actual))
-        LOGGER.info(str(eval_result))
+
         self.assertTrue(np.isclose(actual, eval_result).all())
 
     def test_analytic_raise_error(self):
