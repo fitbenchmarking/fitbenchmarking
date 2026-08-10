@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
-INVALID_WORDS = frozenset({"minimiser", "solver"}) # ignore: spelling
+INVALID_WORDS = frozenset({"minimiser", "solver"})  # ignore: spelling
 VALID_SPELLING = "minimizer"
 IGNORE_STRING = "# ignore: spelling"
+
 
 def find_invalid_word(line: str) -> tuple[int, str] | None:
     lowercase_text = line.lower()
@@ -19,6 +20,7 @@ def find_invalid_word(line: str) -> tuple[int, str] | None:
             return index, word
 
     return None
+
 
 def process_file(file_contents: str, filename: str) -> str | None:
     for line_num, line_text in enumerate(file_contents.splitlines(), start=1):
@@ -39,6 +41,7 @@ def process_file(file_contents: str, filename: str) -> str | None:
             )
 
     return None
+
 
 def main() -> None:
     """
