@@ -13,7 +13,6 @@ docs/source/contributors/module_index
 *.DS_Store
 .vscode/
 .eggs/
-.custom_hooks/
 *.out
 *.diff
 powermetrics_log.txt
