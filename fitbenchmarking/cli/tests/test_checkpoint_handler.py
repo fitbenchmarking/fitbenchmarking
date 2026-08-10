@@ -17,9 +17,6 @@ from fitbenchmarking.cli.checkpoint_handler import (
     merge_problems,
     merge_results,
 )
-from fitbenchmarking.utils.log import get_logger
-
-LOGGER = get_logger()
 
 
 class TestGenerateReport(TestCase):
