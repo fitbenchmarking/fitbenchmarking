@@ -71,10 +71,10 @@ class TestGenerateReport(TestCase):
             options["results_dir"] = results_dir
             generate_report(additional_options=options)
 
-            LOGGER.info("Files in %s (%s)", results_dir, results)
+            print(f"Files in {results_dir} ({results})")
             for filename in results.iterdir():
-                LOGGER.info(filename)
-            LOGGER.info("Done")
+                print(filename)
+            print("Done")
 
             for e in expected:
                 with self.subTest(f'Testing existance of "{e}"'):

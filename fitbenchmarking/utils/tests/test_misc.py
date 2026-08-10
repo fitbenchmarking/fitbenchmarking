@@ -9,11 +9,8 @@ import time
 import unittest
 
 from fitbenchmarking import test_files
-from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import get_css, get_problem_files
 from fitbenchmarking.utils.options import Options
-
-LOGGER = get_logger()
 
 
 class CreateDirsTests(unittest.TestCase):
@@ -65,7 +62,6 @@ class CreateDirsTests(unittest.TestCase):
         """
         options = Options()
         test_dir = os.path.join(options.results_dir, "foo")
-
         expected_css_dir = os.path.join("..", "css")
         expected_main_css = os.path.join(expected_css_dir, "main_style.css")
         expected_table_css = os.path.join(expected_css_dir, "table_style.css")

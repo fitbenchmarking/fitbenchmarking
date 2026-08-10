@@ -95,11 +95,9 @@ def diff_between_htmls(expected_plot_path, output_plot_path):
             diff.append([i, exp_line, act_line])
 
     if diff:
-        LOGGER.error(
-            "Comparing %s against %s\n%s",
-            output_plot_path,
-            expected_plot_path,
-            "\n".join(
+        print(
+            f"Comparing {output_plot_path} against {expected_plot_path}\n"
+            + "\n".join(
                 [
                     f"== Line {change[0]} ==\n"
                     f"Expected :{change[1]}\n"
