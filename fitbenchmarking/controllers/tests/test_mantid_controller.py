@@ -125,7 +125,7 @@ class TestMantidController(TestCase):
         """
         Verifies the output of _get_ties_str() method.
         """
-        self.controller.problem.additional_info["mantid_ties"] = ties
+        self.controller.problem.additional_info["ties"] = ties
         self.controller._dataset_count = dataset_count
         assert self.controller._get_ties_str() == expected
 

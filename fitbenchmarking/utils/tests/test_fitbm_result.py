@@ -569,11 +569,16 @@ class FitbmResultTests(unittest.TestCase):
         return_value=np.arange(10),
     )
     @patch(
-        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc.eval_r",
+        "fitbenchmarking.utils.fitbm_result.BaseNLLSCostFunc."
+        "eval_r_single_dataset",
         return_value=np.arange(10),
     )
     def test_data_x_cuts_when_plot_type_2d(
-        self, mock_eval_r, mock_jac_res, mock_get_cuts, mock_get_indexes
+        self,
+        mock_eval_r_single_dataset,
+        mock_jac_res,
+        mock_get_cuts,
+        mock_get_indexes,
     ):
         """
         Test data_x_cuts is correct when plot_type is "2d".

@@ -25,6 +25,8 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
 from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -448,6 +450,239 @@ class BaseControllerTests(TestCase):
         software = controller.software
         assert software == "my_dummy_software"
 
+    def test_multifit_init(self):
+        """
+        Test multifit_init builds the combined parameter array,
+        prefixing tied parameters with 'shared.' and per-dataset
+        parameters with 'd<i>.'
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+        # Bounds are per-parameter, aligned with the original parameter order.
+        controller.value_ranges = [(0, 5), (10, 20)]
+
+        controller.multifit_init()
+
+        expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
+        assert controller.starting_values == [expected]
+        assert controller.par_names == list(expected.keys())
+        assert controller._save_starting_values_per_dataset == [
+            {"A0": 0.0, "A1": 1.0}
+        ]
+        # The free parameter's bounds are repeated per dataset and the tied
+        # parameter's bounds appear once, matching the expanded param order.
+        assert controller.value_ranges == [(0, 5), (0, 5), (10, 20)]
+        assert controller._save_value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_init_no_bounds(self):
+        """
+        Test multifit_init leaves value_ranges as None when no
+        bounds are set
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+        controller.value_ranges = None
+
+        controller.multifit_init()
+
+        assert controller.value_ranges is None
+        assert controller._save_value_ranges is None
+
+    def _setup_cleanup_controller(self):
+        """
+        Create a controller for a two dataset multifit problem, in the state
+        it would be left in by multifit_init.
+
+        :return: A controller ready for multifit_cleanup to be called on
+        :rtype: DummyController
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
+        controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller.problem.multifit_param_names = controller.par_names
+        # The expanded bounds (as built by multifit_init) and the original
+        # per-parameter bounds that should be restored.
+        controller.value_ranges = [(0, 5), (0, 5), (10, 20)]
+        controller._save_value_ranges = [(0, 5), (10, 20)]
+        return controller
+
+    def test_multifit_cleanup(self):
+        """
+        Test multifit_cleanup maps the final params onto a list
+        of lists (one per dataset) and resets the parameter names
+        to their original (unprefixed) form
+        """
+        controller = self._setup_cleanup_controller()
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        # Each dataset keeps its own params plus the shared (tied) params
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+        # Bounds are restored to the original per-parameter form
+        assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_failed_fit(self):
+        """
+        Test multifit_cleanup restores the single dataset parameter names
+        and initial params when the fit failed, so that the failure can be
+        reported for each dataset
+        """
+        controller = self._setup_cleanup_controller()
+        # A fit which failed leaves the final params unset
+        controller.final_params = [None, None]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [None, None]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+        assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_after_previous_fit(self):
+        """
+        Test multifit_cleanup uses the combined parameter names held on the
+        problem, so that it still works when a previous fit (e.g. with
+        another minimizer) has already reduced par_names
+        """
+        controller = self._setup_cleanup_controller()
+        # par_names as left behind by the cleanup of a previous fit
+        controller.par_names = ["A0", "A1"]
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.par_names == ["A0", "A1"]
+
+    def test_eval_chisq_multifit(self):
+        """
+        Test eval_chisq evaluates the cost for each dataset
+        separately and returns a list of results in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+
+        params = [[1.0], [2.0]]
+        x = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        y = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        e = [np.array([1.0, 1.0]), np.array([1.0, 1.0])]
+
+        with patch.object(
+            controller.cost_func, "eval_cost", side_effect=[10, 20]
+        ) as mock:
+            result = controller.eval_chisq(params=params, x=x, y=y, e=e)
+
+        assert result == [10, 20]
+        assert mock.call_count == 2
+
+    def test_check_bounds_respected_multifit_true(self):
+        """
+        Test that no error flag is set when the final params of every
+        dataset respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        # Asymmetric bounds so that indexing by parameter position (correct)
+        # differs from indexing by dataset (the previous bug).
+        controller.value_ranges = [(0, 10), (100, 200)]
+        controller.final_params = [[1, 150], [3, 150]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 0
+
+    def test_check_bounds_respected_multifit_false(self):
+        """
+        Test that the correct error flag is set when the final params of
+        a dataset do not respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.value_ranges = [(0, 10), (100, 200)]
+        # The first parameter of the second dataset (300) is out of its
+        # bounds (0, 10).
+        controller.final_params = [[1, 150], [300, 150]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 5
+
+    def test_validate_multifit_analytic_jacobian(self):
+        """
+        Test that an analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_best_available_jacobian(self):
+        """
+        Test that a 'best_available' Jacobian which resolves to the
+        analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = BestAvailable(controller.problem)
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_analytic_jacobian_not_multifit(self):
+        """
+        Test that an analytic Jacobian is accepted when the problem is
+        not a multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        controller.validate()
+
+    def test_validate_multifit_mcmc_minimizer(self):
+        """
+        Test that an MCMC minimizer is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "dream"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_supported_options(self):
+        """
+        Test that a numerical Jacobian and a non MCMC minimizer are
+        accepted in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "lm-scipy"
+
+        controller.validate()
+
 
 @run_for_test_types(TEST_TYPE, "default", "all")
 class DefaultControllerTests(TestCase):
@@ -637,6 +872,8 @@ class DefaultControllerTests(TestCase):
         controller = ControllerFactory.create_controller(controller_name)
         self.cost_func.param_names = ["b.1", "b@2", "b-3", "b_4"]
         control = controller(self.cost_func)
+        control.initial_params = [1, 2, 3, 4]
+        control.setup()
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
