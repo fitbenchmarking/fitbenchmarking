@@ -653,7 +653,7 @@ class Fit:
 
         # Ensure emissions tracker has been stopped if energy not set. The
         # task is only stopped if it was started, as the fit may have raised
-        # (e.g. a validation error) before it was started.
+        # an exception before the task was started.
         if self._emissions_tracker and tracker_started and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
