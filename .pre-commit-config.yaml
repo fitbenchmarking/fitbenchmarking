@@ -17,14 +17,13 @@ repos:
     - id: ruff-format
       args: [--check]
 
-repos:
-  - repo: local
-    hooks:
-      - id: spelling-check
-        name: Check spelling
-        entry: python3 .custom_hooks/minimizer_spelling.py
-        language: system
-        files: '\.(py|md|html|rst)$'
+- repo: local
+  hooks:
+    - id: spelling-check
+      name: Check spelling
+      entry: python3 .custom_hooks/minimizer_spelling.py
+      language: system
+      files: '\.(py|md|html|rst)$'
 
 ci:
   skip: [spelling-check]
