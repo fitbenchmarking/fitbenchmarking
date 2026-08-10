@@ -289,7 +289,7 @@ class PerformFitTests(unittest.TestCase):
     ):
         """
         The test checks the emissions tracker task is not stopped when
-        the fit raised before the task was started.
+        the fit raised an exception before the task was started.
         """
         controller = set_up_controller("Gauss3.dat", self.options)
         controller.minimizer = "Nelder-Mead"
