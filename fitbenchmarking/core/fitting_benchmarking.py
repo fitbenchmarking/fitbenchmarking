@@ -583,7 +583,6 @@ class Fit:
                     and controller.software != "mantid"
                 ):
                     controller.multifit_cleanup()
-                # TODO: does check_attributes need changing in multifit case?
                 controller.check_attributes()
 
             min_time = np.min(runtimes)

@@ -162,7 +162,6 @@ class Controller:
         self.starting_values = self.problem.starting_values
         # Parameter Bounds: List of tuples of lower and upper bounds
         # for each parameter
-        # TODO: would this need updating at all for multifit?
         self.value_ranges = self.problem.value_ranges
         # Parameter set: The index of the starting parameters to use
         self.parameter_set = None
