@@ -597,14 +597,14 @@ def main():
 
     if len(sys.argv) == 1:
         if not args.problem_sets[0].exists():
-            print(
+            LOGGER.error(
                 "The default problem set has either been "
                 "deleted or moved. Please specify a file "
                 "path to a different problem set with the "
                 "-p option."
             )
             sys.exit(1)
-        print(
+        LOGGER.info(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
         )

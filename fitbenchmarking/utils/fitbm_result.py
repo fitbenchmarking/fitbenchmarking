@@ -176,7 +176,7 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(
+                self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
@@ -317,10 +317,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f"{key} not equal!")
+                    LOGGER.info("%s not equal!", key)
                     return False
             else:
-                print(f"No attr {key}")
+                LOGGER.info("No attr %s", key)
                 return False
         return True
 

@@ -77,7 +77,7 @@ class TestMantidDevParser(TestCase):
         self.parser.fitting_problem.multifit = multifit
         self.parser._set_additional_info()
         if multifit:
-            result = self.parser.fitting_problem.additional_info["mantid_ties"]
+            result = self.parser.fitting_problem.additional_info["ties"]
             assert result == expected
         else:
             assert self.parser.fitting_problem.additional_info == expected

@@ -134,10 +134,7 @@ See :ref:`The MultiFit documentation<mantid_file>` for more details.
 Basic Multifit has 3 unknown parameters, and fits 40 data points.
 MUSR62260 has 18 unknown parameters, and fits around 8000 data points.
 
-.. warning::
-    |MantidWarning|
-   
-    This will also only work using the :ref:`mantid` minimizers.
+These problems can be fitted with all supported minimizers.
 
 Muon Data (Mantid)
 ==================

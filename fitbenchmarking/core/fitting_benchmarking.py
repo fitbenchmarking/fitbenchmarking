@@ -307,6 +307,11 @@ class Fit:
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    controller.multifit_init()
 
             controller.parameter_set = self._start_values_index
 
@@ -577,7 +582,13 @@ class Fit:
                         num_runs, 1
                     )
                 controller.cleanup()
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    controller.multifit_cleanup()
                 controller.check_attributes()
+
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
             tol = 4
@@ -647,10 +658,23 @@ class Fit:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
+            multi_fit = controller.problem.multifit
+
+            # The fit failed, so multifit_cleanup has not run yet. Running it
+            # here splits the combined problem back into its datasets, so
+            # that the parameter names, initial params and bounds are
+            # reported per dataset as they are for a successful fit.
+            if multi_fit and controller.software != "mantid":
+                controller.multifit_cleanup()
+
+            # A validation error is raised before the controller is prepared,
+            # so initial_params (needed to report the result) have not been set
+            if controller.initial_params is None:
+                controller.prepare(skip_setup=True)
+
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
             energy = np.inf
-            multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)
