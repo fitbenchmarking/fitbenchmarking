@@ -594,7 +594,7 @@ class FittingResult:
             f" runtime: {self.runtime:.4g}{line_break}"
             f"Energy usage: {self.energy:.4g}{line_break}"
             f"Iterations: {iterations}{line_break}"
-            f"Function Evaluations: {self.func_evals}{line_break}"
+            f"Function Evaluations: {self.func_evals}"
         )
 
         if include_title:
