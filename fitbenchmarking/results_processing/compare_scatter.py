@@ -250,6 +250,10 @@ class CompareScatterView:
     the CompareScatter class instead
     """
 
+    DATA_HOVER_TEXT_INDEX = 0
+    DATA_MINIMIZER_INDEX = 1
+    DATA_PROBLEM_INDEX = 2
+
     banned_prefixes = [
         "circle-",  # limited readability
         "arrow",  # is offset from actual point
@@ -378,7 +382,7 @@ class CompareScatterView:
         self.plot.update_layout(hoverlabel={"bgcolor": "white"})
         self.plot.update_layout(scattermode="group", scattergap=0.5)
         self.plot.update_traces(
-            hovertemplate="%{customdata[0]}",
+            hovertemplate=f"%{{customdata[{self.DATA_HOVER_TEXT_INDEX}]}}",
             textposition="middle right",
             marker={
                 "line": {
@@ -727,8 +731,8 @@ class CompareScatterView:
                 # The documentation (linked below) shows how using customadata
                 # to store information other than floats is idiomatic.
                 # https://plotly.com/python/hover-text-and-formatting/
-                minimizer = t.customdata[0][1]  # type: ignore
-                problem = t.customdata[0][2]  # type: ignore
+                minimizer = t.customdata[0][self.DATA_MINIMIZER_INDEX]  # type: ignore
+                problem = t.customdata[0][self.DATA_PROBLEM_INDEX]  # type: ignore
                 if (
                     (
                         len(selected_problems) == 0
