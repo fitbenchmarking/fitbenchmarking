@@ -2,6 +2,7 @@
 FitBenchmarking results object
 """
 
+import math
 from statistics import StatisticsError, fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal
 
@@ -558,3 +559,55 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
+
+    def hover_text(self, include_title=False, style="html") -> str:
+        """
+        Generate the tooltip text for a given fitting result.
+        :param result: The result to generate the text for
+        :type result: FittingResult
+        :param include_title: Whether to include the result title in the
+            tooltip
+        :type include_title: bool
+        :param newline: The newline character to use, defaults to CSS style
+            newline used in tables
+        :type newline: str
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+        line_break = "<br>" if style == "html" else r"\a "
+        bold_start = "<b>" if style == "html" else ""
+        bold_end = "</b>" if style == "html" else ""
+
+        if math.isinf(self.runtime) or math.isinf(self.min_accuracy):
+            return f"Error: {self.status}"
+
+        if self.iteration_count is None or self.iteration_count == 0:
+            iterations = "not available"
+        else:
+            iterations = self.func_evals
+
+        hover_text = (
+            f"Status: {self.status}{line_break}"
+            f"Accuracy: {self.accuracy:.4g}{line_break}"
+            f"{self.runtime_metric.capitalize()}"
+            f" runtime: {self.runtime:.4g}{line_break}"
+            f"Energy usage: {self.energy:.4g}{line_break}"
+            f"Iterations: {iterations}{line_break}"
+            f"Function Evaluations: {self.func_evals}"
+        )
+
+        if include_title:
+            hover_text = (
+                f"{bold_start}"
+                f"{self.modified_minimizer_name(with_software=True)}"
+                f"{bold_end}"
+                f" | "
+                f"{bold_start}"
+                f"{self.problem_tag}"
+                f"{bold_end}"
+                f"{line_break}"
+                f"{hover_text}"
+            )
+
+        return hover_text
