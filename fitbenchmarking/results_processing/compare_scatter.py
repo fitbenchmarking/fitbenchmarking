@@ -213,7 +213,7 @@ class CompareScatter:
         # hover text needs to have the <extra/> tag to remove the grey box
         # that would normally show the trace name
         hover_text = [
-            text + "<extra><extra/>"
+            text + "<extra></extra>"
             for text in self.model.get_values_from_results(
                 "hover_text", include_title=True, style="html"
             )
