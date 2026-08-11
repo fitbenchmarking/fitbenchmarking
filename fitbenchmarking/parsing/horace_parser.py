@@ -11,8 +11,11 @@ import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
+
+LOGGER = get_logger()
 
 
 def horace_on():
@@ -291,7 +294,7 @@ class HoraceParser(FitbenchmarkParser):
             """
             horace_on()
             eng.evalc(f"addpath(genpath('{self._horace_path}'))")
-            print(eng.evalc(f"load('{path}')"))
+            LOGGER.info(eng.evalc(f"load('{path}')"))
 
         self.fitting_problem.set_persistent_vars = set_persistent_vars
 

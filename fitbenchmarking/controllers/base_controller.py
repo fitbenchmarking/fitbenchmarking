@@ -19,10 +19,13 @@ from fitbenchmarking.utils.exceptions import (
     MissingBoundsError,
     UnknownMinimizerError,
 )
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
+LOGGER = get_logger()
 
 
 class Controller:
@@ -428,7 +431,7 @@ class Controller:
         except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
-            print("\n" + str(error_msg))
+            LOGGER.error("\n%s", str(error_msg))
 
         return np.prod(par_conf)
 
