@@ -731,6 +731,7 @@ class CompareScatterView:
                 # The documentation (linked below) shows how using customadata
                 # to store information other than floats is idiomatic.
                 # https://plotly.com/python/hover-text-and-formatting/
+                # always select [0] here because each trace only has one point
                 minimizer = t.customdata[0][self.DATA_MINIMIZER_INDEX]  # type: ignore
                 problem = t.customdata[0][self.DATA_PROBLEM_INDEX]  # type: ignore
                 if (
