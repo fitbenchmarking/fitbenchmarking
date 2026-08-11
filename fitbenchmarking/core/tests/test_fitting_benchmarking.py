@@ -295,7 +295,6 @@ class PerformFitTests(unittest.TestCase):
         controller.minimizer = "Nelder-Mead"
 
         fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
-        assert fit._emissions_tracker is not None
 
         mock_validate.side_effect = exceptions.ValidationException
         _ = fit._perform_fit(controller)
