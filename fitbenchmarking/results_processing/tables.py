@@ -133,6 +133,7 @@ def create_results_tables(
                         table_description=description[suffix],
                         table_format=table_format,
                         result_name=table.table_title,
+                        has_cs=table.has_cs,
                         has_pp=bool(table.pps),
                         pp_filenames=[
                             os.path.relpath(table.pp_locations[p], group_dir)
@@ -143,6 +144,12 @@ def create_results_tables(
                             f"{options.run_id}/{os.path.basename(group_dir)}/"
                             f"pp/{'+'.join(table.pps)}"
                         ),
+                        cs_dash_url=(
+                            f"http://{options.ip_address}:{options.port}/"
+                            f"{options.run_id}/{os.path.basename(group_dir)}/"
+                            f"cs/_"
+                        ),
+                        dash_url=f"http://{options.ip_address}:{options.port}",
                         cbar=cbar,
                         run_name=run_name,
                         error_message=ERROR_FLAG_MAPPINGS,
