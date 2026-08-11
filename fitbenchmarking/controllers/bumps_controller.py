@@ -53,15 +53,12 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        # Need unique strings that are valid python vars
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
         self._func_wrapper = None
         self._fit_problem = None
         self.fit_order = None
         self._status = None
         self._bumps_result = None
+        self._param_names = None
         # Need to map the minimizer to an internal one to avoid changing the
         # minimizer in results
         self._minimizer = ""
@@ -72,6 +69,9 @@ class BumpsController(Controller):
 
         Creates a FitProblem for calling in the fit() function of Bumps
         """
+        # Need unique strings that are valid python vars
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.par_names)]
+
         # Bumps fails with the *args notation
         param_name_str = ", ".join(self._param_names)
         wrapper = f"def fitFunction(x, {param_name_str}):\n"
@@ -98,7 +98,7 @@ class BumpsController(Controller):
             exec_dict = {"func": self.cost_func.eval_r}
             exec(wrapper, exec_dict)
             model = exec_dict["fitFunction"]
-            zero_y = np.zeros(len(self.data_y))
+            zero_y = np.zeros(np.shape(self.data_y))
             func_wrapper = Curve(
                 fn=model, x=self.data_x, y=zero_y, **param_dict
             )

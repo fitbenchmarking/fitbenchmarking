@@ -115,12 +115,12 @@ class GradientFreeController(Controller):
         # set search_space to be the space where the minimizer can search
         # for the best parameters i.e. parameter bounds
         param_ranges = [np.arange(b[0], b[1], 0.1) for b in self.value_ranges]
-        self.search_space = dict(zip(self.problem.param_names, param_ranges))
+        self.search_space = dict(zip(self.par_names, param_ranges))
 
         # set dictionary of initial parameter values to pass to gfo search
         # function
         param_dict = {
-            self.problem.param_names[i]: self.initial_params[i]
+            self.par_names[i]: self.initial_params[i]
             for i in range(len(self.initial_params))
         }
 
@@ -138,8 +138,8 @@ class GradientFreeController(Controller):
         """
 
         # convert dictionary of parameter values to list
-        p_list = [0] * len(self.problem.param_names)
-        for v, n in enumerate(self.problem.param_names):
+        p_list = [0] * len(self.par_names)
+        for v, n in enumerate(self.par_names):
             p_list[v] = p[n]
 
         feval = -self.cost_func.eval_cost(p_list, x=self.data_x, y=self.data_y)
@@ -162,8 +162,8 @@ class GradientFreeController(Controller):
         Convert the result to a numpy array and populate the variables results
         will be read from.
         """
-        self.final_params = [0] * len(self.problem.param_names)
-        for v, n in enumerate(self.problem.param_names):
+        self.final_params = [0] * len(self.par_names)
+        for v, n in enumerate(self.par_names):
             self.final_params[v] = self.results[n]
 
         if self._status == 0:
