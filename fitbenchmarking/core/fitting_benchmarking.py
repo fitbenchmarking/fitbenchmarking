@@ -564,6 +564,7 @@ class Fit:
         num_runs = self._options.num_runs
         energy = np.nan
         tracker = self._emissions_tracker
+        tracker_started = False
         tracker_stopped = False
 
         try:
@@ -572,6 +573,7 @@ class Fit:
                 controller.prepare()
                 if tracker:
                     tracker.start_task()
+                    tracker_started = True
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
@@ -653,8 +655,10 @@ class Fit:
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
 
-        # ensure emissions tracker has been stopped if energy not set
-        if self._emissions_tracker and not tracker_stopped:
+        # Ensure emissions tracker has been stopped if energy not set. The
+        # task is only stopped if it was started, as the fit may have raised
+        # an exception before the task was started.
+        if self._emissions_tracker and tracker_started and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
