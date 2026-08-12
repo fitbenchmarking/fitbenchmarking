@@ -1,4 +1,5 @@
 import inspect
+import numbers
 import os
 import re
 from dataclasses import dataclass
@@ -165,6 +166,36 @@ class CompareScatter:
             )
         )
 
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_fig_axes(
+                    x_title=value,
+                    x_data=model.get_values_from_results(value),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_fig_axes(
+                    y_title=value,
+                    y_data=model.get_values_from_results(value),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
+
         script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
         script_path += "/results_processing/scripts/compare_scatter"
 
@@ -231,6 +262,7 @@ class CompareScatter:
             ),
             problems=self.model.get_values_from_results("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
+            plottable_attributes=self.model.get_plottable_attributes(),
         )
 
         legend_items = [
@@ -320,6 +352,7 @@ class CompareScatterView:
         minimizers: list[str],
         problems: list[str],
         report_pages: list[str],
+        plottable_attributes: list[str],
     ):
         """
         Get a div containing the compare scatter and legend.
@@ -370,8 +403,8 @@ class CompareScatterView:
             color=minimizers,
             symbol=problems,
             symbol_sequence=self.valid_symbols,
-            log_x=True,
-            log_y=True,
+            log_x=False,
+            log_y=False,
             custom_data=[tooltips, minimizers, problems, report_pages],
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
@@ -403,12 +436,41 @@ class CompareScatterView:
 
         div_contents = [
             dcc.Store(id="page-load-trigger", data={"loaded": True}),
-            dcc.Graph(
-                figure=self.plot,
-                id="compare_scatter",
-                style={"flex": "1", "min-width": "66vw"},
+            html.Div(
+                [
+                    dcc.Graph(
+                        figure=self.plot,
+                        id="compare_scatter",
+                        style={"flex": "1", "min-width": "66vw"},
+                    ),
+                    legend,
+                ],
+                style={"display": "flex", "overflow": "hidden"},
             ),
-            legend,
+            html.Div(
+                [
+                    html.Div(
+                        "X axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    dcc.Dropdown(
+                        plottable_attributes,
+                        value=x_title,
+                        id="x-dropdown",
+                        clearable=False,
+                    ),
+                    html.Div(
+                        "Y axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    dcc.Dropdown(
+                        plottable_attributes,
+                        value=y_title,
+                        id="y-dropdown",
+                        clearable=False,
+                    ),
+                ],
+            ),
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
             html.Div(id="dummy-height", style={"display": "none"}),
@@ -425,7 +487,6 @@ class CompareScatterView:
 
         return html.Div(
             div_contents,
-            style={"display": "flex", "overflow": "hidden"},
             id="compare_scatter_container",
         )
 
@@ -504,6 +565,27 @@ class CompareScatterView:
                 errors_by_minimizer[minimizer] += 1
 
         return errors_by_minimizer, runs_by_minimizer
+
+    def update_fig_axes(
+        self, x_title=None, x_data=None, y_title=None, y_data=None
+    ):
+        if x_title is not None:
+            assert x_data is not None, (
+                "x_data must be provided when x_title is provided"
+            )
+            self.plot.update_layout(xaxis_title=x_title)
+            for i, t in enumerate(self.plot.data):
+                t.x = [x_data[i]]
+
+        if y_title is not None:
+            assert y_data is not None, (
+                "y_data must be provided when y_title is provided"
+            )
+            self.plot.update_layout(yaxis_title=y_title)
+            for i, trace in enumerate(self.plot.data):
+                trace.y = [y_data[i]]
+
+        return self.plot
 
     def get_warning_text_for_results(self, error_flags, minimizer_names):
         """
@@ -1043,6 +1125,37 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
+    def get_plottable_attributes(self) -> list[str]:
+        """
+        Get a list of attributes which can be plotted on the compare scatter
+        plot. This is determined by checking if the attribute is present in the
+        FittingResult class and if it is a number or a callable function.
+
+        :return: List of attributes which can be plotted
+        :rtype: list[str]
+        """
+        all_attributes = []
+        for result in self.results:
+            all_attributes.extend(dir(result))
+
+        unique_attributes = list(dict.fromkeys(all_attributes))
+        plottable_attributes = []
+        for attribute in unique_attributes:
+            if not attribute.startswith("_"):
+                try:
+                    values = self.get_values_from_results(attribute)
+
+                    if any(
+                        isinstance(value, numbers.Number) for value in values
+                    ) and not all(value == np.inf for value in values):
+                        plottable_attributes.append(attribute)
+
+                except TypeError:
+                    # callable, but requires arguments, so we cannot plot it
+                    continue
+
+        return plottable_attributes
+
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
     ) -> list:
@@ -1070,6 +1183,8 @@ class CompareScatterDataModel:
         # passed an attribute or method name
 
         values = []
+        if attribute is None:
+            raise ValueError("Attribute name cannot be None")
         if callable(getattr(self.results[0], attribute)):
             for result in self.results:
                 func = getattr(result, attribute)
