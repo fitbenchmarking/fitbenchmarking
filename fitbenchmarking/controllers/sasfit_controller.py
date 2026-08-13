@@ -353,10 +353,10 @@ class SASFitController(Controller):
         Build the callback used by the library to evaluate the model and
         its derivatives at a single x value.
 
-        The library asks for one data point at a time, but the Jacobian is
-        cheapest to evaluate for the whole data set at once, so it is
-        evaluated once per set of parameters and cached. The row needed by
-        the current point is then picked out by index.
+        The library asks for one data point at a time, but the model and
+        its Jacobian are much cheaper to evaluate for the whole data set at
+        once, so they are evaluated once per set of parameters and cached.
+        The row needed by the current point is then picked out by index.
 
         :param cost_func: Cost function providing the model and Jacobian.
         :type cost_func: subclass of
@@ -365,36 +365,41 @@ class SASFitController(Controller):
         :return: The callback in the form expected by the library
         :rtype: ctypes function pointer
         """
-        cache = {"params": None, "jac": None}
+        cache = {"params": None, "ymod": None, "jac": None}
 
         def funcs_wrapper(x_i, a_ptr, ymod_ptr, dyda_ptr):
             # The parameters the library wants the model evaluated at
             params = [float(a_ptr[i]) for i in range(self.n_params)]
 
-            # compute model
-            ymod = cost_func.problem.eval_model(
-                x=np.array([x_i]), params=params
-            )
-            y = float(ymod[0])
-            ymod_ptr[0] = y
-
-            # compute jacobian, reusing it for the other points sharing
-            # these parameters
-            if params != cache["params"]:
-                cache["jac"] = cost_func.jacobian.eval(params, x=self.data_x)
-                cache["params"] = params
-                # One set of parameters is one evaluation of the model
-                # over the whole data set
-                self.func_evals += 1
-
             # x_i is passed straight back from the data, so it is usually
-            # an exact match for one of the values it was built from
+            # one of the values the index was built from
             idx = self.x_index.get(x_i)
-            if idx is None:
-                idx = int(np.argmin(np.abs(self.data_x_np - x_i)))
 
+            if idx is None:
+                # Somewhere other than a data point, so it has to be
+                # worked out on its own
+                x_arr = np.array([x_i])
+                y = float(cost_func.problem.eval_model(params, x=x_arr)[0])
+                dyda = cost_func.jacobian.eval(params, x=x_arr)[0]
+            else:
+                if params != cache["params"]:
+                    cache["ymod"] = cost_func.problem.eval_model(
+                        params, x=self.data_x
+                    )
+                    cache["jac"] = cost_func.jacobian.eval(
+                        params, x=self.data_x
+                    )
+                    cache["params"] = params
+                    # One set of parameters is one evaluation of the model
+                    # over the whole data set
+                    self.func_evals += 1
+
+                y = float(cache["ymod"][idx])
+                dyda = cache["jac"][idx]
+
+            ymod_ptr[0] = y
             for i in range(self.n_params):
-                dyda_ptr[i] = float(cache["jac"][idx][i])
+                dyda_ptr[i] = float(dyda[i])
 
             return y
 
