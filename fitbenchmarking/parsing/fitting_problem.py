@@ -98,7 +98,11 @@ class FittingProblem:
         self.additional_info = {}
 
         # Used to check if a problem is using multifit.
-        self.multifit = None
+        self.multifit = False
+
+        # Used to set multifit parameter names for all minimizers
+        # other than mantid
+        self.multifit_param_names = None
 
         # Used to check if a problem will be used down the line for
         # varying starting conditions analysis.
@@ -151,9 +155,33 @@ class FittingProblem:
             )
 
         self.timer.check_elapsed_time()
-
         x = kwargs.get("x", self.data_x)
-        return self.function(x, *params)
+
+        if isinstance(x, np.ndarray):
+            return self.function(x, *params)
+
+        # Multifit case
+        elif isinstance(x, list):
+            # Split params into list of lists
+            dataset_count = len(x)
+            param_dict = dict(zip(self.multifit_param_names, params))
+            lists_of_params = [[] for _ in range(dataset_count)]
+
+            for d in range(dataset_count):
+                for k, v in param_dict.items():
+                    if k.startswith((f"d{d}.", "shared.")):
+                        lists_of_params[d].append(v)
+
+            # Call self.function on each xi (and params for that xi)
+            out = [
+                self.function(xi, *params)
+                for xi, params in zip(x, lists_of_params)
+            ]
+
+            return np.concatenate(out)
+
+        else:
+            raise ValueError("x is neither an array nor a list")
 
     @property
     def param_names(self):

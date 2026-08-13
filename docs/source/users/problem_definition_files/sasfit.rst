@@ -29,6 +29,8 @@ function
   The function can be described by a series of SASfit functions (separated by a semi-colon),
   which are defined in the
   `SASfit manual <https://raw.githubusercontent.com/SASfit/SASfit/master/doc/manual/sasfit.pdf>`_.
+  Please note that currently only form factors are supported, so size distributions and structure
+  factors should not be included in the function string.
   Only parameters which are being fitted should be included in the function string.
 
 fixed_params

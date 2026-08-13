@@ -7,6 +7,8 @@ FitBenchmarking Output
 FitBenchmarking produces tables and reports called support pages as outputs.
 The links below give descriptions of these outputs.
 
+Please note that an internet connection is required for the plotly plots to be rendered.
+
 Tables
 ******
 

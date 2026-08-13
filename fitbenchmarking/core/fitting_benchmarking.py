@@ -5,6 +5,7 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 
 import numpy as np
@@ -71,6 +72,12 @@ class Fit:
         self._emissions_tracker = None
         self._logger_prefix = "    "
         if "energy_usage" in options.table_type:
+            if platform.system() == "Darwin":
+                LOGGER.info(
+                    "Please be aware that you may be prompted by "
+                    "CodeCarbon to provide a password to give sudo rights "
+                    "so that the powermetrics tool can be used."
+                )
             self._emissions_tracker = EmissionsTracker(
                 measure_power_secs=1,
                 tracking_mode="process",
@@ -151,8 +158,8 @@ class Fit:
                 results = self._loop_over_starting_values(problem)
                 self._results.extend(results)
 
-                if self._emissions_tracker:
-                    _ = self._emissions_tracker.stop()
+        if self._emissions_tracker:
+            _ = self._emissions_tracker.stop()
 
         self._checkpointer.finalise_group(
             self._label, self._failed_problems, self._unselected_minimizers
@@ -296,6 +303,11 @@ class Fit:
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    controller.multifit_init()
 
             controller.parameter_set = self._start_values_index
 
@@ -548,6 +560,7 @@ class Fit:
         num_runs = self._options.num_runs
         energy = np.nan
         tracker = self._emissions_tracker
+        tracker_stopped = False
 
         try:
             with self._grabbed_output:
@@ -559,12 +572,19 @@ class Fit:
                         num_runs, 1
                     )
                     energy = tracker.stop_task().energy_consumed / num_runs
+                    tracker_stopped = True
                 else:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                 controller.cleanup()
+                if (
+                    controller.problem.multifit
+                    and controller.software != "mantid"
+                ):
+                    controller.multifit_cleanup()
                 controller.check_attributes()
+
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
             tol = 4
@@ -630,14 +650,27 @@ class Fit:
         controller.timer.reset()
 
         # ensure emissions tracker has been stopped if energy not set
-        if energy == np.nan and self._emissions_tracker:
+        if self._emissions_tracker and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
+            multi_fit = controller.problem.multifit
+
+            # The fit failed, so multifit_cleanup has not run yet. Running it
+            # here splits the combined problem back into its datasets, so
+            # that the parameter names, initial params and bounds are
+            # reported per dataset as they are for a successful fit.
+            if multi_fit and controller.software != "mantid":
+                controller.multifit_cleanup()
+
+            # A validation error is raised before the controller is prepared,
+            # so initial_params (needed to report the result) have not been set
+            if controller.initial_params is None:
+                controller.prepare(skip_setup=True)
+
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
             energy = np.inf
-            multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)
