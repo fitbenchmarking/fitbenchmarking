@@ -1155,10 +1155,6 @@ class CompareScatterDataModel:
             ):
                 try:
                     values = self.get_values_from_results(attribute)
-                    if attribute == "norm_acc":
-                        pass
-                        # print(values)
-                        # print([type(value) for value in values])
 
                     if self.list_contains_plottable_types(values):
                         plottable_attributes.append(attribute)
