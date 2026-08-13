@@ -17,6 +17,9 @@ from pathlib import Path
 import numpy as np
 
 from fitbenchmarking.controllers.base_controller import Controller
+from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
+    WeightedNLLSCostFunc,
+)
 
 FUNCS_T = CFUNCTYPE(
     c_float,
@@ -202,7 +205,18 @@ class SASFitController(Controller):
         # ---- Convert numpy arrays to c float* ----
         self.data_x_np = np.asarray(self.data_x, dtype=np.float32, order="C")
         self.data_y_np = np.asarray(self.data_y, dtype=np.float32, order="C")
-        self.data_e_np = np.asarray(self.data_e, dtype=np.float32, order="C")
+
+        # The library builds its residuals as (y - model) / sig, so 'sig'
+        # is what carries the weighting. Only a weighted cost function
+        # asks for the errors to be used, and even then the problem might
+        # not have any, so everything else is fitted with unit errors.
+        weighted = isinstance(self.cost_func, WeightedNLLSCostFunc)
+        data_e = (
+            self.data_e
+            if weighted and self.data_e is not None
+            else np.ones(self.ndata)
+        )
+        self.data_e_np = np.asarray(data_e, dtype=np.float32, order="C")
 
         # Used by the model callback to find the Jacobian row for the
         # point it has been given
@@ -210,9 +224,7 @@ class SASFitController(Controller):
 
         self.x_ptr = self.data_x_np.ctypes.data_as(POINTER(c_float))
         self.y_ptr = self.data_y_np.ctypes.data_as(POINTER(c_float))
-        self.sig_ptr = self.data_e_np.ctypes.data_as(
-            POINTER(c_float)
-        )  # FIXME: standard deviation
+        self.sig_ptr = self.data_e_np.ctypes.data_as(POINTER(c_float))
         self.yfit_ptr = yfit_np.ctypes.data_as(POINTER(c_float))
 
         # ---- Other inputs for fitting ----
