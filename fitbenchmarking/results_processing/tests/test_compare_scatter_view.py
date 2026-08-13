@@ -19,7 +19,7 @@ class CompareScatterViewTests(unittest.TestCase):
         """
         Create a plot using CompareScatterView.get plot, default values are
         as follows:
-        Minimizers: solver_1, solver_2
+        Minimizers: minimizer_1, minimizer_2
         Problems: problem_1, problem_2
         Tooltips: tooltip_1, tooltip_2, tooltip_3, tooltip_4
         x axis title: test_x_axis
@@ -40,13 +40,23 @@ class CompareScatterViewTests(unittest.TestCase):
                 ["tooltip_4"],
             ],
             errors=errors,
-            minimizers=["solver_1", "solver_1", "solver_2", "solver_2"],
+            minimizers=[
+                "minimizer_1",
+                "minimizer_1",
+                "minimizer_2",
+                "minimizer_2",
+            ],
             problems=["problem_1", "problem_2", "problem_1", "problem_2"],
             report_pages=[
-                "/solver_1/problem_1",
-                "/solver_2/problem_2",
-                "/solver_3/problem_1",
-                "/solver_4/problem_2",
+                "/minimizer_1/problem_1",
+                "/minimizer_2/problem_2",
+                "/minimizer_3/problem_1",
+                "/minimizer_4/problem_2",
+            ],
+            plottable_attributes=[
+                "test_y_axis",
+                "test_x_axis",
+                "test_alternate_axis",
             ],
         )
 
@@ -190,7 +200,7 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["solver_1"], True),
+            "minimizer": dict.fromkeys(["minimizer_1"], True),
             "problem": dict.fromkeys(["problem_1"], True),
         }
 
@@ -220,29 +230,29 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["mySolver"], True),
+            "minimizer": dict.fromkeys(["myMinimizer"], True),
             "problem": dict.fromkeys(["myProblem"], True),
         }
 
         group_state, state_dict = view.toggle_group_state(
-            "mySolver", default_state_dict
+            "myMinimizer", default_state_dict
         )
 
         self.assertEqual(group_state, False)
-        self.assertEqual(state_dict["minimizer"]["mySolver"], False)
+        self.assertEqual(state_dict["minimizer"]["myMinimizer"], False)
 
         group_state, state_dict = view.toggle_group_state(
-            "mySolver", state_dict
+            "myMinimizer", state_dict
         )
 
         self.assertEqual(group_state, True)
-        self.assertEqual(state_dict["minimizer"]["mySolver"], True)
+        self.assertEqual(state_dict["minimizer"]["myMinimizer"], True)
 
     def test_toggle_group_state_throws_when_item_not_found(self):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["solver_1"], True),
+            "minimizer": dict.fromkeys(["minimizer_1"], True),
             "problem": dict.fromkeys(["problem_1"], True),
         }
 
@@ -388,7 +398,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_all_false",
                 True,
                 {
-                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": False,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": False, "problem2": False},
                 },
             ),
@@ -396,7 +409,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_mixed_states",
                 True,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": True,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": True, "problem2": False},
                 },
             ),
@@ -404,7 +420,7 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_all_true",
                 True,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "minimizer": {"myMinimizer": True, "otherMinimizer": True},
                     "problem": {"problem1": True, "problem2": True},
                 },
             ),
@@ -412,7 +428,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_all_false",
                 False,
                 {
-                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": False,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": False, "problem2": False},
                 },
             ),
@@ -420,7 +439,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_mixed_states",
                 False,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": True,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": True, "problem2": False},
                 },
             ),
@@ -428,7 +450,7 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_all_true",
                 False,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "minimizer": {"myMinimizer": True, "otherMinimizer": True},
                     "problem": {"problem1": True, "problem2": True},
                 },
             ),
@@ -444,12 +466,17 @@ class CompareScatterViewTests(unittest.TestCase):
         legend) for every minimizer and problem
         """
         view = CompareScatterView()
-        minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        minimizers = [
+            "myMinimizer",
+            "myMinimizer",
+            "otherMinimizer",
+            "otherMinimizer",
+        ]
         problems = ["problem1", "problem2", "problem1", "problem2"]
 
         view.plot = Mock(spec=go.Figure)
 
-        # there should be one trace for each problem on each minimiser
+        # there should be one trace for each problem on each minimizer
         view.plot.data = [go.Scatter()] * (len(minimizers) * len(problems))
         for mock_trace in view.plot.data:
             mock_trace.marker = {"opacity": 1}
@@ -478,7 +505,7 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
         plot_div = self._create_test_plot(view, errors=[1, 1, 1, 1])
 
-        trace = plot_div.children[1].figure.data[0]
+        trace = plot_div.children[1].children[0].figure.data[0]
         view.set_trace_opacity(trace, 0)
         self.assertEqual(trace.marker["opacity"], 0)
         self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
@@ -537,7 +564,12 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
         _ = self._create_test_plot(view)
 
-        minimizers = ["solver_1", "solver_2", "solver_3", "solver_4"]
+        minimizers = [
+            "minimizer_1",
+            "minimizer_2",
+            "minimizer_3",
+            "minimizer_4",
+        ]
         problems = ["problem_1", "problem_2", "problem_1", "problem_2"]
         expected_state = {
             "minimizer": dict.fromkeys(minimizers, start_state),
@@ -556,3 +588,17 @@ class CompareScatterViewTests(unittest.TestCase):
             self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
 
         mock_trace_opacity.assert_called()
+
+    def update_fig_axes_makes_correct_changes(self):
+        view = CompareScatterView()
+        view.update_fig_axes(
+            "new_x_title", [1, 2, 3], "new_y_title", [4, 5, 6]
+        )
+        self.assertEqual(view.plot.layout.xaxis.title.text, "new_x_title")
+        self.assertEqual(view.plot.layout.yaxis.title.text, "new_y_title")
+        self.assertEqual(view.plot.data[0].x, 1)  # type: ignore
+        self.assertEqual(view.plot.data[1].x, 2)  # type: ignore
+        self.assertEqual(view.plot.data[2].x, 3)  # type: ignore
+        self.assertEqual(view.plot.data[3].y, 4)  # type: ignore
+        self.assertEqual(view.plot.data[4].y, 5)  # type: ignore
+        self.assertEqual(view.plot.data[5].y, 6)  # type: ignore
