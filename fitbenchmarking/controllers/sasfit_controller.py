@@ -3,6 +3,7 @@ Implements a controller for SASFit
 """
 
 import ctypes as ct
+import os
 from ctypes import (
     CFUNCTYPE,
     POINTER,
@@ -11,6 +12,7 @@ from ctypes import (
     c_float,
     c_int,
 )
+from pathlib import Path
 
 import numpy as np
 
@@ -26,6 +28,110 @@ FUNCS_T = CFUNCTYPE(
     # POINTER(c_bool)         # error
 )
 
+#: Location of the SASfit Levenberg-Marquardt shared library. Defaults to
+#: 'liblmfit.so' shipped alongside this controller, and can be overridden
+#: with the 'SASFIT_LM_LIB' environment variable.
+LIB_PATH = Path(
+    os.environ.get(
+        "SASFIT_LM_LIB",
+        Path(__file__).parent / "sasfit_controller" / "liblmfit.so",
+    )
+)
+
+
+def load_library(path):
+    """
+    Load the SASfit Levenberg-Marquardt shared library and declare the
+    signatures of the functions it provides.
+
+    :param path: Location of the shared library
+    :type path: pathlib.Path
+
+    :return: The loaded shared library
+    :rtype: ctypes.CDLL
+    """
+    if not path.is_file():
+        raise ImportError(
+            f"Could not find the SASfit LM shared library at '{path}'. "
+            "Build 'liblmfit.so' from the SASfit LM sources, then either "
+            "place it at that location or point the 'SASFIT_LM_LIB' "
+            "environment variable at it."
+        )
+
+    try:
+        lib = ct.CDLL(str(path))
+    except OSError as excp:
+        raise ImportError(
+            "Could not load the SASfit LM shared library at "
+            f"'{path}': {excp}"
+        ) from excp
+
+    lib.SASFITmrqmin.argtypes = [
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        c_int,
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        c_int,
+        POINTER(c_int),
+        c_int,
+        POINTER(POINTER(c_float)),
+        POINTER(POINTER(c_float)),
+        POINTER(POINTER(c_float)),
+        POINTER(c_float),
+        FUNCS_T,
+        POINTER(c_float),
+        c_int,
+        POINTER(c_bool),
+    ]
+    lib.SASFITmrqmin.restype = None
+
+    lib.SASFITmrqcof.argtypes = [
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        POINTER(c_float),
+        c_int,
+        POINTER(c_float),
+        POINTER(c_int),
+        c_int,
+        c_int,
+        c_int,
+        POINTER(POINTER(c_float)),
+        POINTER(c_float),
+        POINTER(c_float),
+        FUNCS_T,
+        POINTER(c_bool),
+    ]
+    lib.SASFITmrqcof.restype = None
+
+    lib.SASFITgaussj.argtypes = [
+        POINTER(POINTER(c_float)),
+        c_int,
+        POINTER(POINTER(c_float)),
+        c_int,
+        POINTER(c_bool),
+    ]
+    lib.SASFITgaussj.restype = None
+
+    lib.SASFITcovsrt.argtypes = [
+        POINTER(POINTER(c_float)),
+        c_int,
+        POINTER(c_int),
+        c_int,
+        POINTER(c_bool),
+    ]
+    lib.SASFITcovsrt.restype = None
+
+    return lib
+
+
+LIB = load_library(LIB_PATH)
+
 
 class SASFitController(Controller):
     """
@@ -33,9 +139,24 @@ class SASFitController(Controller):
     """
 
     controller_name = "sasfit"
+
     algorithm_check = {
         "all": ["lm-sasfit"],
+        "ls": ["lm-sasfit"],
+        "deriv_free": [],
+        "general": [],
+        "simplex": [],
+        "trust_region": ["lm-sasfit"],
+        "levenberg-marquardt": ["lm-sasfit"],
+        "gauss_newton": [],
+        "bfgs": [],
+        "conjugate_gradient": [],
+        "steepest_descent": [],
+        "global_optimization": [],
+        "MCMC": [],
     }
+
+    jacobian_enabled_solvers = ["lm-sasfit"]
 
     def __init__(self, cost_func):
         """
@@ -51,73 +172,6 @@ class SASFitController(Controller):
         """
         Setup problem ready to be run
         """
-        # Load library
-        self.lib = ct.CDLL(
-            "/home/letizia/fitbenchmarking_new/fitbenchmarking/fitbenchmarking/controllers/sasfit_controller/liblmfit.so"
-        )
-
-        # ---- Bind the C functions ----
-        self.lib.SASFITmrqmin.argtypes = [
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            c_int,
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            c_int,
-            POINTER(c_int),
-            c_int,
-            POINTER(POINTER(c_float)),
-            POINTER(POINTER(c_float)),
-            POINTER(POINTER(c_float)),
-            POINTER(c_float),
-            FUNCS_T,
-            POINTER(c_float),
-            c_int,
-            POINTER(c_bool),
-        ]
-        self.lib.SASFITmrqmin.restype = None
-
-        self.lib.SASFITmrqcof.argtypes = [
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
-            c_int,
-            POINTER(c_float),
-            POINTER(c_int),
-            c_int,
-            c_int,
-            c_int,
-            POINTER(POINTER(c_float)),
-            POINTER(c_float),
-            POINTER(c_float),
-            FUNCS_T,
-            POINTER(c_bool),
-        ]
-        self.lib.SASFITmrqcof.restype = None
-
-        self.lib.SASFITgaussj.argtypes = [
-            POINTER(POINTER(c_float)),
-            c_int,
-            POINTER(POINTER(c_float)),
-            c_int,
-            POINTER(c_bool),
-        ]
-        self.lib.SASFITgaussj.restype = None
-
-        self.lib.SASFITcovsrt.argtypes = [
-            POINTER(POINTER(c_float)),
-            c_int,
-            POINTER(c_int),
-            c_int,
-            POINTER(c_bool),
-        ]
-        self.lib.SASFITcovsrt.restype = None
-
         self.n_params = len(self.initial_params)
         self.n_fitted_params = len(self.initial_params)
 
@@ -171,12 +225,17 @@ class SASFitController(Controller):
         self.covar_mat, _ = self.make_matrix_float(self.mfit, self.mfit)
         self.oneda_mat, _ = self.make_matrix_float(self.mfit, 1)
 
+        # ---- Model function ----
+        # Held on the controller so that the callback stays alive for as
+        # long as the library might call it
+        self.funcs_cb = self.make_funcs_wrapper(self.cost_func)
+
     def fit(self):
         """
         Run problem
         """
 
-        self.lib.SASFITmrqmin(
+        LIB.SASFITmrqmin(
             self.x_ptr,  # x values
             self.y_ptr,  # measured y
             self.sig_ptr,  # standard dev
@@ -193,7 +252,7 @@ class SASFitController(Controller):
             self.alpha_mat,  # working space array
             self.oneda_mat,  # working space array
             byref(self.chisq),  # Pointer to current chi square value
-            self.make_funcs_wrapper(self.cost_func),  # the model function
+            self.funcs_cb,  # the model function
             byref(self.alamda),  # Levenberg Marquardt control parameter
             c_int(self.error_type),  # 0 to 4
             byref(self.error),  # Set to TRUE if anything goes wrong
