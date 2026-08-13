@@ -141,15 +141,15 @@ class TestFittingProblem(TestCase):
         expected = np.array([1006.0, 1007.0, 1110.0, 1120.0])
         self.assertTrue(np.allclose(eval_result, expected))
 
-    def test_eval_model_invalid_x_type(self):
+    def test_eval_model_list_x_without_multifit(self):
         """
-        Test that eval_model raises a ValueError when x is neither an
-        array nor a list
+        Test that a list of x values is passed straight to the function
+        when the problem is not multifit
         """
         fitting_problem = FittingProblem(self.options)
-        fitting_problem.function = lambda x, p1: x + p1
-        with self.assertRaises(ValueError):
-            fitting_problem.eval_model(x="not_valid", params=[5])
+        fitting_problem.function = lambda x, p1: np.array(x) + p1
+        eval_result = fitting_problem.eval_model(x=[1, 8, 11], params=[5])
+        self.assertTrue(all(eval_result == np.array([6, 13, 16])))
 
     def test_get_function_params(self):
         """

@@ -1,4 +1,4 @@
 ,,bumps,dfo,lmfit,mantid,minuit,nlopt,scipy,scipy_leastsq,scipy_ls
 ,,lm-bumps,dfols,least_squares,Levenberg-Marquardt: j:best_available,migrad,LD_VAR1: j:best_available,Nelder-Mead,lm-leastsq: j:best_available,lm-scipy: j:best_available
-"Basic MultiFit, Dataset 1","2 params, 18 points",7.925e-07 (1),11.97 (1.51e+07),198.2 (2.501e+08),11.97 (1.51e+07)[2],11.97 (1.511e+07),45.64 (5.759e+07),71.54 (9.027e+07),11.97 (1.51e+07),11.97 (1.51e+07)
-"Basic MultiFit, Dataset 2","2 params, 18 points",106.2 (6.846),52.64 (3.392),197.9 (12.75),15.52 (1)[2],52.65 (3.393),45.64 (2.941),85.96 (5.539),52.64 (3.392),52.64 (3.392)
+"Basic MultiFit, Dataset 1","2 params, 18 points",11.97 (1),11.97 (1),198.2 (16.56),11.97 (1)[2],11.97 (1),45.64 (3.812),71.54 (5.977),11.97 (1),11.97 (1)
+"Basic MultiFit, Dataset 2","2 params, 18 points",15.52 (5.974),15.52 (5.974),365.4 (140.7),15.52 (5.974)[2],15.51 (5.973),144.7 (55.72),2.598 (1),15.52 (5.974),15.52 (5.974)

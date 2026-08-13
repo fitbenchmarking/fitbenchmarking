@@ -307,11 +307,6 @@ class Fit:
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
-                if (
-                    controller.problem.multifit
-                    and controller.software != "mantid"
-                ):
-                    controller.multifit_init()
 
             controller.parameter_set = self._start_values_index
 
@@ -566,8 +561,16 @@ class Fit:
         tracker = self._emissions_tracker
         tracker_stopped = False
 
+        # For multifit problems, Mantid combines the datasets itself,
+        # everything else needs the controller to do it
+        combine_datasets = (
+            controller.problem.multifit and controller.software != "mantid"
+        )
+
         try:
             with self._grabbed_output:
+                if combine_datasets:
+                    controller.multifit_init()
                 controller.validate()
                 controller.prepare()
                 if tracker:
@@ -582,10 +585,7 @@ class Fit:
                         num_runs, 1
                     )
                 controller.cleanup()
-                if (
-                    controller.problem.multifit
-                    and controller.software != "mantid"
-                ):
+                if combine_datasets:
                     controller.multifit_cleanup()
                 controller.check_attributes()
 
@@ -660,11 +660,12 @@ class Fit:
         if controller.flag in [3, 6, 7]:
             multi_fit = controller.problem.multifit
 
-            # The fit failed, so multifit_cleanup has not run yet. Running it
-            # here splits the combined problem back into its datasets, so
-            # that the parameter names, initial params and bounds are
-            # reported per dataset as they are for a successful fit.
-            if multi_fit and controller.software != "mantid":
+            # The fit failed, so multifit_cleanup may not have run yet.
+            # Running it here splits the combined problem back into its
+            # datasets, so that the parameter names, initial params and
+            # bounds are reported per dataset as they are for a successful
+            # fit. It is a no-op if it has already run.
+            if combine_datasets:
                 controller.multifit_cleanup()
 
             # A validation error is raised before the controller is prepared,

@@ -157,31 +157,25 @@ class FittingProblem:
         self.timer.check_elapsed_time()
         x = kwargs.get("x", self.data_x)
 
-        if isinstance(x, np.ndarray):
-            return self.function(x, *params)
-
-        # Multifit case
-        elif isinstance(x, list):
-            # Split params into list of lists
-            dataset_count = len(x)
+        # Multifit case: x holds the x values of every dataset and params
+        # holds the combined (shared./d<i>.) parameters, so split the
+        # params up and evaluate the function once per dataset.
+        if self.multifit and self.multifit_param_names and isinstance(x, list):
             param_dict = dict(zip(self.multifit_param_names, params))
-            lists_of_params = [[] for _ in range(dataset_count)]
-
-            for d in range(dataset_count):
-                for k, v in param_dict.items():
-                    if k.startswith((f"d{d}.", "shared.")):
-                        lists_of_params[d].append(v)
-
-            # Call self.function on each xi (and params for that xi)
             out = [
-                self.function(xi, *params)
-                for xi, params in zip(x, lists_of_params)
+                self.function(
+                    x_d,
+                    *[
+                        v
+                        for k, v in param_dict.items()
+                        if k.startswith((f"d{d}.", "shared."))
+                    ],
+                )
+                for d, x_d in enumerate(x)
             ]
-
             return np.concatenate(out)
 
-        else:
-            raise ValueError("x is neither an array nor a list")
+        return self.function(x, *params)
 
     @property
     def param_names(self):
