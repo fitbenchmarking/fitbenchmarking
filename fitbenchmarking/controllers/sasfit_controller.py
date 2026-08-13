@@ -431,8 +431,22 @@ class SASFitController(Controller):
         return FUNCS_T(funcs_wrapper)
 
     def ptr_to_numpy(self, ptr, length) -> np.ndarray:
-        # Create a 1D numpy array that views the same memory
-        return np.ctypeslib.as_array(ptr, shape=(length,))
+        """
+        Copy a C array into a numpy array.
+
+        The copy matters because the library keeps writing to its own
+        arrays, so a view would carry on changing after it was read.
+
+        :param ptr: The C array to copy
+        :type ptr: ctypes array or pointer to c_float
+        :param length: Number of values to copy
+        :type length: int
+
+        :return: The values, in double precision
+        :rtype: numpy array
+        """
+        view = np.ctypeslib.as_array(ptr, shape=(length,))
+        return np.array(view, dtype=np.float64)
 
     def cleanup(self):
         """
