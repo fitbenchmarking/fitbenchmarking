@@ -1126,6 +1126,14 @@ class CompareScatterDataModel:
         return result.name
 
     def get_plottable_attributes(self) -> list[str]:
+        """
+        Get a list of attributes that make logical sense to plot on a scatter
+        plot. Works by reading all attributes of the FittingResults and
+        removing any which return a non-numeric value.
+
+        :return: list of attributes that can be plotted
+        :rtype: list[str]
+        """
 
         excluded_attributes = [
             "error_flag",
@@ -1160,11 +1168,21 @@ class CompareScatterDataModel:
         return plottable_attributes
 
     @staticmethod
-    def list_contains_plottable_types(list):
+    def list_contains_plottable_types(values: list):
+        """
+        Return True if the provided list contains at least one numeric value,
+        and is not entirely unplottable (i.e. np.inf)
+
+        :param values: list of values to check
+        :type values: list
+
+        :return: if the list can be plotted on a scatter plot
+        :rtype: bool
+        """
         return any(
             isinstance(value, numbers.Number) and not isinstance(value, bool)
-            for value in list
-        ) and not all(value for value in np.isinf(list))
+            for value in values
+        ) and not all(value for value in np.isinf(values))
 
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
