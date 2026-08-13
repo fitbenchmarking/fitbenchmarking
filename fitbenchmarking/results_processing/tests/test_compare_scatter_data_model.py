@@ -1,4 +1,6 @@
 import unittest
+from dataclasses import dataclass
+from unittest.mock import Mock
 
 import numpy as np
 from parameterized import parameterized
@@ -9,6 +11,7 @@ from fitbenchmarking.results_processing.compare_scatter import (
 from fitbenchmarking.results_processing.tests.test_compare_scatter import (
     make_mock_fitting_result,
 )
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
 class CompareScatterDataModelTests(unittest.TestCase):
@@ -110,3 +113,98 @@ class CompareScatterDataModelTests(unittest.TestCase):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
         unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
+
+    def test_list_contains_plottable_types_returns_false_if_np_inf(self):
+        self.assertFalse(
+            CompareScatterDataModel.list_contains_plottable_types(
+                [np.inf, np.inf, np.inf, np.inf, np.inf, np.inf]
+            )
+        )
+
+    def test_list_contains_plottable_types_returns_false_if_non_numeric(self):
+        self.assertFalse(
+            CompareScatterDataModel.list_contains_plottable_types(
+                ["test", "test", "test", "test"]
+            )
+        )
+
+    def test_list_contains_plottable_types_returns_true_if_any_numeric(self):
+        self.assertTrue(
+            CompareScatterDataModel.list_contains_plottable_types(
+                [123, 456.123, np.float64(789)]
+            )
+        )
+
+    def test_get_plottable_attributes_returns_expected_attributes(
+        self,
+    ):
+        """
+        Test that get_plottable_attributes returns attributes that are numeric
+        and not excluded.
+
+        Note that the function being tested will iterate through and execute
+        every method on every class in the provided results list. This means
+        that normal mocking cannot be used since normal mock classes will have
+        methods like `assert_called_once_with` which would be executed (causing
+        the test to fail).
+
+        To circumvent this problem, a model class (`StubResult`) has been
+        created to represent the final state we want the fitting result to be
+        in. A mock fitting result has then been created with its __dir__
+        function, its attributes and its methods replaced with those defined
+        in the `StubResult` class.
+        """
+
+        # Configure the test data
+        @dataclass
+        class StubResult:
+            # attributes which can be plotted:
+            plottable_attrib = 1
+            numpy_plottable_attrib = np.float16(1)
+
+            def plottable_method():
+                return 1
+
+            # attributes which cannot be plotted:
+            def unplottable_method_because_params_required(required_param):
+                return required_param
+
+            name = "test"
+            unplottable_beacause_infinite = np.inf
+            unplottable_beacause_wrong_type = "not a number"
+            _unplottable_beacause_private = None
+
+            def unplottable_method_because_wrong_rtype():
+                return "not a number"
+
+            # manually blacklisted attributes
+            error_flag = 1
+
+            def get_n_data_points():
+                return 1
+
+            def get_n_parameters():
+                return 1
+
+            def init_blank():
+                return 1
+
+        # Create the overwritten mock FittingResult
+        mock_fitting_result = Mock(spec=FittingResult)
+        mock_fitting_result.__dir__ = lambda _=mock_fitting_result: dir(
+            StubResult
+        )
+
+        for attr in dir(mock_fitting_result):
+            if attr.startswith("__"):
+                continue
+            setattr(mock_fitting_result, attr, getattr(StubResult, attr))
+
+        model = CompareScatterDataModel([mock_fitting_result])  # type: ignore
+
+        attributes = model.get_plottable_attributes()
+
+        self.assertListEqual(
+            ["numpy_plottable_attrib", "plottable_attrib", "plottable_method"],
+            attributes,
+        )
