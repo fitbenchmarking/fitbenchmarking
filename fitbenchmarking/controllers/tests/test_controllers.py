@@ -21,6 +21,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
     LoglikeNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
@@ -614,6 +615,51 @@ class BaseControllerTests(TestCase):
         controller.check_bounds_respected()
 
         assert controller.flag == 5
+
+    def _poisson_controller(self):
+        """
+        Create a controller with a cost function which is not a least
+        squares one, ready for validate to be called on.
+
+        :return: A controller using the Poisson cost function
+        :rtype: DummyController
+        """
+        cost_func = PoissonCostFunc(self.problem)
+        cost_func.jacobian = Scipy(self.problem)
+        cost_func.jacobian.method = "2-point"
+        return DummyController(cost_func)
+
+    def test_validate_multifit_non_least_squares_cost_func(self):
+        """
+        Test that a cost function which is not a least squares one is
+        rejected in the multifit case
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_mantid(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted in the multifit case when the software is mantid, as
+        mantid combines the datasets itself
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+        controller._software = "mantid"
+
+        controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_not_multifit(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted when the problem is not a multifit problem
+        """
+        controller = self._poisson_controller()
+
+        controller.validate()
 
     def test_validate_multifit_analytic_jacobian(self):
         """
