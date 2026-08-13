@@ -240,7 +240,6 @@ class CompareScatter:
         """
         default_x = "norm_runtime"
         default_y = "norm_acc"
-
         # hover text needs to have the <extra/> tag to remove the grey box
         # that would normally show the trace name
         hover_text = [
@@ -273,6 +272,7 @@ class CompareScatter:
         ]
 
         self.add_callbacks(self.view.plot, legend_items)
+
         return plot, self.app
 
 
@@ -1126,14 +1126,14 @@ class CompareScatterDataModel:
         return result.name
 
     def get_plottable_attributes(self) -> list[str]:
-        """
-        Get a list of attributes which can be plotted on the compare scatter
-        plot. This is determined by checking if the attribute is present in the
-        FittingResult class and if it is a number or a callable function.
 
-        :return: List of attributes which can be plotted
-        :rtype: list[str]
-        """
+        excluded_attributes = [
+            "error_flag",
+            "get_n_data_points",
+            "get_n_parameters",
+            "init_blank",
+        ]
+
         all_attributes = []
         for result in self.results:
             all_attributes.extend(dir(result))
@@ -1141,20 +1141,30 @@ class CompareScatterDataModel:
         unique_attributes = list(dict.fromkeys(all_attributes))
         plottable_attributes = []
         for attribute in unique_attributes:
-            if not attribute.startswith("_"):
+            if (
+                not attribute.startswith("_")
+                and attribute not in excluded_attributes
+            ):
                 try:
                     values = self.get_values_from_results(attribute)
+                    if attribute == "norm_acc":
+                        pass
+                        # print(values)
+                        # print([type(value) for value in values])
 
-                    if any(
-                        isinstance(value, numbers.Number) for value in values
-                    ) and not all(value == np.inf for value in values):
+                    if self.list_contains_plottable_types(values):
                         plottable_attributes.append(attribute)
-
                 except TypeError:
                     # callable, but requires arguments, so we cannot plot it
                     continue
-
         return plottable_attributes
+
+    @staticmethod
+    def list_contains_plottable_types(list):
+        return any(
+            isinstance(value, numbers.Number) and not isinstance(value, bool)
+            for value in list
+        ) and not all(value for value in np.isinf(list))
 
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
