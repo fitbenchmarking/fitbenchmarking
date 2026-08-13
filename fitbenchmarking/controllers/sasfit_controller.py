@@ -62,8 +62,7 @@ def load_library(path):
         lib = ct.CDLL(str(path))
     except OSError as excp:
         raise ImportError(
-            "Could not load the SASfit LM shared library at "
-            f"'{path}': {excp}"
+            f"Could not load the SASfit LM shared library at '{path}': {excp}"
         ) from excp
 
     lib.SASFITmrqmin.argtypes = [
@@ -190,6 +189,10 @@ class SASFitController(Controller):
         self.data_y_np = np.asarray(self.data_y, dtype=np.float32, order="C")
         self.data_e_np = np.asarray(self.data_e, dtype=np.float32, order="C")
 
+        # Used by the model callback to find the Jacobian row for the
+        # point it has been given
+        self.x_index = {float(x): i for i, x in enumerate(self.data_x_np)}
+
         self.x_ptr = self.data_x_np.ctypes.data_as(POINTER(c_float))
         self.y_ptr = self.data_y_np.ctypes.data_as(POINTER(c_float))
         self.sig_ptr = self.data_e_np.ctypes.data_as(
@@ -277,24 +280,49 @@ class SASFitController(Controller):
         return mat, row_buffers
 
     def make_funcs_wrapper(self, cost_func):
-        def funcs_wrapper(x_i, a_ptr, ymod_ptr, dyda_ptr):
-            # need this for getting the right jac later
-            idx = min(range(len(self.data_x)), key=lambda i: abs(self.data_x[i] - x_i))
+        """
+        Build the callback used by the library to evaluate the model and
+        its derivatives at a single x value.
 
-            # extract params correctly
+        The library asks for one data point at a time, but the Jacobian is
+        cheapest to evaluate for the whole data set at once, so it is
+        evaluated once per set of parameters and cached. The row needed by
+        the current point is then picked out by index.
+
+        :param cost_func: Cost function providing the model and Jacobian.
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+
+        :return: The callback in the form expected by the library
+        :rtype: ctypes function pointer
+        """
+        cache = {"params": None, "jac": None}
+
+        def funcs_wrapper(x_i, a_ptr, ymod_ptr, dyda_ptr):
+            # The parameters the library wants the model evaluated at
             params = [float(a_ptr[i]) for i in range(self.n_params)]
 
             # compute model
-            y = float(
-                cost_func.problem.eval_model(x=np.array(x_i), params=params)
+            ymod = cost_func.problem.eval_model(
+                x=np.array([x_i]), params=params
             )
+            y = float(ymod[0])
             ymod_ptr[0] = y
 
-            # compute jacobian
-            jac = cost_func.jacobian.eval(self.initial_params)
+            # compute jacobian, reusing it for the other points sharing
+            # these parameters
+            if params != cache["params"]:
+                cache["jac"] = cost_func.jacobian.eval(params, x=self.data_x)
+                cache["params"] = params
+
+            # x_i is passed straight back from the data, so it is usually
+            # an exact match for one of the values it was built from
+            idx = self.x_index.get(x_i)
+            if idx is None:
+                idx = int(np.argmin(np.abs(self.data_x_np - x_i)))
 
             for i in range(self.n_params):
-                dyda_ptr[i] = np.asarray(jac[idx][i], dtype=np.float32)
+                dyda_ptr[i] = float(cache["jac"][idx][i])
 
             return y
 
