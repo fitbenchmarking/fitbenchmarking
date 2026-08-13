@@ -1131,7 +1131,7 @@ class CompareScatterDataModel:
             "error_flag",
             "get_n_data_points",
             "get_n_parameters",
-            "init_blank",
+            "init_blank",  # needed to avoid accidentally clearing every result
         ]
 
         all_attributes = []
