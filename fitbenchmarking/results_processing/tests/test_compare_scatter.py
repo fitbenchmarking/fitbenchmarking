@@ -158,7 +158,7 @@ class CompareScatterTests(unittest.TestCase):
         none_button_callback_args = events[2][0]
         all_button_callback_args = events[3][0]
         x_dropdown_callback_args = events[4][0]
-        y_dropdown_callback_args = events[4][0]
+        y_dropdown_callback_args = events[5][0]
 
         self.assertEqual(
             my_minimizer_callback_args[0], Output("compare_scatter", "figure")
