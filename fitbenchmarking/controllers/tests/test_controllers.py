@@ -948,6 +948,21 @@ class ExternalControllerTests(TestCase):
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
+    def test_sasfit(self):
+        """
+        SASFitController: Tests for output shape
+        """
+        controller = create_controller("sasfit", self.cost_func)
+
+        controller.minimizer = "lm-sasfit"
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 1
+        controller.cleanup()
+        assert controller.flag == 3
+
     def test_gofit(self):
         """
         GOFitController: Tests for output shape
