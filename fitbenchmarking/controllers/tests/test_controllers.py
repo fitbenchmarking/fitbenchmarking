@@ -960,6 +960,9 @@ class ExternalControllerTests(TestCase):
         controller._status = 0
         self.shared_tests.check_converged(controller)
         controller._status = 1
+        self.shared_tests.check_max_iterations(controller)
+        # the library reported a problem while fitting
+        controller._status = 2
         controller.cleanup()
         assert controller.flag == 3
 

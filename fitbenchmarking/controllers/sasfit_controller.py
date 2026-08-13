@@ -157,6 +157,21 @@ class SASFitController(Controller):
 
     jacobian_enabled_solvers = ["lm-sasfit"]
 
+    #: Most Levenberg-Marquardt iterations to run before giving up
+    max_iterations = 500
+
+    #: Relative change in chi squared below which an iteration is taken
+    #: to have made no progress
+    tolerance = 1e-8
+
+    #: Iterations without progress needed before the fit is taken to
+    #: have converged
+    required_no_progress = 4
+
+    #: Value of 'alamda' above which the steps on offer are too small to
+    #: be worth taking
+    max_alamda = 1e12
+
     def __init__(self, cost_func):
         """
         Extract param names for function setup
@@ -236,8 +251,65 @@ class SASFitController(Controller):
     def fit(self):
         """
         Run problem
-        """
 
+        A call to 'SASFITmrqmin' carries out a single Levenberg-Marquardt
+        iteration, so it is called repeatedly until chi squared stops
+        improving. Once that happens a final iteration is run with
+        'alamda' set to zero, which fills in the covariance matrix.
+
+        An iteration which improves chi squared is taken by the library,
+        which lowers 'alamda'. One which doesn't is thrown away and
+        'alamda' is raised instead, so it is only worth stopping on the
+        iterations that were taken.
+        """
+        self.iteration_count = 0
+        self.func_evals = 0
+        no_progress = 0
+        prev_chisq = np.inf
+        self._status = 1
+
+        while self.iteration_count < self.max_iterations:
+            prev_alamda = self.alamda.value
+            self.mrqmin()
+            self.iteration_count += 1
+
+            if self.error.value:
+                self._status = 2
+                break
+
+            chisq = self.chisq.value
+            improvement = prev_chisq - chisq
+            prev_chisq = chisq
+
+            # 'alamda' is lowered when a step is taken and raised when it
+            # is thrown away. It starts out negative to ask for the set up
+            # to be done, so only a positive value says anything
+            if 0.0 < prev_alamda < self.alamda.value:
+                # The step was thrown away. Keep going with a bigger
+                # 'alamda' until it is too big to give a usable step
+                if self.alamda.value > self.max_alamda:
+                    self._status = 0
+                    break
+            elif improvement <= self.tolerance * abs(chisq):
+                no_progress += 1
+                if no_progress >= self.required_no_progress:
+                    self._status = 0
+                    break
+            else:
+                no_progress = 0
+
+            self.timer.check_elapsed_time()
+
+        if self._status == 0:
+            self.alamda = c_float(0.0)
+            self.mrqmin()
+
+        self._popt = self.ptr_to_numpy(self.a_arr, self.ma)
+
+    def mrqmin(self):
+        """
+        Run a single Levenberg-Marquardt iteration.
+        """
         LIB.SASFITmrqmin(
             self.x_ptr,  # x values
             self.y_ptr,  # measured y
@@ -260,9 +332,6 @@ class SASFitController(Controller):
             c_int(self.error_type),  # 0 to 4
             byref(self.error),  # Set to TRUE if anything goes wrong
         )
-
-        self._popt = self.ptr_to_numpy(self.a_arr, self.ma)
-        self._status = 0 if not self.error else 1
 
     def make_matrix_float(self, rows, cols):
         """
@@ -314,6 +383,9 @@ class SASFitController(Controller):
             if params != cache["params"]:
                 cache["jac"] = cost_func.jacobian.eval(params, x=self.data_x)
                 cache["params"] = params
+                # One set of parameters is one evaluation of the model
+                # over the whole data set
+                self.func_evals += 1
 
             # x_i is passed straight back from the data, so it is usually
             # an exact match for one of the values it was built from
@@ -333,14 +405,15 @@ class SASFitController(Controller):
         return np.ctypeslib.as_array(ptr, shape=(length,))
 
     def cleanup(self):
+        """
+        Convert the result to a numpy array and populate the variables
+        results will be read from.
+        """
         if self._status == 0:
             self.flag = 0
+        elif self._status == 1:
+            self.flag = 1
         else:
             self.flag = 3
-
-        # if "nfev" in self.result:
-        #     self.func_evals = self.result.nfev
-        # if "nit" in self.result:
-        #     self.iteration_count = self.result.nit
 
         self.final_params = self._popt
