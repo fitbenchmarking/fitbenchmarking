@@ -275,7 +275,18 @@ class SASFitController(Controller):
         which lowers 'alamda'. One which doesn't is thrown away and
         'alamda' is raised instead, so it is only worth stopping on the
         iterations that were taken.
+
+        This is timed and so is run more than once for a single 'setup',
+        which means everything the library changes as it goes has to be
+        put back before starting.
         """
+        for i, param in enumerate(self.initial_params):
+            self.a_arr[i] = param
+        # Negative to ask the library to do its own set up
+        self.alamda = c_float(-1.0)
+        self.chisq = c_float(0.0)
+        self.error = c_bool(False)
+
         self.iteration_count = 0
         self.func_evals = 0
         no_progress = 0
