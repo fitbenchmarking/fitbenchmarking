@@ -199,7 +199,9 @@ class SASFitController(Controller):
         self.ndata = len(self.data_x)
 
         # ---- Outputs ----
-        yfit_np = np.zeros(self.ndata, dtype=np.float32)
+        # The library writes the fitted curve here, so it is held on the
+        # controller rather than reached only through a raw pointer
+        self.yfit_np = np.zeros(self.ndata, dtype=np.float32)
         self.chisq = c_float(0.0)
 
         # ---- Convert numpy arrays to c float* ----
@@ -225,7 +227,7 @@ class SASFitController(Controller):
         self.x_ptr = self.data_x_np.ctypes.data_as(POINTER(c_float))
         self.y_ptr = self.data_y_np.ctypes.data_as(POINTER(c_float))
         self.sig_ptr = self.data_e_np.ctypes.data_as(POINTER(c_float))
-        self.yfit_ptr = yfit_np.ctypes.data_as(POINTER(c_float))
+        self.yfit_ptr = self.yfit_np.ctypes.data_as(POINTER(c_float))
 
         # ---- Other inputs for fitting ----
         # FIXME: below params are required to run the fit
