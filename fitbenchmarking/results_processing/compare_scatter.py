@@ -1198,8 +1198,15 @@ class CompareScatterDataModel:
 
     def get_readable_attr_name(self, attribute: str):
         """
-        Given an attribute name, return a human readable name for use in titles
-        and legends.
+        Given an attribute name, return a human readable name for use in the
+        title text for the plot. This means in title case, with underscores
+        replaced with spaces and units added if applicable and known.
+
+        :param attribute: A machine readable name of an attribute
+        :type name: str
+
+        :return: The name of the attribute in a human readable format
+        :rtype: str
         """
         if attribute in self._known_mappings:
             return self._known_mappings[attribute]
@@ -1208,6 +1215,12 @@ class CompareScatterDataModel:
     def get_attr_from_readable_name(self, name: str):
         """
         Given a human readable name, return the attribute name.
+
+        :param name: A human readable name of an attribute
+        :type name: str
+
+        :return: The actual attribute name
+        :rtype: str
         """
         for attr, readable_name in self._known_mappings.items():
             if readable_name == name:
