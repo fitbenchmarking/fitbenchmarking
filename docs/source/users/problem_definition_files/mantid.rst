@@ -155,6 +155,18 @@ against the data in the corresponding input file.
    the status "Validation of the provided options failed".
 
 .. warning::
+   :ref:`Hessians <hessian_option>` are not available for MultiFit problems
+   yet. The ``hes_method`` option should be left as ``default``, otherwise
+   the run is reported as a failed run with the status "Validation of the
+   provided options failed".
+
+.. warning::
+   Only the least squares cost functions (see :ref:`cost_func`) are
+   available for MultiFit problems with softwares other than Mantid.
+   Selecting any other cost function is reported as a failed run with the
+   status "Validation of the provided options failed".
+
+.. warning::
    MCMC minimizers (e.g. ``FABADA``, ``dream``, ``emcee`` and
    ``paraDram_sampler``) are not available for MultiFit problems yet.
    Selecting one for a MultiFit problem is reported as a failed run with

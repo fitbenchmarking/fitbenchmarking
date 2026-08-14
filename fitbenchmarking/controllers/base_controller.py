@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.optimize import curve_fit
 
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.utils.exceptions import (
     ControllerAttributeError,
@@ -19,10 +20,13 @@ from fitbenchmarking.utils.exceptions import (
     MissingBoundsError,
     UnknownMinimizerError,
 )
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
+LOGGER = get_logger()
 
 
 class Controller:
@@ -246,78 +250,95 @@ class Controller:
 
     def multifit_init(self):
         """
-        Construct parameter array for multifit problems.
+        Construct the combined parameter array for multifit problems.
+
+        Each dataset gets its own copy of every parameter, prefixed with
+        ``d<i>.``, apart from the tied parameters which are shared by all
+        the datasets and are prefixed with ``shared.``. Starting values
+        and bounds are expanded to match. This is undone by
+        multifit_cleanup once the fit has finished.
         """
+        # Save the problem's starting values and bounds so that
+        # multifit_cleanup can restore them, and so that
+        # this can be run again for the next minimizer.
+        self._save_starting_values = self.starting_values
+        self._save_value_ranges = self.value_ranges
 
-        # save starting values for an individual dataset for fitting report
-        self._save_starting_values_per_dataset = self.starting_values
-
-        params = self.starting_values[0]
+        par_names = list(self.starting_values[0])
         shared_params = self.problem.additional_info["ties"]
-        param_dict = {}
 
         # value_ranges is a per-parameter list of (lb, ub) tuples aligned
         # with the original parameter order. When bounds are set, expand
         # them alongside the param array so they stay aligned with the new
         # (shared./d<i>.) parameters. The original per-parameter bounds
         # are restored in multifit_cleanup.
-        self._save_value_ranges = self.value_ranges
-        bounds = self.value_ranges or [None] * len(params)
+        bounds = self.value_ranges or [None] * len(par_names)
+        combined_par_names = []
         expanded_value_ranges = []
 
-        for (k, v), vr in zip(params.items(), bounds):
-            if k in shared_params:
-                param_dict[f"shared.{k}"] = v
+        for name, vr in zip(par_names, bounds):
+            if name in shared_params:
+                combined_par_names.append(f"shared.{name}")
                 expanded_value_ranges.append(vr)
             else:
                 for i in range(self._dataset_count):
-                    param_dict[f"d{i}.{k}"] = v
+                    combined_par_names.append(f"d{i}.{name}")
                     expanded_value_ranges.append(vr)
 
         if self.value_ranges is not None:
             self.value_ranges = expanded_value_ranges
 
-        self.starting_values = [param_dict]
-        self.par_names = list(param_dict.keys())
-        self.problem.multifit_param_names = self.par_names
+        self.starting_values = [
+            {
+                combined: values[combined.split(".", 1)[1]]
+                for combined in combined_par_names
+            }
+            for values in self._save_starting_values
+        ]
+        self.par_names = combined_par_names
+        self.problem.multifit_param_names = combined_par_names
 
     def multifit_cleanup(self):
         """
-        Map the final parameters to a list of lists, with each sublist
-        containing the final parameters for each dataset.
+        Undo multifit_init. The final parameters are mapped to a list of
+        lists, with each sublist containing the final parameters for one
+        dataset, and the per dataset parameter names, starting values and
+        bounds are restored for reporting.
+
         This also runs when a fit has failed, so it must cope with the
-        final parameters not having been set.
+        final parameters not having been set, and it must be safe to call
+        when multifit_init has not run or when it has already run once.
         """
         combined_par_names = self.problem.multifit_param_names
+        if combined_par_names is None:
+            return
 
         # create a list of lists of final params for each dataset
         if self.final_params is not None and not any(
             p is None for p in self.final_params
         ):
             param_dict = dict(zip(combined_par_names, self.final_params))
-            lists_of_final_params = [[] for _ in range(self._dataset_count)]
+            self.final_params = [
+                [
+                    v
+                    for k, v in param_dict.items()
+                    if k.startswith((f"d{d}.", "shared."))
+                ]
+                for d in range(self._dataset_count)
+            ]
 
-            for d in range(self._dataset_count):
-                for k, v in param_dict.items():
-                    if k.startswith((f"d{d}.", "shared.")):
-                        lists_of_final_params[d].append(v)
-
-            self.final_params = lists_of_final_params
-
-        # remove all the d0, d1, ... and shared. prefixes
-        # from the parameter names
-        single_dataset_param_names = [
-            name.split(".", 1)[1] for name in combined_par_names
-        ]
-
-        self.par_names = list(dict.fromkeys(single_dataset_param_names))
-        self.initial_params = list(
-            self._save_starting_values_per_dataset[0].values()
-        )
-
-        # restore the original per-parameter bounds so that the post-fit
-        # check_bounds_respected lines up with final_params
+        # Restore the per dataset state so that results are reported
+        # against the problem's own parameters, and clear
+        # multifit_param_names so that single dataset evaluations made
+        # from here on (e.g. by eval_chisq) are not mistaken for the
+        # combined problem.
+        self.starting_values = self._save_starting_values
         self.value_ranges = self._save_value_ranges
+        self.par_names = list(self.starting_values[0])
+        self.initial_params = list(
+            self.starting_values[self.parameter_set or 0].values()
+        )
+        self.problem.multifit_param_names = None
 
     def prepare(self, skip_setup=False):
         """
@@ -428,7 +449,7 @@ class Controller:
         except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
-            print("\n" + str(error_msg))
+            LOGGER.error("\n%s", str(error_msg))
 
         return np.prod(par_conf)
 
@@ -488,11 +509,23 @@ class Controller:
     def _validate_multifit(self):
         """
         Validates that the selected options are supported for MultiFit
-        problems. Analytic Jacobians and MCMC minimizers are not
-        available for MultiFit yet, so an exception is raised for these.
+        problems. Analytic Jacobians, Hessians, MCMC minimizers and non
+        least squares cost functions are not available for MultiFit yet,
+        so an exception is raised for these.
         """
         if not self.problem.multifit:
             return
+
+        # Only the least squares cost functions are set up to combine
+        # datasets. Mantid combines them itself, so it is not affected.
+        if self.software != "mantid" and not isinstance(
+            self.cost_func, BaseNLLSCostFunc
+        ):
+            raise IncompatibleMultifitError(
+                f"The '{self.cost_func.__class__.__name__}' cost function "
+                "is not available for MultiFit problems yet. Please select "
+                "a non-linear least squares cost function."
+            )
 
         jacobian = self.cost_func.jacobian
         # 'best_available' wraps an Analytic jacobian when the problem
@@ -504,6 +537,15 @@ class Controller:
                 "MultiFit problems yet, as it uses the analytic Jacobian "
                 "of the problem. Please select a numerical Jacobian "
                 "method."
+            )
+
+        # The Hessian methods evaluate the model one dataset at a time,
+        # so they cannot size their output for the combined problem.
+        if self.cost_func.hessian is not None:
+            raise IncompatibleMultifitError(
+                f"The '{self.cost_func.hessian.name()}' Hessian is not "
+                "available for MultiFit problems yet. Please set the "
+                "'hes_method' option to 'default'."
             )
 
         if self.minimizer in self.algorithm_check.get("MCMC", []):

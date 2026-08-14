@@ -17,8 +17,11 @@ class CompareTable(Table):
     of the expected parameter values (calculated using
     scipy.optimize.curve_fit).
 
+    The compare table is displayed alongside the compare scatter, which
+    aims to plot the same information on a scatter plot.
     """
 
+    has_cs = True
     name = "compare"
     colour_template = "background-image: linear-gradient({0},{0},{1},{1})"
     cbar_title = (

@@ -21,6 +21,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
     LoglikeNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
@@ -468,9 +469,7 @@ class BaseControllerTests(TestCase):
         expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
         assert controller.starting_values == [expected]
         assert controller.par_names == list(expected.keys())
-        assert controller._save_starting_values_per_dataset == [
-            {"A0": 0.0, "A1": 1.0}
-        ]
+        assert controller._save_starting_values == [{"A0": 0.0, "A1": 1.0}]
         # The free parameter's bounds are repeated per dataset and the tied
         # parameter's bounds appear once, matching the expanded param order.
         assert controller.value_ranges == [(0, 5), (0, 5), (10, 20)]
@@ -502,7 +501,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller._dataset_count = 2
-        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
+        controller._save_starting_values = [{"A0": 0.0, "A1": 1.0}]
         controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
         controller.problem.multifit_param_names = controller.par_names
         # The expanded bounds (as built by multifit_init) and the original
@@ -617,6 +616,51 @@ class BaseControllerTests(TestCase):
 
         assert controller.flag == 5
 
+    def _poisson_controller(self):
+        """
+        Create a controller with a cost function which is not a least
+        squares one, ready for validate to be called on.
+
+        :return: A controller using the Poisson cost function
+        :rtype: DummyController
+        """
+        cost_func = PoissonCostFunc(self.problem)
+        cost_func.jacobian = Scipy(self.problem)
+        cost_func.jacobian.method = "2-point"
+        return DummyController(cost_func)
+
+    def test_validate_multifit_non_least_squares_cost_func(self):
+        """
+        Test that a cost function which is not a least squares one is
+        rejected in the multifit case
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_mantid(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted in the multifit case when the software is mantid, as
+        mantid combines the datasets itself
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+        controller._software = "mantid"
+
+        controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_not_multifit(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted when the problem is not a multifit problem
+        """
+        controller = self._poisson_controller()
+
+        controller.validate()
+
     def test_validate_multifit_analytic_jacobian(self):
         """
         Test that an analytic Jacobian is rejected in the multifit case
@@ -652,6 +696,37 @@ class BaseControllerTests(TestCase):
         controller.problem.jacobian = lambda x, p: np.array([x])
         controller.cost_func.jacobian = Analytic(controller.problem)
         controller.cost_func.jacobian.method = "default"
+
+        controller.validate()
+
+    def test_validate_multifit_hessian(self):
+        """
+        Test that a Hessian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_hessian_not_multifit(self):
+        """
+        Test that a Hessian is accepted when the problem is not a
+        multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
 
         controller.validate()
 
