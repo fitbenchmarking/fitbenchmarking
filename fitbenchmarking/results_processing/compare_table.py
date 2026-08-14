@@ -3,6 +3,7 @@ compare table
 """
 
 from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
 class CompareTable(Table):
@@ -16,8 +17,11 @@ class CompareTable(Table):
     of the expected parameter values (calculated using
     scipy.optimize.curve_fit).
 
+    The compare table is displayed alongside the compare scatter, which
+    aims to plot the same information on a scatter plot.
     """
 
+    has_cs = True
     name = "compare"
     colour_template = "background-image: linear-gradient({0},{0},{1},{1})"
     cbar_title = (
@@ -150,7 +154,7 @@ class CompareTable(Table):
         foreground_text = zip(acc_text, runtime_text)
         return background_col, foreground_text
 
-    def get_hyperlink(self, result, val_str, text_col):
+    def get_hyperlink(self, result: FittingResult, val_str, text_col):
         """
         Generates the hyperlink for a given result
 

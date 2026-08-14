@@ -2,6 +2,7 @@
 FitBenchmarking results object
 """
 
+import math
 from statistics import StatisticsError, fmean, harmonic_mean, median
 from typing import TYPE_CHECKING, Literal
 
@@ -12,6 +13,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -25,6 +27,8 @@ class FittingResult:
     Minimal definition of a class to hold results from a
     fitting problem test.
     """
+
+    status: str
 
     def __init__(
         self,
@@ -162,7 +166,7 @@ class FittingResult:
         self.r_x = None
         self.jac_x = None
 
-        self.ini_y = problem.ini_y(controller.parameter_set)
+        self.ini_y = problem.ini_y(controller.parameter_set, dataset)
         if hasattr(self, "ini_y") and indexes_cuts is not None:
             self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
                 indexes_cuts, self.ini_y
@@ -172,18 +176,26 @@ class FittingResult:
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(
-                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                self.r_x = cost_func.eval_r_single_dataset(
+                    self.params,
+                    x=self.data_x,
+                    y=self.data_y,
+                    e=self.data_e,
+                    dataset=dataset,
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
                         indexes_cuts, self.r_x
                     )
                 self.jac_x = cost_func.jac_res(
-                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                    self.params,
+                    x=self.data_x,
+                    y=self.data_y,
+                    e=self.data_e,
+                    dataset=dataset,
                 )
             self.fin_y = cost_func.problem.eval_model(
-                self.params, x=self.data_x
+                self.params, x=self.data_x, dataset=dataset
             )
             if hasattr(self, "fin_y") and indexes_cuts is not None:
                 self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
@@ -200,7 +212,13 @@ class FittingResult:
 
         # Controller error handling
         self.error_flag = controller.flag
-
+        if (
+            isinstance(self.error_flag, int)
+            and self.error_flag in ERROR_FLAG_MAPPINGS
+        ):
+            self.status = ERROR_FLAG_MAPPINGS[self.error_flag]
+        else:
+            self.status = "Unknown error flag"
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
@@ -307,10 +325,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f"{key} not equal!")
+                    LOGGER.info("%s not equal!", key)
                     return False
             else:
-                print(f"No attr {key}")
+                LOGGER.info("No attr %s", key)
                 return False
         return True
 
@@ -549,3 +567,55 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
+
+    def hover_text(self, include_title=False, style="html") -> str:
+        """
+        Generate the tooltip text for a given fitting result.
+        :param result: The result to generate the text for
+        :type result: FittingResult
+        :param include_title: Whether to include the result title in the
+            tooltip
+        :type include_title: bool
+        :param newline: The newline character to use, defaults to CSS style
+            newline used in tables
+        :type newline: str
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+        line_break = "<br>" if style == "html" else r"\a "
+        bold_start = "<b>" if style == "html" else ""
+        bold_end = "</b>" if style == "html" else ""
+
+        if math.isinf(self.runtime) or math.isinf(self.min_accuracy):
+            return f"Error: {self.status}"
+
+        if self.iteration_count is None or self.iteration_count == 0:
+            iterations = "not available"
+        else:
+            iterations = self.func_evals
+
+        hover_text = (
+            f"Status: {self.status}{line_break}"
+            f"Accuracy: {self.accuracy:.4g}{line_break}"
+            f"{self.runtime_metric.capitalize()}"
+            f" runtime: {self.runtime:.4g}{line_break}"
+            f"Energy usage: {self.energy:.4g}{line_break}"
+            f"Iterations: {iterations}{line_break}"
+            f"Function Evaluations: {self.func_evals}"
+        )
+
+        if include_title:
+            hover_text = (
+                f"{bold_start}"
+                f"{self.modified_minimizer_name(with_software=True)}"
+                f"{bold_end}"
+                f" | "
+                f"{bold_start}"
+                f"{self.problem_tag}"
+                f"{bold_end}"
+                f"{line_break}"
+                f"{hover_text}"
+            )
+
+        return hover_text

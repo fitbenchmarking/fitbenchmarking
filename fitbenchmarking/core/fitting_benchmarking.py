@@ -5,6 +5,7 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 
 import numpy as np
@@ -71,6 +72,12 @@ class Fit:
         self._emissions_tracker = None
         self._logger_prefix = "    "
         if "energy_usage" in options.table_type:
+            if platform.system() == "Darwin":
+                LOGGER.info(
+                    "Please be aware that you may be prompted by "
+                    "CodeCarbon to provide a password to give sudo rights "
+                    "so that the powermetrics tool can be used."
+                )
             self._emissions_tracker = EmissionsTracker(
                 measure_power_secs=1,
                 tracking_mode="process",
@@ -78,7 +85,11 @@ class Fit:
                 log_level="error",
             )
 
-    def benchmark(self):
+    def benchmark(
+        self,
+    ) -> tuple[
+        list[fitbm_result.FittingResult], list[str], dict[str, list[str]]
+    ]:
         """
         Call benchmarking on user input and list of paths.
         The benchmarking structure is:
@@ -151,8 +162,8 @@ class Fit:
                 results = self._loop_over_starting_values(problem)
                 self._results.extend(results)
 
-                if self._emissions_tracker:
-                    _ = self._emissions_tracker.stop()
+        if self._emissions_tracker:
+            _ = self._emissions_tracker.stop()
 
         self._checkpointer.finalise_group(
             self._label, self._failed_problems, self._unselected_minimizers
@@ -548,23 +559,38 @@ class Fit:
         num_runs = self._options.num_runs
         energy = np.nan
         tracker = self._emissions_tracker
+        tracker_started = False
+        tracker_stopped = False
+
+        # For multifit problems, Mantid combines the datasets itself,
+        # everything else needs the controller to do it
+        combine_datasets = (
+            controller.problem.multifit and controller.software != "mantid"
+        )
 
         try:
             with self._grabbed_output:
+                if combine_datasets:
+                    controller.multifit_init()
                 controller.validate()
                 controller.prepare()
                 if tracker:
                     tracker.start_task()
+                    tracker_started = True
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                     energy = tracker.stop_task().energy_consumed / num_runs
+                    tracker_stopped = True
                 else:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                 controller.cleanup()
+                if combine_datasets:
+                    controller.multifit_cleanup()
                 controller.check_attributes()
+
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
             tol = 4
@@ -629,15 +655,31 @@ class Fit:
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
 
-        # ensure emissions tracker has been stopped if energy not set
-        if energy == np.nan and self._emissions_tracker:
+        # Ensure emissions tracker has been stopped if energy not set. The
+        # task is only stopped if it was started, as the fit may have raised
+        # an exception before the task was started.
+        if self._emissions_tracker and tracker_started and not tracker_stopped:
             _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
+            multi_fit = controller.problem.multifit
+
+            # The fit failed, so multifit_cleanup may not have run yet.
+            # Running it here splits the combined problem back into its
+            # datasets, so that the parameter names, initial params and
+            # bounds are reported per dataset as they are for a successful
+            # fit. It is a no-op if it has already run.
+            if combine_datasets:
+                controller.multifit_cleanup()
+
+            # A validation error is raised before the controller is prepared,
+            # so initial_params (needed to report the result) have not been set
+            if controller.initial_params is None:
+                controller.prepare(skip_setup=True)
+
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
             energy = np.inf
-            multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)

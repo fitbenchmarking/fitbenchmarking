@@ -8,18 +8,25 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.optimize import curve_fit
 
+from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.utils.exceptions import (
     ControllerAttributeError,
     IncompatibleHessianError,
     IncompatibleJacobianError,
     IncompatibleMinimizerError,
+    IncompatibleMultifitError,
     IncompatibleProblemError,
     MissingBoundsError,
     UnknownMinimizerError,
 )
+from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
+
+LOGGER = get_logger()
 
 
 class Controller:
@@ -31,8 +38,6 @@ class Controller:
     """
 
     __metaclass__ = ABCMeta
-
-    VALID_FLAGS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     #: Within the controller class, you must
     #: initialize a dictionary, ``algorithm_check``,
@@ -170,8 +175,15 @@ class Controller:
         # class
         self._software = ""
 
+        # dataset count > 1 if problem is multifit
+        self._dataset_count = (
+            len(self.data_x) if isinstance(self.data_x, list) else 1
+        )
+
         # Final Params: The final values for the params from the minimizer
-        self.final_params = None
+        self.final_params = (
+            None if not self.problem.multifit else [None] * self._dataset_count
+        )
 
         # Flag: error handling flag
         self._flag = None
@@ -195,27 +207,22 @@ class Controller:
 
     @property
     def flag(self):
-        """
-        | 0: `Successfully converged`
-        | 1: `Software reported maximum number of iterations exceeded`
-        | 2: `Software run but didn't converge to solution`
-        | 3: `Software raised an exception`
-        | 4: `Solver doesn't support bounded problems`
-        | 5: `Solution doesn't respect parameter bounds`
-        | 6: `Solver has exceeded maximum allowed runtime`
-        | 7: `Validation of the provided options failed`
-        | 8: `Confidence in fit could not be calculated`
-        """
         return self._flag
 
     @flag.setter
     def flag(self, value):
-        if value not in self.VALID_FLAGS:
+        if value not in ERROR_FLAG_MAPPINGS:
             raise ControllerAttributeError(
                 "controller.flag must be one of "
-                f"{list(self.VALID_FLAGS)}. Got: {value}."
+                f"{list(ERROR_FLAG_MAPPINGS.keys())}. Got: {value}."
             )
         self._flag = int(value)
+
+    _flag_docstring = "\n" + "\n".join(
+        f"""\t :{key}: {value}""" for key, value in ERROR_FLAG_MAPPINGS.items()
+    )
+    flag.__doc__ = f"""Valid flags:
+        {_flag_docstring}"""
 
     @property
     def software(self):
@@ -231,6 +238,27 @@ class Controller:
                 self._software = self.__class__.__name__[:-10].lower()
         return self._software
 
+    @property
+    def residual_count(self) -> int:
+        """
+        The number of residuals of the problem, that is the length of the
+        array returned by the cost function's ``eval_r``.
+
+        In the multifit case the residuals of every dataset are returned
+        as one flat array, so this is the total number of data points of
+        all of the datasets rather than the number in one of them.
+
+        Fitting softwares which need to be told how many residuals there
+        are should use this rather than the length of the data, which for
+        a multifit problem is the number of datasets.
+
+        :return: The number of residuals
+        :rtype: int
+        """
+        if self.problem.multifit:
+            return sum(np.size(yi) for yi in self.data_y)
+        return np.size(self.data_y)
+
     def validate(self) -> None:
         """
         Validates that the provided options are compatible with each other.
@@ -239,6 +267,99 @@ class Controller:
         self._validate_jacobian()
         self._validate_hessian()
         self._validate_problem_format()
+        self._validate_multifit()
+
+    def multifit_init(self):
+        """
+        Construct the combined parameter array for multifit problems.
+
+        Each dataset gets its own copy of every parameter, prefixed with
+        ``d<i>.``, apart from the tied parameters which are shared by all
+        the datasets and are prefixed with ``shared.``. Starting values
+        and bounds are expanded to match. This is undone by
+        multifit_cleanup once the fit has finished.
+        """
+        # Save the problem's starting values and bounds so that
+        # multifit_cleanup can restore them, and so that
+        # this can be run again for the next minimizer.
+        self._save_starting_values = self.starting_values
+        self._save_value_ranges = self.value_ranges
+
+        par_names = list(self.starting_values[0])
+        shared_params = self.problem.additional_info["ties"]
+
+        # value_ranges is a per-parameter list of (lb, ub) tuples aligned
+        # with the original parameter order. When bounds are set, expand
+        # them alongside the param array so they stay aligned with the new
+        # (shared./d<i>.) parameters. The original per-parameter bounds
+        # are restored in multifit_cleanup.
+        bounds = self.value_ranges or [None] * len(par_names)
+        combined_par_names = []
+        expanded_value_ranges = []
+
+        for name, vr in zip(par_names, bounds):
+            if name in shared_params:
+                combined_par_names.append(f"shared.{name}")
+                expanded_value_ranges.append(vr)
+            else:
+                for i in range(self._dataset_count):
+                    combined_par_names.append(f"d{i}.{name}")
+                    expanded_value_ranges.append(vr)
+
+        if self.value_ranges is not None:
+            self.value_ranges = expanded_value_ranges
+
+        self.starting_values = [
+            {
+                combined: values[combined.split(".", 1)[1]]
+                for combined in combined_par_names
+            }
+            for values in self._save_starting_values
+        ]
+        self.par_names = combined_par_names
+        self.problem.multifit_param_names = combined_par_names
+
+    def multifit_cleanup(self):
+        """
+        Undo multifit_init. The final parameters are mapped to a list of
+        lists, with each sublist containing the final parameters for one
+        dataset, and the per dataset parameter names, starting values and
+        bounds are restored for reporting.
+
+        This also runs when a fit has failed, so it must cope with the
+        final parameters not having been set, and it must be safe to call
+        when multifit_init has not run or when it has already run once.
+        """
+        combined_par_names = self.problem.multifit_param_names
+        if combined_par_names is None:
+            return
+
+        # create a list of lists of final params for each dataset
+        if self.final_params is not None and not any(
+            p is None for p in self.final_params
+        ):
+            param_dict = dict(zip(combined_par_names, self.final_params))
+            self.final_params = [
+                [
+                    v
+                    for k, v in param_dict.items()
+                    if k.startswith((f"d{d}.", "shared."))
+                ]
+                for d in range(self._dataset_count)
+            ]
+
+        # Restore the per dataset state so that results are reported
+        # against the problem's own parameters, and clear
+        # multifit_param_names so that single dataset evaluations made
+        # from here on (e.g. by eval_chisq) are not mistaken for the
+        # combined problem.
+        self.starting_values = self._save_starting_values
+        self.value_ranges = self._save_value_ranges
+        self.par_names = list(self.starting_values[0])
+        self.initial_params = list(
+            self.starting_values[self.parameter_set or 0].values()
+        )
+        self.problem.multifit_param_names = None
 
     def prepare(self, skip_setup=False):
         """
@@ -284,8 +405,26 @@ class Controller:
                  given parameters
         :rtype: numpy array
         """
-        kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
-        out = self.cost_func.eval_cost(params=params, **kwargs)
+        # In the mantid multifit case, this is done within the
+        # mantid controller
+        if self.problem.multifit and self.software != "mantid":
+            out = []
+
+            # params holds the parameters of each dataset separately, so
+            # each dataset is evaluated on its own data with its own
+            # parameters
+            for d, (pi, xi, yi, ei) in enumerate(zip(params, x, y, e)):
+                kwargs = {
+                    k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
+                }
+                out.append(
+                    self.cost_func.eval_cost(params=pi, dataset=d, **kwargs)
+                )
+
+        else:
+            kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}
+            out = self.cost_func.eval_cost(params=params, **kwargs)
+
         return out
 
     def eval_confidence(self):
@@ -294,6 +433,7 @@ class Controller:
         """
         self.params_pdfs["scipy_pfit"] = None
         self.params_pdfs["scipy_perr"] = None
+
         try:
             popt, pcov = curve_fit(
                 self.problem.function,
@@ -335,7 +475,7 @@ class Controller:
         except RuntimeError as error_msg:
             par_conf = 0
             self.flag = 8
-            print("\n" + str(error_msg))
+            LOGGER.error("\n%s", str(error_msg))
 
         return np.prod(par_conf)
 
@@ -390,6 +530,55 @@ class Controller:
             raise IncompatibleProblemError(
                 f"{self.problem.format} problems cannot be used with "
                 f"{self.software} controllers."
+            )
+
+    def _validate_multifit(self):
+        """
+        Validates that the selected options are supported for MultiFit
+        problems. Analytic Jacobians, Hessians, MCMC minimizers and non
+        least squares cost functions are not available for MultiFit yet,
+        so an exception is raised for these.
+        """
+        if not self.problem.multifit:
+            return
+
+        # Only the least squares cost functions are set up to combine
+        # datasets. Mantid combines them itself, so it is not affected.
+        if self.software != "mantid" and not isinstance(
+            self.cost_func, BaseNLLSCostFunc
+        ):
+            raise IncompatibleMultifitError(
+                f"The '{self.cost_func.__class__.__name__}' cost function "
+                "is not available for MultiFit problems yet. Please select "
+                "a non-linear least squares cost function."
+            )
+
+        jacobian = self.cost_func.jacobian
+        # 'best_available' wraps an Analytic jacobian when the problem
+        # provides one, so check the jacobian it delegates to.
+        sub_jac = getattr(jacobian, "sub_jac", jacobian)
+        if isinstance(sub_jac, Analytic):
+            raise IncompatibleMultifitError(
+                f"The '{jacobian.name()}' Jacobian is not available for "
+                "MultiFit problems yet, as it uses the analytic Jacobian "
+                "of the problem. Please select a numerical Jacobian "
+                "method."
+            )
+
+        # The Hessian methods evaluate the model one dataset at a time,
+        # so they cannot size their output for the combined problem.
+        if self.cost_func.hessian is not None:
+            raise IncompatibleMultifitError(
+                f"The '{self.cost_func.hessian.name()}' Hessian is not "
+                "available for MultiFit problems yet. Please set the "
+                "'hes_method' option to 'default'."
+            )
+
+        if self.minimizer in self.algorithm_check.get("MCMC", []):
+            raise IncompatibleMultifitError(
+                f"The selected minimizer, {self.minimizer}, is an MCMC "
+                "minimizer. MCMC minimizers are not available for "
+                "MultiFit problems yet."
             )
 
     def validate_minimizer(self, minimizer, algorithm_type):
@@ -478,13 +667,26 @@ class Controller:
         Check whether the selected minimizer has respected
         parameter bounds
         """
-        for count, value in enumerate(self.final_params):
-            if (
-                not self.value_ranges[count][0]
-                <= value
-                <= self.value_ranges[count][1]
-            ):
-                self.flag = 5
+        if self.problem.multifit:
+            # final_params is a list of per-dataset param lists, each in
+            # the original paramorder, so value_ranges is indexed by the
+            # param position within a dataset
+            for param_list in self.final_params:
+                for index, param_value in enumerate(param_list):
+                    if (
+                        not self.value_ranges[index][0]
+                        <= param_value
+                        <= self.value_ranges[index][1]
+                    ):
+                        self.flag = 5
+        else:
+            for index, param in enumerate(self.final_params):
+                if (
+                    not self.value_ranges[index][0]
+                    <= param
+                    <= self.value_ranges[index][1]
+                ):
+                    self.flag = 5
 
     def check_attributes(self):
         """

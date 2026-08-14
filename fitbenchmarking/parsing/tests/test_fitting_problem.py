@@ -118,6 +118,129 @@ class TestFittingProblem(TestCase):
         eval_result = fitting_problem.eval_model(params=[5])
         self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
+    def test_eval_model_multifit(self):
+        """
+        Test that eval_model splits the params per dataset and concatenates
+        the model evaluations when x is a list (multifit case)
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1, p2: x + p1 + p2
+        # d0.p1=5, d1.p1=100, shared.p2=1000
+        fitting_problem.multifit_param_names = [
+            "d0.p1",
+            "d1.p1",
+            "shared.p2",
+        ]
+        x_val = [np.array([1.0, 2.0]), np.array([10.0, 20.0])]
+
+        eval_result = fitting_problem.eval_model(
+            x=x_val, params=[5, 100, 1000]
+        )
+
+        expected = np.array([1006.0, 1007.0, 1110.0, 1120.0])
+        self.assertTrue(np.allclose(eval_result, expected))
+
+    def test_eval_model_multifit_dataset_functions(self):
+        """
+        Test that eval_model uses the function of each dataset when the
+        datasets are described by different functions
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.dataset_functions = [
+            lambda x, p1: x + p1,
+            lambda x, p1: x - p1,
+        ]
+        fitting_problem.multifit_param_names = ["d0.p1", "d1.p1"]
+        x_val = [np.array([1.0, 2.0]), np.array([10.0, 20.0])]
+
+        eval_result = fitting_problem.eval_model(x=x_val, params=[5, 100])
+
+        expected = np.array([6.0, 7.0, -90.0, -80.0])
+        self.assertTrue(np.allclose(eval_result, expected))
+
+    def test_eval_model_single_dataset_of_multifit(self):
+        """
+        Test that eval_model uses the function of the dataset it is given
+        when a single dataset of a multifit problem is evaluated
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.dataset_functions = [
+            lambda x, p1: x + p1,
+            lambda x, p1: x - p1,
+        ]
+        x_val = np.array([10.0, 20.0])
+
+        self.assertTrue(
+            np.allclose(
+                fitting_problem.eval_model(x=x_val, params=[5], dataset=1),
+                np.array([5.0, 15.0]),
+            )
+        )
+        # the first dataset is used when none is named
+        self.assertTrue(
+            np.allclose(
+                fitting_problem.eval_model(x=x_val, params=[5]),
+                np.array([15.0, 25.0]),
+            )
+        )
+
+    def test_dataset_function(self):
+        """
+        Test that dataset_function returns the function of the problem
+        unless the datasets are described by different functions
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = "the function"
+
+        self.assertEqual(fitting_problem.dataset_function(), "the function")
+        self.assertEqual(fitting_problem.dataset_function(1), "the function")
+
+        fitting_problem.dataset_functions = ["first", "second"]
+        self.assertEqual(fitting_problem.dataset_function(), "first")
+        self.assertEqual(fitting_problem.dataset_function(1), "second")
+
+    def test_ini_y_per_dataset(self):
+        """
+        Test that ini_y evaluates the dataset it is given, and caches the
+        datasets separately
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.dataset_functions = [
+            lambda x, p1: x + p1,
+            lambda x, p1: x - p1,
+        ]
+        fitting_problem.data_x = [
+            np.array([1.0, 2.0]),
+            np.array([10.0, 20.0]),
+        ]
+        fitting_problem.starting_values = [{"p1": 5}]
+
+        self.assertTrue(
+            np.allclose(fitting_problem.ini_y(), np.array([6.0, 7.0]))
+        )
+        self.assertTrue(
+            np.allclose(
+                fitting_problem.ini_y(dataset=1), np.array([5.0, 15.0])
+            )
+        )
+
+    def test_eval_model_list_x_without_multifit(self):
+        """
+        Test that a list of x values is passed straight to the function
+        when the problem is not multifit
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: np.array(x) + p1
+        eval_result = fitting_problem.eval_model(x=[1, 8, 11], params=[5])
+        self.assertTrue(all(eval_result == np.array([6, 13, 16])))
+
     def test_get_function_params(self):
         """
         Tests that the function params is formatted correctly
@@ -268,7 +391,11 @@ class TestFittingProblem(TestCase):
 
     @parameterized.expand(
         [
-            (True, [np.array([1, 2]), np.array([3, 4])], ["params", "x"]),
+            (
+                True,
+                [np.array([1, 2]), np.array([3, 4])],
+                ["params", "x", "dataset"],
+            ),
             (False, np.array([1, 2]), ["params"]),
         ]
     )

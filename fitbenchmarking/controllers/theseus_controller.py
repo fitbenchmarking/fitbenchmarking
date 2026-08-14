@@ -130,7 +130,6 @@ class TheseusController(Controller):
         self.th_optim = None
         self.th_info = None
         self.th_cost_func = None
-        self._param_names = self.problem.param_names
         self.th_inputs = None
         self.result = None
 
@@ -138,6 +137,7 @@ class TheseusController(Controller):
         """
         Setup problem ready to be run with Theseus
         """
+        self._param_names = self.par_names
         x_tensor = torch.from_numpy(np.array([self.problem.data_x]))
         y_tensor = torch.from_numpy(np.array([self.problem.data_y]))
 
@@ -152,7 +152,7 @@ class TheseusController(Controller):
         params = [
             params * torch.ones((1, 1)) for params in self.initial_params
         ]
-        param_dict = dict(zip(self.problem.param_names, params))
+        param_dict = dict(zip(self.par_names, params))
 
         self.th_inputs = {"x_data": th_x, "y_data": th_y, **param_dict}
 
@@ -163,7 +163,7 @@ class TheseusController(Controller):
             th_optim_vars,
             th_aux_vars,
             name="theseus",
-            dim=len(self.data_x),
+            dim=self.residual_count,
         )
 
         self.th_objective.add(self.th_cost_func)

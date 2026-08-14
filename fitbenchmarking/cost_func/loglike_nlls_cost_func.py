@@ -46,7 +46,7 @@ class LoglikeNLLSCostFunc(BaseNLLSCostFunc):
             "global_optimization",
         ]
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`\\frac{y_i - f(x_i, p)}{e_i}`
 
@@ -65,7 +65,12 @@ class LoglikeNLLSCostFunc(BaseNLLSCostFunc):
                 f"the same, len(x)={len(x)}, len(y)={len(y)}"
                 f" and len(e)={len(e)}"
             )
-        result = (y - self.problem.eval_model(params=params, x=x)) / e
+        result = (
+            y
+            - self.problem.eval_model(
+                params=params, x=x, dataset=kwargs.get("dataset")
+            )
+        ) / e
 
         # Flatten in case of a vector function
         return ravel(result)

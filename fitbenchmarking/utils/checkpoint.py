@@ -124,6 +124,7 @@ class Checkpoint:
             "J": _compress(result.jac_x),
             "fin_y": _compress(result.fin_y),
             "tags": result.algorithm_type,
+            "status": result.status,
         }
 
         with open(self.results_file, "a", encoding="utf-8") as f:
@@ -247,7 +248,11 @@ class Checkpoint:
             f.write("\n}")
         self.finalised = True
 
-    def load(self):
+    def load(
+        self,
+    ) -> tuple[
+        dict[str, list[FittingResult]], dict, dict[str, list[str]], dict
+    ]:
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
@@ -348,6 +353,7 @@ class Checkpoint:
                 new_result.r_x = _decompress(r["r"])
                 new_result.jac_x = _decompress(r["J"])
                 new_result.algorithm_type = r["tags"]
+                new_result.status = r.get("status", "unknown")
 
                 new_result.name = r["name"]
                 p = problems[new_result.name]

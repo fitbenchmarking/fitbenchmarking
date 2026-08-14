@@ -13,7 +13,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from fitbenchmarking.utils.exceptions import PlottingError
-from fitbenchmarking.utils.misc import get_js
 
 
 class Plot:
@@ -87,9 +86,8 @@ class Plot:
         :param options: The options for the run
         :type options: utils.options.Options
         """
-        plotly_path = get_js(options, figures_dir).get("plotly")
         html_file_name = Path(figures_dir) / htmlfile
-        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
+        fig.write_html(html_file_name, include_plotlyjs="cdn")
 
     @staticmethod
     def best_filename(result) -> str:

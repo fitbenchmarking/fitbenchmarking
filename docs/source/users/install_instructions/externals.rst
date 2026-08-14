@@ -124,3 +124,6 @@ SASfit
 SASfit is used to parse SAS problems which use SASfit plugins to define the model function.
 
 Install instructions can be found on the `SASfit GitHub page <https://github.com/SASfit/SASfit?tab=readme-ov-file#building-from-source>`_.
+
+.. note::
+    To use SASfit with FitBenchmarking, the environment variable ``SASFIT_LOCATION`` must be set to the location of the SASfit installation.

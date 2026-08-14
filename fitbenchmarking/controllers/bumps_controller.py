@@ -53,15 +53,12 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        # Need unique strings that are valid python vars
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
         self._func_wrapper = None
         self._fit_problem = None
         self.fit_order = None
         self._status = None
         self._bumps_result = None
+        self._param_names = None
         # Need to map the minimizer to an internal one to avoid changing the
         # minimizer in results
         self._minimizer = ""
@@ -72,10 +69,18 @@ class BumpsController(Controller):
 
         Creates a FitProblem for calling in the fit() function of Bumps
         """
+        # Need unique strings that are valid python vars
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.par_names)]
+
         # Bumps fails with the *args notation
         param_name_str = ", ".join(self._param_names)
         wrapper = f"def fitFunction(x, {param_name_str}):\n"
-        wrapper += f"    return func([{param_name_str}], x=x)"
+        if self.problem.multifit:
+            # The residuals of every dataset are evaluated together from
+            # the combined params, so there is no single x to pass in.
+            wrapper += f"    return func([{param_name_str}])"
+        else:
+            wrapper += f"    return func([{param_name_str}], x=x)"
 
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.
@@ -98,10 +103,15 @@ class BumpsController(Controller):
             exec_dict = {"func": self.cost_func.eval_r}
             exec(wrapper, exec_dict)
             model = exec_dict["fitFunction"]
-            zero_y = np.zeros(len(self.data_y))
-            func_wrapper = Curve(
-                fn=model, x=self.data_x, y=zero_y, **param_dict
-            )
+            if self.problem.multifit:
+                # Curve only feeds x to the model and compares its output
+                # against y, so use a flat placeholder x covering the
+                # points of every dataset.
+                curve_x = np.arange(self.residual_count)
+            else:
+                curve_x = self.data_x
+            zero_y = np.zeros(self.residual_count)
+            func_wrapper = Curve(fn=model, x=curve_x, y=zero_y, **param_dict)
 
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):

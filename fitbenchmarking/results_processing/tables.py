@@ -15,21 +15,9 @@ from fitbenchmarking.utils.exceptions import (
     UnknownTableError,
 )
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS, get_css, get_js
 
 LOGGER = get_logger()
-
-ERROR_OPTIONS = {
-    0: "Successfully converged",
-    1: "Software reported maximum number of iterations exceeded",
-    2: "Software run but didn't converge to solution",
-    3: "Software raised an exception",
-    4: "Solver doesn't support bounded problems",
-    5: "Solution doesn't respect parameter bounds",
-    6: "Solver has exceeded maximum allowed runtime",
-    7: "Validation of the provided options failed",
-    8: "Confidence in fit could not be calculated",
-}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "energy_usage"]
 
@@ -133,7 +121,7 @@ def create_results_tables(
                         dropdown_style=css["dropdown"],
                         table_style=css["table"],
                         dropdown_js=js["dropdown"],
-                        mathjax=js["mathjax"],
+                        mathjax="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
                         table_js=js["table"],
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
@@ -145,6 +133,7 @@ def create_results_tables(
                         table_description=description[suffix],
                         table_format=table_format,
                         result_name=table.table_title,
+                        has_cs=table.has_cs,
                         has_pp=bool(table.pps),
                         pp_filenames=[
                             os.path.relpath(table.pp_locations[p], group_dir)
@@ -155,9 +144,15 @@ def create_results_tables(
                             f"{options.run_id}/{os.path.basename(group_dir)}/"
                             f"pp/{'+'.join(table.pps)}"
                         ),
+                        cs_dash_url=(
+                            f"http://{options.ip_address}:{options.port}/"
+                            f"{options.run_id}/{os.path.basename(group_dir)}/"
+                            f"cs/_"
+                        ),
+                        dash_url=f"http://{options.ip_address}:{options.port}",
                         cbar=cbar,
                         run_name=run_name,
-                        error_message=ERROR_OPTIONS,
+                        error_message=ERROR_FLAG_MAPPINGS,
                         failed_problems=failed_problems,
                         unselected_minimzers=unselected_minimzers,
                         algorithm_type=options.algorithm_type,

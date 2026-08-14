@@ -24,7 +24,7 @@ class NLLSCostFunc(BaseNLLSCostFunc):
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`y_i - f(x_i, p)`
 
@@ -41,7 +41,9 @@ class NLLSCostFunc(BaseNLLSCostFunc):
                 "The length of the x and y are not the same, "
                 f"len(x)={len(x)} and len(y)={len(y)}."
             )
-        result = y - self.problem.eval_model(params=params, x=x)
+        result = y - self.problem.eval_model(
+            params=params, x=x, dataset=kwargs.get("dataset")
+        )
 
         # Flatten in case of a vector function
         return ravel(result)

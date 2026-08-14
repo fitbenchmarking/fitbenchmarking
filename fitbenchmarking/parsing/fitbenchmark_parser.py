@@ -8,6 +8,7 @@ import sys
 from collections.abc import Callable
 from contextlib import suppress
 from functools import partialmethod
+from itertools import repeat
 from pathlib import Path
 
 import numpy as np
@@ -56,6 +57,9 @@ class FitbenchmarkParser(Parser):
         data_points = [self._get_data_points(p) for p in self._get_data_file()]
 
         self.fitting_problem.function = self._create_function()
+        self.fitting_problem.dataset_functions = (
+            self._create_dataset_functions()
+        )
         self.fitting_problem.format = self._entries["software"].lower()
 
         self.fitting_problem.plot_scale = self._get_plot_scale()
@@ -146,6 +150,18 @@ class FitbenchmarkParser(Parser):
         """
         raise NotImplementedError
 
+    def _create_dataset_functions(self) -> list[Callable] | None:
+        """
+        Creates one python callable per dataset of a multifit problem, for
+        problems where the datasets are not all described by the same
+        function.
+
+        :return: One callable per dataset, or None if every dataset is
+                 described by the function returned by ``_create_function``
+        :rtype: list of callable, or None
+        """
+        return None
+
     def _get_equation(self) -> str:
         """
         Returns the equation in the problem definition file.
@@ -183,15 +199,33 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        self.fitting_problem.data_x = data_points[0]["x"]
-        self.fitting_problem.data_y = data_points[0]["y"]
-        if "mask" in data_points[0]:
-            self.fitting_problem.mask = data_points[0]["mask"]
-        self.fitting_problem.data_e = data_points[0].get("e", None)
+        # TODO: do we need to check that software not mantid here?
+        if self.fitting_problem.multifit:
+            self.fitting_problem.data_x = [d["x"] for d in data_points]
+            self.fitting_problem.data_y = [d["y"] for d in data_points]
+            self.fitting_problem.data_e = [
+                d.get("e", None) for d in data_points
+            ]
 
-        if fit_ranges and "x" in fit_ranges[0]:
-            self.fitting_problem.start_x = fit_ranges[0]["x"][0]
-            self.fitting_problem.end_x = fit_ranges[0]["x"][1]
+            if not fit_ranges:
+                fit_ranges = list(repeat({}, len(data_points)))
+
+            self.fitting_problem.start_x = [
+                f["x"][0] if "x" in f else None for f in fit_ranges
+            ]
+            self.fitting_problem.end_x = [
+                f["x"][1] if "x" in f else None for f in fit_ranges
+            ]
+        else:
+            self.fitting_problem.data_x = data_points[0]["x"]
+            self.fitting_problem.data_y = data_points[0]["y"]
+            if "mask" in data_points[0]:
+                self.fitting_problem.mask = data_points[0]["mask"]
+            self.fitting_problem.data_e = data_points[0].get("e", None)
+
+            if fit_ranges and "x" in fit_ranges[0]:
+                self.fitting_problem.start_x = fit_ranges[0]["x"][0]
+                self.fitting_problem.end_x = fit_ranges[0]["x"][1]
 
     def _get_plot_scale(self) -> str:
         """
@@ -213,7 +247,29 @@ class FitbenchmarkParser(Parser):
         """
         Sets any additional info for a fitting problem.
         """
-        return
+        if self.fitting_problem.multifit:
+            ties = re.findall(
+                r"['\"](.*?)['\"]", self._entries.get("ties", "")
+            )
+            self.fitting_problem.additional_info["ties"] = ties
+
+    def _get_input_file_names(self) -> list:
+        """
+        Get the data file name(s) listed in the 'input_file' entry of a
+        FitBenchmark definition file. A single entry gives a list of one
+        name, a bracketed entry gives one name per quoted item.
+
+        This is kept separate from the multifit check so that parsers which
+        combine several input files into a single dataset can still find
+        their data files.
+
+        :return: The data file names
+        :rtype: list<str>
+        """
+        if self._entries["input_file"].startswith("["):
+            pattern = r"['\"]\s*([^'\"]+)\s*['\"]"
+            return re.findall(pattern, self._entries["input_file"])
+        return [self._entries["input_file"]]
 
     def _get_data_file(self) -> list:
         """
@@ -224,11 +280,7 @@ class FitbenchmarkParser(Parser):
         :return: (full) path to a data file. Return None if not found
         :rtype: list<str>
         """
-        if self._is_multifit():
-            pattern = r"['\"]\s*([^'\"]+)\s*['\"]"
-            files = re.findall(pattern, self._entries["input_file"])
-        else:
-            files = [self._entries["input_file"]]
+        files = self._get_input_file_names()
 
         search_path = Path(self._filename).parent
         subdirs = [d for d in search_path.iterdir() if d.is_dir()]

@@ -79,9 +79,7 @@ class GOFitController(Controller):
         # set split point for CrystalField problems
         if self.minimizer == "alternating":
             try:
-                self._nsplit = self.problem.param_names.index(
-                    "IntensityScaling"
-                )
+                self._nsplit = self.par_names.index("IntensityScaling")
             except ValueError as minimizer_incompatible:
                 raise IncompatibleMinimizerError(
                     "alternating minimizer currently only supports "
@@ -102,7 +100,7 @@ class GOFitController(Controller):
 
         # number of dimensions of problem
         n = len(self._p0)
-        m = len(self.data_x)
+        m = self.residual_count
 
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
