@@ -174,7 +174,9 @@ class CompareScatter:
             lambda value, model=self.model, view=self.view: (
                 view.update_fig_axes(
                     x_title=value,
-                    x_data=model.get_values_from_results(value),
+                    x_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
                 )
                 if value is not None
                 else view.plot
@@ -189,7 +191,9 @@ class CompareScatter:
             lambda value, model=self.model, view=self.view: (
                 view.update_fig_axes(
                     y_title=value,
-                    y_data=model.get_values_from_results(value),
+                    y_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
                 )
                 if value is not None
                 else view.plot
@@ -251,9 +255,9 @@ class CompareScatter:
 
         plot = self.view.get_plot(
             x=self.model.get_values_from_results(default_x),
-            x_title=default_x,
+            x_title=self.model.get_readable_attr_name(default_x),
             y=self.model.get_values_from_results(default_y),
-            y_title=default_y,
+            y_title=self.model.get_readable_attr_name(default_y),
             tooltips=hover_text,
             errors=self.model.get_values_from_results("error_flag"),
             minimizers=self.model.get_values_from_results(
@@ -261,7 +265,10 @@ class CompareScatter:
             ),
             problems=self.model.get_values_from_results("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
-            plottable_attributes=self.model.get_plottable_attributes(),
+            plottable_attributes=[
+                self.model.get_readable_attr_name(attr)
+                for attr in self.model.get_plottable_attributes()
+            ],
         )
 
         legend_items = [
@@ -455,7 +462,7 @@ class CompareScatterView:
                     ),
                     dcc.Dropdown(
                         plottable_attributes,
-                        value=x_title,
+                        value=[x_title],
                         id="x-dropdown",
                         clearable=False,
                     ),
@@ -465,7 +472,7 @@ class CompareScatterView:
                     ),
                     dcc.Dropdown(
                         plottable_attributes,
-                        value=y_title,
+                        value=[y_title],
                         id="y-dropdown",
                         clearable=False,
                     ),
@@ -1137,8 +1144,15 @@ class CompareScatterDataModel:
 
         excluded_attributes = [
             "error_flag",
-            "get_n_data_points",
-            "get_n_parameters",
+            "min_accuracy",
+            "min_energy",
+            "min_first_runtime",
+            "min_harmonic_runtime",
+            "min_maximum_runtime",
+            "min_mean_runtime",
+            "min_median_runtime",
+            "min_minimum_runtime",
+            "min_trim_runtime",
             "init_blank",  # needed to avoid accidentally clearing every result
         ]
 
@@ -1162,6 +1176,44 @@ class CompareScatterDataModel:
                     # callable, but requires arguments, so we cannot plot it
                     continue
         return plottable_attributes
+
+    _known_mappings = {
+        "accuracy": "Accuracy (χ²)",
+        "energy": "Energy (kWh)",
+        "first_runtime": "First Runtime (s)",
+        "func_evals": "N Function Evaluations",
+        "harmonic_runtime": "Harmonic Runtime (s)",
+        "maximum_runtime": "Maximum Runtime (s)",
+        "mean_runtime": "Mean Runtime (s)",
+        "median_runtime": "Median Runtime (s)",
+        "minimum_runtime": "Minimum Runtime (s)",
+        "norm_acc": "Normalised Accuracy",
+        "norm_energy": "Normalised Energy",
+        "norm_runtime": "Normalised Runtime",
+        "runtime": "Runtime (s)",
+        "trim_runtime": "Trimmed Mean Runtime (s)",
+        "get_n_data_points": "N Data Points",
+        "get_n_parameters": "N Parameters",
+    }
+
+    def get_readable_attr_name(self, attribute: str):
+        """
+        Given an attribute name, return a human readable name for use in titles
+        and legends.
+        """
+        if attribute in self._known_mappings:
+            return self._known_mappings[attribute]
+        return re.sub("_", " ", attribute).title()
+
+    def get_attr_from_readable_name(self, name: str):
+        """
+        Given a human readable name, return the attribute name.
+        """
+        for attr, readable_name in self._known_mappings.items():
+            if readable_name == name:
+                return attr
+        # If not in known mappings, try to reverse the general conversion
+        return name.lower().replace(" ", "_")
 
     @staticmethod
     def list_contains_plottable_types(values: list):
