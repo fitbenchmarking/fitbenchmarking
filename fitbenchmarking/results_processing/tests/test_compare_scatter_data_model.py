@@ -148,6 +148,98 @@ class CompareScatterDataModelTests(unittest.TestCase):
             )
         )
 
+    def test_get_readable_attr_name_when_mapping_missing(self):
+        """
+        When there is no mapping to translate an attribute to a form suitable
+        for title text, the function will generate one by replacing underscores
+        with spaces and changing the text to title case
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "My Attribute Name",
+            model.get_readable_attr_name("my_attribute_name"),
+        )
+
+    def test_get_attr_from_readable_name_when_mapping_missing(self):
+        """
+        When there is no mapping the function will attempt to reverse the
+        process described in test_get_readable_attr_name_when_mapping_missing.
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "my_attribute_name",
+            model.get_attr_from_readable_name("My Attribute Name"),
+        )
+
+    def test_get_readable_attr_name_when_mapping_exists(self):
+        """
+        When the mapping for a given attribute exists, the function should
+        return the mapped value
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "Accuracy (χ²)",
+            model.get_readable_attr_name("accuracy"),
+        )
+
+    def test_get_attr_from_readable_name_when_mapping_exists(self):
+        """
+        When the mapping for a given attribute exists, the function should
+        return the mapped value
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "accuracy",
+            model.get_attr_from_readable_name("Accuracy (χ²)"),
+        )
+
+    def test_get_readable_attr_name_is_reversible_for_unmapped_values(self):
+        """
+        the combination of get_attr_from_readable_name and
+        get_readable_attr_name should always be the starting value. This test
+        specifically tests the case when the attribute name is not mapped to
+        a known readable value. The test tests both directions.
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "my_attribute_name",
+            model.get_attr_from_readable_name(
+                model.get_readable_attr_name("my_attribute_name")
+            ),
+        )
+
+        self.assertEqual(
+            "My Attribute Name",
+            model.get_readable_attr_name(
+                model.get_attr_from_readable_name("My Attribute Name"),
+            ),
+        )
+
+    def test_get_readable_attr_name_is_reversible_for_mapped_values(self):
+        """
+        the combination of get_attr_from_readable_name and
+        get_readable_attr_name should always be the starting value. This test
+        specifically tests the case when the attribute name is mapped to
+        a known readable value. The test tests both directions.
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "accuracy",
+            model.get_attr_from_readable_name(
+                model.get_readable_attr_name("accuracy")
+            ),
+        )
+
+        self.assertEqual(
+            "Accuracy (χ²)",
+            model.get_readable_attr_name(
+                model.get_attr_from_readable_name("Accuracy (χ²)"),
+            ),
+        )
+
     def test_get_plottable_attributes_returns_expected_attributes(
         self,
     ):
@@ -192,12 +284,6 @@ class CompareScatterDataModelTests(unittest.TestCase):
 
             # manually blacklisted attributes
             error_flag = 1
-
-            def get_n_data_points():
-                return 1
-
-            def get_n_parameters():
-                return 1
 
             def init_blank():
                 return 1

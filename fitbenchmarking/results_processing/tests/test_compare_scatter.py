@@ -300,6 +300,7 @@ class CompareScatterTests(unittest.TestCase):
         cs.view.plot = go.Figure()
         cs.model = Mock(spec=CompareScatterDataModel)
         cs.model.get_values_from_results.return_value = []
+        cs.model.get_plottable_attributes.return_value = []
 
         _, app_returned = cs.get_layout()
         self.assertEqual(app_returned, app)
