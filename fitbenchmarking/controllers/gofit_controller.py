@@ -100,7 +100,7 @@ class GOFitController(Controller):
 
         # number of dimensions of problem
         n = len(self._p0)
-        m = len(self.data_x)
+        m = self.residual_count
 
         # Optimization based on minimizer selected
         if self.minimizer == "alternating":
