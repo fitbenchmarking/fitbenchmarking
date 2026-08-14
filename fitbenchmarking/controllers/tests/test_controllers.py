@@ -21,6 +21,8 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
     LoglikeNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
@@ -468,9 +470,7 @@ class BaseControllerTests(TestCase):
         expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
         assert controller.starting_values == [expected]
         assert controller.par_names == list(expected.keys())
-        assert controller._save_starting_values_per_dataset == [
-            {"A0": 0.0, "A1": 1.0}
-        ]
+        assert controller._save_starting_values == [{"A0": 0.0, "A1": 1.0}]
         # The free parameter's bounds are repeated per dataset and the tied
         # parameter's bounds appear once, matching the expanded param order.
         assert controller.value_ranges == [(0, 5), (0, 5), (10, 20)]
@@ -502,7 +502,7 @@ class BaseControllerTests(TestCase):
         """
         controller = DummyController(self.cost_func)
         controller._dataset_count = 2
-        controller._save_starting_values_per_dataset = [{"A0": 0.0, "A1": 1.0}]
+        controller._save_starting_values = [{"A0": 0.0, "A1": 1.0}]
         controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
         controller.problem.multifit_param_names = controller.par_names
         # The expanded bounds (as built by multifit_init) and the original
@@ -583,6 +583,32 @@ class BaseControllerTests(TestCase):
         assert result == [10, 20]
         assert mock.call_count == 2
 
+        # each dataset must be evaluated on its own data, with its own
+        # parameters, and be named so that the cost function can pick out
+        # the right one of any per dataset model functions
+        for d, call in enumerate(mock.call_args_list):
+            assert call.kwargs["params"] == params[d]
+            assert call.kwargs["dataset"] == d
+            np.testing.assert_allclose(call.kwargs["x"], x[d])
+            np.testing.assert_allclose(call.kwargs["y"], y[d])
+            np.testing.assert_allclose(call.kwargs["e"], e[d])
+
+    def test_residual_count_multifit(self):
+        """
+        Test residual_count is the total number of data points of all of
+        the datasets in the multifit case, as that is the length of the
+        array eval_r returns, and not the number of datasets
+        """
+        controller = DummyController(self.cost_func)
+
+        controller.problem.multifit = False
+        controller.data_y = np.zeros(5)
+        assert controller.residual_count == 5
+
+        controller.problem.multifit = True
+        controller.data_y = [np.zeros(5), np.zeros(7)]
+        assert controller.residual_count == 12
+
     def test_check_bounds_respected_multifit_true(self):
         """
         Test that no error flag is set when the final params of every
@@ -616,6 +642,51 @@ class BaseControllerTests(TestCase):
         controller.check_bounds_respected()
 
         assert controller.flag == 5
+
+    def _poisson_controller(self):
+        """
+        Create a controller with a cost function which is not a least
+        squares one, ready for validate to be called on.
+
+        :return: A controller using the Poisson cost function
+        :rtype: DummyController
+        """
+        cost_func = PoissonCostFunc(self.problem)
+        cost_func.jacobian = Scipy(self.problem)
+        cost_func.jacobian.method = "2-point"
+        return DummyController(cost_func)
+
+    def test_validate_multifit_non_least_squares_cost_func(self):
+        """
+        Test that a cost function which is not a least squares one is
+        rejected in the multifit case
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_mantid(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted in the multifit case when the software is mantid, as
+        mantid combines the datasets itself
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+        controller._software = "mantid"
+
+        controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_not_multifit(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted when the problem is not a multifit problem
+        """
+        controller = self._poisson_controller()
+
+        controller.validate()
 
     def test_validate_multifit_analytic_jacobian(self):
         """
@@ -652,6 +723,37 @@ class BaseControllerTests(TestCase):
         controller.problem.jacobian = lambda x, p: np.array([x])
         controller.cost_func.jacobian = Analytic(controller.problem)
         controller.cost_func.jacobian.method = "default"
+
+        controller.validate()
+
+    def test_validate_multifit_hessian(self):
+        """
+        Test that a Hessian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_hessian_not_multifit(self):
+        """
+        Test that a Hessian is accepted when the problem is not a
+        multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
 
         controller.validate()
 
@@ -1216,6 +1318,141 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 1
         self.shared_tests.check_max_iterations(controller)
+
+
+@run_for_test_types(TEST_TYPE, "all")
+class SASFitControllerTests(TestCase):
+    """
+    Tests for the SASFit controller
+
+    The controller drives a single step of the fitting library at a time
+    and hands it pointers into its own memory, so these cover the parts
+    that go wrong quietly rather than raising.
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+
+    def make_sasfit_controller(self, cost_func=None):
+        """
+        Build a controller ready to be run
+
+        :param cost_func: Cost function to fit with, defaults to the
+                          weighted one built in setUp
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+
+        :return: A prepared controller
+        :rtype: SASFitController
+        """
+        controller = create_controller("sasfit", cost_func or self.cost_func)
+        controller.minimizer = "lm-sasfit"
+        controller.parameter_set = 0
+        controller.prepare()
+        return controller
+
+    def test_fit_starts_from_the_initial_params(self):
+        """
+        SASFitController: Every run of the fit does the same work
+
+        'fit' is what gets timed, so it is run several times for a single
+        'setup'. The library works on its arrays in place, so a run which
+        picks up where the last one finished would report a runtime for a
+        fit that had already been done.
+        """
+        controller = self.make_sasfit_controller()
+
+        controller.execute()
+        first = (controller.iteration_count, controller.func_evals)
+        first_params = np.array(controller._popt)
+
+        controller.execute()
+
+        assert controller.iteration_count > 1
+        assert (controller.iteration_count, controller.func_evals) == first
+        np.testing.assert_allclose(controller._popt, first_params)
+
+    def test_model_is_evaluated_once_per_set_of_params(self):
+        """
+        SASFitController: The model is evaluated over the whole data set
+
+        The library asks for one point at a time, so evaluating the model
+        as it asks costs one evaluation per data point per iteration.
+        """
+        controller = self.make_sasfit_controller()
+
+        with patch.object(
+            controller.cost_func.problem,
+            "eval_model",
+            wraps=controller.cost_func.problem.eval_model,
+        ) as eval_model:
+            controller.execute()
+
+        # The jacobian evaluates the model itself, so it is the size of
+        # each call rather than how many there are that says whether the
+        # model is being asked for a point at a time
+        assert eval_model.call_count > 0
+        for call in eval_model.call_args_list:
+            assert len(call.kwargs["x"]) == len(controller.data_x)
+
+    def test_final_params_do_not_track_the_library(self):
+        """
+        SASFitController: The result is a copy, not a view
+
+        The parameters are read out of an array the library goes on
+        writing to.
+        """
+        controller = self.make_sasfit_controller()
+        controller.execute()
+        controller.cleanup()
+
+        params = np.array(controller.final_params)
+        controller.a_arr[0] = 999.0
+
+        np.testing.assert_allclose(controller.final_params, params)
+
+    def test_unweighted_cost_func_is_fitted_with_unit_errors(self):
+        """
+        SASFitController: Errors are only used by a weighted cost function
+
+        The library divides its residuals by the errors it is given, so
+        anything else has to be given ones.
+        """
+        cost_func = NLLSCostFunc(self.problem)
+        cost_func.jacobian = self.jac
+
+        controller = self.make_sasfit_controller(cost_func)
+
+        np.testing.assert_array_equal(
+            controller.data_e_np, np.ones(len(self.problem.data_x))
+        )
+
+    def test_problem_without_errors_is_fitted_with_unit_errors(self):
+        """
+        SASFitController: A problem with no errors can still be fitted
+        """
+        self.problem.data_e = None
+
+        controller = self.make_sasfit_controller()
+
+        np.testing.assert_array_equal(
+            controller.data_e_np, np.ones(len(self.problem.data_x))
+        )
+
+    def test_weighted_cost_func_is_fitted_with_the_errors(self):
+        """
+        SASFitController: A weighted cost function still uses the errors
+        """
+        controller = self.make_sasfit_controller()
+
+        np.testing.assert_allclose(
+            controller.data_e_np,
+            np.asarray(self.problem.data_e, dtype=np.float32),
+        )
 
 
 @run_for_test_types(TEST_TYPE, "mantid")

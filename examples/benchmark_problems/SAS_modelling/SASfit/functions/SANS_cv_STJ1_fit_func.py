@@ -26,9 +26,10 @@ SASfit, ``P1`` to ``P10``).
 Which parameters are fitted, and the value each of them starts from, is set
 in the ``function`` entry of the problem definition file, the same way it is
 for a fit built out of SASfit plugins. Parameters listed in ``fixed_params``
-instead are held at the value given there. Tying the shared parameters
-together across the datasets, so that the whole series is one global fit, is
-left to the caller.
+instead are held at the value given there, one set of them per dataset, which
+is how each dataset of the series gets its own ``eta_solv``. Tying the shared
+parameters together across the datasets, so that the whole series is one
+global fit, is left to the ``ties`` entry.
 
 Note that the scattering amplitude is taken from ``sasfit_ff_Kshlin`` rather
 than from ``sasfit_ff_LinShell``. The two are the same form factor:
@@ -125,23 +126,6 @@ PARAMETER_SCALES = {
     "N": 1.0e-28,
     "eta_core": 1.0e10,
     "eta_solv": 1.0e10,
-}
-
-# The solvent scattering length density of each dataset of the series, keyed
-# by input file and divided by PARAMETER_SCALES["eta_solv"]. This is fixed by
-# the experiment and is all that differs between the datasets, so the caller
-# gives each dataset its own value of the eta_solv parameter rather than
-# fitting one value for the whole series.
-ETA_SOLV_BY_DATASET = {
-    "STJ1_18e-6.txt": 1.8,
-    "STJ1_19e-6.txt": 1.9,
-    "STJ1_20e-6.txt": 2.0,
-    "STJ1_21e-6.txt": 2.1,
-    "STJ1_22e-6.txt": 2.2,
-    "STJ1_23e-6.txt": 2.3,
-    "STJ1_24e-6.txt": 2.4,
-    "STJ1_25e-6.txt": 2.5,
-    "STJ1_29e-6.txt": 2.9,
 }
 
 equation = "LogNorm x LinShell x 3D Hard Sphere (GH) + polynom"
@@ -248,8 +232,8 @@ def fit_function(x, N, s, mu, dR, eta_core, x_solv, eta_solv, **coefficients):
     The scattering intensity of one dataset of the series.
 
     The same function describes every dataset; which dataset it is evaluating
-    is decided by the value of the eta_solv parameter, which the caller takes
-    from ETA_SOLV_BY_DATASET.
+    is decided by the value of the eta_solv parameter, which the problem
+    definition file fixes to its own value for each of them.
 
     The parameters are passed by name, so the order they are given in the
     problem definition file does not matter, and whether one of them is

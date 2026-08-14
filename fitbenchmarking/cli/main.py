@@ -484,7 +484,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     result_dir = []
     pp_dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
-
+    results = {}
     try:
         for sub_dir in problem_sets:
             # Create full path for the directory that holds a group of
@@ -584,9 +584,8 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
             "You can also set 'results_dir' in an options file.",
             options.results_dir,
         )
-
     index_page = create_index_page(options, group_labels, result_dir)
-    open_browser(index_page, options, pp_dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets, results=results)
 
 
 def main():
@@ -598,14 +597,14 @@ def main():
 
     if len(sys.argv) == 1:
         if not args.problem_sets[0].exists():
-            print(
+            LOGGER.error(
                 "The default problem set has either been "
                 "deleted or moved. Please specify a file "
                 "path to a different problem set with the "
                 "-p option."
             )
             sys.exit(1)
-        print(
+        LOGGER.info(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
         )

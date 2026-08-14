@@ -2,7 +2,10 @@
 software = 'SASfit'
 name = 'SANS cv STJ1'
 description = 'SANS contrast variation experiment'
-input_file = 'STJ1_18e-6.txt'#,'STJ1_19e-6.txt','STJ1_20e-6.txt','STJ1_21e-6.txt','STJ1_22e-6.txt','STJ1_23e-6.txt','STJ1_24e-6.txt','STJ1_25e-6.txt','STJ1_29e-6.txt']
-function = 'name=functions/SANS_cv_STJ1_fit_func.py,N=3.01725,s=0.133386,mu=32.0203,dR=2.88683,eta_core=2.38789,x_solv=0.610765,eta_solv=1.8,p0=0.671694'
-#ties = ['N','s','mu','dR','eta_core','x_solv']
+input_file = ['STJ1_18e-6.txt','STJ1_19e-6.txt','STJ1_20e-6.txt','STJ1_21e-6.txt','STJ1_22e-6.txt','STJ1_23e-6.txt','STJ1_24e-6.txt','STJ1_25e-6.txt']#,'STJ1_29e-6.txt']
+function = 'name=functions/SANS_cv_STJ1_fit_func.py,N=3,s=0.1,mu=32,dR=3,eta_core=2,x_solv=0.5,p0=1'
+# the solvent scattering length density is fixed by the experiment and is
+# what differs between the datasets, so each of them gets its own value
+fixed_params = 'eta_solv=1.8;eta_solv=1.9;eta_solv=2.0;eta_solv=2.1;eta_solv=2.2;eta_solv=2.3;eta_solv=2.4;eta_solv=2.5'#;eta_solv=2.9'
+ties = ['N','s','mu','dR','eta_core','x_solv']
 plot_scale = 'loglog'

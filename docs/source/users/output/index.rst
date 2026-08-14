@@ -41,7 +41,7 @@ convention.
 Performance profile
 -------------------
 
-Below the table there is a :ref:`performance_profile`.
+Below the scatter plot there is a :ref:`performance_profile`.
 
 Assuming the Dash app is running (i.e., it has not been stopped by the user), the performance
 profile is available in two versions:

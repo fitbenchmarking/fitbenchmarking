@@ -57,6 +57,9 @@ class FitbenchmarkParser(Parser):
         data_points = [self._get_data_points(p) for p in self._get_data_file()]
 
         self.fitting_problem.function = self._create_function()
+        self.fitting_problem.dataset_functions = (
+            self._create_dataset_functions()
+        )
         self.fitting_problem.format = self._entries["software"].lower()
 
         self.fitting_problem.plot_scale = self._get_plot_scale()
@@ -146,6 +149,18 @@ class FitbenchmarkParser(Parser):
         Creates a python callable which is a wrapper around the fit function.
         """
         raise NotImplementedError
+
+    def _create_dataset_functions(self) -> list[Callable] | None:
+        """
+        Creates one python callable per dataset of a multifit problem, for
+        problems where the datasets are not all described by the same
+        function.
+
+        :return: One callable per dataset, or None if every dataset is
+                 described by the function returned by ``_create_function``
+        :rtype: list of callable, or None
+        """
+        return None
 
     def _get_equation(self) -> str:
         """

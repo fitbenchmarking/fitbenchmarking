@@ -20,7 +20,10 @@ from fitbenchmarking.core.results_output import (
     save_results,
 )
 from fitbenchmarking.utils.checkpoint import Checkpoint
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.options import find_options_file
+
+LOGGER = get_logger()
 
 
 def get_parser() -> ArgumentParser:
@@ -188,7 +191,7 @@ def generate_report(options_file="", additional_options=None, debug=False):
         all_dirs.append(directory)
 
     index_page = create_index_page(options, list(results), all_dirs)
-    open_browser(index_page, options, pp_dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets, results=results)
 
 
 @exception_handler
@@ -270,19 +273,20 @@ def merge_data_sets(
     :param debug: Enable debugging output.
     :type debug: bool
     """
+
     if len(files) < 2:
         return
 
-    print(f"Loading {files[0]}...")
+    LOGGER.info("Loading %s...", files[0])
     with open(files[0], encoding="utf-8") as f:
         A = json.load(f)
     for to_merge in files[1:]:
-        print(f"Merging {to_merge}...")
+        LOGGER.info("Merging %s...", to_merge)
         with open(to_merge, encoding="utf-8") as f:
             B = json.load(f)
         A = merge(A, B, strategy=strategy)
 
-    print(f"Writing to {output}...")
+    LOGGER.info("Writing to %s...", output)
     with open(output, "w", encoding="utf-8") as f:
         json.dump(A, f, indent=2)
 
