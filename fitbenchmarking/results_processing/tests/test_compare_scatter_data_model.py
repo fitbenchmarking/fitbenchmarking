@@ -115,6 +115,11 @@ class CompareScatterDataModelTests(unittest.TestCase):
         self.assertEqual(unique_values, ["mock_result_1"])
 
     def test_list_contains_plottable_types_returns_false_if_np_inf(self):
+        """
+        list_contains_plottable_types should return false if provided with a
+        list of all np.inf, as they cannot be plotted despite being "number"
+        """
+
         self.assertFalse(
             CompareScatterDataModel.list_contains_plottable_types(
                 [np.inf, np.inf, np.inf, np.inf, np.inf, np.inf]
@@ -122,6 +127,10 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
 
     def test_list_contains_plottable_types_returns_false_if_non_numeric(self):
+        """
+        list_contains_plottable_types should return false if provided with a
+        list containing data which is not an instance of numbers.number
+        """
         self.assertFalse(
             CompareScatterDataModel.list_contains_plottable_types(
                 ["test", "test", "test", "test"]
@@ -129,6 +138,10 @@ class CompareScatterDataModelTests(unittest.TestCase):
         )
 
     def test_list_contains_plottable_types_returns_true_if_any_numeric(self):
+        """
+        list_contains_plottable_types should return true if provided with a
+        list containing any data which is an instance of numbers.number
+        """
         self.assertTrue(
             CompareScatterDataModel.list_contains_plottable_types(
                 [123, 456.123, np.float64(789)]
@@ -200,6 +213,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
                 continue
             setattr(mock_fitting_result, attr, getattr(StubResult, attr))
 
+        # Ignore type because it is a StubResult not a FittingResult
         model = CompareScatterDataModel([mock_fitting_result])  # type: ignore
 
         attributes = model.get_plottable_attributes()
