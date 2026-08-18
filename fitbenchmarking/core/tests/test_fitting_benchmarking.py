@@ -282,6 +282,25 @@ class PerformFitTests(unittest.TestCase):
         assert energy == np.inf
         assert runtimes == [np.inf] * 5
 
+    @patch("codecarbon.EmissionsTracker.stop_task")
+    @patch("fitbenchmarking.controllers.base_controller.Controller.validate")
+    def test_perform_fit_tracker_not_stopped_when_not_started(
+        self, mock_validate, mock_stop_task
+    ):
+        """
+        The test checks the emissions tracker task is not stopped when
+        the fit raised an exception before the task was started.
+        """
+        controller = set_up_controller("Gauss3.dat", self.options)
+        controller.minimizer = "Nelder-Mead"
+
+        fit = Fit(options=self.options, data_dir="test", checkpointer=self.cp)
+
+        mock_validate.side_effect = exceptions.ValidationException
+        _ = fit._perform_fit(controller)
+
+        mock_stop_task.assert_not_called()
+
     @patch("timeit.Timer.repeat")
     @patch(
         "fitbenchmarking.controllers.scipy_controller.ScipyController.cleanup"
