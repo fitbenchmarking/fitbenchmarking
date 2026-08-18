@@ -63,7 +63,6 @@ RUN . $VIRTUAL_ENV
 RUN pip install --no-cache-dir \
     wheel \
     "pytest>3.6" \
-    pytest-flakefinder \
     pytest-cov \
     coveralls \
     "coverage~=4.5.4" \ 
