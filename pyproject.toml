@@ -56,7 +56,7 @@ SAS = ['sasmodels==1.0.12', "tinycc;platform_system=='Windows'"]
 dev = [
     'pytest',
     'pytest-cov>=4.0.0',
-    'pytest-flakefinder'
+    'pytest-flakefinder',
     'coveralls',
     'coverage[toml]>=6.3',
     'ruff',
