@@ -21,6 +21,7 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
     LoglikeNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.nlls_cost_func import NLLSCostFunc
 from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
@@ -1286,6 +1287,24 @@ class ExternalControllerTests(TestCase):
         controller._status = 2
         self.shared_tests.check_diverged(controller)
 
+    def test_sasfit(self):
+        """
+        SASFitController: Tests for output shape
+        """
+        controller = create_controller("sasfit", self.cost_func)
+
+        controller.minimizer = "lm-sasfit"
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = 0
+        self.shared_tests.check_converged(controller)
+        controller._status = 1
+        self.shared_tests.check_max_iterations(controller)
+        # the library reported a problem while fitting
+        controller._status = 2
+        controller.cleanup()
+        assert controller.flag == 3
+
     def test_gofit(self):
         """
         GOFitController: Tests for output shape
@@ -1299,6 +1318,141 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_converged(controller)
         controller._status = 1
         self.shared_tests.check_max_iterations(controller)
+
+
+@run_for_test_types(TEST_TYPE, "all")
+class SASFitControllerTests(TestCase):
+    """
+    Tests for the SASFit controller
+
+    The controller drives a single step of the fitting library at a time
+    and hands it pointers into its own memory, so these cover the parts
+    that go wrong quietly rather than raising.
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+
+    def make_sasfit_controller(self, cost_func=None):
+        """
+        Build a controller ready to be run
+
+        :param cost_func: Cost function to fit with, defaults to the
+                          weighted one built in setUp
+        :type cost_func: subclass of
+                :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
+
+        :return: A prepared controller
+        :rtype: SASFitController
+        """
+        controller = create_controller("sasfit", cost_func or self.cost_func)
+        controller.minimizer = "lm-sasfit"
+        controller.parameter_set = 0
+        controller.prepare()
+        return controller
+
+    def test_fit_starts_from_the_initial_params(self):
+        """
+        SASFitController: Every run of the fit does the same work
+
+        'fit' is what gets timed, so it is run several times for a single
+        'setup'. The library works on its arrays in place, so a run which
+        picks up where the last one finished would report a runtime for a
+        fit that had already been done.
+        """
+        controller = self.make_sasfit_controller()
+
+        controller.execute()
+        first = (controller.iteration_count, controller.func_evals)
+        first_params = np.array(controller._popt)
+
+        controller.execute()
+
+        assert controller.iteration_count > 1
+        assert (controller.iteration_count, controller.func_evals) == first
+        np.testing.assert_allclose(controller._popt, first_params)
+
+    def test_model_is_evaluated_once_per_set_of_params(self):
+        """
+        SASFitController: The model is evaluated over the whole data set
+
+        The library asks for one point at a time, so evaluating the model
+        as it asks costs one evaluation per data point per iteration.
+        """
+        controller = self.make_sasfit_controller()
+
+        with patch.object(
+            controller.cost_func.problem,
+            "eval_model",
+            wraps=controller.cost_func.problem.eval_model,
+        ) as eval_model:
+            controller.execute()
+
+        # The jacobian evaluates the model itself, so it is the size of
+        # each call rather than how many there are that says whether the
+        # model is being asked for a point at a time
+        assert eval_model.call_count > 0
+        for call in eval_model.call_args_list:
+            assert len(call.kwargs["x"]) == len(controller.data_x)
+
+    def test_final_params_do_not_track_the_library(self):
+        """
+        SASFitController: The result is a copy, not a view
+
+        The parameters are read out of an array the library goes on
+        writing to.
+        """
+        controller = self.make_sasfit_controller()
+        controller.execute()
+        controller.cleanup()
+
+        params = np.array(controller.final_params)
+        controller.a_arr[0] = 999.0
+
+        np.testing.assert_allclose(controller.final_params, params)
+
+    def test_unweighted_cost_func_is_fitted_with_unit_errors(self):
+        """
+        SASFitController: Errors are only used by a weighted cost function
+
+        The library divides its residuals by the errors it is given, so
+        anything else has to be given ones.
+        """
+        cost_func = NLLSCostFunc(self.problem)
+        cost_func.jacobian = self.jac
+
+        controller = self.make_sasfit_controller(cost_func)
+
+        np.testing.assert_array_equal(
+            controller.data_e_np, np.ones(len(self.problem.data_x))
+        )
+
+    def test_problem_without_errors_is_fitted_with_unit_errors(self):
+        """
+        SASFitController: A problem with no errors can still be fitted
+        """
+        self.problem.data_e = None
+
+        controller = self.make_sasfit_controller()
+
+        np.testing.assert_array_equal(
+            controller.data_e_np, np.ones(len(self.problem.data_x))
+        )
+
+    def test_weighted_cost_func_is_fitted_with_the_errors(self):
+        """
+        SASFitController: A weighted cost function still uses the errors
+        """
+        controller = self.make_sasfit_controller()
+
+        np.testing.assert_allclose(
+            controller.data_e_np,
+            np.asarray(self.problem.data_e, dtype=np.float32),
+        )
 
 
 @run_for_test_types(TEST_TYPE, "mantid")
