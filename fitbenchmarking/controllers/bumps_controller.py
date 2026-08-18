@@ -3,7 +3,7 @@ Implements a controller for the Bumps fitting software.
 """
 
 import numpy as np
-from bumps.fitters import fit as bumpsFit
+from bumps.fitters import fit as bumps_fit
 from bumps.names import Curve, FitProblem, PoissonCurve
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -158,7 +158,7 @@ class BumpsController(Controller):
         """
         Run problem with Bumps.
         """
-        result = bumpsFit(
+        result = bumps_fit(
             self._fit_problem,
             method=self._minimizer,
             abort_test=self._check_timer_abort_test,
