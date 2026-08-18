@@ -49,7 +49,7 @@ jobs:
         tags: latest
     
     - name: Push ${{ matrix.container }} to ghcr.io
-      if: github.event_name == 'push'
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
       uses: redhat-actions/push-to-registry@v2
       with:
         image: ${{ steps.build-image.outputs.image }}
