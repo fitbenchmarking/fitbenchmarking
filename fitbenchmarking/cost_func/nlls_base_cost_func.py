@@ -2,14 +2,13 @@
 Implements the base non-linear least squares cost function
 """
 
-import re
 from abc import abstractmethod
 
+import numpy as np
 from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
-
-_MULTIFIT_PREFIX = re.compile(r"(d\d+|shared)\.")
+from fitbenchmarking.utils.exceptions import CostFuncError
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -59,6 +58,27 @@ class BaseNLLSCostFunc(CostFunc):
         """
         raise NotImplementedError
 
+    def _evaluating_combined_multifit(self, x) -> bool:
+        """
+        Check whether eval_r has been asked for the combined multifit
+        problem rather than for a single dataset.
+
+        The combined problem is being evaluated when the caller gives no
+        x data (minimizers call eval_r with the parameters only) or gives
+        the whole container of datasets. A single dataset's x values mean
+        the params belong to that dataset alone, which is the case when
+        eval_chisq scores each dataset in turn once the fit has finished.
+
+        :param x: The x data eval_r was called with, if any
+        :type x: numpy array, list of numpy arrays or None
+
+        :return: True if the combined problem should be evaluated
+        :rtype: bool
+        """
+        if not (self.problem.multifit and self.problem.multifit_param_names):
+            return False
+        return x is None or isinstance(x, (list, tuple)) or np.ndim(x) > 1
+
     def eval_r(self, params, **kwargs):
         """
         Calculates residuals used in Least-Squares problems.
@@ -71,51 +91,35 @@ class BaseNLLSCostFunc(CostFunc):
         :return: The residuals for the datapoints at the given parameters
         :rtype: np.array
         """
-        if (
-            self.problem.multifit
-            and self.problem.multifit_param_names is not None
-            and any(
-                _MULTIFIT_PREFIX.match(name)
-                for name in self.problem.multifit_param_names
+        if not self._evaluating_combined_multifit(kwargs.get("x")):
+            return self.eval_r_single_dataset(params, **kwargs)
+
+        par_names = self.problem.multifit_param_names
+        if len(params) != len(par_names):
+            raise CostFuncError(
+                "The number of parameters does not match the number of "
+                f"MultiFit parameters, len(params)={len(params)} and "
+                f"len(multifit_param_names)={len(par_names)}."
             )
-        ):
-            r = []
 
-            if kwargs.get("x") is not None:
-                # Within the multifit case, kwargs.get("x") will appear
-                # in different forms, depending on the function that is
-                # calling eval_r
-                if isinstance(kwargs.get("x")[0], list):
-                    dataset_count = len(kwargs.get("x"))
+        # Each dataset is evaluated with its own d<i>. params plus the
+        # shared. params, and the residuals are joined into one vector.
+        param_dict = dict(zip(par_names, params))
+        r = [
+            self.eval_r_single_dataset(
+                params=[
+                    v
+                    for k, v in param_dict.items()
+                    if k.startswith((f"d{d}.", "shared."))
+                ],
+                x=self.problem.data_x[d],
+                y=self.problem.data_y[d],
+                e=self.problem.data_e[d],
+            )
+            for d in range(len(self.problem.data_x))
+        ]
 
-                # kwargs.get("x") does not contain lists, then we
-                # assume we are currently dealing with a single dataset
-                else:
-                    dataset_count = 1
-
-            else:
-                dataset_count = len(self.problem.data_x)
-
-            param_dict = dict(zip(self.problem.multifit_param_names, params))
-            for d in range(dataset_count):
-                single_dataset_params = []
-                for k, v in param_dict.items():
-                    if k.startswith((f"d{d}.", "shared.")):
-                        single_dataset_params.append(v)
-
-                kwargs["x"] = self.problem.data_x[d]
-                kwargs["y"] = self.problem.data_y[d]
-                kwargs["e"] = self.problem.data_e[d]
-
-                r_single = self.eval_r_single_dataset(
-                    params=single_dataset_params, **kwargs
-                )
-
-                r.extend(r_single)
-        else:
-            r = self.eval_r_single_dataset(params, **kwargs)
-
-        return r
+        return np.concatenate(r)
 
     def eval_cost(self, params, **kwargs):
         """
