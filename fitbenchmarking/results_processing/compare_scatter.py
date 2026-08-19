@@ -860,18 +860,22 @@ class CompareScatterView:
         :param new_opacity: the opacity after the change
         :type new_opacity: int
         """
-        t.marker.opacity = new_opacity
 
-        if t.text is None or t.text == "":
-            return
+        # set the opacity of the plotted trace
+        t.marker["opacity"] = new_opacity
 
-        marker_text = t.text
-        if isinstance(marker_text, np.ndarray):
-            marker_text = marker_text.item()
+        # if the points have text (i.e. an error flag) set the opacity
+        # for that as well
 
-        html_tree = xml_html.fromstring(marker_text)
-        html_tree.set("style", f"opacity:{new_opacity}")
-        t.text = etree.tostring(html_tree).decode("ascii")
+        for i, text in enumerate(t.text):
+            if text is None or text == "":
+                continue
+
+            marker_text = text
+
+            html_tree = xml_html.fromstring(marker_text)
+            html_tree.set("style", f"opacity:{new_opacity}")
+            t.text[i] = etree.tostring(html_tree).decode("ascii")
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
