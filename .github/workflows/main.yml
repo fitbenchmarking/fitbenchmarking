@@ -135,6 +135,9 @@ jobs:
         sudo apt install -y curl
     - name: Run tests
       run: |
+        # Force compatibility mode for numpy and other compiled extensions
+        export OPENBLAS_CORETYPE=PRESCOTT
+        export VECLIB_MAXIMUM_THREADS=1
         ci/unit_tests.sh
     - name: Submit coverage
       if: always()
