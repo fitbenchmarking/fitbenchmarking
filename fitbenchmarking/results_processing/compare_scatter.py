@@ -576,21 +576,32 @@ class CompareScatterView:
     def update_fig_axes(
         self, x_title=None, x_data=None, y_title=None, y_data=None
     ):
+        chunk_len = max(
+            [
+                len(t.x) if isinstance(t, go.Scatter) else 0
+                for t in self.plot.data
+            ]
+        )
+
         if x_title is not None:
             assert x_data is not None, (
                 "x_data must be provided when x_title is provided"
             )
             self.plot.update_layout(xaxis_title=x_title)
-            for i, t in enumerate(self.plot.data):
-                t.x = [x_data[i]]
+            i = 0
+            for trace in self.plot.data:
+                trace.x = x_data[i : i + chunk_len]
+                i += chunk_len
 
         if y_title is not None:
             assert y_data is not None, (
                 "y_data must be provided when y_title is provided"
             )
             self.plot.update_layout(yaxis_title=y_title)
-            for i, trace in enumerate(self.plot.data):
-                trace.y = [y_data[i]]
+            i = 0
+            for trace in self.plot.data:
+                trace.y = y_data[i : i + chunk_len]
+                i += chunk_len
 
         return self.plot
 
