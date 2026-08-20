@@ -602,3 +602,88 @@ class CompareScatterViewTests(unittest.TestCase):
         self.assertEqual(view.plot.data[3].y, 4)  # type: ignore
         self.assertEqual(view.plot.data[4].y, 5)  # type: ignore
         self.assertEqual(view.plot.data[5].y, 6)  # type: ignore
+
+    def test_update_fig_axes_behaves_same_as_get_plot(self):
+        """
+        Both of these functions set how the data is laid out on an axis -
+        they need to behave the same for consistency
+        """
+
+        x_title = "x_title"
+        y_title = "y_title"
+        x_data = [1, 2, 3, 4, 5, 6, 7, 8]
+        y_data = [1, 2, 3, 4, 5, 6, 7, 8]
+        minimizers = [
+            "min1",
+            "min1",
+            "min2",
+            "min2",
+            "min1",
+            "min1",
+            "min2",
+            "min2",
+        ]
+        problems = [
+            "prob1",
+            "prob2",
+            "prob1",
+            "prob2",
+            "prob1",
+            "prob2",
+            "prob1",
+            "prob2",
+        ]
+
+        view = CompareScatterView()
+        view.get_plot(
+            x_data,
+            y_data,
+            x_title,
+            y_title,
+            [[""]] * 8,
+            [0] * 8,
+            minimizers,
+            problems,
+            [""] * 8,
+            [""] * 8,
+        )
+        initial_x = [list(trace.x) for trace in view.plot.data]
+        initial_y = [list(trace.y) for trace in view.plot.data]
+        view.update_fig_axes(x_title, x_data, y_title, y_data)
+
+        for i, trace in enumerate(view.plot.data):
+            self.assertEqual(initial_x[i], list(trace.x))
+            self.assertEqual(initial_y[i], list(trace.y))
+
+    def test_customdata_indices_map_to_correct_fields(self):
+        """
+        The DATA_*_INDEX constants must correctly identify which column in
+        customdata holds each field. If the order of custom_data in get_plot
+        changes without updating the constants, hover text, apply_state, and
+        update_fig_axes will all silently read the wrong values.
+        """
+        view = CompareScatterView()
+        self._create_test_plot(view)
+
+        actual = set()
+        for trace in view.plot.data:
+            for point in trace.customdata:
+                # create a tuple of all of the data in customdata for this
+                # point
+                actual.add(
+                    (
+                        int(point[CompareScatterView.DATA_SOURCE_INDEX]),
+                        point[CompareScatterView.DATA_MINIMIZER_INDEX],
+                        point[CompareScatterView.DATA_PROBLEM_INDEX],
+                        tuple(point[CompareScatterView.DATA_HOVER_TEXT_INDEX]),
+                    )
+                )
+
+        expected = {
+            (0, "minimizer_1", "problem_1", ("tooltip_1",)),
+            (1, "minimizer_1", "problem_2", ("tooltip_2",)),
+            (2, "minimizer_2", "problem_1", ("tooltip_3",)),
+            (3, "minimizer_2", "problem_2", ("tooltip_4",)),
+        }
+
+        self.assertEqual(actual, expected)
