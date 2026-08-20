@@ -95,7 +95,17 @@ RUN mkdir -p /RALFit-build
 WORKDIR /RALFit-build
 
 ENV CC=gcc
-RUN cmake /RALFit/libRALFit && make && make install
+# RALFit defaults CMAKE_BUILD_TYPE to Release, and its Release flags hardcode
+# -march=native. That targets the CPU of whichever runner builds this image, so
+# libral_nlls.so dies with SIGILL on any machine with a narrower instruction set.
+# RelWithDebInfo is used because RALFit set()s CMAKE_<LANG>_FLAGS_RELEASE as a
+# normal variable, which overrides anything passed here with -D; RelWithDebInfo
+# does not match its "Release" check, so these flags are honoured instead.
+RUN cmake /RALFit/libRALFit \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_C_FLAGS_RELWITHDEBINFO="-O2 -march=x86-64-v3 -fno-fast-math -fopenmp" \
+      -DCMAKE_Fortran_FLAGS_RELWITHDEBINFO="-O2 -march=x86-64-v3 -fno-fast-math -fopenmp" \
+    && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install
 RUN pip install --no-cache-dir .
