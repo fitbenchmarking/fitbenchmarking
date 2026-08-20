@@ -200,6 +200,30 @@ class CompareScatter:
             )
         )
 
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_xaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_xaxes(type="linear")
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_yaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_yaxes(type="linear")
+            )
+        )
+
         script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
         script_path += "/results_processing/scripts/compare_scatter"
 
@@ -431,8 +455,6 @@ class CompareScatterView:
             color=minimizers,
             symbol=problems,
             symbol_sequence=self.valid_symbols,
-            log_x=False,
-            log_y=False,
             custom_data=[
                 tooltips,
                 minimizers,
@@ -440,6 +462,8 @@ class CompareScatterView:
                 report_pages,
                 data_locations,
             ],
+            log_x=True,
+            log_y=True,
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
@@ -487,23 +511,62 @@ class CompareScatterView:
                         "X axis attribute:",
                         style={"padding-right": "5px", "padding-left": "5px"},
                     ),
-                    dcc.Dropdown(
-                        plottable_attributes,
-                        value=[x_title],
-                        id="x-dropdown",
-                        clearable=False,
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[x_title],
+                                id="x-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="x-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
                     ),
                     html.Div(
                         "Y axis attribute:",
                         style={"padding-right": "5px", "padding-left": "5px"},
                     ),
-                    dcc.Dropdown(
-                        plottable_attributes,
-                        value=[y_title],
-                        id="y-dropdown",
-                        clearable=False,
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[y_title],
+                                id="y-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="y-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
                     ),
                 ],
+                style={"float": "right"},
             ),
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
