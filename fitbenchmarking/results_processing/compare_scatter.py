@@ -289,9 +289,21 @@ class CompareScatterView:
     the CompareScatter class instead
     """
 
+    # Index in customdata where the hover text for each point is stored
     DATA_HOVER_TEXT_INDEX = 0
+
+    # Index in customdata where the minimizer name for each point is stored
     DATA_MINIMIZER_INDEX = 1
+
+    # Index in customdata where the problem name for each point is stored
     DATA_PROBLEM_INDEX = 2
+
+    # Note: index 3 maps each point to the URL of the relevant fitting report
+    # page. This is accessed in handle_link.js
+
+    # Index in customdata where each point's original position in the source
+    # data is stored
+    DATA_SOURCE_INDEX = 4
 
     banned_prefixes = [
         "circle-",  # limited readability
@@ -404,6 +416,15 @@ class CompareScatterView:
             for flag in errors
         ]
 
+        # since plotly may reorganise points to group them into traces when
+        # there are multiple points under one minimizer problem pairing (e.g.
+        # when we have run with multiple cost functions selected), we need to
+        # keep track of where in the data array that point came from by storing
+        # it in the customdata field of the point. This means that later when
+        # we need to make edits to what is being plotted, we are able to
+        # correctly place the information in self.plot.data
+        data_locations = list(range(len(x)))
+
         self.plot = px.scatter(
             x=x,
             y=y,
@@ -412,7 +433,13 @@ class CompareScatterView:
             symbol_sequence=self.valid_symbols,
             log_x=False,
             log_y=False,
-            custom_data=[tooltips, minimizers, problems, report_pages],
+            custom_data=[
+                tooltips,
+                minimizers,
+                problems,
+                report_pages,
+                data_locations,
+            ],
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
@@ -576,32 +603,28 @@ class CompareScatterView:
     def update_fig_axes(
         self, x_title=None, x_data=None, y_title=None, y_data=None
     ):
-        chunk_len = max(
-            [
-                len(t.x) if isinstance(t, go.Scatter) else 0
-                for t in self.plot.data
-            ]
-        )
-
         if x_title is not None:
             assert x_data is not None, (
                 "x_data must be provided when x_title is provided"
             )
             self.plot.update_layout(xaxis_title=x_title)
-            i = 0
-            for trace in self.plot.data:
-                trace.x = x_data[i : i + chunk_len]
-                i += chunk_len
 
         if y_title is not None:
             assert y_data is not None, (
                 "y_data must be provided when y_title is provided"
             )
             self.plot.update_layout(yaxis_title=y_title)
-            i = 0
-            for trace in self.plot.data:
-                trace.y = y_data[i : i + chunk_len]
-                i += chunk_len
+
+        for trace in self.plot.data:
+            if not isinstance(trace, go.Scatter):
+                continue
+            indices = [
+                int(data[self.DATA_SOURCE_INDEX]) for data in trace.customdata
+            ]
+            if x_data is not None:
+                trace.x = tuple(x_data[i] for i in indices)
+            if y_data is not None:
+                trace.y = tuple(y_data[i] for i in indices)
 
         return self.plot
 
@@ -878,10 +901,10 @@ class CompareScatterView:
         # if the points have text (i.e. an error flag) set the opacity
         # for that as well
 
-        for i, text in enumerate(t.text):
-            if text is None or text == "":
-                continue
+        if t.text is None or t.text == "":
+            return
 
+        for i, text in enumerate(t.text):
             marker_text = text
 
             html_tree = xml_html.fromstring(marker_text)
