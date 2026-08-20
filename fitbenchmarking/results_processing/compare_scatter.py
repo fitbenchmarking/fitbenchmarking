@@ -892,24 +892,25 @@ class CompareScatterView:
         :param t: The trace to modify
         :type t: plotly trace
         :param new_opacity: the opacity after the change
-        :type new_opacity: int
+        :type new_opacity: float
         """
 
         # set the opacity of the plotted trace
         t.marker["opacity"] = new_opacity
 
-        # if the points have text (i.e. an error flag) set the opacity
-        # for that as well
-
-        if t.text is None or t.text == "":
+        if t.text is None:
             return
 
-        for i, text in enumerate(t.text):
-            marker_text = text
-
-            html_tree = xml_html.fromstring(marker_text)
-            html_tree.set("style", f"opacity:{new_opacity}")
-            t.text[i] = etree.tostring(html_tree).decode("ascii")
+        texts = t.text if not isinstance(t.text, str) else (t.text,)
+        new_texts = []
+        for text in texts:
+            if text:
+                html_tree = xml_html.fromstring(text)
+                html_tree.set("style", f"opacity:{new_opacity}")
+                new_texts.append(etree.tostring(html_tree).decode("ascii"))
+            else:
+                new_texts.append(text)
+        t.text = tuple(new_texts)
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
