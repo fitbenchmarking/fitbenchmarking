@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock, patch
 
+import numpy as np
 import plotly.graph_objects as go
 from dash import dcc, html
 from parameterized import parameterized
@@ -14,6 +15,9 @@ from fitbenchmarking.results_processing.compare_scatter import (
 
 
 class CompareScatterViewTests(unittest.TestCase):
+    active_opacity = CompareScatterView.active_opacity
+    inactive_opacity = CompareScatterView.inactive_opacity
+
     @staticmethod
     def _create_test_plot(view=CompareScatterView(), errors=[0, 1, 2, 3]):
         """
@@ -502,19 +506,31 @@ class CompareScatterViewTests(unittest.TestCase):
         set_props_mock.assert_called()
 
     def test_set_trace_opacity(self):
+        """
+        Both the marker opacity and the inline style of any HTML error-flag
+        text must be updated together, so that the point and its annotation
+        fade as one. The opacity must also be settable to arbitrary values
+        and remain consistent across multiple successive calls.
+        """
         view = CompareScatterView()
         plot_div = self._create_test_plot(view, errors=[1, 1, 1, 1])
 
         trace = plot_div.children[1].children[0].figure.data[0]
         view.set_trace_opacity(trace, 0)
         self.assertEqual(trace.marker["opacity"], 0)
-        self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:0"><b>1</b></sup>',)
+        )
         view.set_trace_opacity(trace, 1)
         self.assertEqual(trace.marker["opacity"], 1)
-        self.assertEqual(trace.text, '<sup style="opacity:1"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:1"><b>1</b></sup>',)
+        )
         view.set_trace_opacity(trace, 0.5)
         self.assertEqual(trace.marker["opacity"], 0.5)
-        self.assertEqual(trace.text, '<sup style="opacity:0.5"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:0.5"><b>1</b></sup>',)
+        )
 
     @parameterized.expand(["all", "none"])
     @patch(
@@ -687,3 +703,79 @@ class CompareScatterViewTests(unittest.TestCase):
         }
 
         self.assertEqual(actual, expected)
+
+    @staticmethod
+    def _make_trace(text, opacity=1.0):
+        return go.Scatter(
+            x=[0],
+            y=[0],
+            text=text,
+            marker={"opacity": opacity, "size": 13},
+        )
+
+    def test_set_trace_opacity_leaves_empty_strings_unchanged(self):
+        """
+        Points without an error flag have empty text. These must pass through
+        unchanged so that no spurious annotation appears on the plot.
+        """
+        trace = self._make_trace(text=("", ""))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text, ("", ""))
+
+    def test_set_trace_opacity_handles_mixed_empty_and_html_text(self):
+        """
+        When multiple cost functions are used, a trace has one text entry per
+        cost function: some are HTML error flags, others are empty. Both must
+        survive the update correctly — empty entries unchanged, HTML entries
+        updated.
+        """
+        html_in = '<sup style="opacity:1"><b>3</b></sup>'
+        trace = self._make_trace(text=("", html_in))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text[0], "")
+        self.assertIn(f"opacity:{self.inactive_opacity}", trace.text[1])
+
+    def test_set_trace_opacity_updates_marker_when_text_is_none(self):
+        """
+        Traces with no text (no error flags at all) still need their marker
+        opacity updated so they fade correctly when toggled.
+        """
+        trace = self._make_trace(text=None)
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.marker["opacity"], self.inactive_opacity)
+
+    def test_set_trace_opacity_handles_numpy_array_text(self):
+        """
+        When two cost functions are selected, Plotly stores t.text as a numpy
+        array. Evaluating 'not array' raises an ambiguity error, so the None
+        guard must use 'is None' rather than a truthiness check.
+        """
+        html_in = '<sup style="opacity:1"><b>3</b></sup>'
+        trace = self._make_trace(text=np.array(["", html_in]))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text[0], "")
+        self.assertIn(f"opacity:{self.inactive_opacity}", trace.text[1])
+
+    def test_set_trace_opacity_preserves_all_empty_strings(self):
+        """
+        When every text entry is empty (no error flags), the text sequence
+        must be returned intact so downstream code sees the same structure.
+        """
+        trace = self._make_trace(text=("", "", ""))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text, ("", "", ""))
+
+    def test_set_trace_opacity_restores_active_opacity(self):
+        """
+        Opacity must be settable in both directions so that toggling a trace
+        back on correctly restores its full visibility.
+        """
+        html_in = (
+            f'<sup style="opacity:{self.inactive_opacity}"><b>2</b></sup>'
+        )
+        trace = self._make_trace(
+            text=(html_in,), opacity=self.inactive_opacity
+        )
+        CompareScatterView.set_trace_opacity(trace, self.active_opacity)
+        self.assertEqual(trace.marker["opacity"], self.active_opacity)
+        self.assertIn(f"opacity:{self.active_opacity}", trace.text[0])
