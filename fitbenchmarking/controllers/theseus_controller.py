@@ -163,7 +163,7 @@ class TheseusController(Controller):
             th_optim_vars,
             th_aux_vars,
             name="theseus",
-            dim=len(self.data_x),
+            dim=self.residual_count,
         )
 
         self.th_objective.add(self.th_cost_func)

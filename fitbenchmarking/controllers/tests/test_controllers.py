@@ -582,6 +582,32 @@ class BaseControllerTests(TestCase):
         assert result == [10, 20]
         assert mock.call_count == 2
 
+        # each dataset must be evaluated on its own data, with its own
+        # parameters, and be named so that the cost function can pick out
+        # the right one of any per dataset model functions
+        for d, call in enumerate(mock.call_args_list):
+            assert call.kwargs["params"] == params[d]
+            assert call.kwargs["dataset"] == d
+            np.testing.assert_allclose(call.kwargs["x"], x[d])
+            np.testing.assert_allclose(call.kwargs["y"], y[d])
+            np.testing.assert_allclose(call.kwargs["e"], e[d])
+
+    def test_residual_count_multifit(self):
+        """
+        Test residual_count is the total number of data points of all of
+        the datasets in the multifit case, as that is the length of the
+        array eval_r returns, and not the number of datasets
+        """
+        controller = DummyController(self.cost_func)
+
+        controller.problem.multifit = False
+        controller.data_y = np.zeros(5)
+        assert controller.residual_count == 5
+
+        controller.problem.multifit = True
+        controller.data_y = [np.zeros(5), np.zeros(7)]
+        assert controller.residual_count == 12
+
     def test_check_bounds_respected_multifit_true(self):
         """
         Test that no error flag is set when the final params of every
