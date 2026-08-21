@@ -622,48 +622,17 @@ class CompareScatterViewTests(unittest.TestCase):
         Both of these functions set how the data is laid out on an axis -
         they need to behave the same for consistency
         """
-
-        x_title = "x_title"
-        y_title = "y_title"
-        x_data = [1, 2, 3, 4, 5, 6, 7, 8]
-        y_data = [1, 2, 3, 4, 5, 6, 7, 8]
-        minimizers = [
-            "min1",
-            "min1",
-            "min2",
-            "min2",
-            "min1",
-            "min1",
-            "min2",
-            "min2",
-        ]
-        problems = [
-            "prob1",
-            "prob2",
-            "prob1",
-            "prob2",
-            "prob1",
-            "prob2",
-            "prob1",
-            "prob2",
-        ]
-
         view = CompareScatterView()
-        view.get_plot(
-            x_data,
-            y_data,
-            x_title,
-            y_title,
-            [[""]] * 8,
-            [0] * 8,
-            minimizers,
-            problems,
-            [""] * 8,
-            [""] * 8,
-        )
+        self._create_test_plot(view)
         initial_x = [list(trace.x) for trace in view.plot.data]
         initial_y = [list(trace.y) for trace in view.plot.data]
-        view.update_fig_axes(x_title, x_data, y_title, y_data)
+
+        view.update_fig_axes(
+            view.plot.layout.xaxis.title.text,
+            initial_x,
+            view.plot.layout.yaxis.title.text,
+            initial_y,
+        )
 
         for i, trace in enumerate(view.plot.data):
             self.assertEqual(initial_x[i], list(trace.x))
