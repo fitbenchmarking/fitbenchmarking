@@ -179,7 +179,7 @@ class CompareScatter:
             self.app.clientside_callback(
                 file.read(),
                 Output("dummy-height", "children"),
-                Input("compare_scatter", "figure"),
+                Input("resize-timer", "n_intervals"),
                 prevent_initial_call=False,
             )
 
@@ -412,6 +412,9 @@ class CompareScatterView:
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
             html.Div(id="dummy-height", style={"display": "none"}),
+            # run once a second for the first five seconds to resize as the
+            # plot loads
+            dcc.Interval(id="resize-timer", max_intervals=5),
         ]
 
         warning_messages = self.get_warning_text_for_results(

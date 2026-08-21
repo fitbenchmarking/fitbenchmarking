@@ -268,7 +268,7 @@ class CompareScatterTests(unittest.TestCase):
         )
         self.assertEqual(
             resize_observer_callback_args[2],
-            Input("compare_scatter", "figure"),
+            Input("resize-timer", "n_intervals"),
         )
 
     def test_get_layout_uses_correct_information(self):
