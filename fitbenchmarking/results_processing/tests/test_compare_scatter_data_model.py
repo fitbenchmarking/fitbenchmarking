@@ -114,38 +114,44 @@ class CompareScatterDataModelTests(unittest.TestCase):
         unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
 
-    def test_list_contains_plottable_types_returns_false_if_np_inf(self):
+    @parameterized.expand(
+        [
+            ([np.nan, np.nan],),
+            ([np.inf, np.inf],),
+            ([None, None],),
+            ([True, False],),
+        ]
+    )
+    def test_list_contains_plottable_types_returns_false_if_not_plottable(
+        self, values
+    ):
         """
         list_contains_plottable_types should return false if provided with a
-        list of all np.inf, as they cannot be plotted despite being "number"
+        list of np.
         """
-
         self.assertFalse(
-            CompareScatterDataModel.list_contains_plottable_types(
-                [np.inf, np.inf, np.inf, np.inf, np.inf, np.inf]
-            )
+            CompareScatterDataModel.list_contains_plottable_types(values)
         )
 
-    def test_list_contains_plottable_types_returns_false_if_non_numeric(self):
+    @parameterized.expand(
+        [
+            ([np.float16(123)],),
+            ([0.123],),
+            ([123],),
+            ([1, np.nan],),
+            ([1, np.inf],),
+            ([1, None],),
+        ]
+    )
+    def test_list_contains_plottable_types_returns_true_if_plottable(
+        self, values
+    ):
         """
         list_contains_plottable_types should return false if provided with a
-        list containing data which is not an instance of numbers.number
-        """
-        self.assertFalse(
-            CompareScatterDataModel.list_contains_plottable_types(
-                ["test", "test", "test", "test"]
-            )
-        )
-
-    def test_list_contains_plottable_types_returns_true_if_any_numeric(self):
-        """
-        list_contains_plottable_types should return true if provided with a
-        list containing any data which is an instance of numbers.number
+        list of np.
         """
         self.assertTrue(
-            CompareScatterDataModel.list_contains_plottable_types(
-                [123, 456.123, np.float64(789)]
-            )
+            CompareScatterDataModel.list_contains_plottable_types(values)
         )
 
     def test_get_readable_attr_name_when_mapping_missing(self):
