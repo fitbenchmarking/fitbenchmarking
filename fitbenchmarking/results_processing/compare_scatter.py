@@ -1279,10 +1279,16 @@ class CompareScatterDataModel:
         :return: if the list can be plotted on a scatter plot
         :rtype: bool
         """
-        return any(
-            isinstance(value, numbers.Number) and not isinstance(value, bool)
+        can_be_plotted = [
+            (
+                isinstance(value, numbers.Number)
+                and not (value is np.nan or value is np.inf)
+                and not isinstance(value, bool)
+            )
             for value in values
-        ) and not all(value for value in np.isinf(values))
+        ]
+
+        return any(can_be_plotted)
 
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
