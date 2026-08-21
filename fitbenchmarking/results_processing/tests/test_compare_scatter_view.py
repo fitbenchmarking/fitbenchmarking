@@ -605,19 +605,19 @@ class CompareScatterViewTests(unittest.TestCase):
 
         mock_trace_opacity.assert_called()
 
-    def test_update_fig_axes_makes_correct_changes(self):
+    def test_update_axes_data_makes_correct_changes(self):
         view = CompareScatterView()
         self._create_test_plot(view=view)
         new_x = [4, 3, 2, 1]
         new_y = [5, 6, 7, 8]
-        view.update_fig_axes("new_x_title", new_x, "new_y_title", new_y)
+        view.update_axes_data("new_x_title", new_x, "new_y_title", new_y)
         self.assertEqual(view.plot.layout.xaxis.title.text, "new_x_title")
         self.assertEqual(view.plot.layout.yaxis.title.text, "new_y_title")
         for i, trace in enumerate(view.plot.data):
             self.assertEqual(trace.x, (new_x[i],))
             self.assertEqual(trace.y, (new_y[i],))
 
-    def test_update_fig_axes_behaves_same_as_get_plot(self):
+    def test_update_axes_data_behaves_same_as_get_plot(self):
         """
         Both of these functions set how the data is laid out on an axis -
         they need to behave the same for consistency
@@ -627,7 +627,7 @@ class CompareScatterViewTests(unittest.TestCase):
         initial_x = [list(trace.x) for trace in view.plot.data]
         initial_y = [list(trace.y) for trace in view.plot.data]
 
-        view.update_fig_axes(
+        view.update_axes_data(
             view.plot.layout.xaxis.title.text,
             initial_x,
             view.plot.layout.yaxis.title.text,
@@ -643,7 +643,7 @@ class CompareScatterViewTests(unittest.TestCase):
         The DATA_*_INDEX constants must correctly identify which column in
         customdata holds each field. If the order of custom_data in get_plot
         changes without updating the constants, hover text, apply_state, and
-        update_fig_axes will all silently read the wrong values.
+        update_axes_data will all silently read the wrong values.
         """
         view = CompareScatterView()
         self._create_test_plot(view)
