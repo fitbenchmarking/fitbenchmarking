@@ -605,19 +605,17 @@ class CompareScatterViewTests(unittest.TestCase):
 
         mock_trace_opacity.assert_called()
 
-    def update_fig_axes_makes_correct_changes(self):
+    def test_update_fig_axes_makes_correct_changes(self):
         view = CompareScatterView()
-        view.update_fig_axes(
-            "new_x_title", [1, 2, 3], "new_y_title", [4, 5, 6]
-        )
+        self._create_test_plot(view=view)
+        new_x = [4, 3, 2, 1]
+        new_y = [5, 6, 7, 8]
+        view.update_fig_axes("new_x_title", new_x, "new_y_title", new_y)
         self.assertEqual(view.plot.layout.xaxis.title.text, "new_x_title")
         self.assertEqual(view.plot.layout.yaxis.title.text, "new_y_title")
-        self.assertEqual(view.plot.data[0].x, 1)  # type: ignore
-        self.assertEqual(view.plot.data[1].x, 2)  # type: ignore
-        self.assertEqual(view.plot.data[2].x, 3)  # type: ignore
-        self.assertEqual(view.plot.data[3].y, 4)  # type: ignore
-        self.assertEqual(view.plot.data[4].y, 5)  # type: ignore
-        self.assertEqual(view.plot.data[5].y, 6)  # type: ignore
+        for i, trace in enumerate(view.plot.data):
+            self.assertEqual(trace.x, (new_x[i],))
+            self.assertEqual(trace.y, (new_y[i],))
 
     def test_update_fig_axes_behaves_same_as_get_plot(self):
         """
