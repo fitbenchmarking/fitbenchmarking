@@ -172,7 +172,7 @@ class CompareScatter:
             prevent_initial_call=True,
         )(
             lambda value, model=self.model, view=self.view: (
-                view.update_fig_axes(
+                view.update_axes_data(
                     x_title=value,
                     x_data=model.get_values_from_results(
                         model.get_attr_from_readable_name(value)
@@ -189,7 +189,7 @@ class CompareScatter:
             prevent_initial_call=True,
         )(
             lambda value, model=self.model, view=self.view: (
-                view.update_fig_axes(
+                view.update_axes_data(
                     y_title=value,
                     y_data=model.get_values_from_results(
                         model.get_attr_from_readable_name(value)
@@ -600,9 +600,23 @@ class CompareScatterView:
 
         return errors_by_minimizer, runs_by_minimizer
 
-    def update_fig_axes(
+    def update_axes_data(
         self, x_title=None, x_data=None, y_title=None, y_data=None
     ):
+        """
+        Update the data and title for the x and/or y axes of the plot.
+
+        :param x_title: The new title for the x-axis, defaults to None
+        :type x_title: str, optional
+        :param x_data: The new data for the x-axis, defaults to None
+        :type x_data: list, optional
+        :param y_title: The new title for the y-axis, defaults to None
+        :type y_title: str, optional
+        :param y_data: The new data for the y-axis, defaults to None
+        :type y_data: list, optional
+        :return: The updated plot figure.
+        :rtype: go.Figure
+        """
         if x_title is not None:
             assert x_data is not None, (
                 "x_data must be provided when x_title is provided"
