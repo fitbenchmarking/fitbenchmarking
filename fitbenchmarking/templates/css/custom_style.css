@@ -164,7 +164,10 @@ a {
   justify-content: center;
 }
 
+
 .right-column form button img {
-  width: auto;
-  height: 110px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
+
