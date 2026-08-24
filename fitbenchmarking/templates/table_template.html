@@ -160,13 +160,20 @@
                                         document.getElementById("cs_iframe").height = event.data.height + 20;
                                         document.getElementById("cs_iframe_wrapper").height = event.data.height + 20;
                                     }
+                                    // source is dash url, therefore dash must be running
+                                    document.getElementById("dash-not-running-infobox").style = "display: none";
+                                    document.getElementById("compare-scatter-infobox").style = "visibility: visible";
                                 })
                             </script>
+                            <div class="info-box" id="dash-not-running-infobox">
+                                <p><b>Warning</b></p>
+                                <p>The comparison scatter plot can only be viewed when dash is running, please re-run fitbenchmarking with --run-dash enabled.</p>
+                            </div>
                             <div id="cs_iframe_wrapper" class="iframe-wrapper" style="height:auto">
                                 <iframe id="cs_iframe" width="100%" frameborder="0" seamless="seamless"
                                     src="{{ cs_dash_url }}" height="100%" width="100%" style="overflow-y:hidden"></iframe>
                             </div>
-                            <div class="info-box">
+                            <div class="info-box" id="compare-scatter-infobox" style="visibility: hidden;">
                                 <p><b>Important Information:</b></p>
                                 <ul>
                                     <li>When items from only one column of the legend are selected,
