@@ -277,6 +277,7 @@ class CompareScatterDataModelTests(unittest.TestCase):
                 return 1
 
             # attributes which cannot be plotted:
+            @staticmethod
             def unplottable_method_because_params_required(required_param):
                 return required_param
 
