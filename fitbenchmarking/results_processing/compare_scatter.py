@@ -1195,40 +1195,33 @@ class CompareScatterDataModel:
         :rtype: list[str]
         """
 
-        excluded_attributes = [
-            "error_flag",
-            "min_accuracy",
-            "min_energy",
-            "min_first_runtime",
-            "min_harmonic_runtime",
-            "min_maximum_runtime",
-            "min_mean_runtime",
-            "min_median_runtime",
-            "min_minimum_runtime",
-            "min_trim_runtime",
-            "init_blank",  # needed to avoid accidentally clearing every result
+        plottable_attributes = [
+            "accuracy",
+            "energy",
+            "first_runtime",
+            "func_evals",
+            "get_n_data_points",
+            "get_n_parameters",
+            "harmonic_runtime",
+            "iteration_count",
+            "maximum_runtime",
+            "mean_runtime",
+            "median_runtime",
+            "minimum_runtime",
+            "norm_acc",
+            "norm_energy",
+            "norm_runtime",
+            "runtime",
+            "trim_runtime",
         ]
 
-        all_attributes = []
-        for result in self.results:
-            all_attributes.extend(dir(result))
-
-        unique_attributes = list(dict.fromkeys(all_attributes))
-        plottable_attributes = []
-        for attribute in unique_attributes:
-            if (
-                not attribute.startswith("_")
-                and attribute not in excluded_attributes
-            ):
-                try:
-                    values = self.get_values_from_results(attribute)
-
-                    if self.list_contains_plottable_types(values):
-                        plottable_attributes.append(attribute)
-                except TypeError:
-                    # callable, but requires arguments, so we cannot plot it
-                    continue
-        return plottable_attributes
+        return [
+            attribute
+            for attribute in plottable_attributes
+            if self.list_contains_plottable_types(
+                self.get_values_from_results(attribute)
+            )
+        ]
 
     _known_mappings = {
         "accuracy": "Accuracy (χ²)",
