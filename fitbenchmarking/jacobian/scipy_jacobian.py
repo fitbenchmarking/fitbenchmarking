@@ -13,6 +13,8 @@ from fitbenchmarking.utils.exceptions import (
 )
 from fitbenchmarking.utils.log import get_logger
 
+LOGGER = get_logger()
+
 
 class Scipy(Jacobian):
     """
@@ -39,8 +41,6 @@ class Scipy(Jacobian):
         """
 
         self.equiv_np_method = self.method
-
-        LOGGER = get_logger()
 
         if self.method.endswith("_sparse"):
             if self.problem.sparse_jacobian is None:
