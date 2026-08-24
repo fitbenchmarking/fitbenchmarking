@@ -1,5 +1,5 @@
+import random
 import unittest
-from dataclasses import dataclass
 from unittest.mock import Mock
 
 import numpy as np
@@ -250,68 +250,76 @@ class CompareScatterDataModelTests(unittest.TestCase):
         self,
     ):
         """
-        Test that get_plottable_attributes returns attributes that are numeric
-        and not excluded.
-
-        Note that the function being tested will iterate through and execute
-        every method on every class in the provided results list. This means
-        that normal mocking cannot be used since normal mock classes will have
-        methods like `assert_called_once_with` which would be executed (causing
-        the test to fail).
-
-        To circumvent this problem, a model class (`StubResult`) has been
-        created to represent the final state we want the fitting result to be
-        in. A mock fitting result has then been created with its __dir__
-        function, its attributes and its methods replaced with those defined
-        in the `StubResult` class.
+        Test that get_plottable_attributes returns all of the attributes added
+        to the whitelist, but does not return any which have unplottable data.
         """
 
-        # Configure the test data
-        @dataclass
-        class StubResult:
-            # attributes which can be plotted:
-            plottable_attrib = 1
-            numpy_plottable_attrib = np.float16(1)
+        expected_attributes = [
+            "accuracy",
+            "energy",
+            "first_runtime",
+            "func_evals",
+            "get_n_data_points",
+            "get_n_parameters",
+            "harmonic_runtime",
+            "iteration_count",
+            "maximum_runtime",
+            "mean_runtime",
+            "median_runtime",
+            "minimum_runtime",
+            "norm_acc",
+            "norm_energy",
+            "norm_runtime",
+            "runtime",
+            "trim_runtime",
+        ]
 
-            def plottable_method():
-                return 1
+        plottable_data = [1, 2]
 
-            # attributes which cannot be plotted:
-            @staticmethod
-            def unplottable_method_because_params_required(required_param):
-                return required_param
+        unplottable_data = [
+            [np.nan, np.nan],
+            [np.inf, np.inf],
+            [None, None],
+            [True, False],
+        ]
 
-            name = "test"
-            unplottable_beacause_infinite = np.inf
-            unplottable_beacause_wrong_type = "not a number"
-            _unplottable_beacause_private = None
-
-            def unplottable_method_because_wrong_rtype():
-                return "not a number"
-
-            # manually blacklisted attributes
-            error_flag = 1
-
-            def init_blank():
-                return 1
-
-        # Create the overwritten mock FittingResult
-        mock_fitting_result = Mock(spec=FittingResult)
-        mock_fitting_result.__dir__ = lambda _=mock_fitting_result: dir(
-            StubResult
+        attributes_which_cant_be_plotted = random.sample(
+            expected_attributes, len(unplottable_data)
         )
 
-        for attr in dir(mock_fitting_result):
-            if attr.startswith("__"):
-                continue
-            setattr(mock_fitting_result, attr, getattr(StubResult, attr))
+        for attr in attributes_which_cant_be_plotted:
+            expected_attributes.remove(attr)
 
-        # Ignore type because it is a StubResult not a FittingResult
-        model = CompareScatterDataModel([mock_fitting_result])  # type: ignore
+        attribute_mappings = [
+            (attr, plottable_data) for attr in expected_attributes
+        ]
+        attribute_mappings.extend(
+            zip(attributes_which_cant_be_plotted, unplottable_data)
+        )
 
-        attributes = model.get_plottable_attributes()
+        # Create two mock fitting results to represent the two data points in
+        # plottable_data.
+        # Note: name is required because the data model sorts by name
+        mock_res_1 = Mock(spec=FittingResult)
+        mock_res_1.name = "mock_res_1"
+        mock_res_2 = Mock(spec=FittingResult)
+        mock_res_2.name = "mock_res_2"
+
+        for attr, data in attribute_mappings:
+            val_1, val_2 = data[0], data[1]
+            is_callable = callable(getattr(FittingResult, attr, None))
+            if is_callable:
+                setattr(mock_res_1, attr, Mock(return_value=val_1))
+                setattr(mock_res_2, attr, Mock(return_value=val_2))
+            else:
+                setattr(mock_res_1, attr, val_1)
+                setattr(mock_res_2, attr, val_2)
+
+        model = CompareScatterDataModel([mock_res_1, mock_res_2])  # type: ignore
+
+        returned_attributes = model.get_plottable_attributes()
 
         self.assertListEqual(
-            ["numpy_plottable_attrib", "plottable_attrib", "plottable_method"],
-            attributes,
+            returned_attributes,
+            expected_attributes,
         )
