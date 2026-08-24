@@ -21,16 +21,16 @@ from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
 
-#: Relative tolerance used when comparing the numbers in the expected and
-#: actual results tables. Minimizers are not reproducible to the last digit
-#: across platforms, library versions and CPUs, and the normalised value in
-#: brackets amplifies this because a tiny change in which minimizer was the
-#: best for a problem rescales the whole row. Only differences larger than
-#: this are treated as a regression.
+# Relative tolerance used when comparing expected and actual results.
+# Minimizers are not reproducible to the last digit across platforms,
+# library versions and CPUs, and the normalised value in brackets
+# amplifies this because a tiny change in which minimizer was the
+# best for a problem rescales the whole row. Only differences larger
+# than RELATIVE_TOLERANCE are treated as a regression.
 RELATIVE_TOLERANCE = 1e-3
 
-#: Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
-#: the absolute value, the normalised value and the error flag.
+# Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
+# the absolute value, the normalised value and the error flag.
 TABLE_VALUE_RE = re.compile(
     r"^\s*(?P<abs>[^\s(]+)\s*\((?P<rel>[^)]+)\)\s*(?P<flag>\[\d+\])?\s*$"
 )
