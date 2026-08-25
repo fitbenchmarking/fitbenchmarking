@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import sys
 from pathlib import Path
 
@@ -7,12 +8,41 @@ INVALID_WORDS = frozenset({"minimiser", "solver"})  # ignore: spelling
 VALID_SPELLING = "minimizer"
 IGNORE_STRING = "# ignore: spelling"
 
+#: Names which contain an invalid word but cannot be renamed, either because
+#: they belong to a third party API or because they are part of the public
+#: FitBenchmarking interface.
+ALLOWED_NAMES = re.compile(
+    # FitBenchmarking controller attributes, documented in
+    # docs/source/extending/controllers.rst and set by external controllers.
+    r"_enabled_solvers"
+    # The Ceres Solver library, and its python bindings.
+    r"|[Cc]eres[- ]?[Ss]olver"
+    r"|Solver(Options|Summary)"  # ignore: spelling
+    r"|[Ll]inear[_]?[Ss]olver[_]?[Tt]ype",  # ignore: spelling
+)
+MASK_CHAR = "-"
+
+
+def mask_allowed_names(line: str) -> str:
+    """
+    Blank out any allowed names so that the invalid words they contain are
+    not reported. The length of the line is preserved so that the position of
+    any remaining invalid word still lines up with the original text.
+
+    :param line: The line of text to mask
+    :type line: str
+
+    :return: The line with allowed names replaced by MASK_CHAR
+    :rtype: str
+    """
+    return ALLOWED_NAMES.sub(lambda m: MASK_CHAR * len(m.group()), line)
+
 
 def find_invalid_word(line: str) -> tuple[int, str] | None:
-    lowercase_text = line.lower()
-
-    if IGNORE_STRING.casefold() in lowercase_text:
+    if IGNORE_STRING.casefold() in line.casefold():
         return None
+
+    lowercase_text = mask_allowed_names(line).lower()
 
     for word in INVALID_WORDS:
         index = lowercase_text.find(word)
