@@ -22,7 +22,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    'docutils',
+    'docutils>=0.22',
     'tqdm>=4.60',
     'numpy',
     'matplotlib>=2.0',
