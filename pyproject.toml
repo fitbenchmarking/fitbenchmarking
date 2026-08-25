@@ -195,5 +195,6 @@ ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 [tool.ruff.format]
 quote-style = "double"
 
+
 [tool.versioningit]
 default-version = '0.0.0dev1'
