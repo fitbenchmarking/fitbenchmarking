@@ -618,15 +618,17 @@ class CompareScatterView:
         :rtype: go.Figure
         """
         if x_title is not None:
-            assert x_data is not None, (
-                "x_data must be provided when x_title is provided"
-            )
+            if x_data is None:
+                raise ValueError(
+                    "x_data must be provided when x_title is provided"
+                )
             self.plot.update_layout(xaxis_title=x_title)
 
         if y_title is not None:
-            assert y_data is not None, (
-                "y_data must be provided when y_title is provided"
-            )
+            if y_data is None:
+                raise ValueError(
+                    "y_data must be provided when y_title is provided"
+                )
             self.plot.update_layout(yaxis_title=y_title)
 
         for trace in self.plot.data:
