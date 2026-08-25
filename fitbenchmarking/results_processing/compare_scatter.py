@@ -32,6 +32,11 @@ class CompareScatter:
     point.
     """
 
+    script_path = (
+        os.path.dirname(inspect.getfile(fitbenchmarking))
+        + "/results_processing/scripts/compare_scatter"
+    )
+
     def __init__(self, app: Dash, options, results=[]):
         """
         Initialise the compare_scatter class and MVC components.
@@ -65,18 +70,15 @@ class CompareScatter:
         else:
             return False
 
-    def add_callbacks(self, plot: go.Figure, legend_items: list[str]):
+    def add_legend_callbacks(self, legend_items: list[str]):
         """
-        Given a dash app and a list of legend items, add a callback for each
-         ID to allow it to set the focus of the appropriate traces.
-
-        Also add the required clientside callbacks to resize the iframe which
-        contains the compare scatter at runtime, and to add the handling for
-        the clickthrough links
+        Given a list of legend items, add a callback for each ID to allow it to
+        set the focus of the appropriate traces.
 
         :param legend_items: A list of minimizer names or IDs
         :type legend_items: list[str]
         """
+
         for i, legend_item in enumerate(legend_items):
             button_id = self.view.sanitize_for_id(legend_item)
             button_io: list = [
@@ -138,6 +140,12 @@ class CompareScatter:
                 prevent_initial_call=True,
             )(focus_callback)
 
+    def add_all_none_button_callbacks(self):
+        """
+        Add a callback for the select all and select none buttons on the legend
+        to allow them to manage the focus of all items on the legend.
+        """
+
         self.app.callback(
             Output("legend-status", "data", True),
             Output("all_button", "style", True),
@@ -166,6 +174,12 @@ class CompareScatter:
             )
         )
 
+    def add_axis_dropdown_callbacks(self):
+        """
+        Add the callbacks required for x-dropdown and y-dropdown to change
+        the data plotted on each axis when a different metric to be plotted
+        is selected from the available list.
+        """
         self.app.callback(
             Output("compare_scatter", "figure", True),
             Input("x-dropdown", "value"),
@@ -200,6 +214,12 @@ class CompareScatter:
             )
         )
 
+    def add_log_axis_button_callbacks(self):
+        """
+        Add the callbacks required to allow the x and y-log-axis buttons to
+        switch the axis type between linear and log.
+        """
+
         self.app.callback(
             Output("compare_scatter", "figure", True),
             Input("x-log-axis", "value"),
@@ -224,23 +244,53 @@ class CompareScatter:
             )
         )
 
-        script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
-        script_path += "/results_processing/scripts/compare_scatter"
+    def add_clickthrough_link_callback(self):
+        """
+        Add the clientside callback required to handle the clickthrough link
+        behaviour for the compare scatter. I.e. clicking on a point should
+        navigate the parent window to the relevant fitting report page.
+        """
 
-        with open(f"{script_path}/handle_link.js") as file:
+        with open(f"{self.script_path}/handle_link.js") as file:
             self.app.clientside_callback(
                 file.read(),
                 Output("dummy-click", "children"),
                 Input("compare_scatter", "clickData"),
             )
 
-        with open(f"{script_path}/resize_observer.js") as file:
+    def add_resize_callback(self):
+        """
+        Add the clientside callback to send the window height information from
+        inside the compare scatter iframe to the parent window, which allows
+        the iframe to be scaled correctly when resized.
+        """
+
+        with open(f"{self.script_path}/resize_observer.js") as file:
             self.app.clientside_callback(
                 file.read(),
                 Output("dummy-height", "children"),
                 Input("resize-timer", "n_intervals"),
                 prevent_initial_call=False,
             )
+
+    def add_callbacks(self, legend_items: list[str]):
+        """
+        Given a list of legend items, add all of the required callbacks for
+        the compare scatter.
+
+        :param legend_items: A list of minimizer names or IDs
+        :type legend_items: list[str]
+        """
+        self.add_legend_callbacks(legend_items)
+        self.add_all_none_button_callbacks()
+        self.add_axis_dropdown_callbacks()
+        self.add_log_axis_button_callbacks()
+
+        script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
+        script_path += "/results_processing/scripts/compare_scatter"
+
+        self.add_clickthrough_link_callback()
+        self.add_resize_callback()
 
     def get_fitting_report_urls(self):
         """
@@ -302,7 +352,7 @@ class CompareScatter:
             *self.model.get_values_from_results("problem_tag", unique=True),
         ]
 
-        self.add_callbacks(self.view.plot, legend_items)
+        self.add_callbacks(legend_items)
 
         return plot, self.app
 
