@@ -7,16 +7,33 @@ try:
 except ImportError:
     from itertools import izip_longest as zip_longest
 
+import csv
 import os
+import re
 from sys import platform
 from tempfile import NamedTemporaryFile
 from unittest import TestCase
 
+import numpy as np
 from pytest import test_type as TEST_TYPE
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
+
+# Relative tolerance used when comparing expected and actual results.
+# Minimizers are not reproducible to the last digit across platforms,
+# library versions and CPUs, and the normalised value in brackets
+# amplifies this because a tiny change in which minimizer was the
+# best for a problem rescales the whole row. Only differences larger
+# than RELATIVE_TOLERANCE are treated as a regression.
+RELATIVE_TOLERANCE = 1e-3
+
+# Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
+# the absolute value, the normalised value and the error flag.
+TABLE_VALUE_RE = re.compile(
+    r"^\s*(?P<abs>[^\s(]+)\s*\((?P<rel>[^)]+)\)\s*(?P<flag>\[\d+\])?\s*$"
+)
 
 
 @run_for_test_types(TEST_TYPE, "all")
@@ -188,10 +205,77 @@ class TestRegressionDefault(TestCase):
         self.assertListEqual([], diff, msg)
 
 
+def values_match(expected: str, actual: str) -> bool:
+    """
+    Compare a single cell of the results table. Cells which hold a number,
+    such as '11.97 (1.001)[2]', match when both the absolute and the
+    normalised value are within RELATIVE_TOLERANCE of the expected ones and
+    the error flag is identical. Anything else, e.g. a problem name or
+    'N/A', must match exactly.
+
+    :param expected: The expected cell
+    :type expected: str
+    :param actual: The actual cell
+    :type actual: str
+    :return: True if the cells match
+    :rtype: bool
+    """
+    if expected == actual:
+        return True
+
+    exp_value = TABLE_VALUE_RE.match(expected)
+    act_value = TABLE_VALUE_RE.match(actual)
+    if exp_value is None or act_value is None:
+        return False
+
+    # The error flag records how the fit ended, so it must not change.
+    if exp_value["flag"] != act_value["flag"]:
+        return False
+
+    for group in ("abs", "rel"):
+        try:
+            exp_num = float(exp_value[group])
+            act_num = float(act_value[group])
+        except ValueError:
+            return False
+        if not np.isclose(
+            act_num, exp_num, rtol=RELATIVE_TOLERANCE, equal_nan=True
+        ):
+            return False
+
+    return True
+
+
+def lines_match(expected: str, actual: str) -> bool:
+    """
+    Compare a row of the results table cell by cell, allowing the numbers
+    to differ by up to RELATIVE_TOLERANCE.
+
+    :param expected: The expected row
+    :type expected: str
+    :param actual: The actual row
+    :type actual: str
+    :return: True if the rows match
+    :rtype: bool
+    """
+    if expected == actual:
+        return True
+
+    exp_cells = next(csv.reader([expected]), [])
+    act_cells = next(csv.reader([actual]), [])
+    if len(exp_cells) != len(act_cells):
+        return False
+
+    return all(
+        values_match(exp, act) for exp, act in zip(exp_cells, act_cells)
+    )
+
+
 def diff_result(actual, expected):
     """
     Return the lines which differ between expected and actual along with a
-    formatted message.
+    formatted message. Numbers are compared with a relative tolerance, see
+    RELATIVE_TOLERANCE.
 
     :param expected: The expected result
     :type expected: list of strings
@@ -204,7 +288,7 @@ def diff_result(actual, expected):
     for i, (exp_line, act_line) in enumerate(zip_longest(expected, actual)):
         exp_line = "" if exp_line is None else exp_line.strip("\n")
         act_line = "" if act_line is None else act_line.strip("\n")
-        if exp_line != act_line:
+        if not lines_match(exp_line, act_line):
             diff.append([i, exp_line, act_line])
 
     msg = (
