@@ -4,9 +4,13 @@ import re
 import sys
 from pathlib import Path
 
-INVALID_WORDS = frozenset({"minimiser", "solver"})  # ignore: spelling
+INVALID_WORDS = ("minimiser", "solver")  # ignore: spelling
 VALID_SPELLING = "minimizer"
 IGNORE_STRING = "# ignore: spelling"
+
+INVALID_WORDS_PATTERN = re.compile(
+    "|".join(sorted(INVALID_WORDS, key=len, reverse=True)), re.IGNORECASE
+)
 
 #: Names which contain an invalid word but cannot be renamed, either because
 #: they belong to a third party API or because they are part of the public
@@ -38,28 +42,33 @@ def mask_allowed_names(line: str) -> str:
     return ALLOWED_NAMES.sub(lambda m: MASK_CHAR * len(m.group()), line)
 
 
-def find_invalid_word(line: str) -> tuple[int, str] | None:
+def find_invalid_words(line: str) -> list[tuple[int, str]]:
+    """
+    Find every invalid word in a line, ignoring any which appear inside an
+    allowed name.
+
+    :param line: The line of text to search
+    :type line: str
+
+    :return: The start column and text of each invalid word, in the order
+             they appear in the line
+    :rtype: list[tuple[int, str]]
+    """
     if IGNORE_STRING.casefold() in line.casefold():
-        return None
+        return []
 
-    lowercase_text = mask_allowed_names(line).lower()
+    masked_line = mask_allowed_names(line)
 
-    for word in INVALID_WORDS:
-        index = lowercase_text.find(word)
-        if index != -1:
-            return index, word
-
-    return None
+    return [
+        (match.start(), match.group().lower())
+        for match in INVALID_WORDS_PATTERN.finditer(masked_line)
+    ]
 
 
 def process_file(file_contents: str, filename: str) -> str | None:
-
     matches = []
     for line_num, line_text in enumerate(file_contents.splitlines(), start=1):
-        match = find_invalid_word(line_text)
-
-        if match is not None:
-            word_start, invalid_word = match
+        for word_start, invalid_word in find_invalid_words(line_text):
             matches.append((invalid_word, line_num, line_text, word_start))
 
     if len(matches) > 0:
