@@ -206,14 +206,14 @@
                                         <button class="btn default" id="offline_plot"
                                                 data-value1={{ pp_filenames | join("|") }}
                                                 data-value3="{{ n_solvers_large }}"
-                                                onclick="load_src(this)">Offline version</button>
+                                                onclick="load_src(this,'pp_iframe_wrapper')">Offline version</button>
                                         <button class="btn default" id="online_plot"
                                                 data-value1={{ pp_dash_url }}
                                                 data-value3="{{ n_solvers_large }}"
-                                                onclick="load_src(this)">Online version</button>
+                                                onclick="load_src(this,'pp_iframe_wrapper')">Online version</button>
                                     </div>
                                     <br>
-                                    <div class="iframe-wrapper">
+                                    <div class="iframe-wrapper" id="pp_iframe_wrapper">
                                         {% for offline_plot in pp_filenames %}
                                             <iframe width="100%" frameborder="0" seamless="seamless"
                                                     src="{{ offline_plot }}" height={{ 100 if n_solvers_large else 650 }}></iframe>
