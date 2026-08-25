@@ -73,5 +73,5 @@ class NLLSCostFunc(BaseNLLSCostFunc):
                  each x, y pair
         :rtype: tuple (list of 2D numpy arrays, list of 1D numpy arrays)
         """
-        jacobian = self.jac_res(params, **kwargs)
-        return -self.hessian.eval(params, **kwargs), jacobian
+        jacobian_of_residual = self.jac_res(params, **kwargs)
+        return -self.hessian.eval(params, **kwargs), jacobian_of_residual
