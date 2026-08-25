@@ -185,6 +185,40 @@ class SASFitController(Controller):
         """
         super().__init__(cost_func)
 
+    @property
+    def has_errors(self) -> bool:
+        """
+        Whether the problem has errors to fit with.
+
+        A multifit problem holds one array of errors per dataset, any of
+        which may be missing.
+
+        :return: True if every dataset has errors
+        :rtype: bool
+        """
+        if self.data_e is None:
+            return False
+        if self.problem.multifit:
+            return all(e is not None for e in self.data_e)
+        return True
+
+    def flatten(self, data):
+        """
+        Lay the datasets of a multifit problem end to end.
+
+        The data of a multifit problem is held as one array per dataset,
+        whereas the library fits a single run of points. The data of a
+        single dataset problem is already in that form, so it is
+        returned unchanged.
+
+        :param data: The data to flatten
+        :type data: numpy array, or list of numpy arrays
+
+        :return: The data as one array
+        :rtype: numpy array
+        """
+        return np.concatenate(data) if self.problem.multifit else data
+
     def setup(self):
         """
         Setup problem ready to be run
@@ -196,7 +230,12 @@ class SASFitController(Controller):
         # Setup the problem
         ############################################################
 
-        self.ndata = len(self.data_x)
+        # The library fits a single run of points, so the datasets of a
+        # multifit problem are laid end to end. That is the order the
+        # cost function returns the residuals of the combined parameters
+        # in, so the model values and Jacobian rows line up with the data
+        # without any reordering.
+        self.ndata = self.residual_count
 
         # ---- Outputs ----
         # The library writes the fitted curve here, so it is held on the
@@ -205,8 +244,12 @@ class SASFitController(Controller):
         self.chisq = c_float(0.0)
 
         # ---- Convert numpy arrays to c float* ----
-        self.data_x_np = np.asarray(self.data_x, dtype=np.float32, order="C")
-        self.data_y_np = np.asarray(self.data_y, dtype=np.float32, order="C")
+        # The x values are not among these: the library only hands them
+        # back to the model callback, which is given the indices below
+        # instead, and the model is evaluated on the problem's own x
+        self.data_y_np = np.asarray(
+            self.flatten(self.data_y), dtype=np.float32, order="C"
+        )
 
         # The library builds its residuals as (y - model) / sig, so 'sig'
         # is what carries the weighting. Only a weighted cost function
@@ -214,17 +257,22 @@ class SASFitController(Controller):
         # not have any, so everything else is fitted with unit errors.
         weighted = isinstance(self.cost_func, WeightedNLLSCostFunc)
         data_e = (
-            self.data_e
-            if weighted and self.data_e is not None
+            self.flatten(self.data_e)
+            if weighted and self.has_errors
             else np.ones(self.ndata)
         )
         self.data_e_np = np.asarray(data_e, dtype=np.float32, order="C")
 
-        # Used by the model callback to find the Jacobian row for the
-        # point it has been given
-        self.x_index = {float(x): i for i, x in enumerate(self.data_x_np)}
+        # The library passes each x value it is given straight back to
+        # the model callback and does nothing else with it, so it is
+        # given the index of each point in place of its x value. An x
+        # value on its own does not say which point is being asked for:
+        # a multifit problem repeats the same x grid once per dataset,
+        # and a single dataset can measure the same x more than once.
+        # A float holds indices below 2**24 exactly.
+        self.point_index_np = np.arange(self.ndata, dtype=np.float32)
 
-        self.x_ptr = self.data_x_np.ctypes.data_as(POINTER(c_float))
+        self.index_ptr = self.point_index_np.ctypes.data_as(POINTER(c_float))
         self.y_ptr = self.data_y_np.ctypes.data_as(POINTER(c_float))
         self.sig_ptr = self.data_e_np.ctypes.data_as(POINTER(c_float))
         self.yfit_ptr = self.yfit_np.ctypes.data_as(POINTER(c_float))
@@ -336,7 +384,7 @@ class SASFitController(Controller):
         Run a single Levenberg-Marquardt iteration.
         """
         LIB.SASFITmrqmin(
-            self.x_ptr,  # x values
+            self.index_ptr,  # point indices, handed to the model function
             self.y_ptr,  # measured y
             self.sig_ptr,  # standard dev
             self.yfit_ptr,  # model prediction
@@ -376,12 +424,16 @@ class SASFitController(Controller):
     def make_funcs_wrapper(self, cost_func):
         """
         Build the callback used by the library to evaluate the model and
-        its derivatives at a single x value.
+        its derivatives at a single data point.
 
         The library asks for one data point at a time, but the model and
         its Jacobian are much cheaper to evaluate for the whole data set at
         once, so they are evaluated once per set of parameters and cached.
         The row needed by the current point is then picked out by index.
+
+        For a multifit problem the model is evaluated from the combined
+        parameters, which gives the values of every dataset laid end to
+        end in the same order as the data, so the same indexing works.
 
         :param cost_func: Cost function providing the model and Jacobian.
         :type cost_func: subclass of
@@ -396,31 +448,22 @@ class SASFitController(Controller):
             # The parameters the library wants the model evaluated at
             params = [float(a_ptr[i]) for i in range(self.n_params)]
 
-            # x_i is passed straight back from the data, so it is usually
-            # one of the values the index was built from
-            idx = self.x_index.get(x_i)
+            # The library is given the index of each point in place of
+            # its x value, and hands back whatever it was given
+            idx = round(x_i)
 
-            if idx is None:
-                # Somewhere other than a data point, so it has to be
-                # worked out on its own
-                x_arr = np.array([x_i])
-                y = float(cost_func.problem.eval_model(params, x=x_arr)[0])
-                dyda = cost_func.jacobian.eval(params, x=x_arr)[0]
-            else:
-                if params != cache["params"]:
-                    cache["ymod"] = cost_func.problem.eval_model(
-                        params, x=self.data_x
-                    )
-                    cache["jac"] = cost_func.jacobian.eval(
-                        params, x=self.data_x
-                    )
-                    cache["params"] = params
-                    # One set of parameters is one evaluation of the model
-                    # over the whole data set
-                    self.func_evals += 1
+            if params != cache["params"]:
+                cache["ymod"] = cost_func.problem.eval_model(
+                    params, x=self.data_x
+                )
+                cache["jac"] = cost_func.jacobian.eval(params, x=self.data_x)
+                cache["params"] = params
+                # One set of parameters is one evaluation of the model
+                # over the whole data set
+                self.func_evals += 1
 
-                y = float(cache["ymod"][idx])
-                dyda = cache["jac"][idx]
+            y = float(cache["ymod"][idx])
+            dyda = cache["jac"][idx]
 
             ymod_ptr[0] = y
             for i in range(self.n_params):

@@ -5,6 +5,7 @@ Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import os
 import platform
+from ctypes import c_float
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -31,9 +32,46 @@ from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
+
+
+def make_multifit_cost_func():
+    """
+    Helper function that returns a two dataset multifit problem.
+
+    Both datasets are measured on the same x values but have different
+    data, so an x value on its own does not say which dataset's point is
+    being asked for.
+
+    :return: A cost function for the multifit problem
+    :rtype: WeightedNLLSCostFunc
+    """
+    problem = FittingProblem(Options())
+    problem.name = "multifit"
+    problem.format = "mantid"
+    problem.multifit = True
+    problem.function = lambda x, A0, A1: A0 + A1 * np.asarray(x)
+    problem.equation = "A0 + A1*x"
+    problem.starting_values = [{"A0": 0.0, "A1": 0.0}]
+    # 'A1' is shared by the datasets, 'A0' is fitted for each of them
+    problem.additional_info["ties"] = ["A1"]
+
+    x = np.linspace(1.0, 5.0, 5)
+    problem.data_x = [x, x.copy()]
+    problem.data_y = [1.0 + 2.0 * x, 7.0 + 2.0 * x]
+    problem.data_e = [np.full(5, 0.5), np.full(5, 0.25)]
+    problem.start_x = [None, None]
+    problem.end_x = [None, None]
+    problem.correct_data()
+
+    cost_func = WeightedNLLSCostFunc(problem)
+    jac = Scipy(problem)
+    jac.method = "2-point"
+    cost_func.jacobian = jac
+    return cost_func
 
 
 def make_cost_func(file_name="cubic.dat", cost_func_type="weighted_nlls"):
@@ -1453,6 +1491,75 @@ class SASFitControllerTests(TestCase):
             controller.data_e_np,
             np.asarray(self.problem.data_e, dtype=np.float32),
         )
+
+    def make_multifit_controller(self):
+        """
+        Build a controller for a multifit problem, in the state it would
+        be in when the fit is run
+
+        :return: A prepared controller
+        :rtype: SASFitController
+        """
+        controller = create_controller("sasfit", make_multifit_cost_func())
+        controller.minimizer = "lm-sasfit"
+        controller.parameter_set = 0
+        controller.multifit_init()
+        controller.prepare()
+        # Counted by the model callback, and so zeroed by 'fit' before
+        # the library is given anything to run
+        controller.func_evals = 0
+        return controller
+
+    def test_multifit_datasets_are_laid_end_to_end(self):
+        """
+        SASFitController: A multifit problem is fitted as one set of points
+
+        The data of a multifit problem is held as one array per dataset,
+        whereas the library fits a single set of points, so the point
+        count and the arrays it is given have to cover every dataset.
+        """
+        controller = self.make_multifit_controller()
+        problem = controller.problem
+
+        assert controller.ndata == sum(len(y) for y in problem.data_y)
+        assert len(controller.yfit_np) == controller.ndata
+        assert len(controller.point_index_np) == controller.ndata
+        for got, expected in [
+            (controller.data_y_np, problem.data_y),
+            (controller.data_e_np, problem.data_e),
+        ]:
+            np.testing.assert_allclose(got, np.concatenate(expected))
+
+    def test_model_callback_is_given_the_index_of_the_point(self):
+        """
+        SASFitController: The callback tells the datasets apart
+
+        The datasets of a multifit problem can be measured on the same x
+        values, so the library is given the index of each point in place
+        of its x value. Looking the point up by its x value would give
+        the points of every dataset the same model values.
+        """
+        controller = self.make_multifit_controller()
+        # The datasets share their starting values, so the model is
+        # evaluated away from them at a point where 'A0' differs
+        assert controller.par_names == ["d0.A0", "d1.A0", "shared.A1"]
+        params = [1.0, 7.0, 2.0]
+
+        expected = controller.problem.eval_model(params, x=controller.data_x)
+        # The datasets differ, so the test only says anything if the
+        # model values of the second are not those of the first
+        assert not np.allclose(expected[:5], expected[5:])
+
+        a_arr = (c_float * controller.n_params)(*params)
+        ymod = (c_float * 1)()
+        dyda = (c_float * controller.n_params)()
+
+        got = []
+        for i in range(controller.ndata):
+            controller.funcs_cb(float(i), a_arr, ymod, dyda)
+            got.append(ymod[0])
+
+        np.testing.assert_allclose(got, expected, rtol=1e-6)
 
 
 @run_for_test_types(TEST_TYPE, "mantid")
