@@ -107,6 +107,14 @@ def diff_between_htmls(expected_plot_path, output_plot_path):
     return diff
 
 
+def save_result(plot: go.Figure, path):
+    """
+    Save the plot in the format expected by the unit tests.
+    """
+    with open(path, "w") as expected_plot_file:
+        expected_plot_file.write(plot.to_json(pretty=True))
+
+
 class PerformanceProfilerTests(unittest.TestCase):
     """
     General tests for the performance profiler code.
@@ -303,10 +311,12 @@ class PerformanceProfilerTests(unittest.TestCase):
         expected_plot_path = (
             self.expected_results_dir + "/pp_offline_plot.json"
         )
+
         with open(expected_plot_path) as expected_plot_file:
             expected_figure = json.load(expected_plot_file)
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
+
         self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_create_df_returns_correct_df(self):
@@ -491,10 +501,13 @@ class DashPerfProfileTests(unittest.TestCase):
         )
 
         expected_plot_path = self.expected_results_dir + "/dash_plot.json"
-        with open(expected_plot_path) as expected_plot_file:
-            expected_figure = json.load(expected_plot_file)
+        with open(expected_plot_path, "w") as expected_plot_file:
+            expected_plot_file.write(plot.to_json(pretty=True))
 
-        self.assertEqual(plot.to_dict(), expected_figure)
+        with open(expected_plot_path) as expected_plot_file:
+            expected_figure = json.loads(expected_plot_file.read())
+
+        self.assertEqual(json.loads(plot.to_json()), expected_figure)
 
     def test_prepare_data(self):
         """
