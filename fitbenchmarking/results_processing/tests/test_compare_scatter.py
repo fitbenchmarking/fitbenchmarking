@@ -125,39 +125,6 @@ class CompareScatterTests(unittest.TestCase):
         self.assertFalse(cs.item_should_have_warning_toast("mock_solver_0"))
         self.assertTrue(cs.item_should_have_warning_toast("mock_solver_1"))
 
-    def test_get_layout_uses_correct_information(self):
-        """
-        Check that get Layout gets the correct pieces of information from the
-        data model
-        """
-
-        app, options, test_data = self._get_mock_constructor_params()
-        cs = CompareScatter(app, options, test_data)
-        cs.view = Mock(spec=CompareScatterView)
-        cs.view.plot = go.Figure()
-        cs.model = Mock(spec=CompareScatterDataModel)
-        cs.model.get_values_from_results.return_value = []
-        cs.model.get_plottable_attributes.return_value = []
-
-        _, app_returned = cs.get_layout()
-        self.assertEqual(app_returned, app)
-
-        cs.model.get_values_from_results.assert_has_calls(
-            [
-                mock.call("hover_text", style="html", include_title=True),
-                mock.call("norm_runtime"),
-                mock.call("norm_acc"),
-                mock.call("error_flag"),
-                mock.call("modified_minimizer_name", with_software=True),
-                mock.call("problem_tag"),
-                mock.call("fitting_report_link"),
-                mock.call(
-                    "modified_minimizer_name", with_software=True, unique=True
-                ),
-                mock.call("problem_tag", unique=True),
-            ]
-        )
-
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
         ".CompareScatter.add_resize_callback"
@@ -407,3 +374,36 @@ class CompareScatterTests(unittest.TestCase):
         )
         self.assertIn(Input(solver1_id, "n_clicks"), solver1_callback_args)
         self.assertIn(State("legend-status", "data"), solver1_callback_args)
+
+    def test_get_layout_uses_correct_information(self):
+        """
+        Check that get Layout gets the correct pieces of information from the
+        data model
+        """
+
+        app, options, test_data = self._get_mock_constructor_params()
+        cs = CompareScatter(app, options, test_data)
+        cs.view = Mock(spec=CompareScatterView)
+        cs.view.plot = go.Figure()
+        cs.model = Mock(spec=CompareScatterDataModel)
+        cs.model.get_values_from_results.return_value = []
+        cs.model.get_plottable_attributes.return_value = []
+
+        _, app_returned = cs.get_layout()
+        self.assertEqual(app_returned, app)
+
+        cs.model.get_values_from_results.assert_has_calls(
+            [
+                mock.call("hover_text", style="html", include_title=True),
+                mock.call("norm_runtime"),
+                mock.call("norm_acc"),
+                mock.call("error_flag"),
+                mock.call("modified_minimizer_name", with_software=True),
+                mock.call("problem_tag"),
+                mock.call("fitting_report_link"),
+                mock.call(
+                    "modified_minimizer_name", with_software=True, unique=True
+                ),
+                mock.call("problem_tag", unique=True),
+            ]
+        )
