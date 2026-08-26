@@ -560,7 +560,9 @@ class FittingResult:
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
 
-    def hover_text(self, include_title=False, style="html") -> str:
+    def hover_text(
+        self, include_title=False, style="html", include_cost_func=False
+    ) -> str:
         """
         Generate the tooltip text for a given fitting result.
         :param result: The result to generate the text for
@@ -598,16 +600,33 @@ class FittingResult:
         )
 
         if include_title:
-            hover_text = (
-                f"{bold_start}"
-                f"{self.modified_minimizer_name(with_software=True)}"
-                f"{bold_end}"
-                f" | "
-                f"{bold_start}"
-                f"{self.problem_tag}"
-                f"{bold_end}"
-                f"{line_break}"
-                f"{hover_text}"
-            )
+            if include_cost_func:
+                hover_text = (
+                    f"{bold_start}"
+                    f"{self.modified_minimizer_name(with_software=True)}"
+                    f"{bold_end}"
+                    f" | "
+                    f"{bold_start}"
+                    f"{self.problem_tag}"
+                    f"{bold_end}"
+                    f" | "
+                    f"{bold_start}"
+                    f"{self.costfun_tag}"
+                    f"{bold_end}"
+                    f"{line_break}"
+                    f"{hover_text}"
+                )
+            else:
+                hover_text = (
+                    f"{bold_start}"
+                    f"{self.modified_minimizer_name(with_software=True)}"
+                    f"{bold_end}"
+                    f" | "
+                    f"{bold_start}"
+                    f"{self.problem_tag}"
+                    f"{bold_end}"
+                    f"{line_break}"
+                    f"{hover_text}"
+                )
 
         return hover_text

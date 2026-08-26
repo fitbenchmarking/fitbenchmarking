@@ -270,10 +270,19 @@ class CompareScatter:
         default_y = "norm_acc"
         # hover text needs to have the <extra/> tag to remove the grey box
         # that would normally show the trace name
+
+        multiple_cost_funcs_in_use = (
+            len(self.model.get_values_from_results("costfun_tag", unique=True))
+            > 1
+        )
+
         hover_text = [
             text + "<extra></extra>"
             for text in self.model.get_values_from_results(
-                "hover_text", include_title=True, style="html"
+                "hover_text",
+                include_title=True,
+                style="html",
+                include_cost_func=multiple_cost_funcs_in_use,
             )
         ]
 
@@ -911,8 +920,8 @@ class CompareScatterView:
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
             raise ValueError(
-                f"Apply state only supports group = {valid_group_types} or ",
-                f"None, '{group}' was provided",
+                f"Apply state only supports group = {valid_group_types} or "
+                f"None, '{group}' was provided"
             )
 
         select_all = group == "all"
