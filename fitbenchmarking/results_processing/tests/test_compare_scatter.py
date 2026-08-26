@@ -325,6 +325,13 @@ class CompareScatterTests(unittest.TestCase):
         cs.model.get_values_from_results.assert_has_calls(
             [
                 mock.call("hover_text", style="html", include_title=True),
+                mock.call("costfun_tag", unique=True),
+                mock.call(
+                    "hover_text",
+                    include_title=True,
+                    style="html",
+                    include_cost_func=False,
+                ),
                 mock.call("norm_runtime"),
                 mock.call("norm_acc"),
                 mock.call("error_flag"),
