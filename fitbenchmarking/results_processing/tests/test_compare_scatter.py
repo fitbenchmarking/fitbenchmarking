@@ -149,7 +149,7 @@ class CompareScatterTests(unittest.TestCase):
 
         cs.add_callbacks(cs.view.plot, ["mock_solver_0", "mock_solver_1"])
 
-        self.assertEqual(app.callback.call_count, 4)
+        self.assertEqual(app.callback.call_count, 6)
 
         events = app.callback.call_args_list
 
@@ -157,6 +157,8 @@ class CompareScatterTests(unittest.TestCase):
         test_minimizer_callback_args = events[1][0][0]
         none_button_callback_args = events[2][0]
         all_button_callback_args = events[3][0]
+        x_dropdown_callback_args = events[4][0]
+        y_dropdown_callback_args = events[5][0]
 
         self.assertEqual(
             my_minimizer_callback_args[0], Output("compare_scatter", "figure")
@@ -247,6 +249,21 @@ class CompareScatterTests(unittest.TestCase):
             all_button_callback_args[5], State("legend-status", "data")
         )
 
+        self.assertEqual(
+            x_dropdown_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            x_dropdown_callback_args[1], Input("x-dropdown", "value")
+        )
+        self.assertEqual(
+            y_dropdown_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            y_dropdown_callback_args[1], Input("y-dropdown", "value")
+        )
+
         self.assertEqual(app.clientside_callback.call_count, 2)
 
         clientside_callback_events = app.clientside_callback.call_args_list
@@ -283,6 +300,7 @@ class CompareScatterTests(unittest.TestCase):
         cs.view.plot = go.Figure()
         cs.model = Mock(spec=CompareScatterDataModel)
         cs.model.get_values_from_results.return_value = []
+        cs.model.get_plottable_attributes.return_value = []
 
         _, app_returned = cs.get_layout()
         self.assertEqual(app_returned, app)
