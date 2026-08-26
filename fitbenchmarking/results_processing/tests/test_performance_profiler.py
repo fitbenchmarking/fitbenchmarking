@@ -509,7 +509,7 @@ class DashPerfProfileTests(unittest.TestCase):
         expected_plot_path = self.expected_results_dir + "/dash_plot.json"
 
         with open(expected_plot_path) as expected_plot_file:
-            expected_figure = json.loads(expected_plot_file.read())
+            expected_figure = json.load(expected_plot_file)
 
         self.assertEqual(plot.to_dict(), expected_figure)
 
