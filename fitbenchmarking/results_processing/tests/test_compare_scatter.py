@@ -160,30 +160,52 @@ class CompareScatterTests(unittest.TestCase):
 
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
-        ".CompareScatterView.get_per_minimizer_errors_and_runs"
+        ".CompareScatter.add_resize_callback"
     )
-    def test_add_callbacks_adds_callbacks(self, mock_errors_and_runs: Mock):
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_clickthrough_link_callback"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_log_axis_button_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_axis_dropdown_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_all_none_button_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_legend_callbacks"
+    )
+    def test_add_callbacks_adds_callbacks(
+        self,
+        mock_add_legend_callbacks: Mock,
+        mock_add_all_none_button_callbacks: Mock,
+        mock_add_axis_dropdown_callbacks: Mock,
+        mock_add_log_axis_button_callbacks: Mock,
+        mock_add_clickthrough_link_callback: Mock,
+        mock_add_resize_callback: Mock,
+    ):
         """
-        test that add callbacks adds callbacks with all of the expected inputs
-        and outputs
+        test that add callbacks calls all of the helper functions
         """
-
         app, options, test_data = self._get_mock_constructor_params()
-        test_data[0].error_flag = 0
-        test_data[1].error_flag = 3
-
-        mock_errors_and_runs.return_value = (
-            {"mock_solver_0": 0, "mock_solver_1": 1},
-            None,
-        )
-
         cs = CompareScatter(app, options, test_data)
-        cs.view.plot = Mock(spec=go.Figure())
+        legend_items = ["mock_solver_0", "mock_solver_1"]
 
-        cs.add_callbacks(["mock_solver_0", "mock_solver_1"])
+        cs.add_callbacks(legend_items)
 
-        self.assertEqual(app.callback.call_count, 8)
-        self.assertEqual(app.clientside_callback.call_count, 2)
+        mock_add_legend_callbacks.assert_called_once_with(legend_items)
+        mock_add_all_none_button_callbacks.assert_called_once()
+        mock_add_axis_dropdown_callbacks.assert_called_once()
+        mock_add_log_axis_button_callbacks.assert_called_once()
+        mock_add_clickthrough_link_callback.assert_called_once()
+        mock_add_resize_callback.assert_called_once()
 
     def test_add_resize_callback_uses_correct_io(self):
         app, options, test_data = self._get_mock_constructor_params()
