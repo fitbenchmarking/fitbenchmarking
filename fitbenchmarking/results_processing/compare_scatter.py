@@ -1,4 +1,5 @@
 import inspect
+import numbers
 import os
 import re
 from dataclasses import dataclass
@@ -165,6 +166,64 @@ class CompareScatter:
             )
         )
 
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_axes_data(
+                    x_title=value,
+                    x_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_axes_data(
+                    y_title=value,
+                    y_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_xaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_xaxes(type="linear")
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_yaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_yaxes(type="linear")
+            )
+        )
+
         script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
         script_path += "/results_processing/scripts/compare_scatter"
 
@@ -209,7 +268,6 @@ class CompareScatter:
         """
         default_x = "norm_runtime"
         default_y = "norm_acc"
-
         # hover text needs to have the <extra/> tag to remove the grey box
         # that would normally show the trace name
         hover_text = [
@@ -221,9 +279,9 @@ class CompareScatter:
 
         plot = self.view.get_plot(
             x=self.model.get_values_from_results(default_x),
-            x_title=default_x,
+            x_title=self.model.get_readable_attr_name(default_x),
             y=self.model.get_values_from_results(default_y),
-            y_title=default_y,
+            y_title=self.model.get_readable_attr_name(default_y),
             tooltips=hover_text,
             errors=self.model.get_values_from_results("error_flag"),
             minimizers=self.model.get_values_from_results(
@@ -231,6 +289,10 @@ class CompareScatter:
             ),
             problems=self.model.get_values_from_results("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
+            plottable_attributes=[
+                self.model.get_readable_attr_name(attr)
+                for attr in self.model.get_plottable_attributes()
+            ],
         )
 
         legend_items = [
@@ -241,6 +303,7 @@ class CompareScatter:
         ]
 
         self.add_callbacks(self.view.plot, legend_items)
+
         return plot, self.app
 
 
@@ -250,9 +313,21 @@ class CompareScatterView:
     the CompareScatter class instead
     """
 
+    # Index in customdata where the hover text for each point is stored
     DATA_HOVER_TEXT_INDEX = 0
+
+    # Index in customdata where the minimizer name for each point is stored
     DATA_MINIMIZER_INDEX = 1
+
+    # Index in customdata where the problem name for each point is stored
     DATA_PROBLEM_INDEX = 2
+
+    # Note: index 3 maps each point to the URL of the relevant fitting report
+    # page. This is accessed in handle_link.js
+
+    # Index in customdata where each point's original position in the source
+    # data is stored
+    DATA_SOURCE_INDEX = 4
 
     banned_prefixes = [
         "circle-",  # limited readability
@@ -320,6 +395,7 @@ class CompareScatterView:
         minimizers: list[str],
         problems: list[str],
         report_pages: list[str],
+        plottable_attributes: list[str],
     ):
         """
         Get a div containing the compare scatter and legend.
@@ -364,15 +440,30 @@ class CompareScatterView:
             for flag in errors
         ]
 
+        # since plotly may reorganise points to group them into traces when
+        # there are multiple points under one minimizer problem pairing (e.g.
+        # when we have run with multiple cost functions selected), we need to
+        # keep track of where in the data array that point came from by storing
+        # it in the customdata field of the point. This means that later when
+        # we need to make edits to what is being plotted, we are able to
+        # correctly place the information in self.plot.data
+        data_locations = list(range(len(x)))
+
         self.plot = px.scatter(
             x=x,
             y=y,
             color=minimizers,
             symbol=problems,
             symbol_sequence=self.valid_symbols,
+            custom_data=[
+                tooltips,
+                minimizers,
+                problems,
+                report_pages,
+                data_locations,
+            ],
             log_x=True,
             log_y=True,
-            custom_data=[tooltips, minimizers, problems, report_pages],
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
@@ -403,12 +494,80 @@ class CompareScatterView:
 
         div_contents = [
             dcc.Store(id="page-load-trigger", data={"loaded": True}),
-            dcc.Graph(
-                figure=self.plot,
-                id="compare_scatter",
-                style={"flex": "1", "min-width": "66vw"},
+            html.Div(
+                [
+                    dcc.Graph(
+                        figure=self.plot,
+                        id="compare_scatter",
+                        style={"flex": "1", "min-width": "66vw"},
+                    ),
+                    legend,
+                ],
+                style={"display": "flex", "overflow": "hidden"},
             ),
-            legend,
+            html.Div(
+                [
+                    html.Div(
+                        "X axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[x_title],
+                                id="x-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="x-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
+                    ),
+                    html.Div(
+                        "Y axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[y_title],
+                                id="y-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="y-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
+                    ),
+                ],
+                style={"float": "right"},
+            ),
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
             html.Div(id="dummy-height", style={"display": "none"}),
@@ -425,7 +584,6 @@ class CompareScatterView:
 
         return html.Div(
             div_contents,
-            style={"display": "flex", "overflow": "hidden"},
             id="compare_scatter_container",
         )
 
@@ -504,6 +662,50 @@ class CompareScatterView:
                 errors_by_minimizer[minimizer] += 1
 
         return errors_by_minimizer, runs_by_minimizer
+
+    def update_axes_data(
+        self, x_title=None, x_data=None, y_title=None, y_data=None
+    ):
+        """
+        Update the data and title for the x and/or y axes of the plot.
+
+        :param x_title: The new title for the x-axis, defaults to None
+        :type x_title: str, optional
+        :param x_data: The new data for the x-axis, defaults to None
+        :type x_data: list, optional
+        :param y_title: The new title for the y-axis, defaults to None
+        :type y_title: str, optional
+        :param y_data: The new data for the y-axis, defaults to None
+        :type y_data: list, optional
+        :return: The updated plot figure.
+        :rtype: go.Figure
+        """
+        if x_title is not None:
+            if x_data is None:
+                raise ValueError(
+                    "x_data must be provided when x_title is provided"
+                )
+            self.plot.update_layout(xaxis_title=x_title)
+
+        if y_title is not None:
+            if y_data is None:
+                raise ValueError(
+                    "y_data must be provided when y_title is provided"
+                )
+            self.plot.update_layout(yaxis_title=y_title)
+
+        for trace in self.plot.data:
+            if not isinstance(trace, go.Scatter):
+                continue
+            indices = [
+                int(data[self.DATA_SOURCE_INDEX]) for data in trace.customdata
+            ]
+            if x_data is not None:
+                trace.x = tuple(x_data[i] for i in indices)
+            if y_data is not None:
+                trace.y = tuple(y_data[i] for i in indices)
+
+        return self.plot
 
     def get_warning_text_for_results(self, error_flags, minimizer_names):
         """
@@ -769,20 +971,25 @@ class CompareScatterView:
         :param t: The trace to modify
         :type t: plotly trace
         :param new_opacity: the opacity after the change
-        :type new_opacity: int
+        :type new_opacity: float
         """
-        t.marker.opacity = new_opacity
 
-        if t.text is None or t.text == "":
+        # set the opacity of the plotted trace
+        t.marker["opacity"] = new_opacity
+
+        if t.text is None:
             return
 
-        marker_text = t.text
-        if isinstance(marker_text, np.ndarray):
-            marker_text = marker_text.item()
-
-        html_tree = xml_html.fromstring(marker_text)
-        html_tree.set("style", f"opacity:{new_opacity}")
-        t.text = etree.tostring(html_tree).decode("ascii")
+        texts = t.text if not isinstance(t.text, str) else (t.text,)
+        new_texts = []
+        for text in texts:
+            if text:
+                html_tree = xml_html.fromstring(text)
+                html_tree.set("style", f"opacity:{new_opacity}")
+                new_texts.append(etree.tostring(html_tree).decode("ascii"))
+            else:
+                new_texts.append(text)
+        t.text = tuple(new_texts)
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
@@ -1043,6 +1250,118 @@ class CompareScatterDataModel:
     def get_sort_key(result: FittingResult):
         return result.name
 
+    def get_plottable_attributes(self) -> list[str]:
+        """
+        Get a list of attributes that make logical sense to plot on a scatter
+        plot. Works by reading all attributes of the FittingResults and
+        removing any which return a non-numeric value.
+
+        :return: list of attributes that can be plotted
+        :rtype: list[str]
+        """
+
+        plottable_attributes = [
+            "accuracy",
+            "energy",
+            "first_runtime",
+            "func_evals",
+            "get_n_data_points",
+            "get_n_parameters",
+            "harmonic_runtime",
+            "iteration_count",
+            "maximum_runtime",
+            "mean_runtime",
+            "median_runtime",
+            "minimum_runtime",
+            "norm_acc",
+            "norm_energy",
+            "norm_runtime",
+            "runtime",
+            "trim_runtime",
+        ]
+
+        return [
+            attribute
+            for attribute in plottable_attributes
+            if self.list_contains_plottable_types(
+                self.get_values_from_results(attribute)
+            )
+        ]
+
+    _known_mappings = {
+        "accuracy": "Accuracy (χ²)",
+        "energy": "Energy (kWh)",
+        "first_runtime": "First Runtime (s)",
+        "func_evals": "N Function Evaluations",
+        "harmonic_runtime": "Harmonic Runtime (s)",
+        "maximum_runtime": "Maximum Runtime (s)",
+        "mean_runtime": "Mean Runtime (s)",
+        "median_runtime": "Median Runtime (s)",
+        "minimum_runtime": "Minimum Runtime (s)",
+        "norm_acc": "Normalised Accuracy",
+        "norm_energy": "Normalised Energy",
+        "norm_runtime": "Normalised Runtime",
+        "runtime": "Runtime (s)",
+        "trim_runtime": "Trimmed Mean Runtime (s)",
+        "get_n_data_points": "N Data Points",
+        "get_n_parameters": "N Parameters",
+    }
+
+    def get_readable_attr_name(self, attribute: str):
+        """
+        Given an attribute name, return a human readable name for use in the
+        title text for the plot. This means in title case, with underscores
+        replaced with spaces and units added if applicable and known.
+
+        :param attribute: A machine readable name of an attribute
+        :type name: str
+
+        :return: The name of the attribute in a human readable format
+        :rtype: str
+        """
+        if attribute in self._known_mappings:
+            return self._known_mappings[attribute]
+        return re.sub("_", " ", attribute).title()
+
+    def get_attr_from_readable_name(self, name: str):
+        """
+        Given a human readable name, return the attribute name.
+
+        :param name: A human readable name of an attribute
+        :type name: str
+
+        :return: The actual attribute name
+        :rtype: str
+        """
+        for attr, readable_name in self._known_mappings.items():
+            if readable_name == name:
+                return attr
+        # If not in known mappings, try to reverse the general conversion
+        return name.lower().replace(" ", "_")
+
+    @staticmethod
+    def list_contains_plottable_types(values: list):
+        """
+        Return True if the provided list contains at least one numeric value,
+        and is not entirely unplottable (i.e. np.inf)
+
+        :param values: list of values to check
+        :type values: list
+
+        :return: if the list can be plotted on a scatter plot
+        :rtype: bool
+        """
+        can_be_plotted = [
+            (
+                isinstance(value, numbers.Number)
+                and not (value is np.nan or value is np.inf)
+                and not isinstance(value, bool)
+            )
+            for value in values
+        ]
+
+        return any(can_be_plotted)
+
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
     ) -> list:
@@ -1070,6 +1389,8 @@ class CompareScatterDataModel:
         # passed an attribute or method name
 
         values = []
+        if attribute is None:
+            raise ValueError("Attribute name cannot be None")
         if callable(getattr(self.results[0], attribute)):
             for result in self.results:
                 func = getattr(result, attribute)

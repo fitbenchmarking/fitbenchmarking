@@ -183,6 +183,8 @@
                                     <li>Click on a point to view the fitting report for that result.</li>
                                     <li>Use the <b>all | none</b> buttons to show/hide all results.</li>
                                     <li>Hover over a result for more information.</li>
+                                    <li>Use the provided dropdown menus to select which attributes should
+                                         be plotted on the axes</li>
                                 </ul>
                             </div>
                         <br>
@@ -205,23 +207,23 @@
                                     <div>
                                         <button class="btn default" id="offline_plot"
                                                 data-value1={{ pp_filenames | join("|") }}
-                                                data-value3="{{ n_solvers_large }}"
-                                                onclick="load_src(this)">Offline version</button>
+                                                data-value3="{{ n_minimizers_large }}"
+                                                onclick="load_src(this,'pp_iframe_wrapper')">Offline version</button>
                                         <button class="btn default" id="online_plot"
                                                 data-value1={{ pp_dash_url }}
-                                                data-value3="{{ n_solvers_large }}"
-                                                onclick="load_src(this)">Online version</button>
+                                                data-value3="{{ n_minimizers_large }}"
+                                                onclick="load_src(this,'pp_iframe_wrapper')">Online version</button>
                                     </div>
                                     <br>
-                                    <div class="iframe-wrapper">
+                                    <div class="iframe-wrapper" id="pp_iframe_wrapper">
                                         {% for offline_plot in pp_filenames %}
                                             <iframe width="100%" frameborder="0" seamless="seamless"
-                                                    src="{{ offline_plot }}" height={{ 100 if n_solvers_large else 650 }}></iframe>
+                                                    src="{{ offline_plot }}" height={{ 100 if n_minimizers_large else 650 }}></iframe>
                                             <br>
                                         {% endfor %}
                                     </div>
                                 </div>
-                                <p id="profiles_info" style={{"display:none" if n_solvers_large else "display:block"}}>
+                                <p id="profiles_info" style={{"display:none" if n_minimizers_large else "display:block"}}>
                                     <div class="info-box">
                                         <p><b>Important Information:</b></p>
                                         <ul>
@@ -229,13 +231,13 @@
                                                 <em>n</em> <b>problems</b> and <em>m</em> <b>cost functions</b>, the resulting profile plots will have
                                                 <em>n * m</em> <b>steps</b> on the y-axis.</li>
                                             <li>This is a Dolan-Moré performance profile.
-                                                The solvers appearing in the <b>top left corner</b> may be considered the <b>best</b> performing on this test set.
+                                                The minimizers appearing in the <b>top left corner</b> may be considered the <b>best</b> performing on this test set.
                                                 See <a href="https://doi.org/10.1007/s101070100263">Dolan and Moré (2001)</a> for more information.</li>
                                         </ul>
                                         <br>
                                         <p>The plot is such that lines can be removed by clicking on the respective minimizer name in the dropdown
-                                            or hidden by unselecting the minimizer in the legend. If a solver is removed through the dropdown,
-                                            the graph gets recalculated based on the best minimizer among the ones shown. On the other hand, if a solver
+                                            or hidden by unselecting the minimizer in the legend. If a minimizer is removed through the dropdown,
+                                            the graph gets recalculated based on the best minimizer among the ones shown. On the other hand, if a minimizer
                                             is unselected in the legend, the line gets temporarily hidden and the plot is not recalculated.
                                             <b>We recommend only analysing graphs where lines are removed via the dropdown.</b></p>
                                     </div>
