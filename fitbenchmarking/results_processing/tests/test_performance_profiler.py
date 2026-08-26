@@ -501,13 +501,11 @@ class DashPerfProfileTests(unittest.TestCase):
         )
 
         expected_plot_path = self.expected_results_dir + "/dash_plot.json"
-        with open(expected_plot_path, "w") as expected_plot_file:
-            expected_plot_file.write(plot.to_json(pretty=True))
 
         with open(expected_plot_path) as expected_plot_file:
             expected_figure = json.loads(expected_plot_file.read())
 
-        self.assertEqual(json.loads(plot.to_json()), expected_figure)
+        self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_prepare_data(self):
         """
