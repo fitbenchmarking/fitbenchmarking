@@ -1,4 +1,6 @@
+import random
 import unittest
+from unittest.mock import Mock
 
 import numpy as np
 from parameterized import parameterized
@@ -9,6 +11,7 @@ from fitbenchmarking.results_processing.compare_scatter import (
 from fitbenchmarking.results_processing.tests.test_compare_scatter import (
     make_mock_fitting_result,
 )
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
 class CompareScatterDataModelTests(unittest.TestCase):
@@ -110,3 +113,213 @@ class CompareScatterDataModelTests(unittest.TestCase):
         model = CompareScatterDataModel(self.duplicate_name_dataset)
         unique_values = model.get_values_from_results("name", unique=True)
         self.assertEqual(unique_values, ["mock_result_1"])
+
+    @parameterized.expand(
+        [
+            ([np.nan, np.nan],),
+            ([np.inf, np.inf],),
+            ([None, None],),
+            ([True, False],),
+        ]
+    )
+    def test_list_contains_plottable_types_returns_false_if_not_plottable(
+        self, values
+    ):
+        """
+        list_contains_plottable_types should return false if provided with a
+        list of np.
+        """
+        self.assertFalse(
+            CompareScatterDataModel.list_contains_plottable_types(values)
+        )
+
+    @parameterized.expand(
+        [
+            ([np.float16(123)],),
+            ([0.123],),
+            ([123],),
+            ([1, np.nan],),
+            ([1, np.inf],),
+            ([1, None],),
+        ]
+    )
+    def test_list_contains_plottable_types_returns_true_if_plottable(
+        self, values
+    ):
+        """
+        list_contains_plottable_types should return false if provided with a
+        list of np.
+        """
+        self.assertTrue(
+            CompareScatterDataModel.list_contains_plottable_types(values)
+        )
+
+    def test_get_readable_attr_name_when_mapping_missing(self):
+        """
+        When there is no mapping to translate an attribute to a form suitable
+        for title text, the function will generate one by replacing underscores
+        with spaces and changing the text to title case
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "My Attribute Name",
+            model.get_readable_attr_name("my_attribute_name"),
+        )
+
+    def test_get_attr_from_readable_name_when_mapping_missing(self):
+        """
+        When there is no mapping the function will attempt to reverse the
+        process described in test_get_readable_attr_name_when_mapping_missing.
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "my_attribute_name",
+            model.get_attr_from_readable_name("My Attribute Name"),
+        )
+
+    def test_get_readable_attr_name_when_mapping_exists(self):
+        """
+        When the mapping for a given attribute exists, the function should
+        return the mapped value
+        """
+
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "Accuracy (χ²)",
+            model.get_readable_attr_name("accuracy"),
+        )
+
+    def test_get_attr_from_readable_name_when_mapping_exists(self):
+        """
+        When the mapping for a given attribute exists, the function should
+        return the mapped value
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "accuracy",
+            model.get_attr_from_readable_name("Accuracy (χ²)"),
+        )
+
+    def test_get_readable_attr_name_is_reversible_for_unmapped_values(self):
+        """
+        the combination of get_attr_from_readable_name and
+        get_readable_attr_name should always be the starting value. This test
+        specifically tests the case when the attribute name is not mapped to
+        a known readable value. The test tests both directions.
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "my_attribute_name",
+            model.get_attr_from_readable_name(
+                model.get_readable_attr_name("my_attribute_name")
+            ),
+        )
+
+        self.assertEqual(
+            "My Attribute Name",
+            model.get_readable_attr_name(
+                model.get_attr_from_readable_name("My Attribute Name"),
+            ),
+        )
+
+    def test_get_readable_attr_name_is_reversible_for_mapped_values(self):
+        """
+        the combination of get_attr_from_readable_name and
+        get_readable_attr_name should always be the starting value. This test
+        specifically tests the case when the attribute name is mapped to
+        a known readable value. The test tests both directions.
+        """
+        model = CompareScatterDataModel([])
+        self.assertEqual(
+            "accuracy",
+            model.get_attr_from_readable_name(
+                model.get_readable_attr_name("accuracy")
+            ),
+        )
+
+        self.assertEqual(
+            "Accuracy (χ²)",
+            model.get_readable_attr_name(
+                model.get_attr_from_readable_name("Accuracy (χ²)"),
+            ),
+        )
+
+    def test_get_plottable_attributes_returns_expected_attributes(
+        self,
+    ):
+        """
+        Test that get_plottable_attributes returns all of the attributes added
+        to the whitelist, but does not return any which have unplottable data.
+        """
+
+        expected_attributes = [
+            "accuracy",
+            "energy",
+            "first_runtime",
+            "func_evals",
+            "get_n_data_points",
+            "get_n_parameters",
+            "harmonic_runtime",
+            "iteration_count",
+            "maximum_runtime",
+            "mean_runtime",
+            "median_runtime",
+            "minimum_runtime",
+            "norm_acc",
+            "norm_energy",
+            "norm_runtime",
+            "runtime",
+            "trim_runtime",
+        ]
+
+        plottable_data = [1, 2]
+
+        unplottable_data = [
+            [np.nan, np.nan],
+            [np.inf, np.inf],
+            [None, None],
+            [True, False],
+        ]
+
+        attributes_which_cant_be_plotted = random.sample(
+            expected_attributes, len(unplottable_data)
+        )
+
+        for attr in attributes_which_cant_be_plotted:
+            expected_attributes.remove(attr)
+
+        attribute_mappings = [
+            (attr, plottable_data) for attr in expected_attributes
+        ]
+        attribute_mappings.extend(
+            zip(attributes_which_cant_be_plotted, unplottable_data)
+        )
+
+        # Create two mock fitting results to represent the two data points in
+        # plottable_data.
+        # Note: name is required because the data model sorts by name
+        mock_res_1 = Mock(spec=FittingResult)
+        mock_res_1.name = "mock_res_1"
+        mock_res_2 = Mock(spec=FittingResult)
+        mock_res_2.name = "mock_res_2"
+
+        for attr, data in attribute_mappings:
+            val_1, val_2 = data[0], data[1]
+            is_callable = callable(getattr(FittingResult, attr, None))
+            if is_callable:
+                setattr(mock_res_1, attr, Mock(return_value=val_1))
+                setattr(mock_res_2, attr, Mock(return_value=val_2))
+            else:
+                setattr(mock_res_1, attr, val_1)
+                setattr(mock_res_2, attr, val_2)
+
+        model = CompareScatterDataModel([mock_res_1, mock_res_2])  # type: ignore
+
+        returned_attributes = model.get_plottable_attributes()
+
+        self.assertListEqual(
+            returned_attributes,
+            expected_attributes,
+        )
