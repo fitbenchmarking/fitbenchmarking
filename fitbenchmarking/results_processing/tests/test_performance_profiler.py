@@ -307,6 +307,9 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test create_plot returns the correct performance profile plot,
         by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
         expected_plot_path = (
             self.expected_results_dir + "/pp_offline_plot.json"
@@ -493,6 +496,9 @@ class DashPerfProfileTests(unittest.TestCase):
         """
         Test create_graph returns the expected performance profile plot,
         by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
 
         selected_solvers = self.data.columns
