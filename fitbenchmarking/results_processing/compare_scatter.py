@@ -718,14 +718,18 @@ class CompareScatterView:
 
         :param error_flags: list of error flags in same order as minimizer
             names
+
         :type error_flags: list[int]
+
         :param minimizer_names: list of minimizer names, including duplicates (
             e.g. ``["min1", "min1", "min2", "min2"]``) each instance represents
             one run of that minimizer
+
         :type minimizer_names: list[str]
 
         :return: A dict where the key is the minimizer name, and the
         value is the warning text for that minimizer or None if none is needed
+
         :rtype: list[str,int]
         """
 
