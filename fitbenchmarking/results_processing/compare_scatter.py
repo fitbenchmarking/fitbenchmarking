@@ -728,7 +728,8 @@ class CompareScatterView:
         :type minimizer_names: list[str]
 
         :return: A dict where the key is the minimizer name, and the
-        value is the warning text for that minimizer or None if none is needed
+            value is the warning text for that minimizer or None if none is
+            needed
 
         :rtype: list[str,int]
         """
