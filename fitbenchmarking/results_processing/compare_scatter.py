@@ -848,10 +848,11 @@ class CompareScatterView:
         style for the select all and select none buttons.
 
         The state dict should be in the following format:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
+        .. code:: python
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
 
         :param state: Dictionary with the structure described above
         :type state: dict[str,dict[str,bool]]
