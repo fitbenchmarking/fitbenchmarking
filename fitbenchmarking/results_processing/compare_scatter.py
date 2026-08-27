@@ -848,7 +848,9 @@ class CompareScatterView:
         style for the select all and select none buttons.
 
         The state dict should be in the following format:
+
         .. code:: python
+
             state = {
                 "minimizer": {"minimizer_name":True},
                 "problem": {"problem_name":True},
@@ -857,10 +859,12 @@ class CompareScatterView:
         :param state: Dictionary with the structure described above
         :type state: dict[str,dict[str,bool]]
 
-        :return:
-            all_button_style: the updated style for the select all button\n
-            none_button_style: the updated style for the select all button
-        :rtype: tuple[dict[str,any],] dict[str,any]]
+        :return: A tuple of (all_button_style, none_button_style) where:
+            - ``all_button_style`` is the updated style for the select all
+            button
+            - ``none_button_style`` is the updated style for the select none
+            button
+        :rtype: tuple[dict[str, any], dict[str, any]]
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
