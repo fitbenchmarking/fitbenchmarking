@@ -797,7 +797,7 @@ class CompareScatterView:
             dict[str,any],
             dict[str,any],
             go.Figure
-        ]
+            ]
         """
         style = (
             self.active_button_style if focus else self.inactive_button_style
