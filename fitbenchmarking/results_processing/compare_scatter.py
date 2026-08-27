@@ -784,11 +784,12 @@ class CompareScatterView:
         :param state: Dictionary with the structure described above
         :type state: dict[str,dict[str,bool]]:
 
-        :return:
-            state: the updated state dictionary \n
-            all_button_style: the updated style for the select all button \n
-            none_button_style: the updated style for the select all button \n
-            plot: the plot after the traces have been updated \n
+        :return: A tuple of the following
+            - ``state`` the updated state dictionary
+            - ``all_button_style`` the updated style for the select all button
+            - ``none_button_style`` the updated style for the select all button
+            - ``plot`` the plot after the traces have been updated
+
         :rtype: tuple[
             dict[str,dict[str,bool]],
             dict[str,any],
