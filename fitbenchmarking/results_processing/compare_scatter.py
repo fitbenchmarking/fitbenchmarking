@@ -764,10 +764,13 @@ class CompareScatterView:
         whenever not every item is selected.
 
         the state dictionary should have the following structure:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
+
+        .. code:: python
+
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
 
         Here focus has been used to mean whether a minimizer is selected or not
         on the legend
@@ -814,10 +817,13 @@ class CompareScatterView:
     def toggle_group_state(group, state):
         """
         Given either a minimizer or a problem and a state dict in the format:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
+
+        .. code:: python
+
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
 
         Invert the current state and return the new state, including the
         dictionary with the new state now set
@@ -865,6 +871,7 @@ class CompareScatterView:
             - ``none_button_style`` is the updated style for the select none
             button
         :rtype: tuple[dict[str, any], dict[str, any]]
+
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
