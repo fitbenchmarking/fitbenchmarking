@@ -37,9 +37,9 @@ In order to add a new table, you will need to:
 
 4. If a new attribute has been added to the ``FittingResult`` class which could be 
    useful to plot on the compare scatter, add it to the ``plottable_attributes`` list 
-   in :meth:`fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel.get_plottable_attributes`
+   in :meth:`~fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel.get_plottable_attributes`
    and add a human readable name to the mappings dictionary at 
-   :attr:`fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel._known_mappings`
+   :attr:`~fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel._known_mappings`
 
 5. Document the new table class is by setting the docstring to be
    the description of the table, and add to :ref:`output`.
