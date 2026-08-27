@@ -563,11 +563,14 @@ class FittingResult:
     def hover_text(self, include_title=False, style="html") -> str:
         """
         Generate the tooltip text for a given fitting result.
+
         :param result: The result to generate the text for
         :type result: FittingResult
+
         :param include_title: Whether to include the result title in the
             tooltip
         :type include_title: bool
+
         :param newline: The newline character to use, defaults to CSS style
             newline used in tables
         :type newline: str
