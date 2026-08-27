@@ -1239,7 +1239,8 @@ class CompareScatterView:
         :type symbol: str
 
         :return: a number representing how early it should appear in the sorted
-        list 0 being the earliest
+            list 0 being the earliest
+
         :rtype: int
         """
 
