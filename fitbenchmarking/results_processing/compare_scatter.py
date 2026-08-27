@@ -286,7 +286,6 @@ class CompareScatter:
         self.add_axis_dropdown_callbacks()
         self.add_log_axis_button_callbacks()
 
-
         self.add_clickthrough_link_callback()
         self.add_resize_callback()
 
