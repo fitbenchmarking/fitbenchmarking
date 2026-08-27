@@ -574,6 +574,10 @@ class FittingResult:
             newline used in tables
         :type newline: str
 
+        :param include_cost_func: Whether to include the cost function type
+            in the title of the tooltip
+        :type include_cost_func: bool
+
         :return: The generated tooltip
         :rtype: str
         """
