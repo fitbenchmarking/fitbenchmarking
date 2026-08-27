@@ -2,10 +2,12 @@
 Tests for FitBenchmarking object
 """
 
+import copy
 import inspect
 import os
 import textwrap
 import unittest
+from itertools import product
 from statistics import StatisticsError
 from typing import TYPE_CHECKING
 from unittest.mock import patch
@@ -640,6 +642,117 @@ class FitbmResultTests(unittest.TestCase):
         obtained = result.mask
         expected = np.array([1, 2, 3])
         self.assertTrue((obtained == expected).all())
+
+    @parameterized.expand(
+        product([True, False], ["html", "css"], [True, False])
+    )
+    def test_hover_text_contains_all_values(
+        self, include_title, style, include_cost_func
+    ):
+        """
+        Test that the hover text contains all the expected values.
+        """
+        result = copy.deepcopy(self.result)
+        result.iteration_count = 50
+        result.func_evals = 100
+
+        actual = result.hover_text(
+            include_title=include_title,
+            style=style,
+            include_cost_func=include_cost_func,
+        )
+
+        self.assertIn(f"Status: {result.status}", actual)
+        self.assertIn(f"Accuracy: {result.accuracy:.4g}", actual)
+        self.assertIn(
+            f"{result.runtime_metric.capitalize()} runtime: "
+            f"{result.runtime:.4g}",
+            actual,
+        )
+        self.assertIn(f"Energy usage: {result.energy:.4g}", actual)
+        self.assertIn(f"Iterations: {result.func_evals}", actual)
+        self.assertIn(f"Function Evaluations: {result.func_evals}", actual)
+
+    @parameterized.expand(
+        product([True, False], ["html", "css"], [True, False])
+    )
+    def test_hover_text_contains_title_when_requested(
+        self, include_title, style, include_cost_func
+    ):
+        """
+        Test that the hover text contains the title when requested.
+        """
+        result = copy.deepcopy(self.result)
+        result.iteration_count = 50
+        result.func_evals = 100
+
+        actual = result.hover_text(
+            include_title=include_title,
+            style=style,
+            include_cost_func=include_cost_func,
+        )
+
+        if include_title:
+            bold_start = "<b>" if style == "html" else ""
+            bold_end = "</b>" if style == "html" else ""
+            title = (
+                f"{bold_start}"
+                f"{result.modified_minimizer_name(with_software=True)}"
+                f"{bold_end} | {bold_start}{result.problem_tag}{bold_end}"
+            )
+            self.assertIn(title, actual)
+            if include_cost_func:
+                self.assertIn(
+                    f"| {bold_start}{result.costfun_tag}{bold_end}", actual
+                )
+
+    @parameterized.expand(
+        product([True, False], ["html", "css"], [True, False])
+    )
+    def test_hover_text_uses_correct_styling(
+        self, include_title, style, include_cost_func
+    ):
+        """
+        Test that the hover text uses the correct styling.
+        """
+        result = copy.deepcopy(self.result)
+        result.iteration_count = 50
+        result.func_evals = 100
+
+        actual = result.hover_text(
+            include_title=include_title,
+            style=style,
+            include_cost_func=include_cost_func,
+        )
+
+        if style == "html":
+            self.assertIn("<br>", actual)
+            self.assertNotIn(r"\a ", actual)
+            if include_title:
+                self.assertIn("<b>", actual)
+                self.assertIn("</b>", actual)
+        else:  # style == "css"
+            self.assertIn(r"\a ", actual)
+            self.assertNotIn("<br>", actual)
+            self.assertNotIn("<b>", actual)
+            self.assertNotIn("</b>", actual)
+
+    @parameterized.expand([None, 0])
+    def test_hover_text_handles_invalid_iter_count(self, iter_count):
+        result = copy.deepcopy(self.result)
+        result.iteration_count = iter_count
+        hover_text = result.hover_text()
+        self.assertIn("Iterations: not available", hover_text)
+
+    @parameterized.expand([(np.inf, 100), (100, np.inf), (np.inf, np.inf)])
+    def test_hover_text_handles_invalid_runtime_or_accuracy(
+        self, runtime, accuracy
+    ):
+        result = copy.deepcopy(self.result)
+        result.runtime = runtime
+        result.min_accuracy = accuracy
+        hover_text = result.hover_text()
+        self.assertEqual(hover_text, f"Error: {self.result.status}")
 
 
 if __name__ == "__main__":
