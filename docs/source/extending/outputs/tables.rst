@@ -35,16 +35,10 @@ In order to add a new table, you will need to:
 3. Extend the ``table_type`` option in ``OUTPUT`` following the instructions in
    :ref:`options_extend`.
 
-4. If a new attribute has been added to the ``FittingResult`` class which could be 
-   useful to plot on the compare scatter, add it to the ``plottable_attributes`` list 
-   in :meth:`~fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel.get_plottable_attributes`
-   and add a human readable name to the mappings dictionary at 
-   :attr:`~fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel._known_mappings`
-
-5. Document the new table class is by setting the docstring to be
+4. Document the new table class is by setting the docstring to be
    the description of the table, and add to :ref:`output`.
    
-6. Create tests for the table in
+5. Create tests for the table in
    ``fitbenchmarking/results_processing/tests/test_tables.py``. This is done
    by generating, ahead of time using the results problems constructed in
    ``fitbenchmarking/results_processing/tests/test_tables.generate_test_files``, both a HTML and text table output as the expected
