@@ -21,7 +21,6 @@ outputs the following should be considered:
   and to the dictionary of human readable attributes in the 
   same class (:meth:`CompareScatterDataModel._known_mappings`)
 
-
 - Any calculations should be performed when initialising the FittingResult.
   This reduces runtime in total for any regenerated reports.
 
