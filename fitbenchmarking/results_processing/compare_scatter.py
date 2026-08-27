@@ -246,7 +246,7 @@ class CompareScatter:
         """
         Get the fitting report URLs and format as required for use as links
         :return: List of URLS
-        :rtype list[str]:
+        :rtype: list[str]
         """
         return [
             "support_pages/" + val.split("support_pages/", 1)[1]
@@ -261,10 +261,10 @@ class CompareScatter:
         """
         Get the compare scatter and set all of the required callbacks
 
-        :return: The plot Div/List
-        :rtype Div | list[]:
-        :return: The app with callbacks added
-        :rtype Dash:
+        :return: A tuple of:
+                 - The plot Div
+                 - The app with callbacks added
+        :rtype: tuple[html.Div, Dash]
         """
         default_x = "norm_runtime"
         default_y = "norm_acc"
@@ -424,6 +424,9 @@ class CompareScatterView:
         :type problems: list[str]
         :param report_pages: list of urls of fitting reports
         :type report_pages: list[str]
+        :param plottable_attributes: A list of human readable names for
+            attributes that can be plotted on the scatter plot.
+        :type plottable_attributes: list[str]
 
         :return: Returns a div containing the plot and legend
         :rtype: html.Div
@@ -597,7 +600,7 @@ class CompareScatterView:
 
         :param warning_messages_by_minimizer: key: minimizer, value: warning
             message or None
-        :type warning_messages_by_minimizer: dict[str,str|None]
+        :type warning_messages_by_minimizer: dict[str, str | None]
 
         :return: A list containing the created dbc.Toast objects
         :rtype: list[dbc.Toast]
@@ -643,13 +646,11 @@ class CompareScatterView:
         :type minimizer_names: list[str]
 
 
-        :return:
-            errors: A dict where the key is the minimizer name, and the \n
-            value is the number of times that minimizer had an error flag of 3
-            \n
-            runs: A dict where the key is the minimizer name, and the
-            value is the number of times that minimizer ran
-        :rtype runs: tuple[dict[str,int],dict[str,int]]:
+        :return: A tuple of dictionaries, the first containing the number of
+                 errors for each minimizer, and the second containing the
+                 number of runs for each minimizer.
+                 (errors, runs)
+        :rtype: tuple[dict[str, int], dict[str, int]]
         """
 
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
@@ -731,7 +732,7 @@ class CompareScatterView:
             value is the warning text for that minimizer or None if none is
             needed
 
-        :rtype: list[str,int]
+        :rtype: dict[str, str | None]
         """
 
         errors_by_minimizer, runs_by_minimizer = (
@@ -784,20 +785,17 @@ class CompareScatterView:
         :type focus: bool
 
         :param state: Dictionary with the structure described above
-        :type state: dict[str,dict[str,bool]]:
+        :type state: dict[str, dict[str, bool]]
 
         :return: A tuple of the following
             - ``state`` the updated state dictionary
             - ``all_button_style`` the updated style for the select all button
             - ``none_button_style`` the updated style for the select all button
             - ``plot`` the plot after the traces have been updated
-
-        :rtype: tuple[
-            dict[str,dict[str,bool]],
-            dict[str,any],
-            dict[str,any],
-            go.Figure
-            ]
+        :rtype: tuple[dict[str, dict[str, bool]],
+                      dict[str, any],
+                      dict[str, any],
+                      go.Figure]
         """
         style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -840,9 +838,9 @@ class CompareScatterView:
         :param state: The state dictionary to query and modify
         :type state: dict
 
-        :return:
-            new_state: The state of the group after toggling \n
-            new_state_dictionary: State, modified with the updated group
+        :return: A tuple containing:
+                 - The state of the group after toggling
+                 - The modified state dictionary
         :rtype: tuple[bool, dict]
         """
         if group in state["problem"]:
@@ -917,11 +915,13 @@ class CompareScatterView:
         :param plot: The plot to modify
         :type plot: go.Figure
         :param state: Dictionary of state of each problem, sorted by minimizer
-            , problem
-        :type state: dict[str,dict[str,bool]]
+                      and problem
+        :type state: dict[str, dict[str, bool]]
         :param group: The group of points to set visibility for, either "all"
             or "none", all other values have no effect
         :type group: str
+                      or "none".
+        :type group: str | None
 
         :return: The modified plot
         :rtype: go.Figure
@@ -1334,7 +1334,7 @@ class CompareScatterDataModel:
         replaced with spaces and units added if applicable and known.
 
         :param attribute: A machine readable name of an attribute
-        :type name: str
+        :type attribute: str
 
         :return: The name of the attribute in a human readable format
         :rtype: str
