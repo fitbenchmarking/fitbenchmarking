@@ -870,8 +870,8 @@ class CompareScatterView:
             button
             - ``none_button_style`` is the updated style for the select none
             button
-        :rtype: tuple[dict[str, any], dict[str, any]]
 
+        :rtype: tuple[dict[str, any], dict[str, any]]
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
