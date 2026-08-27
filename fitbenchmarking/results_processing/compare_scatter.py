@@ -286,8 +286,6 @@ class CompareScatter:
         self.add_axis_dropdown_callbacks()
         self.add_log_axis_button_callbacks()
 
-        script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
-        script_path += "/results_processing/scripts/compare_scatter"
 
         self.add_clickthrough_link_callback()
         self.add_resize_callback()
