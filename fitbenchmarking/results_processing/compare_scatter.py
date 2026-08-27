@@ -638,8 +638,8 @@ class CompareScatterView:
             names
         :type error_flags: list[int]
         :param minimizer_names: list of minimizer names, including duplicates (
-            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimizer
+            e.g. ``["min1", "min1", "min2", "min2"]``) each instance represents
+            one run of that minimizer
         :type minimizer_names: list[str]
 
 
@@ -720,8 +720,8 @@ class CompareScatterView:
             names
         :type error_flags: list[int]
         :param minimizer_names: list of minimizer names, including duplicates (
-            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimizer
+            e.g. ``["min1", "min1", "min2", "min2"]``) each instance represents
+            one run of that minimizer
         :type minimizer_names: list[str]
 
         :return: A dict where the key is the minimizer name, and the
