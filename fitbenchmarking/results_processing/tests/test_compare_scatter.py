@@ -127,89 +127,148 @@ class CompareScatterTests(unittest.TestCase):
 
     @patch(
         "fitbenchmarking.results_processing.compare_scatter"
-        ".CompareScatterView.get_per_minimizer_errors_and_runs"
+        ".CompareScatter.add_resize_callback"
     )
-    def test_add_callbacks_adds_callbacks(self, mock_errors_and_runs: Mock):
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_clickthrough_link_callback"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_log_axis_button_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_axis_dropdown_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_all_none_button_callbacks"
+    )
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatter.add_legend_callbacks"
+    )
+    def test_add_callbacks_adds_callbacks(
+        self,
+        mock_add_legend_callbacks: Mock,
+        mock_add_all_none_button_callbacks: Mock,
+        mock_add_axis_dropdown_callbacks: Mock,
+        mock_add_log_axis_button_callbacks: Mock,
+        mock_add_clickthrough_link_callback: Mock,
+        mock_add_resize_callback: Mock,
+    ):
         """
-        test that add callbacks adds callbacks with all of the expected inputs
-        and outputs
+        test that add callbacks calls all of the helper functions
         """
-
         app, options, test_data = self._get_mock_constructor_params()
-        test_data[0].error_flag = 0
-        test_data[1].error_flag = 3
+        cs = CompareScatter(app, options, test_data)
+        legend_items = ["mock_solver_0", "mock_solver_1"]
 
-        mock_errors_and_runs.return_value = (
-            {"mock_solver_0": 0, "mock_solver_1": 1},
-            None,
+        cs.add_callbacks(legend_items)
+
+        mock_add_legend_callbacks.assert_called_once_with(legend_items)
+        mock_add_all_none_button_callbacks.assert_called_once()
+        mock_add_axis_dropdown_callbacks.assert_called_once()
+        mock_add_log_axis_button_callbacks.assert_called_once()
+        mock_add_clickthrough_link_callback.assert_called_once()
+        mock_add_resize_callback.assert_called_once()
+
+    def test_add_resize_callback_uses_correct_io(self):
+        app, options, test_data = self._get_mock_constructor_params()
+
+        cs = CompareScatter(app, options, test_data)
+
+        cs.add_resize_callback()
+
+        clientside_callback_events = app.clientside_callback.call_args_list
+        resize_observer_callback_args = clientside_callback_events[0][0]
+
+        self.assertEqual(
+            resize_observer_callback_args[2],
+            Input("resize-timer", "n_intervals"),
         )
 
+    def test_add_clickthrough_link_callback_uses_correct_io(self):
+        app, options, test_data = self._get_mock_constructor_params()
+
+        cs = CompareScatter(app, options, test_data)
+
+        cs.add_clickthrough_link_callback()
+
+        clientside_callback_events = app.clientside_callback.call_args_list
+        clickthrough_link_callback_args = clientside_callback_events[0][0]
+
+        self.assertEqual(
+            clickthrough_link_callback_args[1],
+            Output("dummy-click", "children"),
+        )
+        self.assertEqual(
+            clickthrough_link_callback_args[2],
+            Input("compare_scatter", "clickData"),
+        )
+
+    def test_add_log_axis_button_callbacks_uses_correct_io(self):
+        app, options, test_data = self._get_mock_constructor_params()
+
+        cs = CompareScatter(app, options, test_data)
+
+        cs.add_log_axis_button_callbacks()
+
+        events = app.callback.call_args_list
+        x_log_axis_callback_args = events[0][0]
+        y_log_axis_callback_args = events[1][0]
+
+        self.assertEqual(
+            x_log_axis_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            x_log_axis_callback_args[1], Input("x-log-axis", "value")
+        )
+        self.assertEqual(
+            y_log_axis_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            y_log_axis_callback_args[1], Input("y-log-axis", "value")
+        )
+
+    def test_add_axis_dropdown_callbacks_uses_correct_io(self):
+        app, options, test_data = self._get_mock_constructor_params()
+
+        cs = CompareScatter(app, options, test_data)
+
+        cs.add_axis_dropdown_callbacks()
+
+        events = app.callback.call_args_list
+        x_dropdown_callback_args = events[0][0]
+        y_dropdown_callback_args = events[1][0]
+        self.assertEqual(
+            x_dropdown_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            x_dropdown_callback_args[1], Input("x-dropdown", "value")
+        )
+        self.assertEqual(
+            y_dropdown_callback_args[0],
+            Output("compare_scatter", "figure", True),
+        )
+        self.assertEqual(
+            y_dropdown_callback_args[1], Input("y-dropdown", "value")
+        )
+
+    def test_add_all_none_button_callbacks_uses_correct_io(self):
+        app, options, test_data = self._get_mock_constructor_params()
         cs = CompareScatter(app, options, test_data)
         cs.view.plot = Mock(spec=go.Figure())
 
-        cs.add_callbacks(cs.view.plot, ["mock_solver_0", "mock_solver_1"])
-
-        self.assertEqual(app.callback.call_count, 8)
+        cs.add_all_none_button_callbacks()
 
         events = app.callback.call_args_list
-
-        my_minimizer_callback_args = events[0][0][0]
-        test_minimizer_callback_args = events[1][0][0]
-        none_button_callback_args = events[2][0]
-        all_button_callback_args = events[3][0]
-        x_dropdown_callback_args = events[4][0]
-        y_dropdown_callback_args = events[5][0]
-        x_log_axis_callback_args = events[6][0]
-        y_log_axis_callback_args = events[7][0]
-
-        self.assertEqual(
-            my_minimizer_callback_args[0], Output("compare_scatter", "figure")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[1], Output("legend-status", "data")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[2], Output("mocksolver0", "style")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[3], Output("all_button", "style")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[4], Output("none_button", "style")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[5], Input("mocksolver0", "n_clicks")
-        )
-        self.assertEqual(
-            my_minimizer_callback_args[6], State("legend-status", "data")
-        )
-
-        self.assertEqual(
-            test_minimizer_callback_args[0],
-            Output("compare_scatter", "figure"),
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[1], Output("legend-status", "data")
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[2], Output("mocksolver1", "style")
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[3], Output("all_button", "style")
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[4], Output("none_button", "style")
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[5],
-            Output("mocksolver1_toast", "is_open"),
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[6], Input("mocksolver1", "n_clicks")
-        )
-        self.assertEqual(
-            test_minimizer_callback_args[7], State("legend-status", "data")
-        )
+        none_button_callback_args = events[0][0]
+        all_button_callback_args = events[1][0]
 
         self.assertEqual(
             none_button_callback_args[0], Output("legend-status", "data", True)
@@ -251,59 +310,70 @@ class CompareScatterTests(unittest.TestCase):
             all_button_callback_args[5], State("legend-status", "data")
         )
 
-        self.assertEqual(
-            x_dropdown_callback_args[0],
-            Output("compare_scatter", "figure", True),
-        )
-        self.assertEqual(
-            x_dropdown_callback_args[1], Input("x-dropdown", "value")
-        )
-        self.assertEqual(
-            y_dropdown_callback_args[0],
-            Output("compare_scatter", "figure", True),
-        )
-        self.assertEqual(
-            y_dropdown_callback_args[1], Input("y-dropdown", "value")
+    @patch(
+        "fitbenchmarking.results_processing.compare_scatter"
+        ".CompareScatterView.get_per_minimizer_errors_and_runs"
+    )
+    def test_add_legend_callbacks_uses_correct_io(
+        self, mock_errors_and_runs: Mock
+    ):
+        app, options, test_data = self._get_mock_constructor_params()
+        cs = CompareScatter(app, options, test_data)
+        test_data[0].error_flag = 0
+        test_data[1].error_flag = 3
+        cs.view.plot = Mock(spec=go.Figure())
+
+        mock_errors_and_runs.return_value = (
+            {test_data[0].name: 0, test_data[1].name: 1},
+            None,
         )
 
-        self.assertEqual(
-            x_log_axis_callback_args[0],
-            Output("compare_scatter", "figure", True),
-        )
-        self.assertEqual(
-            x_log_axis_callback_args[1], Input("x-log-axis", "value")
-        )
-        self.assertEqual(
-            y_log_axis_callback_args[0],
-            Output("compare_scatter", "figure", True),
-        )
-        self.assertEqual(
-            y_log_axis_callback_args[1], Input("y-log-axis", "value")
-        )
+        cs.add_legend_callbacks([test_data[0].name, test_data[1].name])
 
-        self.assertEqual(app.clientside_callback.call_count, 2)
+        events = app.callback.call_args_list
+        solver0_callback_args = events[0][0][0]
+        solver1_callback_args = events[1][0][0]
 
-        clientside_callback_events = app.clientside_callback.call_args_list
-        clickthrough_link_callback_args = clientside_callback_events[0][0]
-        resize_observer_callback_args = clientside_callback_events[1][0]
+        solver0_id = cs.view.sanitize_for_id(test_data[0].name)
+        solver1_id = cs.view.sanitize_for_id(test_data[1].name)
 
-        self.assertEqual(
-            clickthrough_link_callback_args[1],
-            Output("dummy-click", "children"),
+        self.assertIn(
+            Output("legend-status", "data", True), solver0_callback_args
         )
-        self.assertEqual(
-            clickthrough_link_callback_args[2],
-            Input("compare_scatter", "clickData"),
+        self.assertIn(
+            Output("compare_scatter", "figure", allow_duplicate=True),
+            solver0_callback_args,
         )
+        self.assertIn(Output(solver0_id, "style"), solver0_callback_args)
+        self.assertIn(
+            Output("all_button", "style", True), solver0_callback_args
+        )
+        self.assertIn(
+            Output("none_button", "style", True), solver0_callback_args
+        )
+        self.assertIn(Input(solver0_id, "n_clicks"), solver0_callback_args)
+        self.assertIn(State("legend-status", "data"), solver0_callback_args)
 
-        self.assertEqual(
-            resize_observer_callback_args[1],
-            Output("dummy-height", "children"),
+        self.assertIn(
+            Output("compare_scatter", "figure", allow_duplicate=True),
+            solver1_callback_args,
         )
-        self.assertEqual(
-            resize_observer_callback_args[2],
-            Input("resize-timer", "n_intervals"),
+        self.assertIn(
+            Output("legend-status", "data", True), solver1_callback_args
         )
+        self.assertIn(Output(solver1_id, "style"), solver1_callback_args)
+        self.assertIn(
+            Output("all_button", "style", True), solver1_callback_args
+        )
+        self.assertIn(
+            Output("none_button", "style", True), solver1_callback_args
+        )
+        self.assertIn(
+            Output(f"{solver1_id}_toast", "is_open", True),
+            solver1_callback_args,
+        )
+        self.assertIn(Input(solver1_id, "n_clicks"), solver1_callback_args)
+        self.assertIn(State("legend-status", "data"), solver1_callback_args)
 
     def test_get_layout_uses_correct_information(self):
         """
