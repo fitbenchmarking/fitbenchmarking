@@ -281,6 +281,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     """
     Process the best result from a list of FittingResults.
     This includes:
+
      - Setting the `is_best_fit` flag,
      - Setting the `min_accuracy` value,
      - Setting the `min_runtime` value, and

@@ -309,8 +309,10 @@ class CompareScatter:
         Get the compare scatter and set all of the required callbacks
 
         :return: A tuple of:
+
                  - The plot Div
                  - The app with callbacks added
+
         :rtype: tuple[html.Div, Dash]
         """
         default_x = "norm_runtime"
@@ -835,10 +837,14 @@ class CompareScatterView:
         :type state: dict[str, dict[str, bool]]
 
         :return: A tuple of the following
+
             - ``state`` the updated state dictionary
-            - ``all_button_style`` the updated style for the select all button
-            - ``none_button_style`` the updated style for the select all button
+            - ``all_button_style`` the updated style for the select all
+              button
+            - ``none_button_style`` the updated style for the select none
+              button
             - ``plot`` the plot after the traces have been updated
+
         :rtype: tuple[dict[str, dict[str, bool]],
                       dict[str, any],
                       dict[str, any],
@@ -886,8 +892,10 @@ class CompareScatterView:
         :type state: dict
 
         :return: A tuple containing:
+
                  - The state of the group after toggling
                  - The modified state dictionary
+
         :rtype: tuple[bool, dict]
         """
         if group in state["problem"]:
@@ -915,13 +923,14 @@ class CompareScatterView:
             }
 
         :param state: Dictionary with the structure described above
-        :type state: dict[str,dict[str,bool]]
+        :type state: dict[str, dict[str, bool]]
 
         :return: A tuple of (all_button_style, none_button_style) where:
+
             - ``all_button_style`` is the updated style for the select all
-            button
+              button
             - ``none_button_style`` is the updated style for the select none
-            button
+              button
 
         :rtype: tuple[dict[str, any], dict[str, any]]
         """
@@ -966,8 +975,6 @@ class CompareScatterView:
         :type state: dict[str, dict[str, bool]]
         :param group: The group of points to set visibility for, either "all"
             or "none", all other values have no effect
-        :type group: str
-                      or "none".
         :type group: str | None
 
         :return: The modified plot
