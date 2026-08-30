@@ -93,6 +93,7 @@ omit = [
     '*/horace_parser.py',
     '*/sscanss_parser.py',
     '*/matlab_engine.py',
+    '*/SASStudio_functions.py',
 ]
 
 [tool.hatch.build]
@@ -116,7 +117,8 @@ exclude = [
     "benchmark_problems",
     "fonts",
     "test_files",
-    "templates"
+    "templates",
+    "SASStudio_functions.py"
 ]
 line-length = 79
 

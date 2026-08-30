@@ -137,6 +137,7 @@ class FitbmResultTests(unittest.TestCase):
             np.array([4, 2, 5, 1]),
         ]
 
+        problem.multifit = True
         problem.data_x = [
             np.array([3, 2, 1, 4]),
             np.array([5, 1, 2, 3]),

@@ -299,6 +299,41 @@ class TestWeightedNLLSCostFunc(TestCase):
         expected = np.array([4.0, 3.0, 7.0, 6.0])
         self.assertTrue(np.allclose(eval_result, expected))
 
+    def test_eval_r_single_dataset_of_multifit(self):
+        """
+        Test that eval_r evaluates the dataset it is given, with the
+        parameters of that dataset alone, when it is given one
+        """
+        options = Options()
+        fitting_problem = FittingProblem(options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.multifit_param_names = ["d0.p1", "d1.p1"]
+        fitting_problem.data_x = [
+            np.array([1.0, 2.0]),
+            np.array([3.0, 4.0]),
+        ]
+        fitting_problem.data_y = [
+            np.array([10.0, 10.0]),
+            np.array([110.0, 110.0]),
+        ]
+        fitting_problem.data_e = [
+            np.array([1.0, 1.0]),
+            np.array([1.0, 1.0]),
+        ]
+        cost_function = WeightedNLLSCostFunc(fitting_problem)
+
+        eval_result = cost_function.eval_r(
+            params=[100],
+            x=fitting_problem.data_x[1],
+            y=fitting_problem.data_y[1],
+            e=fitting_problem.data_e[1],
+            dataset=1,
+        )
+
+        expected = np.array([7.0, 6.0])
+        self.assertTrue(np.allclose(eval_result, expected))
+
     def test_jac_res_multifit_concatenates_errors(self):
         """
         Test that jac_res concatenates the per-dataset error arrays into a
