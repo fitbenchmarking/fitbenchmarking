@@ -15,7 +15,7 @@ from tempfile import NamedTemporaryFile
 from unittest import TestCase
 
 import numpy as np
-from pytest import test_type as test_type
+from pytest import test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
