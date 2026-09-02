@@ -4,13 +4,18 @@
 import difflib
 import os
 import platform
+import unittest
 
 
-def compare_files(self, expected_output_file: str, actual_output: str):
+def compare_files(
+    test_case: unittest.TestCase, expected_output_file: str, actual_output: str
+):
     """
     Compares two files line by line, if they do not match, output a git
     style unified diff to actual.diff and the actual output to actual.out
 
+    :param test_case: The test case instance executing the assertion
+    :type test_case: unittest.TestCase
     :param expected_output_file: path to a file containing the expected
     output. Typically found at results_processing/tests/expected_results
     :type expected_output_file: str
@@ -49,7 +54,7 @@ def compare_files(self, expected_output_file: str, actual_output: str):
         with open("actual.diff", "w", encoding="utf-8") as diff_file:
             diff_file.write("".join(diff))
 
-    self.assertListEqual(
+    test_case.assertListEqual(
         [],
         diff,
         msg=(
