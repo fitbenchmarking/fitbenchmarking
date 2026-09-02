@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, call, patch
 
 import numpy as np
 from parameterized import parameterized
-from pytest import test_type as TEST_TYPE
+from pytest import test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
@@ -25,7 +25,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class TestMantidController(TestCase):
     """
     Unit tests the MantidController class.
