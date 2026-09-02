@@ -2,13 +2,14 @@ import difflib
 import os
 import platform
 import unittest
+from collections.abc import Callable
 
 
 def compare_files(
     test_case: unittest.TestCase,
     expected_output_file: str,
     actual_output: str,
-    eq: callable | None = None,
+    eq: Callable | None = None,
 ):
     """
     Compares two files line by line, if they do not match, output a git
