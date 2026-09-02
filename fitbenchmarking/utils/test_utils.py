@@ -1,6 +1,3 @@
-# diff between html
-# diff between dash tree
-
 import difflib
 import os
 import platform
