@@ -8,7 +8,10 @@ import unittest
 
 
 def compare_files(
-    test_case: unittest.TestCase, expected_output_file: str, actual_output: str
+    test_case: unittest.TestCase,
+    expected_output_file: str,
+    actual_output: str,
+    eq: callable | None = None,
 ):
     """
     Compares two files line by line, if they do not match, output a git
@@ -17,12 +20,16 @@ def compare_files(
     :param test_case: The test case instance executing the assertion
     :type test_case: unittest.TestCase
     :param expected_output_file: path to a file containing the expected
-    output. Typically found at results_processing/tests/expected_results
+        output. Typically found at results_processing/tests/expected_results
     :type expected_output_file: str
 
     :param actual_output: a string containing the actual output generated
-    when the test was run.
+        when the test was run.
     :type actual_output: str
+    :param eq: A function that returns True if two lines match.
+        Useful for comparing regression output with float
+        tolerances.
+    :type eq: callable, optional
     """
 
     with open(expected_output_file, encoding="utf-8") as f:
@@ -38,6 +45,26 @@ def compare_files(
         actual_output = actual_output.replace("\r\n", "\n")
 
     actual_output_lines = actual_output.splitlines(keepends=True)
+
+    if eq:
+        # if a matching function has been defined (e.g. to compare floats with
+        # a tolerance) then use that function to compare the lines.
+        # If two lines match under the custom comparator `eq`, we replace the
+        # actual line with the expected line in this pre-processing step.
+        # This ensures that `difflib.unified_diff` treats them as identical,
+        # so only genuine mismatches exceeding tolerance are highlighted.
+        try:
+            from itertools import zip_longest
+        except ImportError:
+            from itertools import izip_longest as zip_longest
+        actual_output_lines = [
+            exp
+            if exp is not None and act is not None and eq(exp, act)
+            else act
+            for exp, act in zip_longest(
+                expected_output_lines, actual_output_lines
+            )
+        ]
 
     diff = list(
         difflib.unified_diff(
