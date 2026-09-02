@@ -79,10 +79,10 @@ def compare_files(
         with open("actual.diff", "w", encoding="utf-8") as diff_file:
             diff_file.write("".join(diff))
 
-    test_case.assertListEqual(
-        [],
-        diff,
+    test_case.assertTrue(
+        diff == [],
         msg=(
+            f"{''.join(diff)}"
             "\n\n"
             "The output provided did not match the expected output from:"
             f" {expected_output_file}\n"

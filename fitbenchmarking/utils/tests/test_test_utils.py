@@ -21,9 +21,7 @@ class CompareFilesTests(TestCase):
         test_utils.compare_files(
             self.mock_test_case, "expected_output.txt", actual_content
         )
-        self.mock_test_case.assertListEqual.assert_called_once_with(
-            [], [], msg=ANY
-        )
+        self.mock_test_case.assertTrue.assert_called_once_with(True, msg=ANY)
 
     @patch("builtins.open")
     def test_compare_files_when_files_do_not_match(self, file_io_mock):
@@ -38,18 +36,7 @@ class CompareFilesTests(TestCase):
         test_utils.compare_files(
             self.mock_test_case, "expected_output.txt", actual_content
         )
-        self.mock_test_case.assertListEqual.assert_called_once_with(
-            [],
-            [
-                "--- expected_output.txt\n",
-                "+++ /home/nzw15619/fb-proj/fitbenchmarking/actual.out\n",
-                "@@ -1,2 +1,2 @@\n",
-                " This is a test file\n",
-                "-This file contains test data\n",
-                "+This file contains different data\n",
-            ],
-            msg=ANY,
-        )
+        self.mock_test_case.assertTrue.assert_called_once_with(False, msg=ANY)
 
     @patch("builtins.open")
     def test_compare_files_with_custom_eq_when_files_match(self, file_io_mock):
@@ -59,7 +46,7 @@ class CompareFilesTests(TestCase):
             "This file contains test data\n",
         ]
         actual_content = (
-            "This is a test file\nThis file contains different data\n"
+            "This is a test file\nThis file contains different test data\n"
         )
 
         def relaxed_comparator(lhs, rhs):
@@ -71,18 +58,7 @@ class CompareFilesTests(TestCase):
             actual_content,
             eq=relaxed_comparator,
         )
-        self.mock_test_case.assertListEqual.assert_called_once_with(
-            [],
-            [
-                "--- expected_output.txt\n",
-                "+++ /home/nzw15619/fb-proj/fitbenchmarking/actual.out\n",
-                "@@ -1,2 +1,2 @@\n",
-                " This is a test file\n",
-                "-This file contains test data\n",
-                "+This file contains different data\n",
-            ],
-            msg=ANY,
-        )
+        self.mock_test_case.assertTrue.assert_called_once_with(True, msg=ANY)
 
     @patch("builtins.open")
     def test_compare_files_with_custom_eq_when_files_do_not_match(
@@ -106,16 +82,8 @@ class CompareFilesTests(TestCase):
             actual_content,
             eq=strict_comparator,
         )
-        self.mock_test_case.assertListEqual.assert_called_once_with(
-            [],
-            [
-                "--- expected_output.txt\n",
-                "+++ /home/nzw15619/fb-proj/fitbenchmarking/actual.out\n",
-                "@@ -1,2 +1,2 @@\n",
-                " This is a test file\n",
-                "-This file contains test data\n",
-                "+This file contains different data\n",
-            ],
+        self.mock_test_case.assertTrue.assert_called_once_with(
+            False,
             msg=ANY,
         )
 
@@ -149,6 +117,4 @@ class CompareFilesTests(TestCase):
         test_utils.compare_files(
             self.mock_test_case, "expected_output.txt", actual_content
         )
-        self.mock_test_case.assertListEqual.assert_called_once_with(
-            [], [], msg=ANY
-        )
+        self.mock_test_case.assertTrue.assert_called_once_with(True, msg=ANY)
