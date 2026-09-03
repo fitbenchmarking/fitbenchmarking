@@ -258,9 +258,9 @@ def _read_x(lines):
 
     :param lines: The text to parse data from.
     :type lines: list of str
-    :return: x, y, and error data, list of text to write, and number of
-             parameters from the file.
-    :rtype: numpy array, numpy array, numpy array, list of str, int
+    :return: x, y, and error data, list of text to write, number of
+             parameters from the file and description of the problem.
+    :rtype: numpy array, numpy array, numpy array, list of str, int, str
     """
     to_write, num_params = [], 0
     # SIF requires columns of 25 chars, so line[:col_width-1] will be 1 column
