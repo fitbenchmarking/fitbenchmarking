@@ -3,6 +3,7 @@ This file calls the pycutest interface for SIF data
 """
 
 import os
+import re
 import time
 from tempfile import TemporaryDirectory
 
@@ -12,6 +13,9 @@ import pycutest
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
     # clear problems from cache that are older than 1 hour, do not clear
@@ -70,7 +74,9 @@ class CutestParser(Parser):
         fp = FittingProblem(self.options)
 
         # Collect x and create new file with blank y
-        fname, fp.data_x, fp.data_y, fp.data_e = self._setup_data()
+        fname, fp.data_x, fp.data_y, fp.data_e, fp.description = (
+            self._setup_data()
+        )
 
         self._p = _import_problem(fname)
 
@@ -117,7 +123,7 @@ class CutestParser(Parser):
                 f = cf
                 break
         else:
-            fname, _, _, _ = self._setup_data(x)
+            fname, _, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
             f = p.objcons
             self._cache_f.append((x, f))
@@ -143,7 +149,7 @@ class CutestParser(Parser):
                 g = cg
                 break
         else:
-            fname, _, _, _ = self._setup_data(x)
+            fname, _, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
             g = p.lagjac
             sg = p.slagjac
@@ -169,7 +175,7 @@ class CutestParser(Parser):
                 sg = csg
                 break
         else:
-            fname, _, _, _ = self._setup_data(x)
+            fname, _, _, _, _ = self._setup_data(x)
             p = _import_problem(fname)
             g = p.lagjac
             sg = p.slagjac
@@ -227,7 +233,7 @@ class CutestParser(Parser):
             lines = self.file.readlines()
 
         if x is None:
-            x, y, e, to_write, n = _read_x(lines)
+            x, y, e, to_write, n, description = _read_x(lines)
             self._num_params = n
         else:
             if not x.shape:
@@ -241,7 +247,7 @@ class CutestParser(Parser):
         with open(file_path, "w", encoding="utf-8") as f:
             f.writelines(to_write)
 
-        return file_path, x, y, e
+        return file_path, x, y, e, description
 
 
 def _read_x(lines):
@@ -262,7 +268,11 @@ def _read_x(lines):
 
     x_idx, y_idx, e_idx = 0, 0, 0
 
+    comment_lines = []
     for line in lines:
+        if line.startswith("*"):
+            comment_lines.append(line)
+
         if "IE M " in line:
             data_count = int(line.split()[2])
             # this will always come before x/y data so allocate space now
@@ -284,10 +294,52 @@ def _read_x(lines):
             line = line[: col_width - 1] + "1.0"
         to_write.append(line + "\n")
 
+    description = _get_description(comment_lines)
+
     _check_data(data_count, x_idx, y_idx, e_idx)
     if not e_idx:
         data_e = None
-    return data_x, data_y, data_e, to_write, num_params
+    return data_x, data_y, data_e, to_write, num_params, description
+
+
+def _get_description(lines):
+    """
+    get the description from a list of comment lines extracted from the file.
+    """
+    lines = [line[1:].strip() for line in lines if line.startswith("*")]
+
+    description = []
+    in_description_block = False
+    line_iterator = iter(lines)
+    for line in line_iterator:
+        if line.startswith("Problem :"):
+            in_description_block = True
+            next(line_iterator)
+            continue
+
+        if in_description_block:
+            # Convert URLs into HTML <a> tags
+            line = re.sub(
+                r"(https?://\S+)", r'<a href="\1" target="_blank">\1</a>', line
+            )
+
+            # Bold titles, excluding URLs
+            if re.match(r"^(?!https?:)\w+:", line):
+                line = re.sub(r"^(\w+):", r"<br><strong>\1:</strong>", line)
+
+            # Style the classification tag to match the titles
+            elif re.match(r"^classification \w+-\w+-\w+-\w+$", line):
+                line = line.replace(
+                    "classification", "<br><strong>Classification:</strong>"
+                ).strip()
+
+                in_description_block = False  # End of description
+            description.append(line)
+
+    description = " ".join(description).strip()
+    LOGGER.debug("Extracted description: %s", description)
+
+    return description
 
 
 def _write_x(lines, x):
