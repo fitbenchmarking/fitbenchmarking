@@ -604,33 +604,16 @@ class FittingResult:
         )
 
         if include_title:
+            title_parts = [
+                self.modified_minimizer_name(with_software=True),
+                self.problem_tag,
+            ]
             if include_cost_func:
-                hover_text = (
-                    f"{bold_start}"
-                    f"{self.modified_minimizer_name(with_software=True)}"
-                    f"{bold_end}"
-                    f" | "
-                    f"{bold_start}"
-                    f"{self.problem_tag}"
-                    f"{bold_end}"
-                    f" | "
-                    f"{bold_start}"
-                    f"{self.costfun_tag}"
-                    f"{bold_end}"
-                    f"{line_break}"
-                    f"{hover_text}"
-                )
-            else:
-                hover_text = (
-                    f"{bold_start}"
-                    f"{self.modified_minimizer_name(with_software=True)}"
-                    f"{bold_end}"
-                    f" | "
-                    f"{bold_start}"
-                    f"{self.problem_tag}"
-                    f"{bold_end}"
-                    f"{line_break}"
-                    f"{hover_text}"
-                )
+                title_parts.append(self.costfun_tag)
+
+            title = " | ".join(
+                f"{bold_start}{part}{bold_end}" for part in title_parts
+            )
+            hover_text = f"{title}{line_break}{hover_text}"                
 
         return hover_text
