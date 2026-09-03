@@ -670,7 +670,7 @@ class FitbmResultTests(unittest.TestCase):
             actual,
         )
         self.assertIn(f"Energy usage: {result.energy:.4g}", actual)
-        self.assertIn(f"Iterations: {result.func_evals}", actual)
+        self.assertIn(f"Iterations: {result.iteration_count}", actual)
         self.assertIn(f"Function Evaluations: {result.func_evals}", actual)
 
     @parameterized.expand(
