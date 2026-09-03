@@ -305,6 +305,12 @@ def _read_x(lines):
 def _get_description(lines):
     """
     get the description from a list of comment lines extracted from the file.
+
+    :param lines: The comment lines to parse data from.
+    :type lines: list[str]
+
+    :return: The description extracted from the comment lines.
+    :rtype: str
     """
     lines = [line[1:].strip() for line in lines if line.startswith("*")]
 
