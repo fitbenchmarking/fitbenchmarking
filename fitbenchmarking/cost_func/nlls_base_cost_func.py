@@ -150,9 +150,9 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 1D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        J = self.jac_res(params, **kwargs)
+        jacobian = self.jac_res(params, **kwargs)
 
-        return 2.0 * J.T.dot(r)
+        return 2.0 * jacobian.T.dot(r)
 
     def hes_cost(self, params, **kwargs):
         """
@@ -167,6 +167,6 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 2D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        H, J = self.hes_res(params, **kwargs)
+        hessian, jacobian = self.hes_res(params, **kwargs)
 
-        return 2.0 * (matmul(J.T, J) + matmul(H, r))
+        return 2.0 * (matmul(jacobian.T, jacobian) + matmul(hessian, r))
