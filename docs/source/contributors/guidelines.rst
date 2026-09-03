@@ -55,6 +55,28 @@ Code should use the logging in ``utils.log``. This uses Python's built in
 and should be used in place of any print statements to ensure that persistent
 logs are kept after runs.
 
+========
+Spelling
+========
+
+FitBenchmarking consistently uses the American spelling ``minimizer``, both in
+code and in documentation. A pre-commit hook,
+``.custom_hooks/minimizer_spelling.py``, checks every ``.py``, ``.md``,
+``.html`` and ``.rst`` file and reports any line containing a discouraged
+alternative.
+
+Where such a word cannot be avoided, add ``# ignore: spelling`` to the end of
+the line and the check will skip it. The discouraged words are listed below,
+each shown with the marker applied::
+
+    minimiser  # ignore: spelling
+    solver     # ignore: spelling
+
+If a name comes from a third party API or is part of the public
+FitBenchmarking interface, and so appears in many places, add it to
+``ALLOWED_NAMES`` in the hook instead. This exempts that name wherever it
+occurs, rather than exempting whole lines one at a time.
+
 ==========
 Pre-commit
 ==========
@@ -62,7 +84,10 @@ Pre-commit
 Pre-commit runs checks at the point of committing code to ensure simple
 problems are spotted before running the CI.
 This covers sorting imports, fixing indentation, removing trailing whitespace,
-and checking the linting.
+checking the linting, and checking the spelling conventions described above.
 
 Pre-commit will be installed as part of Step 4 in :ref:`install_instructions`
 but will need to be activated with ``pre-commit install``.
+
+Note that the spelling check runs locally only. It is skipped on pre-commit.ci,
+so activating pre-commit is the only way it will be applied to your changes.
