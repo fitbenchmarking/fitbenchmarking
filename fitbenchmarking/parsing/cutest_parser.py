@@ -13,9 +13,6 @@ import pycutest
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
-from fitbenchmarking.utils.log import get_logger
-
-LOGGER = get_logger()
 
 if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
     # clear problems from cache that are older than 1 hour, do not clear
