@@ -406,7 +406,7 @@ class CompareScatterView:
     ]
 
     active_opacity = 1
-    inactive_opacity = 0.2
+    inactive_opacity = 0.05
 
     active_error_template = (
         f"""<sup style="opacity:{active_opacity}">"""
