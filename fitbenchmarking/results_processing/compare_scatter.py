@@ -389,18 +389,11 @@ class CompareScatterView:
         "hexagon",  # too close to circle at low zoom
         "octagon",  # too close to circle at low zoom
         "star-triangle-up",  # rotation
-        "y-up",  # No body so not visible
-        "y-down",  # rotation, No body so not visible
-        "y-left",  # rotation, No body so not visible
-        "y-right",  # rotation, No body so not visible
-        "line-ew",  # rotation, No body so not visible
-        "line-ns",  # rotation, No body so not visible
-        "cross-thin",  # No body so not visible
-        "x-thin",  # No body so not visible
-        "asterisk",  # No body so not visible
-        "hash",  # No body so not visible
-        "line-ne",  # No body so not visible
-        "line-nw",  # No body so not visible
+        "y-down",  # rotation
+        "y-left",  # rotation
+        "y-right",  # rotation
+        "line-ew",  # rotation
+        "line-ns",  # rotation
     ]
 
     active_opacity = 1
@@ -1249,7 +1242,6 @@ class CompareScatterView:
         valid_symbols = validator.values[2::3]
         valid_symbols.sort(key=self.get_symbol_sort_key)
         valid_symbols = list(filter(self.is_valid_symbol, valid_symbols))
-
         return valid_symbols
 
     def is_valid_symbol(self, symbol: str):
