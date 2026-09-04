@@ -320,6 +320,7 @@ def _get_description(lines):
     for line in line_iterator:
         if line.startswith("Problem :"):
             in_description_block = True
+            # skip the filler line of asterisks that follows Problem :
             next(line_iterator)
             continue
 
