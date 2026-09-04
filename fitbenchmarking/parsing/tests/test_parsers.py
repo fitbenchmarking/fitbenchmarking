@@ -11,7 +11,7 @@ from unittest import TestCase
 
 import numpy as np
 from parameterized import parameterized
-from pytest import test_type as TEST_TYPE
+from pytest import test_type
 from scipy.sparse import issparse
 
 from conftest import run_for_test_types
@@ -81,7 +81,7 @@ def generate_test_cases():
 
     # get all parsers
     test_dir = os.path.dirname(__file__)
-    if TEST_TYPE == "all":
+    if test_type == "all":
         formats = [
             "cutest",
             "nist",
@@ -90,11 +90,11 @@ def generate_test_cases():
             "hogben",
             "bal",
         ]
-    elif TEST_TYPE == "mantid":
+    elif test_type == "mantid":
         formats = ["mantiddev"]
-    elif TEST_TYPE == "default":
+    elif test_type == "default":
         formats = ["nist"]
-    elif TEST_TYPE == "local_only":
+    elif test_type == "local_only":
         formats = [
             "sscanss",
         ]
@@ -560,7 +560,7 @@ class TestParserNoJac(TestCase):
 
         assert fitting_problem.sparse_jacobian is None
 
-    @run_for_test_types(TEST_TYPE, "mantid")
+    @run_for_test_types(test_type, "mantid")
     def test_mantid_jac_when_no_func_by_user(self):
         """
         Tests that, for mantid problems, when no jacobian is provided
