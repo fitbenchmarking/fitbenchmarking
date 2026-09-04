@@ -618,7 +618,7 @@ class Table:
                 "math_output": "MathJax https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
             }
             description_page = docutils.core.publish_parts(
-                descrip, writer_name="html", settings_overrides=docsettings
+                descrip, writer="html", settings_overrides=docsettings
             )
             html[name] = description_page["body"].replace("<blockquote>\n", "")
         return html
