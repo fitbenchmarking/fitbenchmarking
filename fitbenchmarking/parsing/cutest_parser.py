@@ -12,19 +12,28 @@ import pycutest
 from fitbenchmarking.parsing.base_parser import Parser
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.log import get_logger
 
-if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
-    # clear problems from cache that are older than 1 hour, do not clear
-    # all problems as when running with matlab the cache is cleared again
-    # when dill.load is called in controller
-    for cached_problem in pycutest.all_cached_problems():
-        file_age = time.time() - os.path.getmtime(
-            os.environ["PYCUTEST_CACHE"]
-            + "/pycutest_cache_holder/"
-            + cached_problem[0]
-        )
-        if file_age > 7200:
-            pycutest.clear_cache(cached_problem[0], cached_problem[1])
+LOGGER = get_logger()
+
+if "PYCUTEST_CACHE" in os.environ:
+    if os.path.isdir(os.environ["PYCUTEST_CACHE"] + "/pycutest_cache_holder"):
+        # clear problems from cache that are older than 1 hour, do not clear
+        # all problems as when running with matlab the cache is cleared again
+        # when dill.load is called in controller
+        for cached_problem in pycutest.all_cached_problems():
+            file_age = time.time() - os.path.getmtime(
+                os.environ["PYCUTEST_CACHE"]
+                + "/pycutest_cache_holder/"
+                + cached_problem[0]
+            )
+            if file_age > 7200:
+                pycutest.clear_cache(cached_problem[0], cached_problem[1])
+else:
+    LOGGER.warning(
+        "PYCUTEST_CACHE environment variable not set. "
+        "Current working directory will be used for caching."
+    )
 
 
 class CutestParser(Parser):
