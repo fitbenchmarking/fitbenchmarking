@@ -74,9 +74,11 @@ class CutestParser(Parser):
         fp = FittingProblem(self.options)
 
         # Collect x and create new file with blank y
-        fname, fp.data_x, fp.data_y, fp.data_e, fp.description = (
+        fname, fp.data_x, fp.data_y, fp.data_e, description = (
             self._setup_data()
         )
+        if description is not None:
+            fp.description = description
 
         self._p = _import_problem(fname)
 
