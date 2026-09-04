@@ -67,46 +67,6 @@ def remove_ids_and_src(html_path):
     return processed_lines
 
 
-def diff_between_htmls(expected_plot_path, output_plot_path):
-    """
-    Finds differences between two html files line by line.
-    Returns an empty list if no difference is found.
-
-    :param expected: path to html file with expected lines
-    :type expected: str
-    :param achieved: path to html file with achieved lines
-    :type achieved: str
-
-    :return: Lines in the two files that present differences
-    :rtype: list[list]
-    """
-    act_lines = remove_ids_and_src(output_plot_path)
-    exp_lines = remove_ids_and_src(expected_plot_path)
-
-    diff = []
-    for i, (act_line, exp_line) in enumerate(zip(act_lines, exp_lines)):
-        exp_line = "" if exp_line is None else exp_line.strip("\n")
-        act_line = "" if act_line is None else act_line.strip("\n")
-
-        if act_line != exp_line:
-            diff.append([i, exp_line, act_line])
-
-    if diff:
-        print(
-            f"Comparing {output_plot_path} against {expected_plot_path}\n"
-            + "\n".join(
-                [
-                    f"== Line {change[0]} ==\n"
-                    f"Expected :{change[1]}\n"
-                    f"Actual   :{change[2]}"
-                    for change in diff
-                ]
-            )
-        )
-
-    return diff
-
-
 def save_result(plot: go.Figure, path):
     """
     Save the plot in the format expected by the unit tests.

@@ -2,11 +2,6 @@
 Test that accuracy of FitBenchmarking is consistent with previous versions
 """
 
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
-
 import csv
 import os
 import re
@@ -20,6 +15,7 @@ from pytest import test_type as TEST_TYPE
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
 from fitbenchmarking.utils.options import Options
+from fitbenchmarking.utils.test_utils import compare_files
 
 # Relative tolerance used when comparing expected and actual results.
 # Minimizers are not reproducible to the last digit across platforms,
@@ -61,9 +57,7 @@ class TestRegressionAll(TestCase):
         problem_sub_directory = "all_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-
-        diff, msg = compare_results(problem_sub_directory, "all_parsers.csv")
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "all_parsers.csv")
 
 
 @run_for_test_types(TEST_TYPE, "mantid")
@@ -91,9 +85,7 @@ class TestRegressionMantid(TestCase):
         problem_sub_directory = "mantid_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-
-        diff, msg = compare_results(problem_sub_directory, "mantid.csv")
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "mantid.csv")
 
     def test_multifit_consistent(self):
         """
@@ -106,9 +98,7 @@ class TestRegressionMantid(TestCase):
             self.results_dir,
             problem_sub_directory,
         )
-
-        diff, msg = compare_results(problem_sub_directory, "multifit.csv")
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "multifit.csv")
 
 
 @run_for_test_types(TEST_TYPE, "local_only")
@@ -136,11 +126,7 @@ class TestRegressionLocal(TestCase):
         problem_sub_directory = "local_only_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-
-        diff, msg = compare_results(
-            problem_sub_directory, "local_only_set.csv"
-        )
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "local_only_set.csv")
 
 
 @run_for_test_types(TEST_TYPE, "matlab")
@@ -168,9 +154,7 @@ class TestRegressionMatlab(TestCase):
         problem_sub_directory = "all_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-
-        diff, msg = compare_results(problem_sub_directory, "matlab.csv")
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "matlab.csv")
 
 
 @run_for_test_types(TEST_TYPE, "default")
@@ -198,11 +182,7 @@ class TestRegressionDefault(TestCase):
         problem_sub_directory = "default_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-
-        diff, msg = compare_results(
-            problem_sub_directory, "default_parsers_set.csv"
-        )
-        self.assertListEqual([], diff, msg)
+        compare_results(self, problem_sub_directory, "default_parsers_set.csv")
 
 
 def values_match(expected: str, actual: str) -> bool:
@@ -258,6 +238,8 @@ def lines_match(expected: str, actual: str) -> bool:
     :return: True if the rows match
     :rtype: bool
     """
+    expected = expected.rstrip("\r\n")
+    actual = actual.rstrip("\r\n")
     if expected == actual:
         return True
 
@@ -271,53 +253,12 @@ def lines_match(expected: str, actual: str) -> bool:
     )
 
 
-def diff_result(actual, expected):
+def compare_results(
+    test_case: TestCase, problem_sub_directory: str, result_filename: str
+) -> None:
     """
-    Return the lines which differ between expected and actual along with a
-    formatted message. Numbers are compared with a relative tolerance, see
-    RELATIVE_TOLERANCE.
-
-    :param expected: The expected result
-    :type expected: list of strings
-    :param actual: The actual result
-    :type actual: list of strings
-    :return: The lines which differ and a formatted message
-    :rtype: list[list[str]], str
-    """
-    diff = []
-    for i, (exp_line, act_line) in enumerate(zip_longest(expected, actual)):
-        exp_line = "" if exp_line is None else exp_line.strip("\n")
-        act_line = "" if act_line is None else act_line.strip("\n")
-        if not lines_match(exp_line, act_line):
-            diff.append([i, exp_line, act_line])
-
-    msg = (
-        f"\n\nOutput has changed in {len(diff)} "
-        + "minimizer-problem pairs. \n"
-        + "\n".join(
-            [
-                f"== Line {line_change[0]} ==\n"
-                f"Expected :{line_change[1]}\n"
-                f"Actual   :{line_change[2]}"
-                for line_change in diff
-            ]
-        )
-    )
-    if diff:
-        print("\n==\n")
-        print("Output generated (also saved as actual.out):")
-        with open("actual.out", "w", encoding="utf-8") as outfile:
-            for line in actual:
-                print(line)
-                outfile.write(line)
-    return diff, msg
-
-
-def compare_results(problem_sub_directory: str, result_filename: str) -> list:
-    """
-    Compares the expected benchmark results with the actual results,
-    and returns the lines which differ between expected and actual
-    along with a formatted message.
+    Compares the expected benchmark results with the actual results
+    using compare_files from test_utils.
 
     :param problem_sub_directory: The directory containing problems.
     :type problem_sub_directory: str
@@ -339,13 +280,10 @@ def compare_results(problem_sub_directory: str, result_filename: str) -> list:
         "acc_table.csv",
     )
 
-    with open(expected_file, encoding="utf-8") as f:
-        expected = f.readlines()
-
     with open(actual_file, encoding="utf-8") as f:
-        actual = f.readlines()
+        actual_output = f.read()
 
-    return diff_result(actual, expected)
+    compare_files(test_case, expected_file, actual_output, eq=lines_match)
 
 
 def setup_options(
