@@ -1279,7 +1279,7 @@ class CompareScatterView:
         """
 
         # prefer symbols with solid colours
-        suffix_ranking = {"dot": 1, "open": 2, "open-dot": 3}
+        suffix_ranking = {"open-dot": 3, "open": 2, "dot": 1}
         for suffix in suffix_ranking:
             if symbol.endswith(suffix):
                 return suffix_ranking[suffix]
