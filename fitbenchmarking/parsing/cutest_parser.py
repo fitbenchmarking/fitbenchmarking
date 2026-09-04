@@ -232,6 +232,8 @@ class CutestParser(Parser):
         else:
             lines = self.file.readlines()
 
+        description = None
+
         if x is None:
             x, y, e, to_write, n, description = _read_x(lines)
             self._num_params = n
@@ -272,7 +274,6 @@ def _read_x(lines):
     for line in lines:
         if line.startswith("*"):
             comment_lines.append(line)
-
         if "IE M " in line:
             data_count = int(line.split()[2])
             # this will always come before x/y data so allocate space now
@@ -342,9 +343,10 @@ def _get_description(lines):
                 in_description_block = False  # End of description
             description.append(line)
 
-    description = " ".join(description).strip()
-    LOGGER.debug("Extracted description: %s", description)
+    if in_description_block:
+        return None  # Couldn't find an end to the description block
 
+    description = " ".join(description).strip()
     return description
 
 
