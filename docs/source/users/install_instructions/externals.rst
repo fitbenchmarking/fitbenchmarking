@@ -30,8 +30,8 @@ PyCUTEst interface.
 Currently this is only supported for Mac and Linux, and can be installed by
 following the instructions outlined on the `pycutest documentation <https://jfowkes.github.io/pycutest/_build/html/install.html>`_
 
-Please note that the ``PYCUTEST_CACHE`` environment variable must be set, and it must be
-in the ``PYTHONPATH``.
+The ``PYCUTEST_CACHE`` variable is used to determine the cache location for CUTEst problems. 
+If this variable is not set, the current working directory will be used as the cache location.
 
 GSL
 ---
