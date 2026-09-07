@@ -105,7 +105,9 @@ class ScipyController(Controller):
         """
         Setup problem ready to be run with SciPy
         """
-        self.options = {"maxiter": 500}
+        self.options = {
+            "maxfun" if self.minimizer == "TNC" else "maxiter": 500
+        }
 
     def fit(self):
         """
