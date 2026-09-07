@@ -622,7 +622,7 @@
         "runtime_metric": "mean",
         "energy": 3.2916151735287774e-09,
         "iteration_count": null,
-        "func_evals": 7,
+        "func_evals": 8,
         "flag": 0,
         "multistart": false,
         "params_pdfs": null,
