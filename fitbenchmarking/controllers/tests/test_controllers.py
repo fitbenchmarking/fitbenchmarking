@@ -11,8 +11,7 @@ from unittest.mock import patch
 import nlopt
 import numpy as np
 from parameterized import parameterized
-from pytest import mark
-from pytest import test_type as TEST_TYPE
+from pytest import mark, test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
@@ -759,7 +758,7 @@ class BaseControllerTests(TestCase):
         controller.validate()
 
 
-@run_for_test_types(TEST_TYPE, "default", "all")
+@run_for_test_types(test_type, "default", "all")
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -952,7 +951,7 @@ class DefaultControllerTests(TestCase):
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -999,7 +998,7 @@ class ControllerBoundsTests(TestCase):
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class MantidControllerBoundsTests(TestCase):
     """
     Tests to ensure mantid controllers handle and respect bounds correctly
@@ -1033,7 +1032,7 @@ class MantidControllerBoundsTests(TestCase):
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class ControllerValidateTests(TestCase):
     """
     Tests to ensure controller data is validated correctly.
@@ -1182,7 +1181,7 @@ class ControllerValidateTests(TestCase):
         controller.validate()
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class ExternalControllerTests(TestCase):
     """
     Tests for each controller class
@@ -1275,7 +1274,7 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class MantidControllerTests(TestCase):
     """
     Tests for the Mantid Controller
@@ -1325,7 +1324,7 @@ class MantidControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, "matlab")
+@run_for_test_types(test_type, "matlab")
 class MatlabControllerTests(TestCase):
     """
     Tests for each controller class and for the
@@ -1459,7 +1458,7 @@ class MatlabControllerTests(TestCase):
         controller.clear_matlab()
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class GlobalOptimizationControllerTests(TestCase):
     """
     Tests for each controller class
@@ -1504,7 +1503,7 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 @mark.skipif(
     platform.system() == "Windows",
     reason=(
@@ -1549,7 +1548,7 @@ class BayesianControllerTests(TestCase):
         )
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class MantidBayesianControllerTests(TestCase):
     """
     Tests for Mantid Bayesian minimizers
@@ -1577,7 +1576,7 @@ class MantidBayesianControllerTests(TestCase):
         )
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 @mark.skipif(
     platform.system() == "Windows",
     reason=(
@@ -1633,7 +1632,7 @@ class BayesianControllerBoundsTests(TestCase):
         self.check_bounds(controller)
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class MantidBayesianControllerBoundsTests(TestCase):
     """
     Tests to ensure Mantid Bayesian minizers handle
@@ -1675,7 +1674,7 @@ class MantidBayesianControllerBoundsTests(TestCase):
         self.check_bounds(controller)
 
 
-@run_for_test_types(TEST_TYPE, "default", "all", "mantid")
+@run_for_test_types(test_type, "default", "all", "mantid")
 class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
@@ -1689,7 +1688,7 @@ class FactoryTests(TestCase):
         controller = ControllerFactory.create_controller(software)
         self.assertTrue(controller.__name__.lower().startswith(name))
 
-    @run_for_test_types(TEST_TYPE, "all")
+    @run_for_test_types(test_type, "all")
     def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs
@@ -1697,7 +1696,7 @@ class FactoryTests(TestCase):
         controller = ControllerFactory.create_controller("ralfit")
         self.assertTrue(controller.__name__.lower().startswith("ralfit"))
 
-    @run_for_test_types(TEST_TYPE, "mantid")
+    @run_for_test_types(test_type, "mantid")
     def test_mantid_import(self):
         """
         Test that the factory returns the correct external class for inputs
