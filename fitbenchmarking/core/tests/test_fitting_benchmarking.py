@@ -1049,6 +1049,11 @@ class BenchmarkTests(unittest.TestCase):
         # Compare the results obtained with the expected results
         assert len(results) == len(expected["results"])
         for ix, r in enumerate(results):
+            print(
+                f"Comparing result {ix + 1},"
+                f"problem: {r.name}, software: {r.software}, "
+                f"minimizer: {r.minimizer}"
+            )
             for attr in [
                 "name",
                 "software",
