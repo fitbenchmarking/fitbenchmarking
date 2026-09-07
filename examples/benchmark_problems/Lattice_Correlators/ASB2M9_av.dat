@@ -1,0 +1,60 @@
+NIST-format problem file (not a NIST StRD dataset)
+Lattice correlator fit, Sp(4) with three antisymmetric fermions
+
+Dataset Name:  ASB2M9_av    (ASB2M9_av.dat)
+
+File Format:   ASCII
+
+Procedure:     Nonlinear Least Squares Regression
+
+Description:   Zero-momentum axial vector-channel meson two-point
+               correlation function from ensemble ASB2M9 of the Sp(4) gauge
+               theory with three antisymmetric Dirac fermions, measured with
+               wall sources on a 54x32^3 lattice.
+
+               y is the folded, bootstrap-averaged correlator C(t) summed over
+               the channel's gamma-matrix tags and scaled by Ns^3; x is the
+               Euclidean time separation t in lattice units.  The fit window
+               [14, 17] is the published plateau range for this
+               ensemble and channel.
+
+               Extracting the ground-state mass E from the plateau is the
+               inner loop of the published analysis: the fit below is repeated
+               for each of 200 bootstrap samples plus the sample mean.
+
+               Errors e are the square roots of the diagonal of the bootstrap
+               covariance matrix.  The published analysis uses the FULL
+               4x4 covariance, which is supplied alongside this
+               file as ASB2M9_av_cov.txt; fitting against the diagonal errors
+               here is therefore an approximation to the published objective.
+
+Reference:     Bennett et al., "Meson spectroscopy in the Sp(4) gauge theory
+               with three antisymmetric fermions", arXiv:2412.01170.
+               Data release: https://doi.org/10.5281/zenodo.13819562
+               Analysis code: https://github.com/telos-collaboration/antisymmetric_analysis_2024
+
+Data:          1 Response Variable  (y = correlator C(t))
+               1 Predictor Variable (x = Euclidean time t)
+               4 Observations
+
+Model:         Periodic single-cosh, 2 Parameters (a and E)
+
+               y = a**2 * (exp[-E*x] + exp[-E*(54-x)])  +  e
+
+
+          Starting values                  Certified Values
+
+        Start 1     Start 2           Parameter     Standard Deviation
+  a =   1           0.16474187        8.3257660109E-02  0.0000000000E+00
+  E =   0.5         0.500607503       5.0207083728E-01  8.0679877597E-03
+
+Residual Sum of Squares:                    3.8689100407E+00
+Degrees of Freedom:                                4
+Number of Observations:                            4
+
+
+Data:   y               x               e
+   6.142999127098E-06    1.400000000000E+01    1.659149533996E-07
+   3.720397973382E-06    1.500000000000E+01    1.175235137145E-07
+   2.259142444662E-06    1.600000000000E+01    8.442869259330E-08
+   1.394951604554E-06    1.700000000000E+01    6.306253097701E-08

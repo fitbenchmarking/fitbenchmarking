@@ -1,0 +1,15 @@
+{
+  "ensemble": "ASB2M9",
+  "channel": "av",
+  "Nt": 54,
+  "Ns": 32,
+  "tmin": 14,
+  "tmax": 17,
+  "n_bootstrap": 200,
+  "n_configurations": 150,
+  "reference_E": 0.5020708372812166,
+  "reference_E_bootstrap_error": 0.00806798775968704,
+  "reference_a": 0.08325766010923195,
+  "lsqfit_chi2": 3.8689100407026977,
+  "lsqfit_dof": 4
+}
