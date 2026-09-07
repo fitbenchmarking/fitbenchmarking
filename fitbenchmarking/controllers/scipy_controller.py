@@ -4,7 +4,7 @@ In particular, here for the scipy minimize solver for general minimization
 problems.
 """
 
-from scipy.optimize import minimize
+from scipy.optimize import OptimizeResult, minimize
 
 from fitbenchmarking.controllers.base_controller import Controller
 
@@ -14,6 +14,7 @@ class ScipyController(Controller):
     Controller for the Scipy fitting software.
     """
 
+    result: OptimizeResult
     algorithm_check = {
         "all": [
             "Nelder-Mead",
@@ -157,8 +158,8 @@ class ScipyController(Controller):
             self.flag = 2
 
         if "nfev" in self.result:
-            self.func_evals = self.result.nfev
+            self.func_evals = int(self.result.nfev)
         if "nit" in self.result:
-            self.iteration_count = self.result.nit
+            self.iteration_count = int(self.result.nit)
 
         self.final_params = self._popt
