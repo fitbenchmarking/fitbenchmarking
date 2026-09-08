@@ -20,6 +20,13 @@ import sys
 sys.path.append(os.path.abspath("./_ext"))
 sys.path.insert(0, os.path.abspath("../../"))
 
+# PYCUTEST_CACHE needs to be set to use pycutest
+mock_name = "mock_cache"
+mock_pycutest_cache = os.path.join("/tmp", mock_name)
+if not os.path.isdir(mock_pycutest_cache):
+    os.makedirs(mock_pycutest_cache)
+os.environ["PYCUTEST_CACHE"] = mock_pycutest_cache
+
 # PYCERES_LOCATION needs to be set to use PyCeres
 pyceres_mock_name = "/mock_pyceres_location"
 os.environ["PYCERES_LOCATION"] = pyceres_mock_name
