@@ -251,7 +251,7 @@ class CutestParser(Parser):
         return file_path, x, y, e, description
 
 
-def _read_x(lines):
+def _read_x(lines: list[str]):
     """
     Read data from the list of lines from the file.
     Overwrite the Y and E values with 0.0 and 1.0 respectively, and return a
@@ -271,7 +271,7 @@ def _read_x(lines):
 
     comment_lines = []
     for line in lines:
-        if line.startswith("*"):
+        if line.startswith("*") or line.strip() == "":
             comment_lines.append(line)
         if "IE M " in line:
             data_count = int(line.split()[2])
@@ -312,11 +312,12 @@ def _get_description(lines):
     :return: The description extracted from the comment lines.
     :rtype: str
     """
-    lines = [line[1:].strip() for line in lines if line.startswith("*")]
+    lines = [line[1:].strip("* ") for line in lines]
 
     description = []
     in_description_block = False
     line_iterator = iter(lines)
+
     for line in line_iterator:
         if line.startswith("Problem :"):
             in_description_block = True
@@ -327,27 +328,25 @@ def _get_description(lines):
         if in_description_block:
             # Convert URLs into HTML <a> tags
             line = re.sub(
-                r"(https?://\S+)", r'<a href="\1" target="_blank">\1</a>', line
+                r"(?P<LINK>https?:\S+\.\w+)",
+                r'<a href="\g<LINK>" target="_blank">\g<LINK></a>',
+                line,
             )
 
-            # Bold titles, excluding URLs
-            if re.match(r"^(?!https?:)\w+:", line):
-                line = re.sub(r"^(\w+):", r"<br><strong>\1:</strong>", line)
-
             # Style the classification tag to match the titles
-            elif re.match(r"^classification \w+-\w+-\w+-\w+$", line):
-                line = line.replace(
-                    "classification", "<br><strong>Classification:</strong>"
-                ).strip()
-
+            if re.match(r"^classification \w+-\w+-\w+-\w+$", line):
                 in_description_block = False  # End of description
+
             description.append(line)
 
     if in_description_block:
         return None  # Couldn't find an end to the description block
 
-    description = " ".join(description).strip()
-    return description
+    description = [
+        "<br>" if not line.strip() else line for line in description
+    ]
+
+    return " ".join(description).strip()
 
 
 def _write_x(lines, x):
