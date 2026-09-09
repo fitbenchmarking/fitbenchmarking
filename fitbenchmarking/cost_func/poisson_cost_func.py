@@ -10,6 +10,9 @@ from fitbenchmarking.utils.exceptions import (
     CostFuncError,
     IncompatibleCostFunctionError,
 )
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 class PoissonCostFunc(CostFunc):
@@ -63,7 +66,13 @@ class PoissonCostFunc(CostFunc):
             )
         f_xp = self.problem.eval_model(x=x, params=params)
 
-        # Penalise nagative f(x, p)
+        if (f_xp[f_xp <= 0.0]).any():
+            LOGGER.error(
+                "Found negative values while evaluating poisson cost "
+                "function. Negative values have been replaced with "
+                "np.finfo(float).max so that the cost cannot be evaluated."
+            )
+        # Penalize negative f(x, p)
         f_xp[f_xp <= 0.0] = np.finfo(float).max
 
         residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
