@@ -577,6 +577,28 @@ class Table:
             "pointer-events: none;",
         )
 
+        # set it so that hover text near the edge of the table does not
+        # overflow the bounds of the table
+        styler = styler.set_table_styles(
+            [
+                {
+                    "selector": "td:nth-last-child(-n+3) .pd-t",
+                    "props": [("transform", "translate(-95%, -0.6em)")],
+                },
+                {
+                    "selector": "tr:nth-last-child(-n+3) td .pd-t",
+                    "props": [("transform", "translate(2em, -105%)")],
+                },
+                {
+                    "selector": (
+                        "tr:nth-last-child(-n+3) td:nth-last-child(-n+3) .pd-t"
+                    ),
+                    "props": [("transform", "translate(-95%, -105%)")],
+                },
+            ],
+            overwrite=False,
+        )
+
         return styler
 
     def to_csv_file(self):
