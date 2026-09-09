@@ -3,7 +3,7 @@
 ====================
 
 The CUTEst file format in FitBenchmarking is a slight modification of the
-`SIF format <http://www.numerical.rl.ac.uk/lancelot/sif/sif.html>`_.
+`SIF format <https://ralna.github.io/SIFDecode/html/index.html>`_.
 Specifically, the data points, errors, and the number of variables
 must be defined in such a way to allow FitBenchmarking to access this data; see below.
 In FitBenchmarking, all SIF files are assumed to be CUTEst problems.
@@ -69,7 +69,7 @@ of vectors.
 Support for Bounds
 ==================
 
-Parameter ranges can be added to SIF files using the `BOUNDS <https://www.numerical.rl.ac.uk/lancelot/sif/node26.html>`_
+Parameter ranges can be added to SIF files using the `BOUNDS <https://ralna.github.io/SIFDecode/html/sif/node26>`_
 indicator card.
 
 Currently in Fitbenchmarking, problems with parameter ranges can be handled by SciPy, Bumps, Minuit, Mantid,
