@@ -321,7 +321,7 @@ def _get_description(lines):
     for line in line_iterator:
         if line.startswith("Problem :"):
             in_description_block = True
-            # skip the filler line of asterisks that follows Problem :
+            # skip the filler lines of asterisks and white space
             next(line_iterator)
             continue
 
@@ -342,8 +342,12 @@ def _get_description(lines):
     if in_description_block:
         return None  # Couldn't find an end to the description block
 
+    # drop any empty lines at the start
+    while description and not description[0].strip():
+        description.pop(0)
+
     description = [
-        "<br>" if not line.strip() else line for line in description
+        "<br><br>" if not line.strip() else line for line in description
     ]
 
     return " ".join(description).strip()
