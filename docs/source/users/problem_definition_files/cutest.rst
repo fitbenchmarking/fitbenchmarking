@@ -9,7 +9,7 @@ must be defined in such a way to allow FitBenchmarking to access this data; see 
 In FitBenchmarking, all SIF files are assumed to be CUTEst problems.
 
 These problems are a subset of the problems in the
-`CUTEr/st Test Problem Set <http://www.cuter.rl.ac.uk/Problems/mastsif.shtml>`_,
+`CUTEr/st Test Problem Set <https://github.com/ralna/SIF/>`_,
 which may have been adapted to work with FitBenchmarking.
 
 The SIF file format is very powerful, and CUTEst will work with arbitrary
