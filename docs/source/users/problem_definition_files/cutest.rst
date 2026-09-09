@@ -3,7 +3,7 @@
 ====================
 
 The CUTEst file format in FitBenchmarking is a slight modification of the
-`SIF format <https://ralna.github.io/SIFDecode/html/index.html>`_.
+`SIF format <https://ralna.github.io/SIFDecode/html/sif/index.html>`_.
 Specifically, the data points, errors, and the number of variables
 must be defined in such a way to allow FitBenchmarking to access this data; see below.
 In FitBenchmarking, all SIF files are assumed to be CUTEst problems.
