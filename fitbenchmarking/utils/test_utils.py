@@ -71,6 +71,7 @@ def compare_files(
             actual_output_lines,
             fromfile=expected_output_file,
             tofile=out_file_dir,
+            n=context_lines,
         )
     )
 
