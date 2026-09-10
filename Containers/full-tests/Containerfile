@@ -95,6 +95,17 @@ RUN mkdir -p /RALFit-build
 WORKDIR /RALFit-build
 
 ENV CC=gcc
+# RALFit defaults CMAKE_BUILD_TYPE to Release and hardcodes -march=native in its
+# Release flags. That targets the CPU of whichever runner builds this image, so
+# libral_nlls.so dies with SIGILL on any machine with a narrower instruction set
+# (e.g. an image built on an AVX-512 runner, then run on an AVX2-only machine).
+# The flag is patched out rather than overridden on the command line: RALFit
+# set()s CMAKE_<LANG>_FLAGS_RELEASE as a normal variable, so -D values are
+# discarded, and it rejects any build type other than Debug or Release.
+# x86-64-v3 is AVX2+FMA, supported by anything from Haswell (2013) onwards.
+# The grep afterwards asserts no -march=native survived the substitution.
+RUN sed -i 's/-march=native/-march=x86-64-v3/g' /RALFit/libRALFit/CMakeLists.txt \
+    && ! grep -q -- '-march=native' /RALFit/libRALFit/CMakeLists.txt
 RUN cmake /RALFit/libRALFit && make && make install
 
 # make install for RALFit doesn't work in a container, so manually pip install

@@ -1,4 +1,5 @@
 import inspect
+import numbers
 import os
 import re
 from dataclasses import dataclass
@@ -30,6 +31,11 @@ class CompareScatter:
     Clicking on a point will take you to the fitting report page for that
     point.
     """
+
+    script_path = (
+        os.path.dirname(inspect.getfile(fitbenchmarking))
+        + "/results_processing/scripts/compare_scatter"
+    )
 
     def __init__(self, app: Dash, options, results=[]):
         """
@@ -64,18 +70,15 @@ class CompareScatter:
         else:
             return False
 
-    def add_callbacks(self, plot: go.Figure, legend_items: list[str]):
+    def add_legend_callbacks(self, legend_items: list[str]):
         """
-        Given a dash app and a list of legend items, add a callback for each
-         ID to allow it to set the focus of the appropriate traces.
-
-        Also add the required clientside callbacks to resize the iframe which
-        contains the compare scatter at runtime, and to add the handling for
-        the clickthrough links
+        Given a list of legend items, add a callback for each ID to allow it to
+        set the focus of the appropriate traces.
 
         :param legend_items: A list of minimizer names or IDs
         :type legend_items: list[str]
         """
+
         for i, legend_item in enumerate(legend_items):
             button_id = self.view.sanitize_for_id(legend_item)
             button_io: list = [
@@ -137,6 +140,12 @@ class CompareScatter:
                 prevent_initial_call=True,
             )(focus_callback)
 
+    def add_all_none_button_callbacks(self):
+        """
+        Add a callback for the select all and select none buttons on the legend
+        to allow them to manage the focus of all items on the legend.
+        """
+
         self.app.callback(
             Output("legend-status", "data", True),
             Output("all_button", "style", True),
@@ -165,29 +174,126 @@ class CompareScatter:
             )
         )
 
-        script_path = os.path.dirname(inspect.getfile(fitbenchmarking))
-        script_path += "/results_processing/scripts/compare_scatter"
+    def add_axis_dropdown_callbacks(self):
+        """
+        Add the callbacks required for x-dropdown and y-dropdown to change
+        the data plotted on each axis when a different metric to be plotted
+        is selected from the available list.
+        """
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_axes_data(
+                    x_title=value,
+                    x_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
 
-        with open(f"{script_path}/handle_link.js") as file:
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-dropdown", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, model=self.model, view=self.view: (
+                view.update_axes_data(
+                    y_title=value,
+                    y_data=model.get_values_from_results(
+                        model.get_attr_from_readable_name(value)
+                    ),
+                )
+                if value is not None
+                else view.plot
+            )
+        )
+
+    def add_log_axis_button_callbacks(self):
+        """
+        Add the callbacks required to allow the x and y-log-axis buttons to
+        switch the axis type between linear and log.
+        """
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("x-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_xaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_xaxes(type="linear")
+            )
+        )
+
+        self.app.callback(
+            Output("compare_scatter", "figure", True),
+            Input("y-log-axis", "value"),
+            prevent_initial_call=True,
+        )(
+            lambda value, view=self.view: (
+                view.plot.update_yaxes(type="log")
+                if "Log axis" in value
+                else view.plot.update_yaxes(type="linear")
+            )
+        )
+
+    def add_clickthrough_link_callback(self):
+        """
+        Add the clientside callback required to handle the clickthrough link
+        behaviour for the compare scatter. I.e. clicking on a point should
+        navigate the parent window to the relevant fitting report page.
+        """
+
+        with open(f"{self.script_path}/handle_link.js") as file:
             self.app.clientside_callback(
                 file.read(),
                 Output("dummy-click", "children"),
                 Input("compare_scatter", "clickData"),
             )
 
-        with open(f"{script_path}/resize_observer.js") as file:
+    def add_resize_callback(self):
+        """
+        Add the clientside callback to send the window height information from
+        inside the compare scatter iframe to the parent window, which allows
+        the iframe to be scaled correctly when resized.
+        """
+
+        with open(f"{self.script_path}/resize_observer.js") as file:
             self.app.clientside_callback(
                 file.read(),
                 Output("dummy-height", "children"),
-                Input("compare_scatter", "figure"),
+                Input("resize-timer", "n_intervals"),
                 prevent_initial_call=False,
             )
+
+    def add_callbacks(self, legend_items: list[str]):
+        """
+        Given a list of legend items, add all of the required callbacks for
+        the compare scatter.
+
+        :param legend_items: A list of minimizer names or IDs
+        :type legend_items: list[str]
+        """
+        self.add_legend_callbacks(legend_items)
+        self.add_all_none_button_callbacks()
+        self.add_axis_dropdown_callbacks()
+        self.add_log_axis_button_callbacks()
+
+        self.add_clickthrough_link_callback()
+        self.add_resize_callback()
 
     def get_fitting_report_urls(self):
         """
         Get the fitting report URLs and format as required for use as links
         :return: List of URLS
-        :rtype list[str]:
+        :rtype: list[str]
         """
         return [
             "support_pages/" + val.split("support_pages/", 1)[1]
@@ -202,28 +308,38 @@ class CompareScatter:
         """
         Get the compare scatter and set all of the required callbacks
 
-        :return: The plot Div/List
-        :rtype Div | list[]:
-        :return: The app with callbacks added
-        :rtype Dash:
+        :return: A tuple of:
+
+                 - The plot Div
+                 - The app with callbacks added
+
+        :rtype: tuple[html.Div, Dash]
         """
         default_x = "norm_runtime"
         default_y = "norm_acc"
-
         # hover text needs to have the <extra/> tag to remove the grey box
         # that would normally show the trace name
+
+        multiple_cost_funcs_in_use = (
+            len(self.model.get_values_from_results("costfun_tag", unique=True))
+            > 1
+        )
+
         hover_text = [
             text + "<extra></extra>"
             for text in self.model.get_values_from_results(
-                "hover_text", include_title=True, style="html"
+                "hover_text",
+                include_title=True,
+                style="html",
+                include_cost_func=multiple_cost_funcs_in_use,
             )
         ]
 
         plot = self.view.get_plot(
             x=self.model.get_values_from_results(default_x),
-            x_title=default_x,
+            x_title=self.model.get_readable_attr_name(default_x),
             y=self.model.get_values_from_results(default_y),
-            y_title=default_y,
+            y_title=self.model.get_readable_attr_name(default_y),
             tooltips=hover_text,
             errors=self.model.get_values_from_results("error_flag"),
             minimizers=self.model.get_values_from_results(
@@ -231,6 +347,10 @@ class CompareScatter:
             ),
             problems=self.model.get_values_from_results("problem_tag"),
             report_pages=self.get_fitting_report_urls(),
+            plottable_attributes=[
+                self.model.get_readable_attr_name(attr)
+                for attr in self.model.get_plottable_attributes()
+            ],
         )
 
         legend_items = [
@@ -240,7 +360,8 @@ class CompareScatter:
             *self.model.get_values_from_results("problem_tag", unique=True),
         ]
 
-        self.add_callbacks(self.view.plot, legend_items)
+        self.add_callbacks(legend_items)
+
         return plot, self.app
 
 
@@ -250,9 +371,21 @@ class CompareScatterView:
     the CompareScatter class instead
     """
 
+    # Index in customdata where the hover text for each point is stored
     DATA_HOVER_TEXT_INDEX = 0
+
+    # Index in customdata where the minimizer name for each point is stored
     DATA_MINIMIZER_INDEX = 1
+
+    # Index in customdata where the problem name for each point is stored
     DATA_PROBLEM_INDEX = 2
+
+    # Note: index 3 maps each point to the URL of the relevant fitting report
+    # page. This is accessed in handle_link.js
+
+    # Index in customdata where each point's original position in the source
+    # data is stored
+    DATA_SOURCE_INDEX = 4
 
     banned_prefixes = [
         "circle-",  # limited readability
@@ -267,15 +400,22 @@ class CompareScatterView:
         "hexagon",  # too close to circle at low zoom
         "octagon",  # too close to circle at low zoom
         "star-triangle-up",  # rotation
-        "y-down",  # rotation
-        "y-left",  # rotation
-        "y-right",  # rotation
-        "line-ew",  # rotation
-        "line-ns",  # rotation
+        "y-up",  # No body so not visible
+        "y-down",  # rotation, No body so not visible
+        "y-left",  # rotation, No body so not visible
+        "y-right",  # rotation, No body so not visible
+        "line-ew",  # rotation, No body so not visible
+        "line-ns",  # rotation, No body so not visible
+        "cross-thin",  # No body so not visible
+        "x-thin",  # No body so not visible
+        "asterisk",  # No body so not visible
+        "hash",  # No body so not visible
+        "line-ne",  # No body so not visible
+        "line-nw",  # No body so not visible
     ]
 
     active_opacity = 1
-    inactive_opacity = 0.2
+    inactive_opacity = 0.05
 
     active_error_template = (
         f"""<sup style="opacity:{active_opacity}">"""
@@ -320,6 +460,7 @@ class CompareScatterView:
         minimizers: list[str],
         problems: list[str],
         report_pages: list[str],
+        plottable_attributes: list[str],
     ):
         """
         Get a div containing the compare scatter and legend.
@@ -348,6 +489,9 @@ class CompareScatterView:
         :type problems: list[str]
         :param report_pages: list of urls of fitting reports
         :type report_pages: list[str]
+        :param plottable_attributes: A list of human readable names for
+            attributes that can be plotted on the scatter plot.
+        :type plottable_attributes: list[str]
 
         :return: Returns a div containing the plot and legend
         :rtype: html.Div
@@ -364,15 +508,30 @@ class CompareScatterView:
             for flag in errors
         ]
 
+        # since plotly may reorganise points to group them into traces when
+        # there are multiple points under one minimizer problem pairing (e.g.
+        # when we have run with multiple cost functions selected), we need to
+        # keep track of where in the data array that point came from by storing
+        # it in the customdata field of the point. This means that later when
+        # we need to make edits to what is being plotted, we are able to
+        # correctly place the information in self.plot.data
+        data_locations = list(range(len(x)))
+
         self.plot = px.scatter(
             x=x,
             y=y,
             color=minimizers,
             symbol=problems,
             symbol_sequence=self.valid_symbols,
+            custom_data=[
+                tooltips,
+                minimizers,
+                problems,
+                report_pages,
+                data_locations,
+            ],
             log_x=True,
             log_y=True,
-            custom_data=[tooltips, minimizers, problems, report_pages],
             text=error_superscripts,
             color_discrete_sequence=colour_groups,
         )
@@ -403,15 +562,86 @@ class CompareScatterView:
 
         div_contents = [
             dcc.Store(id="page-load-trigger", data={"loaded": True}),
-            dcc.Graph(
-                figure=self.plot,
-                id="compare_scatter",
-                style={"flex": "1", "min-width": "66vw"},
+            html.Div(
+                [
+                    dcc.Graph(
+                        figure=self.plot,
+                        id="compare_scatter",
+                        style={"flex": "1", "min-width": "66vw"},
+                    ),
+                    legend,
+                ],
+                style={"display": "flex", "overflow": "hidden"},
             ),
-            legend,
+            html.Div(
+                [
+                    html.Div(
+                        "X axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[x_title],
+                                id="x-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="x-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
+                    ),
+                    html.Div(
+                        "Y axis attribute:",
+                        style={"padding-right": "5px", "padding-left": "5px"},
+                    ),
+                    html.Div(
+                        [
+                            dcc.Dropdown(
+                                plottable_attributes,
+                                value=[y_title],
+                                id="y-dropdown",
+                                clearable=False,
+                                style={
+                                    "width": "27ch",
+                                },
+                            ),
+                            dcc.Checklist(
+                                ["Log axis"],
+                                ["Log axis"],
+                                id="y-log-axis",
+                                style={
+                                    "padding-left": "5px",
+                                },
+                            ),
+                        ],
+                        style={
+                            "display": "flex",
+                            "align-items": "center",
+                        },
+                    ),
+                ],
+                style={"float": "right"},
+            ),
             # dummy divs needed for callbacks
             html.Div(id="dummy-click", style={"display": "none"}),
             html.Div(id="dummy-height", style={"display": "none"}),
+            # run once a second for the first five seconds to resize as the
+            # plot loads
+            dcc.Interval(id="resize-timer", max_intervals=5),
         ]
 
         warning_messages = self.get_warning_text_for_results(
@@ -422,7 +652,6 @@ class CompareScatterView:
 
         return html.Div(
             div_contents,
-            style={"display": "flex", "overflow": "hidden"},
             id="compare_scatter_container",
         )
 
@@ -436,7 +665,7 @@ class CompareScatterView:
 
         :param warning_messages_by_minimizer: key: minimizer, value: warning
             message or None
-        :type warning_messages_by_minimizer: dict[str,str|None]
+        :type warning_messages_by_minimizer: dict[str, str | None]
 
         :return: A list containing the created dbc.Toast objects
         :rtype: list[dbc.Toast]
@@ -477,18 +706,16 @@ class CompareScatterView:
             names
         :type error_flags: list[int]
         :param minimizer_names: list of minimizer names, including duplicates (
-            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimizer
+            e.g. ``["min1", "min1", "min2", "min2"]``) each instance represents
+            one run of that minimizer
         :type minimizer_names: list[str]
 
 
-        :return:
-            errors: A dict where the key is the minimizer name, and the \n
-            value is the number of times that minimizer had an error flag of 3
-            \n
-            runs: A dict where the key is the minimizer name, and the
-            value is the number of times that minimizer ran
-        :rtype runs: tuple[dict[str,int],dict[str,int]]:
+        :return: A tuple of dictionaries, the first containing the number of
+                 errors for each minimizer, and the second containing the
+                 number of runs for each minimizer.
+                 (errors, runs)
+        :rtype: tuple[dict[str, int], dict[str, int]]
         """
 
         errors_by_minimizer = dict.fromkeys(minimizer_names, 0)
@@ -502,6 +729,50 @@ class CompareScatterView:
 
         return errors_by_minimizer, runs_by_minimizer
 
+    def update_axes_data(
+        self, x_title=None, x_data=None, y_title=None, y_data=None
+    ):
+        """
+        Update the data and title for the x and/or y axes of the plot.
+
+        :param x_title: The new title for the x-axis, defaults to None
+        :type x_title: str, optional
+        :param x_data: The new data for the x-axis, defaults to None
+        :type x_data: list, optional
+        :param y_title: The new title for the y-axis, defaults to None
+        :type y_title: str, optional
+        :param y_data: The new data for the y-axis, defaults to None
+        :type y_data: list, optional
+        :return: The updated plot figure.
+        :rtype: go.Figure
+        """
+        if x_title is not None:
+            if x_data is None:
+                raise ValueError(
+                    "x_data must be provided when x_title is provided"
+                )
+            self.plot.update_layout(xaxis_title=x_title)
+
+        if y_title is not None:
+            if y_data is None:
+                raise ValueError(
+                    "y_data must be provided when y_title is provided"
+                )
+            self.plot.update_layout(yaxis_title=y_title)
+
+        for trace in self.plot.data:
+            if not isinstance(trace, go.Scatter):
+                continue
+            indices = [
+                int(data[self.DATA_SOURCE_INDEX]) for data in trace.customdata
+            ]
+            if x_data is not None:
+                trace.x = tuple(x_data[i] for i in indices)
+            if y_data is not None:
+                trace.y = tuple(y_data[i] for i in indices)
+
+        return self.plot
+
     def get_warning_text_for_results(self, error_flags, minimizer_names):
         """
         Get the warning text for a minimizer, which changes depending on its
@@ -513,15 +784,20 @@ class CompareScatterView:
 
         :param error_flags: list of error flags in same order as minimizer
             names
+
         :type error_flags: list[int]
+
         :param minimizer_names: list of minimizer names, including duplicates (
-            e.g. ["min1", "min1", "min2", "min2"]) each instance represents one
-            run of that minimizer
+            e.g. ``["min1", "min1", "min2", "min2"]``) each instance represents
+            one run of that minimizer
+
         :type minimizer_names: list[str]
 
         :return: A dict where the key is the minimizer name, and the
-        value is the warning text for that minimizer or None if none is needed
-        :rtype: list[str,int]
+            value is the warning text for that minimizer or None if none is
+            needed
+
+        :rtype: dict[str, str | None]
         """
 
         errors_by_minimizer, runs_by_minimizer = (
@@ -559,30 +835,36 @@ class CompareScatterView:
         whenever not every item is selected.
 
         the state dictionary should have the following structure:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
 
-        Here focus has been used to mean whether a minimizer is selected or not
-        on the legend
+        .. code:: python
+
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
+
+        Here "focus" has been used to mean whether a minimizer is selected or
+        not on the legend
 
         :param focus: The new focus state for all items
         :type focus: bool
-        :param state: Dictionary with the structure described above
-        :type state: dict[str,dict[str,bool]]:
 
-        :return:
-            state: the updated state dictionary \n
-            all_button_style: the updated style for the select all button \n
-            none_button_style: the updated style for the select all button \n
-            plot: the plot after the traces have been updated \n
-        :rtype: tuple[
-            dict[str,dict[str,bool]],
-            dict[str,any],
-            dict[str,any],
-            go.Figure
-        ]
+        :param state: Dictionary with the structure described above
+        :type state: dict[str, dict[str, bool]]
+
+        :return: A tuple of the following
+
+            - ``state`` the updated state dictionary
+            - ``all_button_style`` the updated style for the select all
+              button
+            - ``none_button_style`` the updated style for the select none
+              button
+            - ``plot`` the plot after the traces have been updated
+
+        :rtype: tuple[dict[str, dict[str, bool]],
+                      dict[str, any],
+                      dict[str, any],
+                      go.Figure]
         """
         style = (
             self.active_button_style if focus else self.inactive_button_style
@@ -609,10 +891,13 @@ class CompareScatterView:
     def toggle_group_state(group, state):
         """
         Given either a minimizer or a problem and a state dict in the format:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
+
+        .. code:: python
+
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
 
         Invert the current state and return the new state, including the
         dictionary with the new state now set
@@ -622,9 +907,11 @@ class CompareScatterView:
         :param state: The state dictionary to query and modify
         :type state: dict
 
-        :return:
-            new_state: The state of the group after toggling \n
-            new_state_dictionary: State, modified with the updated group
+        :return: A tuple containing:
+
+                 - The state of the group after toggling
+                 - The modified state dictionary
+
         :rtype: tuple[bool, dict]
         """
         if group in state["problem"]:
@@ -643,18 +930,25 @@ class CompareScatterView:
         style for the select all and select none buttons.
 
         The state dict should be in the following format:
-        state = {
-            "minimizer": {"minimizer_name":True},
-            "problem": {"problem_name":True},
-        }
+
+        .. code:: python
+
+            state = {
+                "minimizer": {"minimizer_name":True},
+                "problem": {"problem_name":True},
+            }
 
         :param state: Dictionary with the structure described above
-        :type state: dict[str,dict[str,bool]]
+        :type state: dict[str, dict[str, bool]]
 
-        :return:
-            all_button_style: the updated style for the select all button\n
-            none_button_style: the updated style for the select all button
-        :rtype: tuple[dict[str,any],] dict[str,any]]
+        :return: A tuple of (all_button_style, none_button_style) where:
+
+            - ``all_button_style`` is the updated style for the select all
+              button
+            - ``none_button_style`` is the updated style for the select none
+              button
+
+        :rtype: tuple[dict[str, any], dict[str, any]]
         """
         all_selected = all(state["minimizer"].values()) and all(
             state["problem"].values()
@@ -693,11 +987,11 @@ class CompareScatterView:
         :param plot: The plot to modify
         :type plot: go.Figure
         :param state: Dictionary of state of each problem, sorted by minimizer
-            , problem
-        :type state: dict[str,dict[str,bool]]
+                      and problem
+        :type state: dict[str, dict[str, bool]]
         :param group: The group of points to set visibility for, either "all"
             or "none", all other values have no effect
-        :type group: str
+        :type group: str | None
 
         :return: The modified plot
         :rtype: go.Figure
@@ -706,8 +1000,8 @@ class CompareScatterView:
         valid_group_types = ["all", "none"]
         if group is not None and group not in ["all", "none"]:
             raise ValueError(
-                f"Apply state only supports group = {valid_group_types} or ",
-                f"None, '{group}' was provided",
+                f"Apply state only supports group = {valid_group_types} or "
+                f"None, '{group}' was provided"
             )
 
         select_all = group == "all"
@@ -766,20 +1060,25 @@ class CompareScatterView:
         :param t: The trace to modify
         :type t: plotly trace
         :param new_opacity: the opacity after the change
-        :type new_opacity: int
+        :type new_opacity: float
         """
-        t.marker.opacity = new_opacity
 
-        if t.text is None or t.text == "":
+        # set the opacity of the plotted trace
+        t.marker["opacity"] = new_opacity
+
+        if t.text is None:
             return
 
-        marker_text = t.text
-        if isinstance(marker_text, np.ndarray):
-            marker_text = marker_text.item()
-
-        html_tree = xml_html.fromstring(marker_text)
-        html_tree.set("style", f"opacity:{new_opacity}")
-        t.text = etree.tostring(html_tree).decode("ascii")
+        texts = t.text if not isinstance(t.text, str) else (t.text,)
+        new_texts = []
+        for text in texts:
+            if text:
+                html_tree = xml_html.fromstring(text)
+                html_tree.set("style", f"opacity:{new_opacity}")
+                new_texts.append(etree.tostring(html_tree).decode("ascii"))
+            else:
+                new_texts.append(text)
+        t.text = tuple(new_texts)
 
     def get_legend(self, symbol_groups, symbol_map, colour_groups, colour_map):
         """
@@ -985,6 +1284,7 @@ class CompareScatterView:
         valid_symbols = validator.values[2::3]
         valid_symbols.sort(key=self.get_symbol_sort_key)
         valid_symbols = list(filter(self.is_valid_symbol, valid_symbols))
+
         return valid_symbols
 
     def is_valid_symbol(self, symbol: str):
@@ -1017,12 +1317,13 @@ class CompareScatterView:
         :type symbol: str
 
         :return: a number representing how early it should appear in the sorted
-        list 0 being the earliest
+            list 0 being the earliest
+
         :rtype: int
         """
 
         # prefer symbols with solid colours
-        suffix_ranking = {"dot": 1, "open": 2, "open-dot": 3}
+        suffix_ranking = {"open-dot": 3, "open": 2, "dot": 1}
         for suffix in suffix_ranking:
             if symbol.endswith(suffix):
                 return suffix_ranking[suffix]
@@ -1039,6 +1340,118 @@ class CompareScatterDataModel:
     @staticmethod
     def get_sort_key(result: FittingResult):
         return result.name
+
+    def get_plottable_attributes(self) -> list[str]:
+        """
+        Get a list of attributes that make logical sense to plot on a scatter
+        plot. Works by reading all attributes of the FittingResults and
+        removing any which return a non-numeric value.
+
+        :return: list of attributes that can be plotted
+        :rtype: list[str]
+        """
+
+        plottable_attributes = [
+            "accuracy",
+            "energy",
+            "first_runtime",
+            "func_evals",
+            "get_n_data_points",
+            "get_n_parameters",
+            "harmonic_runtime",
+            "iteration_count",
+            "maximum_runtime",
+            "mean_runtime",
+            "median_runtime",
+            "minimum_runtime",
+            "norm_acc",
+            "norm_energy",
+            "norm_runtime",
+            "runtime",
+            "trim_runtime",
+        ]
+
+        return [
+            attribute
+            for attribute in plottable_attributes
+            if self.list_contains_plottable_types(
+                self.get_values_from_results(attribute)
+            )
+        ]
+
+    _known_mappings = {
+        "accuracy": "Accuracy (χ²)",
+        "energy": "Energy (kWh)",
+        "first_runtime": "First Runtime (s)",
+        "func_evals": "N Function Evaluations",
+        "harmonic_runtime": "Harmonic Runtime (s)",
+        "maximum_runtime": "Maximum Runtime (s)",
+        "mean_runtime": "Mean Runtime (s)",
+        "median_runtime": "Median Runtime (s)",
+        "minimum_runtime": "Minimum Runtime (s)",
+        "norm_acc": "Normalised Accuracy",
+        "norm_energy": "Normalised Energy",
+        "norm_runtime": "Normalised Runtime",
+        "runtime": "Runtime (s)",
+        "trim_runtime": "Trimmed Mean Runtime (s)",
+        "get_n_data_points": "N Data Points",
+        "get_n_parameters": "N Parameters",
+    }
+
+    def get_readable_attr_name(self, attribute: str):
+        """
+        Given an attribute name, return a human readable name for use in the
+        title text for the plot. This means in title case, with underscores
+        replaced with spaces and units added if applicable and known.
+
+        :param attribute: A machine readable name of an attribute
+        :type attribute: str
+
+        :return: The name of the attribute in a human readable format
+        :rtype: str
+        """
+        if attribute in self._known_mappings:
+            return self._known_mappings[attribute]
+        return re.sub("_", " ", attribute).title()
+
+    def get_attr_from_readable_name(self, name: str):
+        """
+        Given a human readable name, return the attribute name.
+
+        :param name: A human readable name of an attribute
+        :type name: str
+
+        :return: The actual attribute name
+        :rtype: str
+        """
+        for attr, readable_name in self._known_mappings.items():
+            if readable_name == name:
+                return attr
+        # If not in known mappings, try to reverse the general conversion
+        return name.lower().replace(" ", "_")
+
+    @staticmethod
+    def list_contains_plottable_types(values: list):
+        """
+        Return True if the provided list contains at least one numeric value,
+        and is not entirely unplottable (i.e. np.inf)
+
+        :param values: list of values to check
+        :type values: list
+
+        :return: if the list can be plotted on a scatter plot
+        :rtype: bool
+        """
+        can_be_plotted = [
+            (
+                isinstance(value, numbers.Number)
+                and not (value is np.nan or value is np.inf)
+                and not isinstance(value, bool)
+            )
+            for value in values
+        ]
+
+        return any(can_be_plotted)
 
     def get_values_from_results(
         self, attribute: str, unique=False, **func_kwargs
@@ -1067,6 +1480,8 @@ class CompareScatterDataModel:
         # passed an attribute or method name
 
         values = []
+        if attribute is None:
+            raise ValueError("Attribute name cannot be None")
         if callable(getattr(self.results[0], attribute)):
             for result in self.results:
                 func = getattr(result, attribute)

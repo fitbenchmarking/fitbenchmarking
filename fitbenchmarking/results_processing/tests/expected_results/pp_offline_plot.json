@@ -10,11 +10,11 @@
       "name": "migrad [minuit]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADwPzMzMzMzM/M/ZmZmZmZm9j8AAAAAAAAAQAAAAAAAABRAzczMzMzMJEDNzMzMzMwvQAAAAAAAQH9AQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAAAAAAAAADwPzMzMzMzM\u002fM\u002fZmZmZmZm9j8AAAAAAAAAQAAAAAAAABRAzczMzMzMJEDNzMzMzMwvQAAAAAAAQH9AQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     },
@@ -28,11 +28,11 @@
       "name": "simplex [minuit]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPg/zczMzMzM/D8AAAAAAAAUQAAAAAAAACBAzczMzMzMLkBmZmZmZuY5QAAAAAAAwIJAQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPg\u002fzczMzMzM\u002fD8AAAAAAAAUQAAAAAAAACBAzczMzMzMLkBmZmZmZuY5QAAAAAAAwIJAQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     },
@@ -46,11 +46,11 @@
       "name": "dfols [dfo]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAAAAQAAAAAAAAAxAMzMzMzMzF0AAAAAAAAAcQAAAAAAAACRAZmZmZmZmOUAzMzMzM/NGQAAAAAAAAIlAQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAAAAAAAAAAAQAAAAAAAAAxAMzMzMzMzF0AAAAAAAAAcQAAAAAAAACRAZmZmZmZmOUAzMzMzM\u002fNGQAAAAAAAAIlAQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     }
@@ -467,17 +467,6 @@
             }
           }
         ],
-        "scattermapbox": [
-          {
-            "type": "scattermapbox",
-            "marker": {
-              "colorbar": {
-                "outlinewidth": 0,
-                "ticks": ""
-              }
-            }
-          }
-        ],
         "scatterternary": [
           {
             "type": "scatterternary",
@@ -826,9 +815,6 @@
         },
         "title": {
           "x": 0.05
-        },
-        "mapbox": {
-          "style": "light"
         }
       }
     }

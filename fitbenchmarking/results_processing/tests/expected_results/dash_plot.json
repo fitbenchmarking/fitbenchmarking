@@ -10,11 +10,11 @@
       "name": "migrad [minuit]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/ZmZmZmZm9j+kcD0K16MAQMdxHMdxXHFAQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPA\u002fAAAAAAAA8D8AAAAAAADwPwAAAAAAAPA\u002fZmZmZmZm9j+kcD0K16MAQMdxHMdxXHFAQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     },
@@ -28,11 +28,11 @@
       "name": "simplex [minuit]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAAD4PwAAAAAAABBAuB6F61G4FECrqqqqqqopQO1zSE0w3kJAQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAAAAAAAAADwPwAAAAAAAPA\u002fAAAAAAAA8D8AAAAAAAD4PwAAAAAAABBAuB6F61G4FECrqqqqqqopQO1zSE0w3kJAQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     },
@@ -46,11 +46,11 @@
       "name": "dfols [dfo]",
       "x": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAC/10asS4/5PwAAAAAAAABAVlVVVVVVB0AAAAAAAAAMQI7jOI7jOBZAMzMzMzMzF0Bcj8L1KFwiQAAAAAAAAGRAQIy1eB2vFUQ="
+        "bdata": "AAAAAAAAAAC\u002f10asS4\u002f5PwAAAAAAAABAVlVVVVVVB0AAAAAAAAAMQI7jOI7jOBZAMzMzMzMzF0Bcj8L1KFwiQAAAAAAAAGRAQIy1eB2vFUQ="
       },
       "y": {
         "dtype": "f8",
-        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA/AAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ/AAAAAAAA6D8AAAAAAADsPwAAAAAAAPA/AAAAAAAA8D8="
+        "bdata": "AAAAAAAAAAAAAAAAAADAPwAAAAAAANA\u002fAAAAAAAA2D8AAAAAAADgPwAAAAAAAOQ\u002fAAAAAAAA6D8AAAAAAADsPwAAAAAAAPA\u002fAAAAAAAA8D8="
       },
       "type": "scatter"
     }
@@ -467,17 +467,6 @@
             }
           }
         ],
-        "scattermapbox": [
-          {
-            "type": "scattermapbox",
-            "marker": {
-              "colorbar": {
-                "outlinewidth": 0,
-                "ticks": ""
-              }
-            }
-          }
-        ],
         "scatterternary": [
           {
             "type": "scatterternary",
@@ -826,9 +815,6 @@
         },
         "title": {
           "x": 0.05
-        },
-        "mapbox": {
-          "style": "light"
         }
       }
     },
@@ -852,9 +838,9 @@
         "2",
         "5",
         "10",
-        "10<sup>2</sup>",
-        "10<sup>3</sup>",
-        "10<sup>4</sup>"
+        "10\u003csup\u003e2\u003c\u002fsup\u003e",
+        "10\u003csup\u003e3\u003c\u002fsup\u003e",
+        "10\u003csup\u003e4\u003c\u002fsup\u003e"
       ],
       "title": {
         "text": "f"

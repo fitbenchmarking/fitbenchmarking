@@ -110,8 +110,8 @@ def create_results_tables(
 
             key1 = list(results.keys())[0]
             key11 = list(results[key1].keys())[0]
-            n_solvers = len(results[key1][key11])
-            n_solvers_large = n_solvers > 15
+            n_minimizers = len(results[key1][key11])
+            n_minimizers_large = n_minimizers > 15
 
             with open(f"{table.file_path}html", "w", encoding="utf-8") as f:
                 f.write(
@@ -157,7 +157,7 @@ def create_results_tables(
                         unselected_minimzers=unselected_minimzers,
                         algorithm_type=options.algorithm_type,
                         report_failed_min=report_failed_min,
-                        n_solvers_large=n_solvers_large,
+                        n_minimizers_large=n_minimizers_large,
                     )
                 )
 
