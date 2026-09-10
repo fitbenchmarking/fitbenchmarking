@@ -192,10 +192,13 @@ def generate_report(options_file="", additional_options=None, debug=False):
 
     index_page = create_index_page(options, list(results), all_dirs)
 
-    # flatten results
+    # flatten results dictionary because open_browser expects a list of
+    # fitting results
+
     flat_results = [
         result for result_list in results.values() for result in result_list
     ]
+
     open_browser(
         index_page, options, pp_dfs_all_prob_sets, results=flat_results
     )
