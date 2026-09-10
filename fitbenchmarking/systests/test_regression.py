@@ -57,7 +57,9 @@ class TestRegressionAll(TestCase):
         problem_sub_directory = "all_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-        compare_results(self, problem_sub_directory, "all_parsers.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "all_parsers.csv"
+        )
 
 
 @run_for_test_types(test_type, "mantid")
@@ -85,7 +87,9 @@ class TestRegressionMantid(TestCase):
         problem_sub_directory = "mantid_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-        compare_results(self, problem_sub_directory, "mantid.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "mantid.csv"
+        )
 
     def test_multifit_consistent(self):
         """
@@ -98,7 +102,9 @@ class TestRegressionMantid(TestCase):
             self.results_dir,
             problem_sub_directory,
         )
-        compare_results(self, problem_sub_directory, "multifit.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "multifit.csv"
+        )
 
 
 @run_for_test_types(test_type, "local_only")
@@ -126,7 +132,9 @@ class TestRegressionLocal(TestCase):
         problem_sub_directory = "local_only_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-        compare_results(self, problem_sub_directory, "local_only_set.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "local_only_set.csv"
+        )
 
 
 @run_for_test_types(test_type, "matlab")
@@ -154,7 +162,9 @@ class TestRegressionMatlab(TestCase):
         problem_sub_directory = "all_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-        compare_results(self, problem_sub_directory, "matlab.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "matlab.csv"
+        )
 
 
 @run_for_test_types(test_type, "default")
@@ -182,7 +192,9 @@ class TestRegressionDefault(TestCase):
         problem_sub_directory = "default_parsers_set"
 
         run_benchmark(self.results_dir, problem_sub_directory)
-        compare_results(self, problem_sub_directory, "default_parsers_set.csv")
+        assert_results_within_tolerance(
+            self, problem_sub_directory, "default_parsers_set.csv"
+        )
 
 
 def values_match(expected: str, actual: str) -> bool:
@@ -253,7 +265,7 @@ def lines_match(expected: str, actual: str) -> bool:
     )
 
 
-def compare_results(
+def assert_results_within_tolerance(
     test_case: TestCase, problem_sub_directory: str, result_filename: str
 ) -> None:
     """
