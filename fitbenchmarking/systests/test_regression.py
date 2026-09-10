@@ -258,7 +258,9 @@ def compare_results(
 ) -> None:
     """
     Compares the expected benchmark results with the actual results
-    using compare_files from test_utils.
+    using compare_files from test_utils, which contains an assertion internally
+    that fails the test if the lines do not match accounting for the defined
+    RELATIVE_TOLERANCE value.
 
     :param problem_sub_directory: The directory containing problems.
     :type problem_sub_directory: str
@@ -283,6 +285,7 @@ def compare_results(
     with open(actual_file, encoding="utf-8") as f:
         actual_output = f.read()
 
+    # assert that lines are matching, accounting for tolerance
     compare_files(test_case, expected_file, actual_output, eq=lines_match)
 
 
