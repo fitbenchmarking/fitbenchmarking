@@ -79,6 +79,15 @@ def compare_files(
         with open("actual.diff", "w", encoding="utf-8") as diff_file:
             diff_file.write("".join(diff))
 
+    eq_note = (
+        (
+            "Note: Diff highlighting is based on the equality function passed "
+            "as `eq`."
+        )
+        if eq
+        else ""
+    )
+
     test_case.assertTrue(
         diff == [],
         msg=(
@@ -87,6 +96,7 @@ def compare_files(
             "The output provided did not match the expected output from:"
             f" {expected_output_file}\n"
             f"The actual output has been saved in {out_file_dir}\n"
-            f"full diff saved in {diff_file_dir}"
+            f"full diff saved in {diff_file_dir}\n"
+            f"{eq_note}"
         ),
     )
