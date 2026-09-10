@@ -105,14 +105,12 @@ class BumpsController(Controller):
             model = exec_dict["fitFunction"]
             if self.problem.multifit:
                 # Curve only feeds x to the model and compares its output
-                # against y, so use a flat placeholder x and a zero y
-                # covering the points of every dataset.
-                n_points = sum(len(d) for d in self.data_y)
-                curve_x = np.arange(n_points)
-                zero_y = np.zeros(n_points)
+                # against y, so use a flat placeholder x covering the
+                # points of every dataset.
+                curve_x = np.arange(self.residual_count)
             else:
                 curve_x = self.data_x
-                zero_y = np.zeros(np.shape(self.data_y))
+            zero_y = np.zeros(self.residual_count)
             func_wrapper = Curve(fn=model, x=curve_x, y=zero_y, **param_dict)
 
         # Set a range for each parameter

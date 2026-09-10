@@ -166,7 +166,7 @@ class FittingResult:
         self.r_x = None
         self.jac_x = None
 
-        self.ini_y = problem.ini_y(controller.parameter_set)
+        self.ini_y = problem.ini_y(controller.parameter_set, dataset)
         if hasattr(self, "ini_y") and indexes_cuts is not None:
             self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
                 indexes_cuts, self.ini_y
@@ -177,17 +177,25 @@ class FittingResult:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
                 self.r_x = cost_func.eval_r_single_dataset(
-                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                    self.params,
+                    x=self.data_x,
+                    y=self.data_y,
+                    e=self.data_e,
+                    dataset=dataset,
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
                         indexes_cuts, self.r_x
                     )
                 self.jac_x = cost_func.jac_res(
-                    self.params, x=self.data_x, y=self.data_y, e=self.data_e
+                    self.params,
+                    x=self.data_x,
+                    y=self.data_y,
+                    e=self.data_e,
+                    dataset=dataset,
                 )
             self.fin_y = cost_func.problem.eval_model(
-                self.params, x=self.data_x
+                self.params, x=self.data_x, dataset=dataset
             )
             if hasattr(self, "fin_y") and indexes_cuts is not None:
                 self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
