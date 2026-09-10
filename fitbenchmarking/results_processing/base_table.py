@@ -582,16 +582,16 @@ class Table:
         styler = styler.set_table_styles(
             [
                 {
-                    "selector": "td:nth-last-child(-n+4) .pd-t",
+                    "selector": "td:nth-last-child(-n+5) .pd-t",
                     "props": [("transform", "translate(-95%, -0.6em)")],
                 },
                 {
-                    "selector": "tr:nth-last-child(-n+4) td .pd-t",
+                    "selector": "tr:nth-last-child(-n+5) td .pd-t",
                     "props": [("transform", "translate(2em, -105%)")],
                 },
                 {
                     "selector": (
-                        "tr:nth-last-child(-n+4) td:nth-last-child(-n+4) .pd-t"
+                        "tr:nth-last-child(-n+5) td:nth-last-child(-n+5) .pd-t"
                     ),
                     "props": [("transform", "translate(-95%, -105%)")],
                 },
