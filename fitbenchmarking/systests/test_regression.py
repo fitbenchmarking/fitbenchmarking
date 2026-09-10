@@ -298,7 +298,13 @@ def assert_results_within_tolerance(
         actual_output = f.read()
 
     # assert that lines are matching, accounting for tolerance
-    compare_files(test_case, expected_file, actual_output, eq=lines_match)
+    compare_files(
+        test_case,
+        expected_file,
+        actual_output,
+        eq=lines_match,
+        context_lines=0,
+    )
 
 
 def setup_options(

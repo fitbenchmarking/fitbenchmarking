@@ -10,6 +10,7 @@ def compare_files(
     expected_output_file: str,
     actual_output: str,
     eq: Callable | None = None,
+    context_lines=3,
 ):
     """
     Compares two files line by line, if they do not match, output a git
