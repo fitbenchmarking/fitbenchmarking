@@ -934,7 +934,7 @@ differentiable architectures.
 * Levenberg Marquardt (:code:`Levenberg_Marquardt`)
 * Gauss Newton (:code:`Gauss-Newton`)
 
-**Links** `Paper- Theseus optimization <https://arxiv.org/pdf/2207.09442.pdf/>`__
+**Links** `Paper- Theseus optimization <https://arxiv.org/abs/2207.09442>`__
 
 **Licence** Theseus is available under a `MIT licence <https://github.com/facebookresearch/theseus/blob/main/LICENSE>`__.
 
