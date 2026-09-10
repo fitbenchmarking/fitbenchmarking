@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 from unittest import TestCase
 
 import numpy as np
-from pytest import test_type as TEST_TYPE
+from pytest import test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli.main import run
@@ -32,7 +32,7 @@ TABLE_VALUE_RE = re.compile(
 )
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class TestRegressionAll(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all fitting software
@@ -60,7 +60,7 @@ class TestRegressionAll(TestCase):
         compare_results(self, problem_sub_directory, "all_parsers.csv")
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class TestRegressionMantid(TestCase):
     """
     Regression tests for the Fitbenchmarking software with
@@ -101,7 +101,7 @@ class TestRegressionMantid(TestCase):
         compare_results(self, problem_sub_directory, "multifit.csv")
 
 
-@run_for_test_types(TEST_TYPE, "local_only")
+@run_for_test_types(test_type, "local_only")
 class TestRegressionLocal(TestCase):
     """
     Regression tests for the Fitbenchmarking software with
@@ -129,7 +129,7 @@ class TestRegressionLocal(TestCase):
         compare_results(self, problem_sub_directory, "local_only_set.csv")
 
 
-@run_for_test_types(TEST_TYPE, "matlab")
+@run_for_test_types(test_type, "matlab")
 class TestRegressionMatlab(TestCase):
     """
     Regression tests for the Fitbenchmarking software with
@@ -157,7 +157,7 @@ class TestRegressionMatlab(TestCase):
         compare_results(self, problem_sub_directory, "matlab.csv")
 
 
-@run_for_test_types(TEST_TYPE, "default")
+@run_for_test_types(test_type, "default")
 class TestRegressionDefault(TestCase):
     """
     Regression tests for the Fitbenchmarking software with all default fitting
@@ -387,7 +387,7 @@ def setup_options(
     }
 
     opts.software = (
-        software.get(TEST_TYPE)
+        software.get(test_type)
         if override_software is None
         else override_software
     )

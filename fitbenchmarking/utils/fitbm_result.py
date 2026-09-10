@@ -560,17 +560,23 @@ class FittingResult:
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
 
-    def hover_text(self, include_title=False, style="html") -> str:
+    def hover_text(
+        self, include_title=False, style="html", include_cost_func=False
+    ) -> str:
         """
         Generate the tooltip text for a given fitting result.
-        :param result: The result to generate the text for
-        :type result: FittingResult
         :param include_title: Whether to include the result title in the
             tooltip
         :type include_title: bool
-        :param newline: The newline character to use, defaults to CSS style
-            newline used in tables
-        :type newline: str
+
+        :param style: The type of styling tags needed for the tooltip, either
+            css or html. This determines the type of line breaks and bold tags
+            used. Note: Bold text is not applied when using css style
+        :type style: str
+
+        :param include_cost_func: Whether to include the cost function type
+            in the title of the tooltip
+        :type include_cost_func: bool
 
         :return: The generated tooltip
         :rtype: str
@@ -585,7 +591,7 @@ class FittingResult:
         if self.iteration_count is None or self.iteration_count == 0:
             iterations = "not available"
         else:
-            iterations = self.func_evals
+            iterations = self.iteration_count
 
         hover_text = (
             f"Status: {self.status}{line_break}"
@@ -598,16 +604,16 @@ class FittingResult:
         )
 
         if include_title:
-            hover_text = (
-                f"{bold_start}"
-                f"{self.modified_minimizer_name(with_software=True)}"
-                f"{bold_end}"
-                f" | "
-                f"{bold_start}"
-                f"{self.problem_tag}"
-                f"{bold_end}"
-                f"{line_break}"
-                f"{hover_text}"
+            title_parts = [
+                self.modified_minimizer_name(with_software=True),
+                self.problem_tag,
+            ]
+            if include_cost_func:
+                title_parts.append(self.costfun_tag)
+
+            title = " | ".join(
+                f"{bold_start}{part}{bold_end}" for part in title_parts
             )
+            hover_text = f"{title}{line_break}{hover_text}"
 
         return hover_text
