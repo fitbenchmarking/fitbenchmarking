@@ -81,8 +81,8 @@ def compare_files(
 
     eq_note = (
         (
-            "Note: Diff highlighting is based on the equality function passed "
-            "as `eq`."
+            "Note: actual.diff will mask changes that pass the equality "
+            "function provided to compare_files."
         )
         if eq
         else ""
