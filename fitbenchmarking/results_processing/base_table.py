@@ -572,28 +572,56 @@ class Table:
             "border: 1px solid #8c8b8b;"
             "background-color: white;"
             "color: black; font-size: 0.8em;"
-            "transform: translate(2em, -0.6em); padding: 0.6em;"
+            # "transform: translate(2em, -0.6em); padding: 0.6em;"
             "border-radius: 0em;"
             "pointer-events: none;",
         )
 
-        # set it so that hover text near the edge of the table does not
-        # overflow the bounds of the table
+        # when the x/y edge flipping is applied to hover text, how many cells
+        # around the edge should have the flipping applied
+        y_flip_cells = 5
+        x_flip_cells = 3
+
+        # minimum required size of table to apply flipping logic
+        # informed by the size of a row in the x/y axis compared to the size of
+        # a tooltip in the x/y axis
+        y_flip_table_size = 10
+        x_flip_table_size = 6
+
+        y_translate = "-125%"
+        x_translate = "-100%"
+
+        # add styling such that the hover text near the edge of the table is
+        # positioned to stay within the bounds of the table
         styler = styler.set_table_styles(
             [
                 {
-                    "selector": "td:nth-last-child(-n+5) .pd-t",
-                    "props": [("transform", "translate(-95%, -0.6em)")],
-                },
-                {
-                    "selector": "tr:nth-last-child(-n+5) td .pd-t",
-                    "props": [("transform", "translate(2em, -105%)")],
+                    "selector": (
+                        f"td:nth-last-child(n+{x_flip_table_size})"
+                        f" ~ td:nth-last-child(-n+{x_flip_cells}) .pd-t"
+                    ),
+                    "props": [("transform", f"translate({x_translate})")],
                 },
                 {
                     "selector": (
-                        "tr:nth-last-child(-n+5) td:nth-last-child(-n+5) .pd-t"
+                        f"tr:nth-last-child(n+{y_flip_table_size})"
+                        f" ~ tr:nth-last-child(-n+{y_flip_cells}) .pd-t"
                     ),
-                    "props": [("transform", "translate(-95%, -105%)")],
+                    "props": [("transform", f"translate(0,{y_translate})")],
+                },
+                {
+                    "selector": (
+                        f"tr:nth-last-child(n+{y_flip_table_size})"
+                        f" ~ tr:nth-last-child(-n+{y_flip_cells}) "
+                        f"td:nth-last-child(n+{x_flip_table_size})"
+                        f" ~ td:nth-last-child(-n+{x_flip_cells}) .pd-t"
+                    ),
+                    "props": [
+                        (
+                            "transform",
+                            f"translate({x_translate}, {y_translate})",
+                        )
+                    ],
                 },
             ],
             overwrite=False,
