@@ -572,7 +572,6 @@ class Table:
             "border: 1px solid #8c8b8b;"
             "background-color: white;"
             "color: black; font-size: 0.8em;"
-            # "transform: translate(2em, -0.6em); padding: 0.6em;"
             "border-radius: 0em;"
             "pointer-events: none;",
         )
