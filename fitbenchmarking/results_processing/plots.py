@@ -895,6 +895,10 @@ class Plot:
         label = f" {minim}"
         data_x = result.data_x
         r_x = result.r_x
+        # Residuals are not calculated for non nlls cost functions so cant be
+        # plotted.
+        if r_x is None:
+            return fig
 
         # in the SpinW 2d data case
         if hasattr(result, "r_x_cuts"):
@@ -902,6 +906,7 @@ class Plot:
             r_x = result.r_x_cuts
 
         data_len = int(len(data_x) / n_plots_per_row)
+
         for i in range(n_plots_per_row):
             fig.add_trace(
                 go.Scatter(
