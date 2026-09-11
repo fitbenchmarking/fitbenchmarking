@@ -1061,9 +1061,20 @@ class BenchmarkTests(unittest.TestCase):
                 "iteration_count",
                 "func_evals",
             ]:
-                assert getattr(r, attr) == expected["results"][ix][attr]
+                self.assertEqual(
+                    getattr(r, attr),
+                    expected["results"][ix][attr],
+                    msg=(
+                        f"Comparing attr {attr},"
+                        f"problem: {r.name}, software: {r.software}, "
+                        f"minimizer: {r.minimizer}"
+                    ),
+                )
+
             self.assertAlmostEqual(
-                r.accuracy, expected["results"][ix]["accuracy"], 6
+                r.accuracy,
+                expected["results"][ix]["accuracy"],
+                6,
             )
             assert r.hess == expected["results"][ix]["hessian"]
             assert r.jac == expected["results"][ix]["jacobian"]
