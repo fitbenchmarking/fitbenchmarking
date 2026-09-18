@@ -238,6 +238,27 @@ class Controller:
                 self._software = self.__class__.__name__[:-10].lower()
         return self._software
 
+    @property
+    def residual_count(self) -> int:
+        """
+        The number of residuals of the problem, that is the length of the
+        array returned by the cost function's ``eval_r``.
+
+        In the multifit case the residuals of every dataset are returned
+        as one flat array, so this is the total number of data points of
+        all of the datasets rather than the number in one of them.
+
+        Fitting softwares which need to be told how many residuals there
+        are should use this rather than the length of the data, which for
+        a multifit problem is the number of datasets.
+
+        :return: The number of residuals
+        :rtype: int
+        """
+        if self.problem.multifit:
+            return sum(np.size(yi) for yi in self.data_y)
+        return np.size(self.data_y)
+
     def validate(self) -> None:
         """
         Validates that the provided options are compatible with each other.
@@ -389,11 +410,16 @@ class Controller:
         if self.problem.multifit and self.software != "mantid":
             out = []
 
-            for pi, xi, yi, ei in zip(params, x, y, e):
+            # params holds the parameters of each dataset separately, so
+            # each dataset is evaluated on its own data with its own
+            # parameters
+            for d, (pi, xi, yi, ei) in enumerate(zip(params, x, y, e)):
                 kwargs = {
                     k: v for k, v in zip("xye", [xi, yi, ei]) if v is not None
                 }
-                out.append(self.cost_func.eval_cost(params=pi, **kwargs))
+                out.append(
+                    self.cost_func.eval_cost(params=pi, dataset=d, **kwargs)
+                )
 
         else:
             kwargs = {k: v for k, v in zip("xye", [x, y, e]) if v is not None}

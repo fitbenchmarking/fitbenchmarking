@@ -47,7 +47,11 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
                 "The length of the x and y are not the same, "
                 f"len(x)={len(x)} and len(y)= {len(y)}."
             )
-        result = sqrt(y) - sqrt(self.problem.eval_model(params=params, x=x))
+        result = sqrt(y) - sqrt(
+            self.problem.eval_model(
+                params=params, x=x, dataset=kwargs.get("dataset")
+            )
+        )
 
         # Flatten in case of a vector function
         return ravel(result)
@@ -67,7 +71,8 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         x = kwargs.get("x", self.problem.data_x)
 
         j = self.jacobian.eval(params, **kwargs)
-        return -j / (2 * sqrt(self.problem.eval_model(params, x=x)[:, None]))
+        f = self.problem.eval_model(params, x=x, dataset=kwargs.get("dataset"))
+        return -j / (2 * sqrt(f[:, None]))
 
     def hes_res(self, params, **kwargs):
         """
@@ -84,7 +89,7 @@ class HellingerNLLSCostFunc(BaseNLLSCostFunc):
         """
         x = kwargs.get("x", self.problem.data_x)
 
-        f = self.problem.eval_model(params, x=x)
+        f = self.problem.eval_model(params, x=x, dataset=kwargs.get("dataset"))
         jac = self.jacobian.eval(params, **kwargs)
         hes = self.hessian.eval(params, **kwargs)
 

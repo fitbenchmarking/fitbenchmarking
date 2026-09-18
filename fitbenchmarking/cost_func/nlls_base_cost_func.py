@@ -4,8 +4,7 @@ Implements the base non-linear least squares cost function
 
 from abc import abstractmethod
 
-import numpy as np
-from numpy import dot, matmul
+from numpy import concatenate, dot, matmul, ndim
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
@@ -63,11 +62,13 @@ class BaseNLLSCostFunc(CostFunc):
         Check whether eval_r has been asked for the combined multifit
         problem rather than for a single dataset.
 
-        The combined problem is being evaluated when the caller gives no
-        x data (minimizers call eval_r with the parameters only) or gives
-        the whole container of datasets. A single dataset's x values mean
-        the params belong to that dataset alone, which is the case when
-        eval_chisq scores each dataset in turn once the fit has finished.
+        This is only consulted when the caller has not named a dataset
+        with the 'dataset' keyword argument. The combined problem is being
+        evaluated when the caller gives no x data (minimizers call eval_r
+        with the parameters only) or gives the whole container of
+        datasets. A single dataset's x values mean the params belong to
+        that dataset alone, which is the case when eval_chisq scores each
+        dataset in turn once the fit has finished.
 
         :param x: The x data eval_r was called with, if any
         :type x: numpy array, list of numpy arrays or None
@@ -77,7 +78,7 @@ class BaseNLLSCostFunc(CostFunc):
         """
         if not (self.problem.multifit and self.problem.multifit_param_names):
             return False
-        return x is None or isinstance(x, (list, tuple)) or np.ndim(x) > 1
+        return x is None or isinstance(x, (list, tuple)) or ndim(x) > 1
 
     def eval_r(self, params, **kwargs):
         """
@@ -85,13 +86,33 @@ class BaseNLLSCostFunc(CostFunc):
         Handles both the multifit case (fitting multiple datasets)
         and other cases.
 
+        In the multifit case the parameters of every dataset are given as
+        one combined vector, and the residuals of all of the datasets are
+        returned one after the other. A single dataset of a multifit
+        problem can be evaluated by naming it with the 'dataset' keyword
+        argument, in which case 'params' holds the parameters of that
+        dataset only.
+
         :param params: The parameters to calculate residuals for
         :type params: list
+        :param dataset: The index of the single dataset to evaluate,
+                        defaults to None (all of them)
+        :type dataset: int, optional
+
+        :raises CostFuncError: If the combined problem is evaluated with a
+                               parameter vector of the wrong length.
 
         :return: The residuals for the datapoints at the given parameters
         :rtype: np.array
         """
-        if not self._evaluating_combined_multifit(kwargs.get("x")):
+        # A named dataset always means a single dataset of a multifit
+        # problem, whose parameters have already been split out of the
+        # combined vector by the caller. Where the caller has not named
+        # one, fall back to working it out from the shape of the x data.
+        named_dataset = kwargs.get("dataset") is not None
+        if named_dataset or not self._evaluating_combined_multifit(
+            kwargs.get("x")
+        ):
             return self.eval_r_single_dataset(params, **kwargs)
 
         par_names = self.problem.multifit_param_names
@@ -102,24 +123,29 @@ class BaseNLLSCostFunc(CostFunc):
                 f"len(multifit_param_names)={len(par_names)}."
             )
 
-        # Each dataset is evaluated with its own d<i>. params plus the
-        # shared. params, and the residuals are joined into one vector.
+        r = []
         param_dict = dict(zip(par_names, params))
-        r = [
-            self.eval_r_single_dataset(
-                params=[
-                    v
-                    for k, v in param_dict.items()
-                    if k.startswith((f"d{d}.", "shared."))
-                ],
-                x=self.problem.data_x[d],
-                y=self.problem.data_y[d],
-                e=self.problem.data_e[d],
-            )
-            for d in range(len(self.problem.data_x))
-        ]
+        for d in range(len(self.problem.data_x)):
+            single_dataset_params = [
+                v
+                for k, v in param_dict.items()
+                if k.startswith((f"d{d}.", "shared."))
+            ]
 
-        return np.concatenate(r)
+            kwargs["x"] = self.problem.data_x[d]
+            kwargs["y"] = self.problem.data_y[d]
+            kwargs["e"] = self.problem.data_e[d]
+            kwargs["dataset"] = d
+
+            r.append(
+                self.eval_r_single_dataset(
+                    params=single_dataset_params, **kwargs
+                )
+            )
+
+        # the residuals of the datasets are returned as one flat array, as
+        # some of the fitting softwares require an array rather than a list
+        return concatenate(r)
 
     def eval_cost(self, params, **kwargs):
         """

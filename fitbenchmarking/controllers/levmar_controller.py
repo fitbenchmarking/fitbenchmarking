@@ -61,7 +61,7 @@ class LevmarController(Controller):
             lb = [None if x == -np.inf else x for x in lb]
             ub = [None if x == np.inf else x for x in ub]
             self.param_ranges = list(zip(lb, ub))
-        self.lm_y = np.zeros(self.data_y.shape)
+        self.lm_y = np.zeros(self.residual_count)
 
     def fit(self):
         """
