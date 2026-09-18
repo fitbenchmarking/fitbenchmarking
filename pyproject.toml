@@ -27,7 +27,7 @@ dependencies = [
     'numpy',
     'matplotlib>=2.0',
     'plotly>=7.0.0',
-    'scipy>=0.18,<1.16.0',
+    'scipy>=0.18',
     'lxml',
     'pandas>=1.3',
     'jinja2',
