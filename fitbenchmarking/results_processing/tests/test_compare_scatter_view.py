@@ -3,6 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock, patch
 
+import numpy as np
 import plotly.graph_objects as go
 from dash import dcc, html
 from parameterized import parameterized
@@ -14,12 +15,15 @@ from fitbenchmarking.results_processing.compare_scatter import (
 
 
 class CompareScatterViewTests(unittest.TestCase):
+    active_opacity = CompareScatterView.active_opacity
+    inactive_opacity = CompareScatterView.inactive_opacity
+
     @staticmethod
     def _create_test_plot(view=CompareScatterView(), errors=[0, 1, 2, 3]):
         """
         Create a plot using CompareScatterView.get plot, default values are
         as follows:
-        Minimizers: solver_1, solver_2
+        Minimizers: minimizer_1, minimizer_2
         Problems: problem_1, problem_2
         Tooltips: tooltip_1, tooltip_2, tooltip_3, tooltip_4
         x axis title: test_x_axis
@@ -40,13 +44,23 @@ class CompareScatterViewTests(unittest.TestCase):
                 ["tooltip_4"],
             ],
             errors=errors,
-            minimizers=["solver_1", "solver_1", "solver_2", "solver_2"],
+            minimizers=[
+                "minimizer_1",
+                "minimizer_1",
+                "minimizer_2",
+                "minimizer_2",
+            ],
             problems=["problem_1", "problem_2", "problem_1", "problem_2"],
             report_pages=[
-                "/solver_1/problem_1",
-                "/solver_2/problem_2",
-                "/solver_3/problem_1",
-                "/solver_4/problem_2",
+                "/minimizer_1/problem_1",
+                "/minimizer_2/problem_2",
+                "/minimizer_3/problem_1",
+                "/minimizer_4/problem_2",
+            ],
+            plottable_attributes=[
+                "test_y_axis",
+                "test_x_axis",
+                "test_alternate_axis",
             ],
         )
 
@@ -190,7 +204,7 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["solver_1"], True),
+            "minimizer": dict.fromkeys(["minimizer_1"], True),
             "problem": dict.fromkeys(["problem_1"], True),
         }
 
@@ -220,29 +234,29 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["mySolver"], True),
+            "minimizer": dict.fromkeys(["myMinimizer"], True),
             "problem": dict.fromkeys(["myProblem"], True),
         }
 
         group_state, state_dict = view.toggle_group_state(
-            "mySolver", default_state_dict
+            "myMinimizer", default_state_dict
         )
 
         self.assertEqual(group_state, False)
-        self.assertEqual(state_dict["minimizer"]["mySolver"], False)
+        self.assertEqual(state_dict["minimizer"]["myMinimizer"], False)
 
         group_state, state_dict = view.toggle_group_state(
-            "mySolver", state_dict
+            "myMinimizer", state_dict
         )
 
         self.assertEqual(group_state, True)
-        self.assertEqual(state_dict["minimizer"]["mySolver"], True)
+        self.assertEqual(state_dict["minimizer"]["myMinimizer"], True)
 
     def test_toggle_group_state_throws_when_item_not_found(self):
         view = CompareScatterView()
 
         default_state_dict = {
-            "minimizer": dict.fromkeys(["solver_1"], True),
+            "minimizer": dict.fromkeys(["minimizer_1"], True),
             "problem": dict.fromkeys(["problem_1"], True),
         }
 
@@ -388,7 +402,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_all_false",
                 True,
                 {
-                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": False,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": False, "problem2": False},
                 },
             ),
@@ -396,7 +413,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_mixed_states",
                 True,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": True,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": True, "problem2": False},
                 },
             ),
@@ -404,7 +424,7 @@ class CompareScatterViewTests(unittest.TestCase):
                 "active_all_true",
                 True,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "minimizer": {"myMinimizer": True, "otherMinimizer": True},
                     "problem": {"problem1": True, "problem2": True},
                 },
             ),
@@ -412,7 +432,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_all_false",
                 False,
                 {
-                    "minimizer": {"mySolver": False, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": False,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": False, "problem2": False},
                 },
             ),
@@ -420,7 +443,10 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_mixed_states",
                 False,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": False},
+                    "minimizer": {
+                        "myMinimizer": True,
+                        "otherMinimizer": False,
+                    },
                     "problem": {"problem1": True, "problem2": False},
                 },
             ),
@@ -428,7 +454,7 @@ class CompareScatterViewTests(unittest.TestCase):
                 "inactive_all_true",
                 False,
                 {
-                    "minimizer": {"mySolver": True, "otherSolver": True},
+                    "minimizer": {"myMinimizer": True, "otherMinimizer": True},
                     "problem": {"problem1": True, "problem2": True},
                 },
             ),
@@ -444,12 +470,17 @@ class CompareScatterViewTests(unittest.TestCase):
         legend) for every minimizer and problem
         """
         view = CompareScatterView()
-        minimizers = ["mySolver", "mySolver", "otherSolver", "otherSolver"]
+        minimizers = [
+            "myMinimizer",
+            "myMinimizer",
+            "otherMinimizer",
+            "otherMinimizer",
+        ]
         problems = ["problem1", "problem2", "problem1", "problem2"]
 
         view.plot = Mock(spec=go.Figure)
 
-        # there should be one trace for each problem on each minimiser
+        # there should be one trace for each problem on each minimizer
         view.plot.data = [go.Scatter()] * (len(minimizers) * len(problems))
         for mock_trace in view.plot.data:
             mock_trace.marker = {"opacity": 1}
@@ -475,19 +506,31 @@ class CompareScatterViewTests(unittest.TestCase):
         set_props_mock.assert_called()
 
     def test_set_trace_opacity(self):
+        """
+        Both the marker opacity and the inline style of any HTML error-flag
+        text must be updated together, so that the point and its annotation
+        fade as one. The opacity must also be settable to arbitrary values
+        and remain consistent across multiple successive calls.
+        """
         view = CompareScatterView()
         plot_div = self._create_test_plot(view, errors=[1, 1, 1, 1])
 
-        trace = plot_div.children[1].figure.data[0]
+        trace = plot_div.children[1].children[0].figure.data[0]
         view.set_trace_opacity(trace, 0)
         self.assertEqual(trace.marker["opacity"], 0)
-        self.assertEqual(trace.text, '<sup style="opacity:0"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:0"><b>1</b></sup>',)
+        )
         view.set_trace_opacity(trace, 1)
         self.assertEqual(trace.marker["opacity"], 1)
-        self.assertEqual(trace.text, '<sup style="opacity:1"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:1"><b>1</b></sup>',)
+        )
         view.set_trace_opacity(trace, 0.5)
         self.assertEqual(trace.marker["opacity"], 0.5)
-        self.assertEqual(trace.text, '<sup style="opacity:0.5"><b>1</b></sup>')
+        self.assertEqual(
+            trace.text, ('<sup style="opacity:0.5"><b>1</b></sup>',)
+        )
 
     @parameterized.expand(["all", "none"])
     @patch(
@@ -537,7 +580,12 @@ class CompareScatterViewTests(unittest.TestCase):
         view = CompareScatterView()
         _ = self._create_test_plot(view)
 
-        minimizers = ["solver_1", "solver_2", "solver_3", "solver_4"]
+        minimizers = [
+            "minimizer_1",
+            "minimizer_2",
+            "minimizer_3",
+            "minimizer_4",
+        ]
         problems = ["problem_1", "problem_2", "problem_1", "problem_2"]
         expected_state = {
             "minimizer": dict.fromkeys(minimizers, start_state),
@@ -556,3 +604,145 @@ class CompareScatterViewTests(unittest.TestCase):
             self.assertEqual(mock_trace_opacity.call_args.args[1], new_opacity)
 
         mock_trace_opacity.assert_called()
+
+    def test_update_axes_data_makes_correct_changes(self):
+        view = CompareScatterView()
+        self._create_test_plot(view=view)
+        new_x = [4, 3, 2, 1]
+        new_y = [5, 6, 7, 8]
+        view.update_axes_data("new_x_title", new_x, "new_y_title", new_y)
+        self.assertEqual(view.plot.layout.xaxis.title.text, "new_x_title")
+        self.assertEqual(view.plot.layout.yaxis.title.text, "new_y_title")
+        for i, trace in enumerate(view.plot.data):
+            self.assertEqual(trace.x, (new_x[i],))
+            self.assertEqual(trace.y, (new_y[i],))
+
+    def test_update_axes_data_behaves_same_as_get_plot(self):
+        """
+        Both of these functions set how the data is laid out on an axis -
+        they need to behave the same for consistency
+        """
+        view = CompareScatterView()
+        self._create_test_plot(view)
+        initial_x = [list(trace.x) for trace in view.plot.data]
+        initial_y = [list(trace.y) for trace in view.plot.data]
+
+        view.update_axes_data(
+            view.plot.layout.xaxis.title.text,
+            initial_x,
+            view.plot.layout.yaxis.title.text,
+            initial_y,
+        )
+
+        for i, trace in enumerate(view.plot.data):
+            self.assertEqual(initial_x[i], list(trace.x))
+            self.assertEqual(initial_y[i], list(trace.y))
+
+    def test_customdata_indices_map_to_correct_fields(self):
+        """
+        The DATA_*_INDEX constants must correctly identify which column in
+        customdata holds each field. If the order of custom_data in get_plot
+        changes without updating the constants, hover text, apply_state, and
+        update_axes_data will all silently read the wrong values.
+        """
+        view = CompareScatterView()
+        self._create_test_plot(view)
+
+        actual = set()
+        for trace in view.plot.data:
+            for point in trace.customdata:
+                # create a tuple of all of the data in customdata for this
+                # point
+                actual.add(
+                    (
+                        int(point[CompareScatterView.DATA_SOURCE_INDEX]),
+                        point[CompareScatterView.DATA_MINIMIZER_INDEX],
+                        point[CompareScatterView.DATA_PROBLEM_INDEX],
+                        tuple(point[CompareScatterView.DATA_HOVER_TEXT_INDEX]),
+                    )
+                )
+
+        expected = {
+            (0, "minimizer_1", "problem_1", ("tooltip_1",)),
+            (1, "minimizer_1", "problem_2", ("tooltip_2",)),
+            (2, "minimizer_2", "problem_1", ("tooltip_3",)),
+            (3, "minimizer_2", "problem_2", ("tooltip_4",)),
+        }
+
+        self.assertEqual(actual, expected)
+
+    @staticmethod
+    def _make_trace(text, opacity=1.0):
+        return go.Scatter(
+            x=[0],
+            y=[0],
+            text=text,
+            marker={"opacity": opacity, "size": 13},
+        )
+
+    def test_set_trace_opacity_leaves_empty_strings_unchanged(self):
+        """
+        Points without an error flag have empty text. These must pass through
+        unchanged so that no spurious annotation appears on the plot.
+        """
+        trace = self._make_trace(text=("", ""))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text, ("", ""))
+
+    def test_set_trace_opacity_handles_mixed_empty_and_html_text(self):
+        """
+        When multiple cost functions are used, a trace has one text entry per
+        cost function: some are HTML error flags, others are empty. Both must
+        survive the update correctly — empty entries unchanged, HTML entries
+        updated.
+        """
+        html_in = '<sup style="opacity:1"><b>3</b></sup>'
+        trace = self._make_trace(text=("", html_in))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text[0], "")
+        self.assertIn(f"opacity:{self.inactive_opacity}", trace.text[1])
+
+    def test_set_trace_opacity_updates_marker_when_text_is_none(self):
+        """
+        Traces with no text (no error flags at all) still need their marker
+        opacity updated so they fade correctly when toggled.
+        """
+        trace = self._make_trace(text=None)
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.marker["opacity"], self.inactive_opacity)
+
+    def test_set_trace_opacity_handles_numpy_array_text(self):
+        """
+        When two cost functions are selected, Plotly stores t.text as a numpy
+        array. Evaluating 'not array' raises an ambiguity error, so the None
+        guard must use 'is None' rather than a truthiness check.
+        """
+        html_in = '<sup style="opacity:1"><b>3</b></sup>'
+        trace = self._make_trace(text=np.array(["", html_in]))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text[0], "")
+        self.assertIn(f"opacity:{self.inactive_opacity}", trace.text[1])
+
+    def test_set_trace_opacity_preserves_all_empty_strings(self):
+        """
+        When every text entry is empty (no error flags), the text sequence
+        must be returned intact so downstream code sees the same structure.
+        """
+        trace = self._make_trace(text=("", "", ""))
+        CompareScatterView.set_trace_opacity(trace, self.inactive_opacity)
+        self.assertEqual(trace.text, ("", "", ""))
+
+    def test_set_trace_opacity_restores_active_opacity(self):
+        """
+        Opacity must be settable in both directions so that toggling a trace
+        back on correctly restores its full visibility.
+        """
+        html_in = (
+            f'<sup style="opacity:{self.inactive_opacity}"><b>2</b></sup>'
+        )
+        trace = self._make_trace(
+            text=(html_in,), opacity=self.inactive_opacity
+        )
+        CompareScatterView.set_trace_opacity(trace, self.active_opacity)
+        self.assertEqual(trace.marker["opacity"], self.active_opacity)
+        self.assertIn(f"opacity:{self.active_opacity}", trace.text[0])

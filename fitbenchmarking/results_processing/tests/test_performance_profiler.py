@@ -67,44 +67,12 @@ def remove_ids_and_src(html_path):
     return processed_lines
 
 
-def diff_between_htmls(expected_plot_path, output_plot_path):
+def save_result(plot: go.Figure, path):
     """
-    Finds differences between two html files line by line.
-    Returns an empty list if no difference is found.
-
-    :param expected: path to html file with expected lines
-    :type expected: str
-    :param achieved: path to html file with achieved lines
-    :type achieved: str
-
-    :return: Lines in the two files that present differences
-    :rtype: list[list]
+    Save the plot in the format expected by the unit tests.
     """
-    act_lines = remove_ids_and_src(output_plot_path)
-    exp_lines = remove_ids_and_src(expected_plot_path)
-
-    diff = []
-    for i, (act_line, exp_line) in enumerate(zip(act_lines, exp_lines)):
-        exp_line = "" if exp_line is None else exp_line.strip("\n")
-        act_line = "" if act_line is None else act_line.strip("\n")
-
-        if act_line != exp_line:
-            diff.append([i, exp_line, act_line])
-
-    if diff:
-        print(
-            f"Comparing {output_plot_path} against {expected_plot_path}\n"
-            + "\n".join(
-                [
-                    f"== Line {change[0]} ==\n"
-                    f"Expected :{change[1]}\n"
-                    f"Actual   :{change[2]}"
-                    for change in diff
-                ]
-            )
-        )
-
-    return diff
+    with open(path, "w") as expected_plot_file:
+        expected_plot_file.write(plot.to_json(pretty=True))
 
 
 class PerformanceProfilerTests(unittest.TestCase):
@@ -299,14 +267,19 @@ class PerformanceProfilerTests(unittest.TestCase):
         """
         Test create_plot returns the correct performance profile plot,
         by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
         expected_plot_path = (
             self.expected_results_dir + "/pp_offline_plot.json"
         )
+
         with open(expected_plot_path) as expected_plot_file:
             expected_figure = json.load(expected_plot_file)
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
+
         self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_create_df_returns_correct_df(self):
@@ -483,6 +456,9 @@ class DashPerfProfileTests(unittest.TestCase):
         """
         Test create_graph returns the expected performance profile plot,
         by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
 
         selected_solvers = self.data.columns
@@ -491,6 +467,7 @@ class DashPerfProfileTests(unittest.TestCase):
         )
 
         expected_plot_path = self.expected_results_dir + "/dash_plot.json"
+
         with open(expected_plot_path) as expected_plot_file:
             expected_figure = json.load(expected_plot_file)
 

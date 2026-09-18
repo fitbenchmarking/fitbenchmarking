@@ -145,10 +145,12 @@ class TestNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[-1.0], [-1.0], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_jac_cost(self):
         """
@@ -180,7 +182,7 @@ class TestNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
 
@@ -190,7 +192,7 @@ class TestNLLSCostFunc(TestCase):
                 [[-300.0, -19200.0, -36300.0], [-300.0, -19200.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_hes_cost(self):
         """
@@ -346,10 +348,10 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.cost_function.jacobian = mock_jacobian
 
         e = [np.array([2.0, 2.0]), np.array([4.0, 4.0])]
-        J = self.cost_function.jac_res(params=[5], e=e)
+        jacobian_of_residual = self.cost_function.jac_res(params=[5], e=e)
 
         expected = np.array([[-1.0], [-1.0], [-1.0], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_jac_res(self):
         """
@@ -359,12 +361,12 @@ class TestWeightedNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(
+        jacobian_of_residual = self.cost_function.jac_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
         expected = np.array([[-0.5], [-0.25], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -381,7 +383,7 @@ class TestWeightedNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
@@ -391,7 +393,7 @@ class TestWeightedNLLSCostFunc(TestCase):
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -460,12 +462,12 @@ class TestLoglikeNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(
+        jacobian_of_residual = self.cost_function.jac_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
         expected = np.array([[-0.5], [-0.25], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -482,7 +484,7 @@ class TestLoglikeNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
@@ -492,7 +494,7 @@ class TestLoglikeNLLSCostFunc(TestCase):
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -567,10 +569,12 @@ class TestHellingerNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[-0.20412415], [-0.13867504], [-0.125]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -587,7 +591,7 @@ class TestHellingerNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
         expected = np.array(
@@ -596,7 +600,7 @@ class TestHellingerNLLSCostFunc(TestCase):
                 [[-2.0, -16.0, -22.0], [-2.0, -16.0, -22.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -677,10 +681,12 @@ class TestPoissonCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[0.0], [0.23076923], [-0.25]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -697,7 +703,7 @@ class TestPoissonCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
 
@@ -707,7 +713,7 @@ class TestPoissonCostFunc(TestCase):
                 [[300.96, 19201.6, 36303.2], [300.96, 19201.6, 36303.2]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """

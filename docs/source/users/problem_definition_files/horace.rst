@@ -15,7 +15,7 @@ Examples of horace problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/PCSMO_at_001_data.txt
 
-.. literalinclude:: ..../../../examples/benchmark_problems/SpinW_powder_data/tri_AFM_powder.txt
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW_powder_data/tri_AFM_powder.txt
 
 .. note::
   The Horace file format requires you to have run the benchmark problem in Horace 

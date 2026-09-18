@@ -281,6 +281,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     """
     Process the best result from a list of FittingResults.
     This includes:
+
      - Setting the `is_best_fit` flag,
      - Setting the `min_accuracy` value,
      - Setting the `min_runtime` value, and
@@ -729,13 +730,17 @@ def display_page(
 
     :param pathname: The link to the page with the Dash plot
     :type pathname: str
+
     :param profile_instances_all_groups: The data to be plotted (formatted as
-    problem set: dict())
+        problem set: dict())
     :type profile_instances_all_groups: dict[str[dict]]
+
     :param layout: Layout of the Dash app
     :type layout: list of dcc or html components
+
     :param max_solvers: Maximum number of solvers that can be plotted
     :type max_solvers: int
+
     :param run_id: The id for the run that is plotted in dash
     :type run_id: str
 

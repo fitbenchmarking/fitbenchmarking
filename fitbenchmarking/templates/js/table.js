@@ -498,9 +498,11 @@ function set_iframe_height(path){
 /**
 * Allows to switch between offline and online (Dash) performance profile plots.
 */
-function load_src(_button) {
+function load_src(_button,iframe_wrapper_id) {
+    console.log(_button);
+    console.log(iframe_wrapper_id); 
     var path = _button.dataset.value1.split("|");
-    var iframewrapper = document.getElementsByClassName("iframe-wrapper")[0];
+    var iframe_wrapper = document.getElementById(iframe_wrapper_id);
 
     var new_iframes = []
     for (p in path) {
@@ -515,7 +517,7 @@ function load_src(_button) {
         new_iframes.push(new_iframe);
     };
 
-    iframewrapper.replaceChildren(...new_iframes);
+    iframe_wrapper.replaceChildren(...new_iframes);
 }
 
 /**
