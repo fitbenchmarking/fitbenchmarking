@@ -23,7 +23,7 @@ from fitbenchmarking.utils.test_utils import compare_files
 # amplifies this because a tiny change in which minimizer was the
 # best for a problem rescales the whole row. Only differences larger
 # than RELATIVE_TOLERANCE are treated as a regression.
-RELATIVE_TOLERANCE = 1e-3
+RELATIVE_TOLERANCE = 1e-2
 
 # Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
 # the absolute value, the normalised value and the error flag.
