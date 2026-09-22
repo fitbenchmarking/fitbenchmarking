@@ -7,9 +7,10 @@
   "tmax": 20,
   "n_bootstrap": 200,
   "n_configurations": 137,
+  "scale": 1000.0,
   "reference_E": 0.7033757141901914,
   "reference_E_bootstrap_error": 0.017608667349978232,
-  "reference_a": 0.13128464316902516,
+  "reference_a": 4.151584942165854,
   "lsqfit_chi2": 6.699166093732921,
   "lsqfit_dof": 9
 }

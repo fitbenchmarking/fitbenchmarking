@@ -28,6 +28,13 @@ Description:   Zero-momentum axial vector-channel meson two-point
                file as ASB2M9_av_cov.txt; fitting against the diagonal errors
                here is therefore an approximation to the published objective.
 
+               y and e have both been multiplied by 100 relative to the
+               published normalisation, to keep every error bar clear of the
+               1e-8 floor FitBenchmarking imposes on data_e.  This rescales
+               the amplitude as a -> a*sqrt(100) and leaves E and the
+               weighted residuals unchanged.  The covariance file is scaled to
+               match, by 100**2.
+
 Reference:     Bennett et al., "Meson spectroscopy in the Sp(4) gauge theory
                with three antisymmetric fermions", arXiv:2412.01170.
                Data release: https://doi.org/10.5281/zenodo.13819562
@@ -45,7 +52,7 @@ Model:         Periodic single-cosh, 2 Parameters (a and E)
           Starting values                  Certified Values
 
         Start 1     Start 2           Parameter     Standard Deviation
-  a =   1           0.16474187        8.3257660109E-02  0.0000000000E+00
+  a =   1           1.6474187         8.3257660109E-01  0.0000000000E+00
   E =   0.5         0.500607503       5.0207083728E-01  8.0679877597E-03
 
 Residual Sum of Squares:                    3.8689100407E+00
@@ -54,7 +61,7 @@ Number of Observations:                            4
 
 
 Data:   y               x               e
-   6.142999127098E-06    1.400000000000E+01    1.659149533996E-07
-   3.720397973382E-06    1.500000000000E+01    1.175235137145E-07
-   2.259142444662E-06    1.600000000000E+01    8.442869259330E-08
-   1.394951604554E-06    1.700000000000E+01    6.306253097701E-08
+   6.142999127098E-04    1.400000000000E+01    1.659149533996E-05
+   3.720397973382E-04    1.500000000000E+01    1.175235137145E-05
+   2.259142444662E-04    1.600000000000E+01    8.442869259330E-06
+   1.394951604554E-04    1.700000000000E+01    6.306253097701E-06
