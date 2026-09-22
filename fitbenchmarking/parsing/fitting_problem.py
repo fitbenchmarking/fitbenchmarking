@@ -97,7 +97,6 @@ class FittingProblem:
         #: For lsqfit problems, may include:
         #:   - 'priors': dict of {param_name: gvar.gvar(...)}
         #:   - 'covariance': full covariance matrix (np.ndarray)
-        #:   - 'cholesky_L': lower-triangular Cholesky decomposition
         #:   - 'lsqfit_metadata': raw JSON metadata dict
         #: This should be avoided if possible for other uses.
         self.additional_info = {}

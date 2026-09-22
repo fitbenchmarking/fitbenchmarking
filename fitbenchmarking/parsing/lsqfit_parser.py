@@ -7,7 +7,6 @@ import os
 
 import gvar as gv
 import numpy as np
-from scipy.linalg import cholesky
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
@@ -27,7 +26,6 @@ class LSQfitParser(FitbenchmarkParser):
         Stores in problem.additional_info:
             - 'priors': dict of {param_name: gvar} (if available)
             - 'covariance': full covariance matrix (nt x nt)
-            - 'cholesky_L': lower-triangular Cholesky decomposition
             - 'lsqfit_metadata': raw metadata dict
         """
         super()._set_additional_info()
@@ -52,15 +50,10 @@ class LSQfitParser(FitbenchmarkParser):
             if priors:
                 self.fitting_problem.additional_info["priors"] = priors
 
-        # Extract covariance and Cholesky
-        cov_info = self._parse_covariance_cholesky(data_file)
-        if cov_info:
-            self.fitting_problem.additional_info["covariance"] = cov_info[
-                "cov"
-            ]
-            self.fitting_problem.additional_info["cholesky_L"] = cov_info[
-                "cholesky_L"
-            ]
+        # Extract covariance
+        cov = self._parse_covariance(data_file)
+        if cov is not None:
+            self.fitting_problem.additional_info["covariance"] = cov
 
     def _parse_metadata_file(self, data_file: str):
         """
@@ -104,17 +97,16 @@ class LSQfitParser(FitbenchmarkParser):
             for name, spec in priors_spec.items()
         }
 
-    def _parse_covariance_cholesky(self, data_file: str):
+    def _parse_covariance(self, data_file: str):
         """
-        Extract covariance matrix and its Cholesky decomposition.
+        Extract covariance matrix from file.
 
         Reads from *_cov.txt (full covariance matrix).
-        Optionally uses pre-computed *_cov_cholesky.npy.
 
         :param data_file: Path to the data file
         :type data_file: str
-        :return: Dict with 'cov' and 'cholesky_L' keys, or None
-        :rtype: dict or None
+        :return: Covariance matrix, or None
+        :rtype: np.ndarray or None
         """
         base = data_file.replace(".dat", "")
         cov_file = f"{base}_cov.txt"
@@ -122,17 +114,4 @@ class LSQfitParser(FitbenchmarkParser):
         if not os.path.exists(cov_file):
             return None
 
-        # Load full covariance
-        cov_matrix = np.loadtxt(cov_file)
-
-        # Compute or load Cholesky
-        chol_file = f"{base}_cov_cholesky.npy"
-        if os.path.exists(chol_file):
-            chol_l = np.load(chol_file)
-        else:
-            chol_l = cholesky(cov_matrix, lower=True)
-
-        return {
-            "cov": cov_matrix,
-            "cholesky_L": chol_l,
-        }
+        return np.loadtxt(cov_file)
