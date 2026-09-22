@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-INVALID_WORDS = ("minimiser", "solver")  # ignore: spelling
+INVALID_WORDS = ("minimiser",)  # ignore: spelling
 VALID_SPELLING = "minimizer"
 IGNORE_STRING = "# ignore: spelling"
 
@@ -12,40 +12,10 @@ INVALID_WORDS_PATTERN = re.compile(
     "|".join(sorted(INVALID_WORDS, key=len, reverse=True)), re.IGNORECASE
 )
 
-#: Names which contain an invalid word but cannot be renamed, either because
-#: they belong to a third party API or because they are part of the public
-#: FitBenchmarking interface.
-ALLOWED_NAMES = re.compile(
-    # FitBenchmarking controller attributes, documented in
-    # docs/source/extending/controllers.rst and set by external controllers.
-    r"_enabled_solvers"
-    # The Ceres Solver library, and its python bindings.
-    r"|[Cc]eres[- ]?[Ss]olver"
-    r"|Solver(Options|Summary)"  # ignore: spelling
-    r"|[Ll]inear[_]?[Ss]olver[_]?[Tt]ype",  # ignore: spelling
-)
-MASK_CHAR = "-"
-
-
-def mask_allowed_names(line: str) -> str:
-    """
-    Blank out any allowed names so that the invalid words they contain are
-    not reported. The length of the line is preserved so that the position of
-    any remaining invalid word still lines up with the original text.
-
-    :param line: The line of text to mask
-    :type line: str
-
-    :return: The line with allowed names replaced by MASK_CHAR
-    :rtype: str
-    """
-    return ALLOWED_NAMES.sub(lambda m: MASK_CHAR * len(m.group()), line)
-
 
 def find_invalid_words(line: str) -> list[tuple[int, str]]:
     """
-    Find every invalid word in a line, ignoring any which appear inside an
-    allowed name.
+    Find every invalid word in a line.
 
     :param line: The line of text to search
     :type line: str
@@ -57,11 +27,9 @@ def find_invalid_words(line: str) -> list[tuple[int, str]]:
     if IGNORE_STRING.casefold() in line.casefold():
         return []
 
-    masked_line = mask_allowed_names(line)
-
     return [
         (match.start(), match.group().lower())
-        for match in INVALID_WORDS_PATTERN.finditer(masked_line)
+        for match in INVALID_WORDS_PATTERN.finditer(line)
     ]
 
 

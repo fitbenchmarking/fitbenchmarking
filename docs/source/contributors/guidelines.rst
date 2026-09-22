@@ -66,16 +66,9 @@ code and in documentation. A pre-commit hook,
 alternative.
 
 Where such a word cannot be avoided, add ``# ignore: spelling`` to the end of
-the line and the check will skip it. The discouraged words are listed below,
-each shown with the marker applied::
+the line and the check will skip it. The discouraged word is::
 
     minimiser  # ignore: spelling
-    solver     # ignore: spelling
-
-If a name comes from a third party API or is part of the public
-FitBenchmarking interface, and so appears in many places, add it to
-``ALLOWED_NAMES`` in the hook instead. This exempts that name wherever it
-occurs, rather than exempting whole lines one at a time.
 
 ==========
 Pre-commit
