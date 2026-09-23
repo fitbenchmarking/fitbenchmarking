@@ -27,7 +27,7 @@ DEFAULT_RELATIVE_TOLERANCE = 1e-3
 
 # Per-problem tolerances for specific benchmark problems
 PROBLEM_TOLERANCES = {
-    "hogben": 1e-1,
+    "hogben": 1e-2,
 }
 
 # Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
