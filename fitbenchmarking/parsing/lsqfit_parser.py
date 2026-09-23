@@ -2,10 +2,12 @@
 This file implements a parser for lsqfit-specific problem definitions.
 """
 
-import json
+import importlib
 import os
+import sys
+import typing
+from pathlib import Path
 
-import gvar as gv
 import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -15,87 +17,129 @@ class LSQfitParser(FitbenchmarkParser):
     """
     Parser for FitBenchmark problems with lsqfit-specific metadata.
 
-    Extends FitbenchmarkParser to read prior specifications and covariance
-    matrices from *_meta.json files, storing them in problem.additional_info.
+    Extends FitbenchmarkParser to read covariance matrices from *_cov.txt
+    files, storing them in problem.additional_info.
     """
+
+    def _create_function(self) -> typing.Callable:
+        """
+        Create a callable function from the lsqfit model specification.
+
+        Expected function format:
+        function='module=functions/functions,func=periodic_cosh,a=0.1,E=0.7,Nt=48'
+        or
+        function='module=functions,func=periodic_cosh,a=0.1,E=0.7,Nt=48'
+
+        :return: A callable function
+        :rtype: callable
+        """
+        pf = self._parsed_func[0]
+        module_path_str = pf["module"]
+        func_name = pf["func"]
+
+        # Handle both module names and module paths (with /)
+        base_path = Path(self._filename).parent
+        if "/" in module_path_str:
+            # module_path_str is a path like "functions/functions"
+            module_file_path = base_path / f"{module_path_str}.py"
+            module_dir = module_file_path.parent
+            module_name = module_file_path.stem
+        else:
+            # module_path_str is just a name like "functions"
+            module_file_path = base_path / f"{module_path_str}.py"
+            module_dir = base_path
+            module_name = module_path_str
+
+        sys.path.insert(0, str(module_dir))
+        module = importlib.import_module(module_name)
+        model_func = getattr(module, func_name)
+
+        # Extract parameter names (all keys except module and func)
+        param_names = [k for k in pf if k not in ("module", "func")]
+
+        self._equation = func_name
+        self._starting_values = [{n: pf[n] for n in param_names}]
+
+        def fit_function(x, *params):
+            param_dict = dict(zip(param_names, params))
+            return model_func(x, **param_dict)
+
+        return fit_function
+
+    def _get_equation(self) -> str:
+        """
+        Returns the function name as the equation.
+
+        :return: The function name
+        :rtype: str
+        """
+        return self._equation
+
+    def _get_starting_values(self) -> list:
+        """
+        Returns the starting values for the problem.
+
+        :return: The starting values from the function definition
+        :rtype: list
+        """
+        return self._starting_values
 
     def _set_additional_info(self):
         """
-        Parse lsqfit metadata from *_meta.json files.
+        Parse lsqfit priors and covariance.
 
         Stores in problem.additional_info:
-            - 'priors': dict of {param_name: gvar} (if available)
+            - 'priors': dict of {param_name: gvar} (if specified)
             - 'covariance': full covariance matrix (nt x nt)
-            - 'lsqfit_metadata': raw metadata dict
         """
         super()._set_additional_info()
 
-        # Parse metadata for each data file
-        for data_file in self._get_data_file():
-            self._parse_lsqfit_metadata(data_file)
-
-    def _parse_lsqfit_metadata(self, data_file: str) -> None:
-        """
-        Parse and store lsqfit metadata and covariance info.
-
-        :param data_file: Path to the data file
-        :type data_file: str
-        """
-        meta = self._parse_metadata_file(data_file)
-        if meta:
-            self.fitting_problem.additional_info["lsqfit_metadata"] = meta
-
-            # Extract priors if specified
-            priors = self._parse_priors(meta)
+        # Parse priors if specified
+        if "priors" in self._entries:
+            priors = self._parse_priors_entry(self._entries["priors"])
             if priors:
                 self.fitting_problem.additional_info["priors"] = priors
 
-        # Extract covariance
-        cov = self._parse_covariance(data_file)
-        if cov is not None:
-            self.fitting_problem.additional_info["covariance"] = cov
+        # Parse covariance for each data file
+        for data_file in self._get_data_file():
+            cov = self._parse_covariance(data_file)
+            if cov is not None:
+                self.fitting_problem.additional_info["covariance"] = cov
 
-    def _parse_metadata_file(self, data_file: str):
-        """
-        Load and parse *_meta.json file associated with data file.
+    # def _parse_priors_entry(self, priors_str: str) -> dict | None:
+    #     """
+    #     Parse priors from the problem definition file.
 
-        :param data_file: Path to the data file
-        :type data_file: str
-        :return: Parsed JSON dict, or None if file not found
-        :rtype: dict or None
-        """
-        meta_file = data_file.replace(".dat", "_meta.json")
-        try:
-            with open(meta_file) as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return None
+    #     Expected format: 'a=0.1(0.02),E=0.7(0.1)'
+    #     where param=mean(sdev) creates gvar(mean, sdev).
 
-    def _parse_priors(self, metadata: dict):
-        """
-        Extract prior specifications from metadata.
+    #     :param priors_str: The priors specification string
+    #     :type priors_str: str
+    #     :return: Dict of {param_name: gvar}, or None if empty/invalid
+    #     :rtype: dict or None
+    #     """
+    #     if not priors_str or not priors_str.strip():
+    #         return None
 
-        Expected metadata format:
-            {
-                "priors": {
-                    "param_name": {"mean": 0.5, "sdev": 0.1},
-                    ...
-                }
-            }
-
-        :param metadata: Parsed metadata dict
-        :type metadata: dict
-        :return: Dict of {param_name: gvar}, or None
-        :rtype: dict or None
-        """
-        priors_spec = metadata.get("priors", {})
-        if not priors_spec:
-            return None
-
-        return {
-            name: gv.gvar(spec["mean"], spec["sdev"])
-            for name, spec in priors_spec.items()
-        }
+    #     priors = {}
+    #     for item in priors_str.split(","):
+    #         item = item.strip()
+    #         if "=" not in item or "(" not in item or ")" not in item:
+    #             continue
+    #         name, val_str = item.split("=", 1)
+    #         name = name.strip()
+    #         val_str = val_str.strip()
+    #         # Parse format: mean(sdev)
+    #         if "(" in val_str and val_str.endswith(")"):
+    #             parts = val_str.split("(")
+    #             if len(parts) == 2:
+    #                 try:
+    #                     mean = float(parts[0].strip())
+    #                     sdev = float(parts[1].rstrip(")").strip())
+    #                     priors[name] = gv.gvar(mean, sdev)
+    #                 except ValueError:
+    #                     pass
+    #     return priors if priors else None
 
     def _parse_covariance(self, data_file: str):
         """
@@ -108,6 +152,7 @@ class LSQfitParser(FitbenchmarkParser):
         :return: Covariance matrix, or None
         :rtype: np.ndarray or None
         """
+        data_file = str(data_file)
         base = data_file.replace(".dat", "")
         cov_file = f"{base}_cov.txt"
 
