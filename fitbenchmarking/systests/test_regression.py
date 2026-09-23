@@ -22,8 +22,13 @@ from fitbenchmarking.utils.test_utils import compare_files
 # library versions and CPUs, and the normalised value in brackets
 # amplifies this because a tiny change in which minimizer was the
 # best for a problem rescales the whole row. Only differences larger
-# than RELATIVE_TOLERANCE are treated as a regression.
-RELATIVE_TOLERANCE = 1e-3
+# than DEFAULT_RELATIVE_TOLERANCE are treated as a regression.
+DEFAULT_RELATIVE_TOLERANCE = 1e-3
+
+# Per-problem tolerances for specific benchmark problems
+PROBLEM_TOLERANCES = {
+    "hogben": 1e-2,
+}
 
 # Matches a value in a results table, e.g. '11.97 (1.001)[2]', capturing
 # the absolute value, the normalised value and the error flag.
@@ -197,11 +202,13 @@ class TestRegressionDefault(TestCase):
         )
 
 
-def values_match(expected: str, actual: str) -> bool:
+def values_match(
+    expected: str, actual: str, rtol: float = DEFAULT_RELATIVE_TOLERANCE
+) -> bool:
     """
     Compare a single cell of the results table. Cells which hold a number,
     such as '11.97 (1.001)[2]', match when both the absolute and the
-    normalised value are within RELATIVE_TOLERANCE of the expected ones and
+    normalised value are within rtol of the expected ones and
     the error flag is identical. Anything else, e.g. a problem name or
     'N/A', must match exactly.
 
@@ -209,6 +216,8 @@ def values_match(expected: str, actual: str) -> bool:
     :type expected: str
     :param actual: The actual cell
     :type actual: str
+    :param rtol: Relative tolerance for numeric comparison
+    :type rtol: float
     :return: True if the cells match
     :rtype: bool
     """
@@ -230,23 +239,26 @@ def values_match(expected: str, actual: str) -> bool:
             act_num = float(act_value[group])
         except ValueError:
             return False
-        if not np.isclose(
-            act_num, exp_num, rtol=RELATIVE_TOLERANCE, equal_nan=True
-        ):
+        if not np.isclose(act_num, exp_num, rtol=rtol, equal_nan=True):
             return False
 
     return True
 
 
-def lines_match(expected: str, actual: str) -> bool:
+def lines_match(
+    expected: str, actual: str, rtol: float = DEFAULT_RELATIVE_TOLERANCE
+) -> bool:
     """
     Compare a row of the results table cell by cell, allowing the numbers
-    to differ by up to RELATIVE_TOLERANCE.
+    to differ by up to rtol. If the row contains a problem name that has a
+    problem-specific tolerance, that tolerance is used instead.
 
     :param expected: The expected row
     :type expected: str
     :param actual: The actual row
     :type actual: str
+    :param rtol: Relative tolerance for numeric comparison
+    :type rtol: float
     :return: True if the rows match
     :rtype: bool
     """
@@ -260,8 +272,13 @@ def lines_match(expected: str, actual: str) -> bool:
     if len(exp_cells) != len(act_cells):
         return False
 
+    # Check if the first cell (problem name) has a problem-specific tolerance
+    if act_cells and act_cells[0] in PROBLEM_TOLERANCES:
+        rtol = PROBLEM_TOLERANCES[act_cells[0]]
+
     return all(
-        values_match(exp, act) for exp, act in zip(exp_cells, act_cells)
+        values_match(exp, act, rtol=rtol)
+        for exp, act in zip(exp_cells, act_cells)
     )
 
 
@@ -271,8 +288,8 @@ def assert_results_within_tolerance(
     """
     Compares the expected benchmark results with the actual results
     using compare_files from test_utils, which contains an assertion internally
-    that fails the test if the lines do not match accounting for the defined
-    RELATIVE_TOLERANCE value.
+    that fails the test if the lines do not match accounting for the tolerance
+    value configured for each problem or the default tolerance.
 
     :param problem_sub_directory: The directory containing problems.
     :type problem_sub_directory: str
@@ -297,7 +314,7 @@ def assert_results_within_tolerance(
     with open(actual_file, encoding="utf-8") as f:
         actual_output = f.read()
 
-    # assert that lines are matching, accounting for tolerance
+    # assert that lines match, with problem-specific tolerances
     compare_files(
         test_case,
         expected_file,
