@@ -21,6 +21,7 @@ from fitbenchmarking.core.results_output import (
 from fitbenchmarking.results_processing import plots
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.exceptions import PlottingError
+from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.options import Options
 
 
@@ -365,6 +366,20 @@ class PlotTests(unittest.TestCase):
         )
         expected = len(self.fr["Fake_Test_Data"])
         self.assertEqual(add_residual_traces.call_count, expected)
+
+    def test_add_residual_traces_does_nothing_if_residuals_are_none(self):
+        """
+        When the cost func is not nlls based, the residuals are not calculated
+        so add traces cannot add them to the plot. If it were to attempt to,
+        it would raise an error.
+        """
+        result = mock.Mock(spec=FittingResult)
+        result.r_x = None
+        result.minimizer = "test_minimizer"
+        result.data_x = [1]
+        test_fig = go.Figure()
+        self.plot._add_residual_traces(test_fig, result, 1, "rgba(1,1,1,1)", 0)
+        self.assertEqual(len(test_fig.data), 0)
 
     @mock.patch(
         "fitbenchmarking.results_processing.plots.Plot._plot_minimizer_results"
