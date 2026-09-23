@@ -104,6 +104,33 @@ Default is ``central``.
     [JACOBIAN]
     numdifftools: central
 
+.. _gvar-jac:
+
+GVar (:code:`gvar`)
+-------------------
+
+Calculates the Jacobian by automatic differentiation using the python
+package :code:`gvar`. The supported options are:
+
+* ``forward_ad`` - forward mode automatic differentiation.
+
+Default is ``forward_ad``.
+
+.. warning::
+
+    This requires the model to be written entirely in operations that
+    ``gvar.GVar`` supports.  Models which cast their parameters to float, or
+    which call into compiled code, cannot be differentiated this way, and an
+    error will be raised.  This rules out the cutest, horace, mantid,
+    mantiddev and sasview problem formats.
+
+**Licence** :code:`gvar` is available under a `GPL-3.0 Licence <https://github.com/gplepage/gvar/blob/master/LICENSE.txt>`__.
+
+.. code-block:: rst
+
+    [JACOBIAN]
+    gvar: forward_ad
+
 Best Available (:code:`best_available`)
 ---------------------------------------
 
