@@ -94,17 +94,37 @@ class LSQfitParser(FitbenchmarkParser):
         """
         super()._set_additional_info()
 
-        # Parse priors if specified
-        if "priors" in self._entries:
-            priors = self._parse_priors_entry(self._entries["priors"])
-            if priors:
-                self.fitting_problem.additional_info["priors"] = priors
-
         # Parse covariance for each data file
         for data_file in self._get_data_file():
             cov = self._parse_covariance(data_file)
             if cov is not None:
                 self.fitting_problem.additional_info["covariance"] = cov
+
+        # TODO: need to work on this
+        # if "priors" in self._entries:
+        #     priors = self._parse_priors_entry(self._entries["priors"])
+        #     if priors:
+        #         self.fitting_problem.additional_info["priors"] = priors
+
+    def _parse_covariance(self, data_file: str):
+        """
+        Extract covariance matrix from file.
+
+        Reads from *_cov.txt (full covariance matrix).
+
+        :param data_file: Path to the data file
+        :type data_file: str
+        :return: Covariance matrix, or None
+        :rtype: np.ndarray or None
+        """
+        data_file = str(data_file)
+        base = data_file.replace(".dat", "")
+        cov_file = f"{base}_cov.txt"
+
+        if not os.path.exists(cov_file):
+            return None
+
+        return np.loadtxt(cov_file)
 
     # def _parse_priors_entry(self, priors_str: str) -> dict | None:
     #     """
@@ -140,23 +160,3 @@ class LSQfitParser(FitbenchmarkParser):
     #                 except ValueError:
     #                     pass
     #     return priors if priors else None
-
-    def _parse_covariance(self, data_file: str):
-        """
-        Extract covariance matrix from file.
-
-        Reads from *_cov.txt (full covariance matrix).
-
-        :param data_file: Path to the data file
-        :type data_file: str
-        :return: Covariance matrix, or None
-        :rtype: np.ndarray or None
-        """
-        data_file = str(data_file)
-        base = data_file.replace(".dat", "")
-        cov_file = f"{base}_cov.txt"
-
-        if not os.path.exists(cov_file):
-            return None
-
-        return np.loadtxt(cov_file)
