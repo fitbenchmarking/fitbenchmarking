@@ -37,18 +37,10 @@ class LSQfitParser(FitbenchmarkParser):
         module_path_str = pf["module"]
         func_name = pf["func"]
 
-        # Handle both module names and module paths (with /)
         base_path = Path(self._filename).parent
-        if "/" in module_path_str:
-            # module_path_str is a path like "functions/functions"
-            module_file_path = base_path / f"{module_path_str}.py"
-            module_dir = module_file_path.parent
-            module_name = module_file_path.stem
-        else:
-            # module_path_str is just a name like "functions"
-            module_file_path = base_path / f"{module_path_str}.py"
-            module_dir = base_path
-            module_name = module_path_str
+        module_file_path = base_path / f"{module_path_str}.py"
+        module_dir = module_file_path.parent
+        module_name = module_file_path.stem
 
         sys.path.insert(0, str(module_dir))
         module = importlib.import_module(module_name)

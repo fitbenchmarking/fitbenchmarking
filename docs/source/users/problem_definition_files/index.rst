@@ -17,6 +17,7 @@ More information on the supported formats can be found on the following pages.
 
     cutest
     native
+    lsqfit
     mantid
     nist
     horace
