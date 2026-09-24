@@ -34,6 +34,7 @@ autodoc_mock_imports = [
     "galahad",
     "gofit",
     "gradient_free_optimizers",
+    "gvar",
     "iminuit",
     "levmar",
     "lmfit",
