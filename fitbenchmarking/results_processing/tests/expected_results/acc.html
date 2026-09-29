@@ -1,4 +1,13 @@
 <style type="text/css">
+#T_table td:nth-last-child(n+6) ~ td:nth-last-child(-n+3) .pd-t {
+  transform: translate(-100%);
+}
+#T_table tr:nth-last-child(n+10) ~ tr:nth-last-child(-n+5) .pd-t {
+  transform: translate(0,-125%);
+}
+#T_table tr:nth-last-child(n+10) ~ tr:nth-last-child(-n+5) td:nth-last-child(n+6) ~ td:nth-last-child(-n+3) .pd-t {
+  transform: translate(-100%, -125%);
+}
 #T_table .pd-t {
   white-space: pre;
   visibility: hidden;
@@ -8,8 +17,6 @@
   background-color: white;
   color: black;
   font-size: 0.8em;
-  transform: translate(2em, -0.6em);
-  padding: 0.6em;
   border-radius: 0em;
   pointer-events: none;
 }

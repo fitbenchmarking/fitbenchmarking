@@ -82,6 +82,7 @@ where valid strings ``option-x`` are:
 * ``galahad`` -- installs the Python interface to the `GALAHAD <https://www.galahad.rl.ac.uk/>`__ nonlinear optimization library.
 * ``gofit`` -- installs the `GOFit <https://github.com/ralna/GOFit>`_ fitting package (suitable for Python up to 3.11).
 * ``gradient-free`` -- installs the `Gradient-Free-Optimizers <https://github.com/SimonBlanke/Gradient-Free-Optimizers>`_ fitting package
+* ``gvar`` -- installs the `gvar <https://gvar.readthedocs.io>`_ package, used for the :ref:`automatic differentiation Jacobian <gvar-jac>`.
 * ``levmar`` -- installs the `levmar <http://users.ics.forth.gr/~lourakis/levmar/>`_ fitting package (suitable for Python up to 3.8, see :ref:`levmar-install`). Note that the interface we use also requires BLAS and LAPLACK to be installed on the system, and calls to this minimizer will fail if these libraries are not present.
 * ``mantid`` -- installs the `h5py <https://pypi.org/project/h5py/>`_ and `pyyaml <https://pypi.org/project/PyYAML/>`_ modules.
 * ``matlab`` -- installs the `dill <https://pypi.org/project/dill/>`_ module required to run matlab controllers in fitbenchmarking

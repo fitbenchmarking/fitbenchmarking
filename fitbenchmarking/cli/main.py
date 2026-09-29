@@ -615,6 +615,7 @@ def main():
         generate_report(
             options_file=args.options_file,
             additional_options=options_dictionary,
+            debug=args.debug_mode,
         )
     else:
         run(
