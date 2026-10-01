@@ -34,8 +34,6 @@ class HogbenParser(FitbenchmarkParser):
         with open(model, "rb") as f:
             refnx_model = pickle.load(f)
 
-        refnx_model.threads = 1
-
         self._equation = pf["function"].split(".")[0].replace("_", " ")
 
         varying_params = refnx_model.parameters.varying_parameters()
