@@ -46,7 +46,7 @@ class CreateDirsTests(unittest.TestCase):
         """
         shutil.rmtree(self.dirname)
 
-    def test_getProblemFiles_get_correct_probs(self):
+    def test_get_problem_files_get_correct_probs(self):
         """
         Test that the correct files are found
         """
