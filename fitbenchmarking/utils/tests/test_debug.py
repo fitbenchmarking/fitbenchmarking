@@ -25,9 +25,9 @@ class GetPrintableTableTests(unittest.TestCase):
             "TupleAttribute": (3, 4),
         }
 
-    def test_getProblemFiles_get_correct_probs(self):
+    def test_get_printable_table_returns_correct_string(self):
         """
-        Test that the correct files are found
+        Test that the printable table is returned in the correct format.
         """
         printable_str = get_printable_table(self.class_name, self.class_info)
 
