@@ -93,8 +93,12 @@ class FittingProblem:
         self.sorted_index = None
 
         #: *dict*
-        #: Container for software specific information.
-        #: This should be avoided if possible.
+        #: Container for software-specific information.
+        #: For lsqfit problems, may include:
+        #:   - 'priors': dict of {param_name: gvar.gvar(...)}
+        #:   - 'covariance': full covariance matrix (np.ndarray)
+        #:   - 'lsqfit_metadata': raw JSON metadata dict
+        #: This should be avoided if possible for other uses.
         self.additional_info = {}
 
         # Used to check if a problem is using multifit.

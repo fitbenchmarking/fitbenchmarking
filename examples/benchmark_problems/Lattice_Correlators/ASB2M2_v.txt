@@ -1,0 +1,7 @@
+# Fitbenchmark Problem
+software = 'lsqfit'
+name = 'ASB2M2_v'
+description = 'Lattice correlator plateau fit'
+input_file = 'data_files/ASB2M2_v.dat'
+function = 'module=functions/periodic_cosh_function,func=periodic_cosh,a=0.28999758019989246,E=0.7843060676241836,Nt=48'
+plot_scale = 'logy'
