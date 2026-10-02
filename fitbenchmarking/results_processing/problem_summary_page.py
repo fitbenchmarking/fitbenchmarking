@@ -150,6 +150,13 @@ def _create_summary_page(
     summary_plot = Path("figures") / summary_plot
     residuals_plot = Path("figures") / residuals_plot
 
+    residuals_plot_available = options.make_plots and any(
+        r.r_x is not None for r in results
+    )
+    any_residuals_plot_missing = options.make_plots and any(
+        r.r_x is None for r in results
+    )
+
     rerun_make_plots_msg = ""
 
     if two_d_plot_available := bool(two_d_plot):
@@ -202,6 +209,8 @@ def _create_summary_page(
                 summary_plot_available=summary_plot_available,
                 summary_plot=summary_plot,
                 residuals_plot=residuals_plot,
+                residuals_plot_available=residuals_plot_available,
+                any_residuals_plot_missing=any_residuals_plot_missing,
                 two_d_plot_available=two_d_plot_available,
                 two_d_plot=two_d_plot,
                 multistart_plot_avaliable=multistart_plot_avaliable,
