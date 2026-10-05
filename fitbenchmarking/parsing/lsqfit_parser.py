@@ -92,12 +92,6 @@ class LSQfitParser(FitbenchmarkParser):
             if cov is not None:
                 self.fitting_problem.additional_info["covariance"] = cov
 
-        # TODO: need to work on this
-        # if "priors" in self._entries:
-        #     priors = self._parse_priors_entry(self._entries["priors"])
-        #     if priors:
-        #         self.fitting_problem.additional_info["priors"] = priors
-
     def _parse_covariance(self, data_file: str):
         """
         Extract covariance matrix from file.
@@ -117,38 +111,3 @@ class LSQfitParser(FitbenchmarkParser):
             return None
 
         return np.loadtxt(cov_file)
-
-    # def _parse_priors_entry(self, priors_str: str) -> dict | None:
-    #     """
-    #     Parse priors from the problem definition file.
-
-    #     Expected format: 'a=0.1(0.02),E=0.7(0.1)'
-    #     where param=mean(sdev) creates gvar(mean, sdev).
-
-    #     :param priors_str: The priors specification string
-    #     :type priors_str: str
-    #     :return: Dict of {param_name: gvar}, or None if empty/invalid
-    #     :rtype: dict or None
-    #     """
-    #     if not priors_str or not priors_str.strip():
-    #         return None
-
-    #     priors = {}
-    #     for item in priors_str.split(","):
-    #         item = item.strip()
-    #         if "=" not in item or "(" not in item or ")" not in item:
-    #             continue
-    #         name, val_str = item.split("=", 1)
-    #         name = name.strip()
-    #         val_str = val_str.strip()
-    #         # Parse format: mean(sdev)
-    #         if "(" in val_str and val_str.endswith(")"):
-    #             parts = val_str.split("(")
-    #             if len(parts) == 2:
-    #                 try:
-    #                     mean = float(parts[0].strip())
-    #                     sdev = float(parts[1].rstrip(")").strip())
-    #                     priors[name] = gv.gvar(mean, sdev)
-    #                 except ValueError:
-    #                     pass
-    #     return priors if priors else None
