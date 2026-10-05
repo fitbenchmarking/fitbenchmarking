@@ -35,11 +35,6 @@ Fields
   - ``func``: Name of the function to call in the module.
   - Additional parameters: Starting values for each parameter (these are parsed as floats if possible).
 
-**priors** (optional): Prior specifications for parameters (empty string if not used).
-Format: ``param1=mean(sdev),param2=mean(sdev)``
-
-Example: ``priors = 'a=0.1(0.02),E=0.7(0.1)'``
-
 Data Files
 ==========
 
@@ -101,7 +96,6 @@ Problem definition file (``problem.txt``):
     description = 'Example lsqfit problem'
     input_file = 'data_files/problem.dat'
     function = 'module=functions/model_functions,func=periodic_cosh,a=0.1,E=0.7,Nt=48'
-    priors = ''
     plot_scale = 'logy'
 
 Usage
