@@ -78,10 +78,9 @@ class LSQfitParser(FitbenchmarkParser):
 
     def _set_additional_info(self):
         """
-        Parse lsqfit priors and covariance.
+        Parse lsqfit covariance.
 
         Stores in problem.additional_info:
-            - 'priors': dict of {param_name: gvar} (if specified)
             - 'covariance': full covariance matrix (nt x nt)
         """
         super()._set_additional_info()
