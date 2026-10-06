@@ -2,6 +2,7 @@
 Tests available cost function classes in FitBenchmarking.
 """
 
+import logging
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -21,6 +22,9 @@ from fitbenchmarking.cost_func.poisson_cost_func import (
 )
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
+)
+from fitbenchmarking.cost_func.whitened_nlls_cost_func import (
+    WhitenedNLLSCostFunc,
 )
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
@@ -136,6 +140,31 @@ class TestNLLSCostFunc(TestCase):
         Test that validate_problem does not raise an error
         """
         self.cost_function.validate_problem()
+
+    def test_validate_problem_no_warning_without_covariance(self):
+        """
+        No warning is emitted when the problem has no covariance matrix
+        """
+        with self.assertLogs("fitbenchmarking", level="WARNING") as cm:
+            # emit an unrelated warning so assertLogs does not fail on empty
+            logging.getLogger("fitbenchmarking").warning("sentinel")
+            self.cost_function.validate_problem()
+        self.assertEqual(len(cm.output), 1, "Expected no covariance warning")
+
+    def test_validate_problem_warns_when_covariance_present(self):
+        """
+        A warning is emitted when the problem supplies a covariance matrix
+        but the cost function does not use it
+        """
+        self.cost_function.problem.additional_info = {
+            "covariance": np.diag([4.0, 16.0, 1.0])
+        }
+        with self.assertLogs("fitbenchmarking", level="WARNING") as cm:
+            self.cost_function.validate_problem()
+        self.assertTrue(
+            any("covariance" in msg for msg in cm.output),
+            "Expected a covariance warning in log output",
+        )
 
     def test_jac_res(self):
         """
@@ -693,6 +722,140 @@ class TestPoissonCostFunc(TestCase):
         self.cost_function.problem.data_y[2] = -0.05
         with self.assertRaises(IncompatibleCostFunctionError):
             self.cost_function.validate_problem()
+
+
+class TestWhitenedNLLSCostFunc(TestCase):
+    """
+    Tests for the WhitenedNLLSCostFunc class
+    """
+
+    def setUp(self):
+        """
+        Set up a problem with a diagonal covariance matching e=[2, 4, 1].
+        The diagonal case lets us cross-check against WeightedNLLSCostFunc.
+        """
+        self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
+        # diagonal covariance: e = [2, 4, 1] -> C = diag([4, 16, 1])
+        self.cov = np.diag([4.0, 16.0, 1.0])
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.data_e = np.array([2.0, 4.0, 1.0])
+        fitting_problem.additional_info = {"covariance": self.cov}
+        self.cost_function = WhitenedNLLSCostFunc(fitting_problem)
+
+    def test_init_raises_without_covariance(self):
+        """
+        Test that __init__ raises CostFuncError if covariance is absent
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.additional_info = {}
+        self.assertRaises(
+            exceptions.CostFuncError,
+            WhitenedNLLSCostFunc,
+            fitting_problem,
+        )
+
+    def test_eval_r_diagonal_matches_weighted_nlls(self):
+        """
+        Whitened residuals with diagonal C must equal (y - f) / e
+        """
+        result = self.cost_function.eval_r(
+            x=self.x_val, y=self.y_val, params=[5]
+        )
+        expected = np.array([0.0, -0.75, 4.0])
+        self.assertTrue(np.allclose(result, expected))
+
+    def test_eval_cost_diagonal_matches_weighted_nlls(self):
+        """
+        Cost with diagonal C must equal sum((y - f)^2 / e^2)
+        """
+        result = self.cost_function.eval_cost(
+            params=[5], x=self.x_val, y=self.y_val
+        )
+        self.assertAlmostEqual(result, 16.5625)
+
+    def test_eval_r_off_diagonal_covariance(self):
+        """
+        Whitened residuals for a non-diagonal covariance are correct
+        """
+        # C = [[4, 2, 0], [2, 4, 0], [0, 0, 1]]
+        # L = [[2, 0, 0], [1, sqrt(3), 0], [0, 0, 1]]
+        # r = y - f(x, 5) = [0, -3, 4]
+        # r_white = L^{-1} r = [0, -sqrt(3), 4]
+        cov = np.array([[4.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 1.0]])
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.additional_info = {"covariance": cov}
+        cf = WhitenedNLLSCostFunc(fitting_problem)
+
+        result = cf.eval_r(x=self.x_val, y=self.y_val, params=[5])
+        expected = np.array([0.0, -np.sqrt(3), 4.0])
+        self.assertTrue(np.allclose(result, expected))
+
+    def test_jac_res_diagonal_matches_weighted_nlls(self):
+        """
+        Whitened Jacobian with diagonal C must equal -J / e
+        """
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+
+        result = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
+        expected = np.array([[-0.5], [-0.25], [-1.0]])
+        self.assertTrue(np.allclose(result, expected, atol=1e-5))
+
+    def test_hes_res(self):
+        """
+        Test that hes_res returns sensible shapes for a linear model
+        """
+        self.cost_function.problem.function = fun
+        self.cost_function.problem.jacobian = jac
+        self.cost_function.problem.hessian = hes
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
+        self.cost_function.hessian = hessian
+
+        hessian_of_residual, jacobian_of_residual = self.cost_function.hes_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
+        # fun/jac helpers above use 2 Jacobian columns regardless of params
+        n = len(self.x_val)
+        self.assertEqual(hessian_of_residual.shape[2], n)
+        self.assertEqual(
+            hessian_of_residual.shape[0], hessian_of_residual.shape[1]
+        )
+        self.assertEqual(jacobian_of_residual.shape[0], n)
+
+    def test_validate_problem_correct(self):
+        """
+        validate_problem must not raise when covariance is present
+        """
+        self.cost_function.validate_problem()
+
+    def test_validate_problem_incorrect(self):
+        """
+        validate_problem must raise CostFuncError when covariance is absent
+        """
+        self.cost_function.problem.additional_info = {}
+        self.assertRaises(
+            exceptions.CostFuncError,
+            self.cost_function.validate_problem,
+        )
 
 
 class FactoryTests(TestCase):

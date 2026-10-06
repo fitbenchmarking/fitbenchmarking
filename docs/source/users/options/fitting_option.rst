@@ -179,6 +179,8 @@ Currently supported cost functions are:
 
 * ``poisson`` - This sets the cost function to be the Poisson Deviation cost function, :class:`~fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc`.
 
+* ``whitened_nlls`` - This sets the cost function to be the whitened non-linear least squares cost function, :class:`~fitbenchmarking.cost_func.whitened_nlls_cost_func.WhitenedNLLSCostFunc`. Requires a full covariance matrix in ``problem.additional_info['covariance']``.
+
 
 Default is ``weighted_nlls``
 

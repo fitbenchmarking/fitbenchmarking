@@ -52,6 +52,13 @@ Columns: x (independent variable), y (dependent variable), e (error/uncertainty)
 **Covariance** (optional): If a file named ``<basename>_cov.txt`` exists, it will be
 read as a covariance matrix and stored in ``problem.additional_info['covariance']``.
 
+.. note::
+
+   Storing a covariance matrix does not automatically affect the fit.  To use
+   the full covariance in the objective function you must select the
+   ``whitened_nlls`` cost function (see :ref:`fitting_option`).  Using any
+   other cost function with a covariance matrix present will produce a warning.
+
 Model Function
 ===============
 
