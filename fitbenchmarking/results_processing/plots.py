@@ -467,17 +467,8 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-        first_result = next(iter(categories.values()))[0]
-        col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
-        colours = Plot._sample_colours(col_vals)
-        n_plots_per_row = 1
-        subplot_titles = None
-
-        if first_result.plot_info is not None:
-            n_plots_per_row = first_result.plot_info["n_plots"]
-            subplot_titles = first_result.plot_info["subplot_titles"]
-
-        # Exclude cost funcs with no residuals (Poisson) to avoid blank rows
+        # Exclude cost functions with no residuals (e.g. non-NLLS)
+        # to avoid blank rows.
         plottable = {
             k: v
             for k, v in categories.items()
@@ -485,6 +476,16 @@ class Plot:
         }
         if not plottable:
             return ""
+
+        first_result = next(iter(plottable.values()))[0]
+        col_vals = np.linspace(0, 1, len(list(plottable.values())[0]))
+        colours = Plot._sample_colours(col_vals)
+        n_plots_per_row = 1
+        subplot_titles = None
+
+        if first_result.plot_info is not None:
+            n_plots_per_row = first_result.plot_info["n_plots"]
+            subplot_titles = first_result.plot_info["subplot_titles"]
 
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
@@ -902,9 +903,6 @@ class Plot:
         label = f" {minim}"
         data_x = result.data_x
         r_x = result.r_x
-        # Residuals are not plotted for non-NLLS cost functions.
-        if r_x is None:
-            return fig
 
         # in the SpinW 2d data case
         if hasattr(result, "r_x_cuts"):
