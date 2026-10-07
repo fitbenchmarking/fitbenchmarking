@@ -227,10 +227,16 @@
                                 <iframe width="100%" height="500" frameborder="0" seamless="seamless" scrolling="no" src="{{ residuals_plot }}"></iframe>
                             </div>
                         {% endif %}
-                        {% if any_residuals_plot_missing %}
+                        {% if residuals_absent_non_nlls %}
                             <div class="info-box">
                                 <p><b>Important Information:</b></p>
-                                Residuals are not plotted for non-NLLS cost functions.
+                                Residuals are not available for non-NLLS cost functions (e.g. Poisson).
+                            </div>
+                        {% endif %}
+                        {% if residuals_absent_failed_fit %}
+                            <div class="info-box">
+                                <p><b>Important Information:</b></p>
+                                One or more fits failed so residuals could not be plotted for all cost functions.
                             </div>
                         {% endif %}
                         {% if two_d_plot_available %}

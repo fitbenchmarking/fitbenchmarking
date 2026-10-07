@@ -153,8 +153,11 @@ def _create_summary_page(
     residuals_plot_available = options.make_plots and any(
         r.r_x is not None for r in results
     )
-    any_residuals_plot_missing = options.make_plots and any(
-        r.r_x is None for r in results
+    residuals_absent_non_nlls = options.make_plots and any(
+        r.r_x is None and r.params is not None for r in results
+    )
+    residuals_absent_failed_fit = options.make_plots and any(
+        r.r_x is None and r.params is None for r in results
     )
 
     rerun_make_plots_msg = ""
@@ -210,7 +213,8 @@ def _create_summary_page(
                 summary_plot=summary_plot,
                 residuals_plot=residuals_plot,
                 residuals_plot_available=residuals_plot_available,
-                any_residuals_plot_missing=any_residuals_plot_missing,
+                residuals_absent_non_nlls=residuals_absent_non_nlls,
+                residuals_absent_failed_fit=residuals_absent_failed_fit,
                 two_d_plot_available=two_d_plot_available,
                 two_d_plot=two_d_plot,
                 multistart_plot_avaliable=multistart_plot_avaliable,
