@@ -35,7 +35,7 @@ The cost functions that are currently supported are:
     .. autoclass:: fitbenchmarking.cost_func.hellinger_nlls_cost_func.HellingerNLLSCostFunc
                :noindex:
 
-- Poisson cost function
+- Poisson deviance cost function
 
     .. currentmodule:: fitbenchmarking.cost_func.poisson_cost_func
     .. autoclass:: fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc

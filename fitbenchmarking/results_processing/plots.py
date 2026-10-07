@@ -905,7 +905,6 @@ class Plot:
             r_x = result.r_x_cuts
 
         data_len = int(len(data_x) / n_plots_per_row)
-
         for i in range(n_plots_per_row):
             fig.add_trace(
                 go.Scatter(
