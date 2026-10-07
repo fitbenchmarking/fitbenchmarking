@@ -30,6 +30,9 @@ class LSQfitParser(FitbenchmarkParser):
         or
         function='module=functions,func=periodic_cosh,a=0.1,E=0.7,Nt=48'
 
+        Parameters listed in the optional ``fixed_params`` problem file entry
+        are held constant during fitting; all remaining parameters are free.
+
         :return: A callable function
         :rtype: callable
         """
@@ -46,14 +49,25 @@ class LSQfitParser(FitbenchmarkParser):
         module = importlib.import_module(module_name)
         model_func = getattr(module, func_name)
 
-        # Extract parameter names (all keys except module and func)
-        param_names = [k for k in pf if k not in ("module", "func")]
+        # Parameters listed in fixed_params are baked into the closure
+        fixed_names = set()
+        if "fixed_params" in self._entries:
+            fixed_names = {
+                name.strip()
+                for name in self._entries["fixed_params"].split(",")
+                if name.strip()
+            }
+
+        excluded = {"module", "func"} | fixed_names
+        param_names = [k for k in pf if k not in excluded]
+        fixed_params = {k: pf[k] for k in fixed_names if k in pf}
 
         self._equation = func_name
         self._starting_values = [{n: pf[n] for n in param_names}]
 
         def fit_function(x, *params):
             param_dict = dict(zip(param_names, params))
+            param_dict.update(fixed_params)
             return model_func(x, **param_dict)
 
         return fit_function
