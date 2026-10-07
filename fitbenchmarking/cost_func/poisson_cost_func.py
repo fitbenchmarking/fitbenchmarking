@@ -72,8 +72,8 @@ class PoissonCostFunc(CostFunc):
                 "cost function. These have been replaced with "
                 "np.finfo(float).max to apply a large penalty."
             )
-        # Penalize negative f(x, p)
-        f_xp[f_xp <= 0.0] = np.finfo(float).max
+        # Penalize non-positive f(x, p)
+        f_xp = np.where(f_xp <= 0.0, np.finfo(float).max, f_xp)
 
         residuals = _safe_a_log_b(y, y) - _safe_a_log_b(y, f_xp) - (y - f_xp)
 
