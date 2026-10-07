@@ -15,7 +15,11 @@ class EnergyUsageTable(Table):
 
     For more information on how energy usage is measured,
     see the Methodology section of the `codecarbon docs
-    <https://mlco2.github.io/codecarbon/methodology.html#cpu>`_.
+    <https://docs.codecarbon.io/latest/explanation/methodology/>`_.
+
+    Please be aware that if you are running on a Mac, then you may
+    be prompted to provide a password to give sudo rights (so that
+    the powermetrics tool can be used).
 
     """
 

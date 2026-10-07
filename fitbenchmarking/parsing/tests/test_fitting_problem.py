@@ -118,6 +118,39 @@ class TestFittingProblem(TestCase):
         eval_result = fitting_problem.eval_model(params=[5])
         self.assertTrue(all(eval_result == np.array([25, 26, 27])))
 
+    def test_eval_model_multifit(self):
+        """
+        Test that eval_model splits the params per dataset and concatenates
+        the model evaluations when x is a list (multifit case)
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.multifit = True
+        fitting_problem.function = lambda x, p1, p2: x + p1 + p2
+        # d0.p1=5, d1.p1=100, shared.p2=1000
+        fitting_problem.multifit_param_names = [
+            "d0.p1",
+            "d1.p1",
+            "shared.p2",
+        ]
+        x_val = [np.array([1.0, 2.0]), np.array([10.0, 20.0])]
+
+        eval_result = fitting_problem.eval_model(
+            x=x_val, params=[5, 100, 1000]
+        )
+
+        expected = np.array([1006.0, 1007.0, 1110.0, 1120.0])
+        self.assertTrue(np.allclose(eval_result, expected))
+
+    def test_eval_model_list_x_without_multifit(self):
+        """
+        Test that a list of x values is passed straight to the function
+        when the problem is not multifit
+        """
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: np.array(x) + p1
+        eval_result = fitting_problem.eval_model(x=[1, 8, 11], params=[5])
+        self.assertTrue(all(eval_result == np.array([6, 13, 16])))
+
     def test_get_function_params(self):
         """
         Tests that the function params is formatted correctly

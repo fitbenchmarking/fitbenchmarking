@@ -9,6 +9,7 @@ from fitbenchmarking.utils.exceptions import (
     IncompatibleProblemError,
     MissingSoftwareError,
 )
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import (
     add_persistent_matlab_var,
@@ -22,6 +23,8 @@ try:
     import_success = True
 except ImportError:
     import_success = False
+
+LOGGER = get_logger()
 
 
 # If we re-implement caching, make sure the cache is cleared by the
@@ -71,7 +74,7 @@ class MatlabMixin:
                     self.eng.evalc(
                         f"save('{matlab_dump}', {to_transfer_str});"
                     )
-                    print(
+                    LOGGER.info(
                         self.eng.evalc(
                             f"cf.problem.set_persistent_vars('{matlab_dump}')"
                         )

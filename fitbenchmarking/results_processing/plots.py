@@ -13,7 +13,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from fitbenchmarking.utils.exceptions import PlottingError
-from fitbenchmarking.utils.misc import get_js
 
 
 class Plot:
@@ -87,9 +86,8 @@ class Plot:
         :param options: The options for the run
         :type options: utils.options.Options
         """
-        plotly_path = get_js(options, figures_dir).get("plotly")
         html_file_name = Path(figures_dir) / htmlfile
-        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
+        fig.write_html(html_file_name, include_plotlyjs="cdn")
 
     @staticmethod
     def best_filename(result) -> str:
@@ -192,7 +190,7 @@ class Plot:
                 title=self.result.name, legend=self._legend_style
             )
             self._update_to_logscale_if_needed(fig, self.result)
-
+            self._add_menu_buttons(fig)
             htmlfile = (
                 f"{minimizer}_fit_for_{self.result.costfun_tag}"
                 f"_{self.result.sanitised_name}.html"
@@ -983,6 +981,40 @@ class Plot:
             fig.update_xaxes(type="log")
         if result.plot_scale in ["loglog", "logy"]:
             fig.update_yaxes(type="log")
+        return fig
+
+    @staticmethod
+    def _add_menu_buttons(fig) -> go.Figure:
+        """
+        Adds an interactible button to the plot, to toggle error bars
+
+        :param fig: The plotly figure to update the axis for
+        :type fig: plotly.graph_objects.Figure
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        fig.update_layout(
+            updatemenus=[
+                {
+                    "type": "buttons",
+                    "direction": "down",
+                    "showactive": False,
+                    "x": 1.25,
+                    "y": 1.15,
+                    "xanchor": "right",
+                    "yanchor": "top",
+                    "buttons": [
+                        {
+                            "label": "Toggle error bars",
+                            "method": "restyle",
+                            "args": [{"error_y.visible": [True]}, [0]],
+                            "args2": [{"error_y.visible": [False]}, [0]],
+                        }
+                    ],
+                }
+            ]
+        )
         return fig
 
     @staticmethod

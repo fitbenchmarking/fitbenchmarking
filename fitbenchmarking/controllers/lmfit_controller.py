@@ -109,9 +109,7 @@ class LmfitController(Controller):
         super().__init__(cost_func)
         self.lmfit_out = None
         self.lmfit_params = Parameters()
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
+        self._param_names = None
 
     def lmfit_resdiuals(self, params):
         """
@@ -141,6 +139,8 @@ class LmfitController(Controller):
         """
         Setup problem ready to be run with lmfit
         """
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.par_names)]
+
         for i, name in enumerate(self._param_names):
             kwargs = {"name": name, "value": self.initial_params[i]}
             if self.value_ranges is not None:
@@ -188,7 +188,7 @@ class LmfitController(Controller):
         if self.minimizer == "emcee":
             params_pdf_dict = self.lmfit_out.flatchain.to_dict(orient="list")
             self.params_pdfs = dict(
-                zip(self.problem.param_names, list(params_pdf_dict.values()))
+                zip(self.par_names, list(params_pdf_dict.values()))
             )
 
         self.final_params = [

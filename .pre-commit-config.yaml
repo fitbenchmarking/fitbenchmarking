@@ -8,7 +8,7 @@ repos:
   - id: check-merge-conflict
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.6
+  rev: v0.16.10
   hooks:
     # Run the linter.
     - id: ruff
@@ -16,3 +16,14 @@ repos:
     # Run the formatter.
     - id: ruff-format
       args: [--check]
+
+- repo: local
+  hooks:
+    - id: spelling-check
+      name: Check spelling
+      entry: python3 .custom_hooks/minimizer_spelling.py
+      language: system
+      files: '\.(py|md|html|rst)$'
+
+ci:
+  skip: [spelling-check]

@@ -9,6 +9,7 @@ import unittest
 from inspect import getfile
 
 import fitbenchmarking
+import fitbenchmarking.utils.test_utils as test_utils
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing.tables import (
@@ -46,6 +47,8 @@ class GenerateTableTests(unittest.TestCase):
     Class that tests the generate_table function within
     fitbenchmarking.results_processing.tables
     """
+
+    maxDiff = None
 
     def setUp(self):
         """
@@ -104,7 +107,7 @@ class GenerateTableTests(unittest.TestCase):
             for f, t in zip(
                 [html_table_name, csv_table_name], [html["table"], csv_table]
             ):
-                self.compare_files(f, t)
+                test_utils.compare_files(self, f, t)
 
     def test_dropdown_html_correct(self):
         """
@@ -137,51 +140,7 @@ class GenerateTableTests(unittest.TestCase):
             [expected_problem_dropdown, expected_minimizer_dropdown],
             ["problem_dropdown", "minim_dropdown"],
         ):
-            self.compare_files(expected_file, html[dropdown_name])
-
-    def compare_files(self, expected, achieved):
-        """
-        Compares two files line by line
-
-        :param expected: imported HTML output from expected results in
-                         fitbenchmarking/results_processing/tests/
-                         expected_results
-        :type expected: str
-        :param achieved: HTML generated using generate_table in
-                         fitbenchmarking.results_processing.tables
-        :type achieved: str
-        """
-        with open(expected, encoding="utf-8") as f:
-            exp_lines = f.readlines()
-
-        diff = []
-        for i, (act_line, exp_line) in enumerate(
-            zip(achieved.splitlines(), exp_lines)
-        ):
-            exp_line = "" if exp_line is None else exp_line.strip("\n")
-            act_line = "" if act_line is None else act_line.strip("\n")
-            # to pass on windows need to first do this before comparing
-            act_line = act_line.replace('href="..\\', 'href="../')
-            if act_line != exp_line:
-                diff.append([i, exp_line, act_line])
-        if diff:
-            print(
-                f"Comparing against {expected}\n"
-                + "\n".join(
-                    [
-                        f"== Line {change[0]} ==\n"
-                        f"Expected :{change[1]}\n"
-                        f"Actual   :{change[2]}"
-                        for change in diff
-                    ]
-                )
-            )
-            print("\n==\n")
-            print("Output generated (also saved as actual.out):")
-            print(achieved)
-            with open("actual.out", "w", encoding="utf-8") as outfile:
-                outfile.write(achieved)
-        self.assertListEqual([], diff)
+            test_utils.compare_files(self, expected_file, html[dropdown_name])
 
 
 class CreateResultsTableTests(unittest.TestCase):

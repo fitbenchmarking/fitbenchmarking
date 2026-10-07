@@ -3,7 +3,7 @@ Implements a controller for the Bumps fitting software.
 """
 
 import numpy as np
-from bumps.fitters import fit as bumpsFit
+from bumps.fitters import fit as bumps_fit
 from bumps.names import Curve, FitProblem, PoissonCurve
 
 from fitbenchmarking.controllers.base_controller import Controller
@@ -53,15 +53,12 @@ class BumpsController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        # Need unique strings that are valid python vars
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
         self._func_wrapper = None
         self._fit_problem = None
         self.fit_order = None
         self._status = None
         self._bumps_result = None
+        self._param_names = None
         # Need to map the minimizer to an internal one to avoid changing the
         # minimizer in results
         self._minimizer = ""
@@ -72,10 +69,18 @@ class BumpsController(Controller):
 
         Creates a FitProblem for calling in the fit() function of Bumps
         """
+        # Need unique strings that are valid python vars
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.par_names)]
+
         # Bumps fails with the *args notation
         param_name_str = ", ".join(self._param_names)
         wrapper = f"def fitFunction(x, {param_name_str}):\n"
-        wrapper += f"    return func([{param_name_str}], x=x)"
+        if self.problem.multifit:
+            # The residuals of every dataset are evaluated together from
+            # the combined params, so there is no single x to pass in.
+            wrapper += f"    return func([{param_name_str}])"
+        else:
+            wrapper += f"    return func([{param_name_str}], x=x)"
 
         # Remove any function attribute. BinWidth is the only attribute in all
         # FitBenchmark (Mantid) problems.
@@ -98,10 +103,17 @@ class BumpsController(Controller):
             exec_dict = {"func": self.cost_func.eval_r}
             exec(wrapper, exec_dict)
             model = exec_dict["fitFunction"]
-            zero_y = np.zeros(len(self.data_y))
-            func_wrapper = Curve(
-                fn=model, x=self.data_x, y=zero_y, **param_dict
-            )
+            if self.problem.multifit:
+                # Curve only feeds x to the model and compares its output
+                # against y, so use a flat placeholder x and a zero y
+                # covering the points of every dataset.
+                n_points = sum(len(d) for d in self.data_y)
+                curve_x = np.arange(n_points)
+                zero_y = np.zeros(n_points)
+            else:
+                curve_x = self.data_x
+                zero_y = np.zeros(np.shape(self.data_y))
+            func_wrapper = Curve(fn=model, x=curve_x, y=zero_y, **param_dict)
 
         # Set a range for each parameter
         for ind, name in enumerate(self._param_names):
@@ -146,7 +158,7 @@ class BumpsController(Controller):
         """
         Run problem with Bumps.
         """
-        result = bumpsFit(
+        result = bumps_fit(
             self._fit_problem,
             method=self._minimizer,
             abort_test=self._check_timer_abort_test,

@@ -136,7 +136,6 @@ def _create_summary_page(
     :type options: utils.optons.Options
     """
     categories, results, descriptions = zip(*categorised_best_results)
-
     prob_name = results[0].sanitised_name
 
     file_name = f"{prob_name}_summary.html".lower()

@@ -4,9 +4,11 @@ Implements the base non-linear least squares cost function
 
 from abc import abstractmethod
 
+import numpy as np
 from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
+from fitbenchmarking.utils.exceptions import CostFuncError
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -44,7 +46,7 @@ class BaseNLLSCostFunc(CostFunc):
         self.invalid_algorithm_types = ["MCMC"]
 
     @abstractmethod
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate residuals used in Least-Squares problems
 
@@ -55,6 +57,69 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: numpy array
         """
         raise NotImplementedError
+
+    def _evaluating_combined_multifit(self, x) -> bool:
+        """
+        Check whether eval_r has been asked for the combined multifit
+        problem rather than for a single dataset.
+
+        The combined problem is being evaluated when the caller gives no
+        x data (minimizers call eval_r with the parameters only) or gives
+        the whole container of datasets. A single dataset's x values mean
+        the params belong to that dataset alone, which is the case when
+        eval_chisq scores each dataset in turn once the fit has finished.
+
+        :param x: The x data eval_r was called with, if any
+        :type x: numpy array, list of numpy arrays or None
+
+        :return: True if the combined problem should be evaluated
+        :rtype: bool
+        """
+        if not (self.problem.multifit and self.problem.multifit_param_names):
+            return False
+        return x is None or isinstance(x, (list, tuple)) or np.ndim(x) > 1
+
+    def eval_r(self, params, **kwargs):
+        """
+        Calculates residuals used in Least-Squares problems.
+        Handles both the multifit case (fitting multiple datasets)
+        and other cases.
+
+        :param params: The parameters to calculate residuals for
+        :type params: list
+
+        :return: The residuals for the datapoints at the given parameters
+        :rtype: np.array
+        """
+        if not self._evaluating_combined_multifit(kwargs.get("x")):
+            return self.eval_r_single_dataset(params, **kwargs)
+
+        par_names = self.problem.multifit_param_names
+        if len(params) != len(par_names):
+            raise CostFuncError(
+                "The number of parameters does not match the number of "
+                f"MultiFit parameters, len(params)={len(params)} and "
+                f"len(multifit_param_names)={len(par_names)}."
+            )
+
+        # Each dataset is evaluated with its own d<i>. params plus the
+        # shared. params, and the residuals are joined into one vector.
+        param_dict = dict(zip(par_names, params))
+        r = [
+            self.eval_r_single_dataset(
+                params=[
+                    v
+                    for k, v in param_dict.items()
+                    if k.startswith((f"d{d}.", "shared."))
+                ],
+                x=self.problem.data_x[d],
+                y=self.problem.data_y[d],
+                e=self.problem.data_e[d],
+            )
+            for d in range(len(self.problem.data_x))
+        ]
+
+        return np.concatenate(r)
 
     def eval_cost(self, params, **kwargs):
         """
@@ -85,9 +150,9 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 1D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        J = self.jac_res(params, **kwargs)
+        jacobian_of_residual = self.jac_res(params, **kwargs)
 
-        return 2.0 * J.T.dot(r)
+        return 2.0 * jacobian_of_residual.T.dot(r)
 
     def hes_cost(self, params, **kwargs):
         """
@@ -102,6 +167,11 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 2D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        H, J = self.hes_res(params, **kwargs)
+        hessian_of_residual, jacobian_of_residual = self.hes_res(
+            params, **kwargs
+        )
 
-        return 2.0 * (matmul(J.T, J) + matmul(H, r))
+        return 2.0 * (
+            matmul(jacobian_of_residual.T, jacobian_of_residual)
+            + matmul(hessian_of_residual, r)
+        )

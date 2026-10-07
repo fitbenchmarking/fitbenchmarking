@@ -12,9 +12,15 @@ import plotly.graph_objects as go
 from dash import Input, Output, dcc
 
 from fitbenchmarking.results_processing.plots import Plot
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
 
 
-def profile(results, fig_dir, options):
+def profile(
+    results: dict[str, dict[str, list[FittingResult]]],
+    fig_dir: str,
+    options: Options,
+) -> tuple[dict[str, str], dict[str, pd.DataFrame]]:
     """
     Function that generates profiler plots
 

@@ -3,6 +3,7 @@ Tests for the performance profiler file.
 """
 
 import inspect
+import json
 import os
 import re
 import unittest
@@ -19,7 +20,6 @@ import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.core.results_output import preprocess_data
 from fitbenchmarking.results_processing import performance_profiler
-from fitbenchmarking.results_processing.plots import Plot
 from fitbenchmarking.utils.checkpoint import Checkpoint
 from fitbenchmarking.utils.options import Options
 
@@ -67,44 +67,12 @@ def remove_ids_and_src(html_path):
     return processed_lines
 
 
-def diff_between_htmls(expected_plot_path, output_plot_path):
+def save_result(plot: go.Figure, path):
     """
-    Finds differences between two html files line by line.
-    Returns an empty list if no difference is found.
-
-    :param expected: path to html file with expected lines
-    :type expected: str
-    :param achieved: path to html file with achieved lines
-    :type achieved: str
-
-    :return: Lines in the two files that present differences
-    :rtype: list[list]
+    Save the plot in the format expected by the unit tests.
     """
-    act_lines = remove_ids_and_src(output_plot_path)
-    exp_lines = remove_ids_and_src(expected_plot_path)
-
-    diff = []
-    for i, (act_line, exp_line) in enumerate(zip(act_lines, exp_lines)):
-        exp_line = "" if exp_line is None else exp_line.strip("\n")
-        act_line = "" if act_line is None else act_line.strip("\n")
-
-        if act_line != exp_line:
-            diff.append([i, exp_line, act_line])
-
-    if diff:
-        print(
-            f"Comparing {output_plot_path} against {expected_plot_path}\n"
-            + "\n".join(
-                [
-                    f"== Line {change[0]} ==\n"
-                    f"Expected :{change[1]}\n"
-                    f"Actual   :{change[2]}"
-                    for change in diff
-                ]
-            )
-        )
-
-    return diff
+    with open(path, "w") as expected_plot_file:
+        expected_plot_file.write(plot.to_json(pretty=True))
 
 
 class PerformanceProfilerTests(unittest.TestCase):
@@ -297,24 +265,22 @@ class PerformanceProfilerTests(unittest.TestCase):
 
     def test_create_plot_returns_correct_plot(self):
         """
-        Test that create_plot_and_df returns the correct plot.
+        Test create_plot returns the correct performance profile plot,
+        by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
-        output_plot_path = self.temp_result + "/pp_offline_plot.html"
         expected_plot_path = (
-            self.expected_results_dir + "/pp_offline_plot.html"
+            self.expected_results_dir + "/pp_offline_plot.json"
         )
+
+        with open(expected_plot_path) as expected_plot_file:
+            expected_figure = json.load(expected_plot_file)
 
         plot = performance_profiler.create_plot(self.step_values, self.solvers)
 
-        Plot.write_html_with_link_plotlyjs(
-            fig=plot,
-            figures_dir="",
-            htmlfile=output_plot_path,
-            options=self.options,
-        )
-
-        diff = diff_between_htmls(expected_plot_path, output_plot_path)
-        self.assertListEqual([], diff)
+        self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_create_df_returns_correct_df(self):
         """
@@ -488,27 +454,24 @@ class DashPerfProfileTests(unittest.TestCase):
 
     def test_create_graph_returns_expected_plot(self):
         """
-        Test create_graph returns the expected plot.
+        Test create_graph returns the expected performance profile plot,
+        by comparing against the saved json file.
+
+        To generate an updated expected results file use the save_result()
+        function.
         """
 
         selected_solvers = self.data.columns
-        output_fig = self.perf_profile.create_graph(
+        plot = self.perf_profile.create_graph(
             x_axis_scale="Log x-axis", solvers=selected_solvers[:3]
         )
 
-        output_plot_path = self.temp_result + "/obtained_plot.html"
+        expected_plot_path = self.expected_results_dir + "/dash_plot.json"
 
-        Plot.write_html_with_link_plotlyjs(
-            fig=output_fig,
-            figures_dir="",
-            htmlfile=output_plot_path,
-            options=self.options,
-        )
+        with open(expected_plot_path) as expected_plot_file:
+            expected_figure = json.load(expected_plot_file)
 
-        expected_plot_path = self.expected_results_dir + "/dash_plot.html"
-
-        diff = diff_between_htmls(expected_plot_path, output_plot_path)
-        self.assertListEqual([], diff)
+        self.assertEqual(plot.to_dict(), expected_figure)
 
     def test_prepare_data(self):
         """

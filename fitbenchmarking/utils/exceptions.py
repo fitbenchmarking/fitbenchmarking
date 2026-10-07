@@ -341,3 +341,16 @@ class SparseJacobianIsDenseError(FitBenchmarkException):
         "so it cannot be used as a sparsity pattern."
     )
     error_code = 31
+
+
+class IncompatibleMultifitError(ValidationException):
+    """
+    Indicates that the selected options are not supported for MultiFit
+    problems.
+    """
+
+    class_message = (
+        "The selected options are not currently supported for MultiFit "
+        "problems."
+    )
+    error_code = 32

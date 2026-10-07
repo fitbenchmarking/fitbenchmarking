@@ -5,13 +5,13 @@ run without errors
 
 from unittest import TestCase, mock
 
-from pytest import test_type as TEST_TYPE
+from pytest import test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking.cli import main
 
 
-@run_for_test_types(TEST_TYPE, "default")
+@run_for_test_types(test_type, "default")
 class TestExamples(TestCase):
     """
     Test that all usage examples run as expected

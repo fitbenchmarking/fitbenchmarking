@@ -84,10 +84,6 @@ functionality.
 In this section, we outline how to use Mantid's MultiFit feature,
 in which some options differ from the **native** :ref:`mantid_file`.
 
-.. warning::
-   Due to the way Mantid uses ties (a central feature of MultiFit),
-   MultiFit problems can only be used with Mantid minimizers.
-
 In this format, data is separated from the function. This allows running the
 same dataset against multiple different models to assess which is the most
 appropriate.
@@ -120,6 +116,66 @@ ties
 
      function='name=LinearBackground, A0=0, A1=0; name=Gaussian, Height=0.01, PeakCentre=0.00037, Sigma=1e-05'
      ties=['f0.A0', 'f0.A1', 'f1.Height']
+
+  Parameters which are not listed here are fitted separately for each
+  input file.
+
+fit_ranges
+  As in **native** :ref:`mantid_file`, but a fit range must be given for each
+  of the ``input_files`` (see above example). If this entry is omitted, the
+  full range of each data file is used.
+
+parameter_ranges
+  As in **native** :ref:`mantid_file`. The bounds given for a parameter are
+  applied to that parameter in every dataset.
+
+A MultiFit problem is reported as one row per dataset in the output tables
+(e.g. ``MUSR62260, Dataset 1``), with the accuracy of each dataset measured
+against the data in the corresponding input file.
+
+.. note::
+   MultiFit problems can be run with all supported minimizers, with the
+   exception of MCMC minimizers (see the warning below).
+
+   Ties are a Mantid concept, so for other softwares FitBenchmarking
+   assembles an equivalent single fitting problem: the parameters listed in
+   ``ties`` occur once and are shared by all datasets, the remaining
+   parameters are repeated once per dataset, and the residuals of all
+   datasets are concatenated into one residual vector. The fitted values are
+   then split back up per dataset, so the results are presented in the same
+   way for every software.
+
+.. warning::
+   :ref:`Analytic Jacobians <analytic-jac>` are not available for MultiFit
+   problems yet. Mantid does not provide an analytic Jacobian for MultiFit
+   problems, so a numerical Jacobian is used instead
+   (see :ref:`jacobian_option`). If the problem itself defines an analytic
+   Jacobian, then selecting the ``analytic`` (or ``best_available``)
+   Jacobian method for a MultiFit problem is reported as a failed run with
+   the status "Validation of the provided options failed".
+
+.. warning::
+   :ref:`Hessians <hessian_option>` are not available for MultiFit problems
+   yet. The ``hes_method`` option should be left as ``default``, otherwise
+   the run is reported as a failed run with the status "Validation of the
+   provided options failed".
+
+.. warning::
+   Only the least squares cost functions (see :ref:`cost_func`) are
+   available for MultiFit problems with softwares other than Mantid.
+   Selecting any other cost function is reported as a failed run with the
+   status "Validation of the provided options failed".
+
+.. warning::
+   MCMC minimizers (e.g. ``FABADA``, ``dream``, ``emcee`` and
+   ``paraDram_sampler``) are not available for MultiFit problems yet.
+   Selecting one for a MultiFit problem is reported as a failed run with
+   the status "Validation of the provided options failed".
+
+.. warning::
+   The ``ties`` entry only accepts parameter names, which are then shared
+   across all of the datasets. Mantid's more general tie expressions
+   (e.g. ``f0.A0=f1.A0*2``) cannot be given here, see :ref:`notes`.
 
 
 Multistart Analysis

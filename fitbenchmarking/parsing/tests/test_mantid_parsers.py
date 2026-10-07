@@ -7,7 +7,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from parameterized import parameterized
-from pytest import test_type as TEST_TYPE
+from pytest import test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
@@ -17,7 +17,7 @@ from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class TestMantidDevParser(TestCase):
     """
     Unit tests the MantidDevParser class.
@@ -77,7 +77,7 @@ class TestMantidDevParser(TestCase):
         self.parser.fitting_problem.multifit = multifit
         self.parser._set_additional_info()
         if multifit:
-            result = self.parser.fitting_problem.additional_info["mantid_ties"]
+            result = self.parser.fitting_problem.additional_info["ties"]
             assert result == expected
         else:
             assert self.parser.fitting_problem.additional_info == expected
@@ -271,7 +271,7 @@ class TestMantidDevParser(TestCase):
             assert self.parser._dense_jacobian() is None
 
 
-@run_for_test_types(TEST_TYPE, "mantid")
+@run_for_test_types(test_type, "mantid")
 class TestMantidParser(TestCase):
     """
     Unit tests the MantidParser class.
