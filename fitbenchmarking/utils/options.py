@@ -251,6 +251,7 @@ class Options:
             "hellinger_nlls",
             "loglike_nlls",
             "poisson",
+            "whitened_nlls",
         ],
     }
     VALID_JACOBIAN = {
