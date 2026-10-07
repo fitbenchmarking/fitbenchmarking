@@ -895,8 +895,7 @@ class Plot:
         label = f" {minim}"
         data_x = result.data_x
         r_x = result.r_x
-        # Residuals are not calculated for non nlls cost functions so cant be
-        # plotted.
+        # Residuals are not plotted for non-NLLS cost functions.
         if r_x is None:
             return fig
 
