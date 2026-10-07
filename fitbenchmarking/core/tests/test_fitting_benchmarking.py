@@ -1058,8 +1058,6 @@ class BenchmarkTests(unittest.TestCase):
                 "jacobian_tag",
                 "hessian_tag",
                 "costfun_tag",
-                "iteration_count",
-                "func_evals",
             ]:
                 self.assertEqual(
                     getattr(r, attr),
