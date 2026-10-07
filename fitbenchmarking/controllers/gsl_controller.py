@@ -5,6 +5,8 @@ using the pyGSL python interface
 https://sourceforge.net/projects/pygsl/
 """
 
+import contextlib
+
 import numpy as np
 from pygsl import _numobj as numx
 from pygsl import errno, multifit_nlin, multiminimize
@@ -228,7 +230,12 @@ class GSLController(Controller):
         Run problem with GSL
         """
         for n in range(self._maxits):
-            status = self._solver.iterate()
+            # pygsl raises SystemError when GSL returns GSL_ENOPROG (no
+            # further progress possible), which can happen legitimately at
+            # convergence.  Suppress it and fall through to the convergence
+            # check below.
+            with contextlib.suppress(SystemError):
+                self._solver.iterate()
             # check if the method has converged
             if self.minimizer in self._residual_methods:
                 x = self._solver.getx()
