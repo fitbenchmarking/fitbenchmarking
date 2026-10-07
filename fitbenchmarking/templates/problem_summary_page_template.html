@@ -230,13 +230,13 @@
                         {% if residuals_absent_non_nlls %}
                             <div class="info-box">
                                 <p><b>Important Information:</b></p>
-                                Residuals are not available for non-NLLS cost functions (e.g. Poisson).
+                                The Poisson cost function is not least-squares-based, so the residuals plot is not available for this cost function.
                             </div>
                         {% endif %}
                         {% if residuals_absent_failed_fit %}
                             <div class="info-box">
                                 <p><b>Important Information:</b></p>
-                                One or more fits failed so residuals could not be plotted for all cost functions.
+                                One or more fits failed so residuals could not be plotted in these cases.
                             </div>
                         {% endif %}
                         {% if two_d_plot_available %}

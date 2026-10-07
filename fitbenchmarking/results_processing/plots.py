@@ -477,19 +477,26 @@ class Plot:
             n_plots_per_row = first_result.plot_info["n_plots"]
             subplot_titles = first_result.plot_info["subplot_titles"]
 
+        # Exclude cost funcs with no residuals (Poisson) to avoid blank rows
+        plottable = {
+            k: v
+            for k, v in categories.items()
+            if any(r.r_x is not None for r in v)
+        }
+        if not plottable:
+            return ""
+
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
-            fig = Plot._create_empty_residuals_plots(
-                categories, subplot_titles
-            )
+            fig = Plot._create_empty_residuals_plots(plottable, subplot_titles)
         else:
             fig = make_subplots(
-                rows=len(categories),
+                rows=len(plottable),
                 cols=n_plots_per_row,
-                subplot_titles=list(categories.keys()),
+                subplot_titles=list(plottable.keys()),
             )
 
-        for row_ind, (results) in enumerate(categories.values(), 1):
+        for row_ind, (results) in enumerate(plottable.values(), 1):
             for result, colour in zip(results, colours):
                 if result.params is not None:
                     fig = Plot._add_residual_traces(
