@@ -42,7 +42,7 @@ The cost functions that are currently supported are:
                :noindex:
     .. note::
          The Poisson cost function is only valid for problems with non-negative data.
-         Additionally, residuals plot will not be available when using this cost function.
+         Additionally, residuals plots will not be available when using this cost function.
 
 - Weighted non-linear least squares cost function with log-likelihood evaluation
 
