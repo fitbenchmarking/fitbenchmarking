@@ -286,6 +286,23 @@ class PlotTests(unittest.TestCase):
 
         assert file_size_KB < 50
 
+    def test_plot_residuals_returns_empty_string_when_no_residuals(self):
+        """
+        When all categories have r_x=None (e.g. non-NLLS cost functions),
+        plot_residuals should return "" rather than crashing on
+        make_subplots(rows=0).
+        """
+        for results in self.fr.values():
+            for r in results:
+                r.r_x = None
+        result = plots.Plot.plot_residuals(
+            categories=self.fr,
+            title="",
+            options=self.opts,
+            figures_dir=self.figures_dir,
+        )
+        self.assertEqual(result, "")
+
     def test_plot_residuals_create_files(self):
         """
         Test that plot_residuals creates a file
