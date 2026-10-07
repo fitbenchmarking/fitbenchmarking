@@ -76,7 +76,6 @@ class Options:
         ],
         "horace": ["lm-lsqr"],
         "levmar": ["levmar"],
-        "lsqfit": ["lm"],
         "lmfit": [
             "differential_evolution",
             "brute",
@@ -213,7 +212,6 @@ class Options:
             "gsl",
             "horace",
             "levmar",
-            "lsqfit",
             "lmfit",
             "mantid",
             "matlab",
@@ -366,7 +364,6 @@ class Options:
         ],
         "horace": ["lm-lsqr"],
         "levmar": ["levmar"],
-        "lsqfit": ["lm"],
         "lmfit": [
             "powell",
             "cobyla",
