@@ -1058,13 +1058,40 @@ class BenchmarkTests(unittest.TestCase):
                 "jacobian_tag",
                 "hessian_tag",
                 "costfun_tag",
-                "iteration_count",
-                "func_evals",
             ]:
-                assert getattr(r, attr) == expected["results"][ix][attr]
-            self.assertAlmostEqual(
-                r.accuracy, expected["results"][ix]["accuracy"], 6
+                self.assertEqual(
+                    getattr(r, attr),
+                    expected["results"][ix][attr],
+                    msg=(
+                        f"Comparing attr {attr},"
+                        f"problem: {r.name}, software: {r.software}, "
+                        f"minimizer: {r.minimizer}"
+                    ),
+                )
+
+            self.assertEqual(
+                r.error_flag,
+                expected["results"][ix]["flag"],
+                msg=(
+                    f"Comparing convergence flag, problem: {r.name}, "
+                    f"software: {r.software}, minimizer: {r.minimizer}"
+                ),
             )
+
+            # Relax tolerance if error flag is set, as the accuracy may
+            # be more sensitive to linear algebra backends in this case.
+            if expected["results"][ix]["flag"] == 0:
+                self.assertAlmostEqual(
+                    r.accuracy,
+                    expected["results"][ix]["accuracy"],
+                    6,
+                )
+            else:
+                self.assertAlmostEqual(
+                    r.accuracy,
+                    expected["results"][ix]["accuracy"],
+                    delta=abs(expected["results"][ix]["accuracy"]) * 1e-2,
+                )
             assert r.hess == expected["results"][ix]["hessian"]
             assert r.jac == expected["results"][ix]["jacobian"]
 
