@@ -165,7 +165,12 @@ class GSLController(Controller):
         """
         Setup for GSL
         """
-        data = numx.array([self.data_x, self.data_y, self.data_e])
+        data_e = (
+            self.data_e
+            if self.data_e is not None
+            else numx.zeros_like(self.data_y)
+        )
+        data = numx.array([self.data_x, self.data_y, data_e])
         n = len(self.data_x)
         p = len(self.initial_params)
         pinit = numx.array(self.initial_params)
