@@ -467,8 +467,8 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-        # Exclude cost functions with no residuals (e.g. non-NLLS)
-        # to avoid blank rows.
+        # Exclude cost functions with no residuals (i.e. Poisson)
+        # to avoid blank rows in the plot
         plottable = {
             k: v
             for k, v in categories.items()

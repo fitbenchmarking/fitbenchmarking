@@ -288,8 +288,7 @@ class PlotTests(unittest.TestCase):
     def test_plot_residuals_returns_empty_string_when_no_residuals(self):
         """
         When all categories have r_x=None (e.g. non-NLLS cost functions),
-        plot_residuals should return "" rather than crashing on
-        make_subplots(rows=0).
+        plot_residuals should return "" rather than crashing.
         """
         for results in self.fr.values():
             for r in results:
