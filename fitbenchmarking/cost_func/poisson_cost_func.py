@@ -66,7 +66,7 @@ class PoissonCostFunc(CostFunc):
             )
         f_xp = self.problem.eval_model(x=x, params=params)
 
-        if (f_xp[f_xp <= 0.0]).any():
+        if (f_xp <= 0.0).any():
             LOGGER.error(
                 "Found negative values while evaluating poisson cost "
                 "function. Negative values have been replaced with "
