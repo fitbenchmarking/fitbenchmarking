@@ -14,9 +14,10 @@ plateau window: `C(t) = a²(exp(-E*t) + exp(-E*(Nt-t)))`.
 | ASB1M4_av  | 48×24³ |  9 | 0.703376 |
 | ASB2M9_av  | 54×32³ |  4 | 0.502071 |
 
-The published analysis uses the full covariance matrix; these problems provide
-diagonal errors. Full covariance matrices are available in `*_cov.txt` files for
-future use with custom cost functions.
+The published analysis uses the full covariance matrix. These problems include
+full covariance matrices in `*_cov.txt` files, which are automatically loaded
+by the lsqfit parser into `problem.additional_info['covariance']`. This allows
+the `whitened_nlls` cost function to reproduce the correlated fit from the paper.
 
 [paper]: https://arxiv.org/abs/2412.01170
 [code]: https://github.com/telos-collaboration/antisymmetric_analysis_2024
