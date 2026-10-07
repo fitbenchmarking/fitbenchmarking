@@ -67,10 +67,10 @@ class PoissonCostFunc(CostFunc):
         f_xp = self.problem.eval_model(x=x, params=params)
 
         if (f_xp <= 0.0).any():
-            LOGGER.error(
-                "Found negative values while evaluating poisson cost "
-                "function. Negative values have been replaced with "
-                "np.finfo(float).max so that the cost cannot be evaluated."
+            LOGGER.warning(
+                "Found non-positive model values while evaluating the Poisson "
+                "cost function. These have been replaced with "
+                "np.finfo(float).max to apply a large penalty."
             )
         # Penalize negative f(x, p)
         f_xp[f_xp <= 0.0] = np.finfo(float).max
