@@ -369,8 +369,8 @@ class PlotTests(unittest.TestCase):
 
     def test_add_residual_traces_does_nothing_if_residuals_are_none(self):
         """
-        When the cost func is not nlls based, the residuals are not calculated
-        so add traces cannot add them to the plot. If it were to attempt to,
+        When the cost func is not nlls based, residuals are not plotted.
+        If _add_residual_traces were to attempt to add them,
         it would raise an error.
         """
         result = mock.Mock(spec=FittingResult)

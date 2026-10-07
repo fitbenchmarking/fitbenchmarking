@@ -35,14 +35,14 @@ The cost functions that are currently supported are:
     .. autoclass:: fitbenchmarking.cost_func.hellinger_nlls_cost_func.HellingerNLLSCostFunc
                :noindex:
 
-- Poisson deviance cost function
+- Poisson cost function
 
     .. currentmodule:: fitbenchmarking.cost_func.poisson_cost_func
     .. autoclass:: fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc
                :noindex:
     .. note::
-         The Poisson deviance cost function is only valid for problems with non-negative data.
-         In addition to this, the Poisson deviance cost function cannot calculate residuals,
+         The Poisson cost function is only valid for problems with non-negative data.
+         Additionally, residuals are not plotted for non-NLLS cost functions,
          so the residuals plot will not be available when using this cost function.
 
 - Weighted non-linear least squares cost function with log-likelihood evaluation
