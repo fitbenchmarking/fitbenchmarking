@@ -467,8 +467,18 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-        first_result = next(iter(categories.values()))[0]
-        col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
+        # Exclude cost functions with no residuals (i.e. Poisson)
+        # to avoid blank rows in the plot
+        plottable = {
+            k: v
+            for k, v in categories.items()
+            if any(r.r_x is not None for r in v)
+        }
+        if not plottable:
+            return ""
+
+        first_result = next(iter(plottable.values()))[0]
+        col_vals = np.linspace(0, 1, len(list(plottable.values())[0]))
         colours = Plot._sample_colours(col_vals)
         n_plots_per_row = 1
         subplot_titles = None
@@ -479,17 +489,15 @@ class Plot:
 
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
-            fig = Plot._create_empty_residuals_plots(
-                categories, subplot_titles
-            )
+            fig = Plot._create_empty_residuals_plots(plottable, subplot_titles)
         else:
             fig = make_subplots(
-                rows=len(categories),
+                rows=len(plottable),
                 cols=n_plots_per_row,
-                subplot_titles=list(categories.keys()),
+                subplot_titles=list(plottable.keys()),
             )
 
-        for row_ind, (results) in enumerate(categories.values(), 1):
+        for row_ind, (results) in enumerate(plottable.values(), 1):
             for result, colour in zip(results, colours):
                 if result.params is not None:
                     fig = Plot._add_residual_traces(

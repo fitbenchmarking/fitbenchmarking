@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "FitBenchmarking Team" }]
 description = "FitBenchmarking: A tool for comparing fitting software"
 readme = "README.md"
-requires-python = ">=3.10.1"
+requires-python = ">=3.11"
 keywords = [
     "benchmark",
     "fitting",
@@ -27,7 +27,7 @@ dependencies = [
     'numpy',
     'matplotlib>=2.0',
     'plotly>=7.0.0',
-    'scipy>=0.18,<1.16.0',
+    'scipy>=1.16',
     'lxml',
     'pandas>=1.3',
     'jinja2',
@@ -43,6 +43,7 @@ DFO = ['DFO-LS']
 galahad = ['galahad-optrove']
 gofit = ['gofit']
 gradient-free = ['gradient-free-optimizers[sklearn]']
+gvar = ['gvar']
 hogben = ['HOGBEN']
 levmar = ['levmar']
 lmfit = ['lmfit', 'emcee>=3.1.0']
@@ -152,12 +153,11 @@ ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 "fitbenchmarking/parsing/tests/test_fitbenchmark_parser.py" = ["SLF001"]
 "fitbenchmarking/utils/tests/test_options_generic.py" = ["SLF001"]
 "fitbenchmarking/results_processing/tests/test_problem_summary_page.py" = ["SLF001"]
+".custom_hooks/*.py" = ["T20"]
 "fitbenchmarking/controllers/tests/test_controllers.py" = ["SLF001"]
 "fitbenchmarking/results_processing/tests/test_plots.py" = ["SLF001", "N806"]
 "fitbenchmarking/parsing/tests/test_mantid_parsers.py" = ["SLF001"]
 "fitbenchmarking/controllers/tests/test_mantid_controller.py" = ["SLF001", "N802", "N806"]
-"fitbenchmarking/utils/tests/test_misc.py" = ["N802"]
-"fitbenchmarking/utils/tests/test_debug.py" = ["N802"]
 "fitbenchmarking/utils/tests/test_create_dirs.py" = ["N802"]
 "fitbenchmarking/utils/output_grabber.py" = ["N802"]
 "fitbenchmarking/utils/log.py" = ["N806"]
@@ -181,7 +181,6 @@ ignore = ["PERF203", "RUF012", "RUF015", "RUF019"]
 "fitbenchmarking/controllers/ceres_controller.py" = ["N802"]
 "fitbenchmarking/cli/tests/test_checkpoint_handler.py" = ["N806"]
 "fitbenchmarking/cli/checkpoint_handler.py" = ["N803", "N806"]
-"conftest.py" = ["N803"]
 "**/tests/*.py" = ["T20"]
 "**/systests/*.py" = ["T20"]
 
