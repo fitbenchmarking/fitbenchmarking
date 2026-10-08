@@ -21,10 +21,10 @@ class Plot:
     """
 
     _data_marker = {"symbol": "x", "color": "black", "opacity": 0.3}
-    _best_fit_line = {"dash": "dot", "color": "#6699ff"}
+    _best_fit_line = {"dash": "dot", "width": 2, "color": "#65B2D1"}
     _summary_best_plot_line = {"width": 2}
     _summary_plot_line = {"width": 1, "dash": "dash"}
-    _starting_guess_plot_line = {"width": 1, "color": "#5F8575"}
+    _starting_guess_plot_line = {"width": 1, "color": "#009E73"}
     _multistart_successful_fit_line = {
         "width": 2,
         "color": "rgba(0, 0, 255, 0.2)",
@@ -33,7 +33,7 @@ class Plot:
         "width": 2,
         "color": "rgba(255, 0, 0, 0.2)",
     }
-    _subplots_line = {"width": 1, "color": "red"}
+    _subplots_line = {"width": 1, "color": "#9A29B1"}
     _error_dict = {
         "type": "data",
         "array": None,
