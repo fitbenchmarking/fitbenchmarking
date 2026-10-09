@@ -1,0 +1,7 @@
+# Fitbenchmark Problem
+software = 'lsqfit'
+name = 'start_end_x'
+description = 'A lsqfit parser test problem with fit ranges'
+input_file = 'data_files/start_end_x.dat'
+function = 'module=functions/basic_func,func=linear,p1=0.0,p2=1.0'
+fit_ranges = {'x': [1.0, 3.0]}

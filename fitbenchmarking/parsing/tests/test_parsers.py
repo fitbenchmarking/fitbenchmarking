@@ -89,6 +89,7 @@ def generate_test_cases():
             "sasview",
             "hogben",
             "bal",
+            "lsqfit",
         ]
     elif test_type == "mantid":
         formats = ["mantiddev"]

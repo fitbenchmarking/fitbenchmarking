@@ -9,6 +9,9 @@ from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -45,6 +48,21 @@ class BaseNLLSCostFunc(CostFunc):
 
         self.invalid_algorithm_types = ["MCMC"]
 
+    def validate_problem(self):
+        """
+        Warn if the problem supplies a covariance matrix but this cost
+        function ignores it.  Subclasses that do use the covariance (e.g.
+        WhitenedNLLSCostFunc) should override this method.
+        """
+        if self.problem.additional_info.get("covariance") is not None:
+            LOGGER.warning(
+                "Problem '%s' provides a covariance matrix, but the "
+                "selected cost function '%s' does not use it. "
+                "Consider using 'whitened_nlls' instead.",
+                self.problem.name,
+                type(self).__name__,
+            )
+
     @abstractmethod
     def eval_r_single_dataset(self, params, **kwargs):
         """
@@ -77,7 +95,7 @@ class BaseNLLSCostFunc(CostFunc):
         """
         if not (self.problem.multifit and self.problem.multifit_param_names):
             return False
-        return x is None or isinstance(x, (list, tuple)) or np.ndim(x) > 1
+        return x is None or isinstance(x, list | tuple) or np.ndim(x) > 1
 
     def eval_r(self, params, **kwargs):
         """
