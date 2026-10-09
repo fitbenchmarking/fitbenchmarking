@@ -1,5 +1,5 @@
 """
-Model functions for Lattice_Correlators benchmark problems.
+Model functions for CCPTEP_lsqfit_samples benchmark problems.
 """
 
 import numpy as np
