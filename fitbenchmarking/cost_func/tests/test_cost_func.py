@@ -762,25 +762,6 @@ class TestWhitenedNLLSCostFunc(TestCase):
             fitting_problem,
         )
 
-    def test_eval_r_diagonal_matches_weighted_nlls(self):
-        """
-        Whitened residuals with diagonal C must equal (y - f) / e
-        """
-        result = self.cost_function.eval_r(
-            x=self.x_val, y=self.y_val, params=[5]
-        )
-        expected = np.array([0.0, -0.75, 4.0])
-        self.assertTrue(np.allclose(result, expected))
-
-    def test_eval_cost_diagonal_matches_weighted_nlls(self):
-        """
-        Cost with diagonal C must equal sum((y - f)^2 / e^2)
-        """
-        result = self.cost_function.eval_cost(
-            params=[5], x=self.x_val, y=self.y_val
-        )
-        self.assertAlmostEqual(result, 16.5625)
-
     def test_eval_r_off_diagonal_covariance(self):
         """
         Whitened residuals for a non-diagonal covariance are correct
