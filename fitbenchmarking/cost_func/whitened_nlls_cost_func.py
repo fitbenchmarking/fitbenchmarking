@@ -39,12 +39,19 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
 
     def validate_problem(self):
         """
-        Check that the problem provides a covariance matrix.
+        Check that the problem provides a valid covariance matrix.
         """
         if "covariance" not in self.problem.additional_info:
             raise CostFuncError(
                 "WhitenedNLLSCostFunc requires 'covariance' in "
                 "problem.additional_info."
+            )
+        cov = self.problem.additional_info["covariance"]
+        n = len(self.problem.data_y)
+        if cov.shape != (n, n):
+            raise CostFuncError(
+                f"Covariance matrix shape {cov.shape} does not match "
+                f"data length {n}."
             )
 
     def eval_r_single_dataset(self, params, **kwargs):

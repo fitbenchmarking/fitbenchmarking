@@ -857,6 +857,19 @@ class TestWhitenedNLLSCostFunc(TestCase):
             self.cost_function.validate_problem,
         )
 
+    def test_validate_problem_wrong_covariance_shape(self):
+        """
+        validate_problem must raise CostFuncError when covariance shape
+        does not match the number of data points
+        """
+        self.cost_function.problem.additional_info = {
+            "covariance": np.diag([1.0, 1.0])  # 2x2 but data has 3 points
+        }
+        self.assertRaises(
+            exceptions.CostFuncError,
+            self.cost_function.validate_problem,
+        )
+
 
 class FactoryTests(TestCase):
     """
