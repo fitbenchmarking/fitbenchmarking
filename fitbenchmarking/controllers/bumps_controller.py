@@ -123,7 +123,7 @@ class BumpsController(Controller):
             else:
                 min_val = -np.inf
                 max_val = np.inf
-            func_wrapper.__dict__[name].range(min_val, max_val)
+            getattr(func_wrapper, name).range(min_val, max_val)
 
         # Create a Problem Wrapper. The type of the Problem Wrapper is
         # acceptable by Bumps fitting.

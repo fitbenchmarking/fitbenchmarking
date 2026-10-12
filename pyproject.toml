@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-bumps = ['bumps<1.0.0']
+bumps = ['bumps']
 DFO = ['DFO-LS']
 galahad = ['galahad-optrove']
 gofit = ['gofit']
