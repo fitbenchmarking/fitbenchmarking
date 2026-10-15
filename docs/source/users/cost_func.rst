@@ -49,3 +49,9 @@ The cost functions that are currently supported are:
     .. currentmodule:: fitbenchmarking.cost_func.loglike_nlls_cost_func
     .. autoclass:: fitbenchmarking.cost_func.loglike_nlls_cost_func.LoglikeNLLSCostFunc
                :noindex:
+
+- Whitened non-linear least squares cost function
+
+    .. currentmodule:: fitbenchmarking.cost_func.whitened_nlls_cost_func
+    .. autoclass:: fitbenchmarking.cost_func.whitened_nlls_cost_func.WhitenedNLLSCostFunc
+               :noindex:
