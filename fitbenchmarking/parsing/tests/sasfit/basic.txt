@@ -1,0 +1,7 @@
+# Fitbenchmark Problem
+software = 'sasfit'
+name = 'basic'
+description = 'This dataset has no real world application. It is used to test the parsing.'
+input_file = 'sasfit_basic.dat'
+function ='name=polynom,p0=0.0,p1=1.0'
+fixed_params = 'p2=0.0,p3=0.0,p4=0.0'

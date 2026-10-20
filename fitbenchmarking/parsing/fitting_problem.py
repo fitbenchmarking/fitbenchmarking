@@ -87,6 +87,13 @@ class FittingProblem:
         #: Callable function
         self.function = None
 
+        #: *list of callable or None*
+        #: One callable per dataset of a multifit problem, for problems
+        #: where the datasets are described by different functions (e.g.
+        #: because a parameter is held at a different value in each of
+        #: them). None if every dataset uses :code:`self.function`.
+        self.dataset_functions = None
+
         self._param_names = None
 
         #: *numpy array* The index for sorting the data (used in plotting)
@@ -139,12 +146,35 @@ class FittingProblem:
 
         return get_printable_table("FittingProblem", info)
 
+    def dataset_function(self, dataset=None):
+        """
+        The callable which describes one dataset of the problem.
+
+        This is :code:`self.function` unless the datasets of a multifit
+        problem are described by different functions, in which case it is
+        the function of the given dataset.
+
+        :param dataset: The index of the dataset, defaults to the first one
+        :type dataset: int, optional
+
+        :return: The function of the dataset
+        :rtype: callable
+        """
+        if self.dataset_functions is None:
+            return self.function
+        return self.dataset_functions[dataset or 0]
+
     def eval_model(self, params, **kwargs):
         """
         Function evaluation method
 
         :param params: parameter value(s)
         :type params: list
+        :param dataset: The index of the dataset being evaluated. Only
+                        needed for multifit problems whose datasets are
+                        described by different functions, and only when a
+                        single dataset is being evaluated.
+        :type dataset: int, optional
 
         :return: data values evaluated from the function of the problem
         :rtype: numpy array
@@ -159,11 +189,11 @@ class FittingProblem:
 
         # Multifit case: x holds the x values of every dataset and params
         # holds the combined (shared./d<i>.) parameters, so split the
-        # params up and evaluate the function once per dataset.
+        # params up and evaluate each dataset's function once.
         if self.multifit and self.multifit_param_names and isinstance(x, list):
             param_dict = dict(zip(self.multifit_param_names, params))
             out = [
-                self.function(
+                self.dataset_function(d)(
                     x_d,
                     *[
                         v
@@ -175,7 +205,7 @@ class FittingProblem:
             ]
             return np.concatenate(out)
 
-        return self.function(x, *params)
+        return self.dataset_function(kwargs.get("dataset"))(x, *params)
 
     @property
     def param_names(self):
@@ -310,24 +340,32 @@ class FittingProblem:
             else:
                 self.value_ranges.append((-np.inf, np.inf))
 
-    def ini_y(self, parameter_set=0):
+    def ini_y(self, parameter_set=0, dataset=None):
         """
         Return the result of evaluating the problem at the initial parameters
         for plotting.
 
         :param parameter_set: The initial parameters to use, defaults to 0
         :type parameter_set: int, optional
+        :param dataset: The dataset to evaluate, defaults to the first one.
+                        Only used for multifit problems.
+        :type dataset: int, optional
         :return: The initial estimates
         :rtype: numpy.ndarray
         """
-        if parameter_set not in self._ini_y:
+        key = (parameter_set, dataset or 0)
+        if key not in self._ini_y:
             params = self.starting_values[parameter_set].values()
-            self._ini_y[parameter_set] = (
-                self.eval_model(params=params, x=self.data_x[0])
+            self._ini_y[key] = (
+                self.eval_model(
+                    params=params,
+                    x=self.data_x[dataset or 0],
+                    dataset=dataset,
+                )
                 if self.multifit
                 else self.eval_model(params=params)
             )
-        return self._ini_y[parameter_set]
+        return self._ini_y[key]
 
 
 def correct_data(x, y, e, startx, endx, use_errors):

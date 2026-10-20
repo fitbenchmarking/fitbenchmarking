@@ -166,7 +166,7 @@ class GSLController(Controller):
         Setup for GSL
         """
         data = numx.array([self.data_x, self.data_y, self.data_e])
-        n = len(self.data_x)
+        n = self.residual_count
         p = len(self.initial_params)
         pinit = numx.array(self.initial_params)
 
