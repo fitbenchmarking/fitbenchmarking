@@ -95,7 +95,7 @@ class LSQfitParser(FitbenchmarkParser):
         Parse lsqfit covariance.
 
         Stores in problem.additional_info:
-            - 'covariance': full covariance matrix (nt x nt)
+            - 'covariance': full covariance matrix (n x n)
         """
         super()._set_additional_info()
 

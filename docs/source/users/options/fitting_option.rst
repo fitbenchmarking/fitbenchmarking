@@ -181,7 +181,6 @@ Currently supported cost functions are:
 
 * ``whitened_nlls`` - This sets the cost function to be the whitened non-linear least squares cost function, :class:`~fitbenchmarking.cost_func.whitened_nlls_cost_func.WhitenedNLLSCostFunc`. Requires a full covariance matrix in ``problem.additional_info['covariance']``.
 
-
 Default is ``weighted_nlls``
 
 .. code-block:: rst
