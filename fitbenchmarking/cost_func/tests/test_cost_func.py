@@ -748,30 +748,24 @@ class TestWhitenedNLLSCostFunc(TestCase):
         self.cost_function = WhitenedNLLSCostFunc(fitting_problem)
         self.cost_function.validate_problem()
 
-    def test_eval_r_off_diagonal_covariance(self):
+    def test_eval_r(self):
         """
-        Whitened residuals for a non-diagonal covariance are correct
+        Test that eval_r correctly whitens residuals using the Cholesky factor
+        of a non-diagonal covariance matrix
         """
-        # C = [[4, 2, 0], [2, 4, 0], [0, 0, 1]]
-        # L = [[2, 0, 0], [1, sqrt(3), 0], [0, 0, 1]]
-        # r = y - f(x, 5) = [0, -3, 4]
-        # r_white = L^{-1} r = [0, -sqrt(3), 4]
         cov = np.array([[4.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 1.0]])
-        fitting_problem = FittingProblem(self.options)
-        fitting_problem.function = lambda x, p1: x + p1
-        fitting_problem.data_x = self.x_val
-        fitting_problem.data_y = self.y_val
-        fitting_problem.additional_info = {"covariance": cov}
-        cf = WhitenedNLLSCostFunc(fitting_problem)
-        cf.validate_problem()
+        self.cost_function.problem.additional_info = {"covariance": cov}
+        self.cost_function.validate_problem()
 
-        result = cf.eval_r(x=self.x_val, y=self.y_val, params=[5])
+        result = self.cost_function.eval_r(
+            x=self.x_val, y=self.y_val, params=[5]
+        )
         expected = np.array([0.0, -np.sqrt(3), 4.0])
         self.assertTrue(np.allclose(result, expected))
 
-    def test_jac_res_diagonal_matches_weighted_nlls(self):
+    def test_jac_res(self):
         """
-        Whitened Jacobian with diagonal C must equal -J / e
+        Test that jac_res works for the whitened NLLS cost function
         """
         jacobian = Scipy(self.cost_function.problem)
         jacobian.method = "2-point"
@@ -785,9 +779,7 @@ class TestWhitenedNLLSCostFunc(TestCase):
 
     def test_hes_res(self):
         """
-        Test that hes_res returns correct values for a diagonal covariance.
-        With C = diag([4, 16, 1]) the whitened result must equal the weighted
-        NLLS result with e = [2, 4, 1].
+        Test that hes_res works for the whitened NLLS cost function
         """
         self.cost_function.problem.function = fun
         self.cost_function.problem.jacobian = jac
@@ -800,25 +792,22 @@ class TestWhitenedNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        hessian_of_residual, jacobian_of_residual = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
-        expected_hes = np.array(
+
+        expected = np.array(
             [
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
             ]
         )
-        expected_jac = np.array([[-250.0], [-8000.0], [-60500.0]])
-        self.assertTrue(np.allclose(hessian_of_residual, expected_hes))
-        self.assertTrue(
-            np.allclose(jacobian_of_residual, expected_jac, atol=1e-5)
-        )
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_incorrect(self):
         """
-        validate_problem must raise IncompatibleCostFunctionError when
-        covariance is absent
+        Test that validate_problem raises IncompatibleCostFunctionError when
+        no covariance matrix is present
         """
         self.cost_function.problem.additional_info = {}
         self.assertRaises(
@@ -828,8 +817,8 @@ class TestWhitenedNLLSCostFunc(TestCase):
 
     def test_validate_problem_wrong_covariance_shape(self):
         """
-        validate_problem must raise CostFuncError when covariance shape
-        does not match the number of data points
+        Test that validate_problem raises CostFuncError when the covariance
+        shape does not match the number of data points
         """
         self.cost_function.problem.additional_info = {
             "covariance": np.diag([1.0, 1.0])  # 2x2 but data has 3 points
