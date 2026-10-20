@@ -45,7 +45,7 @@ class LSQfitParser(FitbenchmarkParser):
         module_dir = module_file_path.parent
         module_name = module_file_path.stem
 
-        sys.path.insert(0, str(module_dir))
+        sys.path.append(str(module_dir))
         module = importlib.import_module(module_name)
         model_func = getattr(module, func_name)
 
