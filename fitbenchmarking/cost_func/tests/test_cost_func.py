@@ -746,21 +746,7 @@ class TestWhitenedNLLSCostFunc(TestCase):
         fitting_problem.data_e = np.array([2.0, 4.0, 1.0])
         fitting_problem.additional_info = {"covariance": self.cov}
         self.cost_function = WhitenedNLLSCostFunc(fitting_problem)
-
-    def test_init_raises_without_covariance(self):
-        """
-        Test that __init__ raises CostFuncError if covariance is absent
-        """
-        fitting_problem = FittingProblem(self.options)
-        fitting_problem.function = lambda x, p1: x + p1
-        fitting_problem.data_x = self.x_val
-        fitting_problem.data_y = self.y_val
-        fitting_problem.additional_info = {}
-        self.assertRaises(
-            exceptions.CostFuncError,
-            WhitenedNLLSCostFunc,
-            fitting_problem,
-        )
+        self.cost_function.validate_problem()
 
     def test_eval_r_off_diagonal_covariance(self):
         """
@@ -777,6 +763,7 @@ class TestWhitenedNLLSCostFunc(TestCase):
         fitting_problem.data_y = self.y_val
         fitting_problem.additional_info = {"covariance": cov}
         cf = WhitenedNLLSCostFunc(fitting_problem)
+        cf.validate_problem()
 
         result = cf.eval_r(x=self.x_val, y=self.y_val, params=[5])
         expected = np.array([0.0, -np.sqrt(3), 4.0])
@@ -798,7 +785,9 @@ class TestWhitenedNLLSCostFunc(TestCase):
 
     def test_hes_res(self):
         """
-        Test that hes_res returns sensible shapes for a linear model
+        Test that hes_res returns correct values for a diagonal covariance.
+        With C = diag([4, 16, 1]) the whitened result must equal the weighted
+        NLLS result with e = [2, 4, 1].
         """
         self.cost_function.problem.function = fun
         self.cost_function.problem.jacobian = jac
@@ -814,27 +803,26 @@ class TestWhitenedNLLSCostFunc(TestCase):
         hessian_of_residual, jacobian_of_residual = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
-        # fun/jac helpers above use 2 Jacobian columns regardless of params
-        n = len(self.x_val)
-        self.assertEqual(hessian_of_residual.shape[2], n)
-        self.assertEqual(
-            hessian_of_residual.shape[0], hessian_of_residual.shape[1]
+        expected_hes = np.array(
+            [
+                [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
+                [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
+            ]
         )
-        self.assertEqual(jacobian_of_residual.shape[0], n)
-
-    def test_validate_problem_correct(self):
-        """
-        validate_problem must not raise when covariance is present
-        """
-        self.cost_function.validate_problem()
+        expected_jac = np.array([[-250.0], [-8000.0], [-60500.0]])
+        self.assertTrue(np.allclose(hessian_of_residual, expected_hes))
+        self.assertTrue(
+            np.allclose(jacobian_of_residual, expected_jac, atol=1e-5)
+        )
 
     def test_validate_problem_incorrect(self):
         """
-        validate_problem must raise CostFuncError when covariance is absent
+        validate_problem must raise IncompatibleCostFunctionError when
+        covariance is absent
         """
         self.cost_function.problem.additional_info = {}
         self.assertRaises(
-            exceptions.CostFuncError,
+            IncompatibleCostFunctionError,
             self.cost_function.validate_problem,
         )
 

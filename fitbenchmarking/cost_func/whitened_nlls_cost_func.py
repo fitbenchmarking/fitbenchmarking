@@ -6,7 +6,10 @@ from numpy import ravel
 from scipy.linalg import cholesky, solve_triangular
 
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
-from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.exceptions import (
+    CostFuncError,
+    IncompatibleCostFunctionError,
+)
 
 
 class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
@@ -26,33 +29,31 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
     ``problem.additional_info['covariance']``.
     """
 
-    def __init__(self, problem):
-        super().__init__(problem)
-        try:
-            cov = problem.additional_info["covariance"]
-        except KeyError as exc:
-            raise CostFuncError(
-                "WhitenedNLLSCostFunc requires 'covariance' in "
-                "problem.additional_info."
-            ) from exc
-        self._chol_L = cholesky(cov, lower=True)
-
     def validate_problem(self):
         """
-        Check that the problem provides a valid covariance matrix.
+        Check that the problem provides a valid covariance matrix and compute
+        the Cholesky factor used by the residual methods.
+
+        Raises:
+            IncompatibleCostFunctionError: When the problem does not supply a
+                covariance matrix.
+            CostFuncError: When the covariance matrix shape does not match
+                the number of data points.
         """
-        if "covariance" not in self.problem.additional_info:
-            raise CostFuncError(
+        cov = self.problem.additional_info.get("covariance")
+        if cov is None:
+            raise IncompatibleCostFunctionError(
                 "WhitenedNLLSCostFunc requires 'covariance' in "
                 "problem.additional_info."
             )
-        cov = self.problem.additional_info["covariance"]
         n = len(self.problem.data_y)
         if cov.shape != (n, n):
             raise CostFuncError(
                 f"Covariance matrix shape {cov.shape} does not match "
-                f"data length {n}."
+                f"the number of data points ({n}). "
+                "Check the covariance file for this problem."
             )
+        self._chol_L = cholesky(cov, lower=True)
 
     def eval_r_single_dataset(self, params, **kwargs):
         """

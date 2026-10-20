@@ -50,8 +50,8 @@ class BaseNLLSCostFunc(CostFunc):
 
     def validate_problem(self):
         """
-        Warn if the problem supplies a covariance matrix but this cost
-        function ignores it.  Subclasses that do use the covariance (e.g.
+        Warn if the problem supplies a covariance matrix, as the base cost
+        function does not use it.  Subclasses that use the covariance (e.g.
         WhitenedNLLSCostFunc) should override this method.
         """
         if self.problem.additional_info.get("covariance") is not None:
