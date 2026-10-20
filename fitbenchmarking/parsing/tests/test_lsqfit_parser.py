@@ -48,9 +48,8 @@ class TestLSQfitParser(TestCase):
     def test_parse_covariance_returns_array_when_file_exists(
         self, data_file, expected_cov_file, mock_exists, mock_loadtxt
     ):
-        """
-        Verifies the output of _parse_covariance() when the cov file exists.
-        """
+        """Test that _parse_covariance returns the loaded array when the
+        covariance file exists."""
         mock_exists.return_value = True
         mock_loadtxt.return_value = np.eye(3)
 
@@ -64,9 +63,8 @@ class TestLSQfitParser(TestCase):
     def test_parse_covariance_returns_none_when_file_missing(
         self, mock_exists
     ):
-        """
-        Verifies _parse_covariance() returns None when no cov file is found.
-        """
+        """Test that _parse_covariance returns None when no covariance file is
+        found."""
         mock_exists.return_value = False
         result = self.parser._parse_covariance("data_files/test.dat")
         self.assertIsNone(result)
@@ -81,10 +79,8 @@ class TestLSQfitParser(TestCase):
     def test_set_additional_info_stores_covariance(
         self, mock_parent_set_additional_info, mock_parse_cov
     ):
-        """
-        Verifies _set_additional_info() stores the covariance matrix in
-        additional_info when a cov file is found.
-        """
+        """Test that _set_additional_info stores the covariance matrix when a
+        covariance file is found."""
         expected_cov = np.eye(3)
         mock_parse_cov.return_value = expected_cov
         self.parser._get_data_file = MagicMock(
@@ -94,6 +90,7 @@ class TestLSQfitParser(TestCase):
         self.parser._set_additional_info()
 
         mock_parent_set_additional_info.assert_called_once()
+        mock_parse_cov.assert_called_once_with("data_files/test.dat")
         np.testing.assert_array_equal(
             self.parser.fitting_problem.additional_info["covariance"],
             expected_cov,
@@ -109,10 +106,8 @@ class TestLSQfitParser(TestCase):
     def test_set_additional_info_no_covariance_when_none_returned(
         self, mock_parent_set_additional_info, mock_parse_cov
     ):
-        """
-        Verifies _set_additional_info() does not set 'covariance' in
-        additional_info when no cov file is found.
-        """
+        """Test that _set_additional_info does not set 'covariance' when no
+        covariance file is found."""
         mock_parse_cov.return_value = None
         self.parser._get_data_file = MagicMock(
             return_value=["data_files/test.dat"]
