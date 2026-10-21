@@ -142,14 +142,14 @@ class TestNLLSCostFunc(TestCase):
 
     def test_validate_problem_no_warning_without_covariance(self):
         """
-        Test no warning is emitted when the problem has no covariance matrix.
+        Test no warning is raised when the problem has no covariance matrix.
         """
         with self.assertNoLogs("fitbenchmarking", level="WARNING"):
             self.cost_function.validate_problem()
 
     def test_validate_problem_warns_when_covariance_present(self):
         """
-        A warning is emitted when the problem supplies a covariance matrix
+        A warning is raised when the problem supplies a covariance matrix
         but the cost function does not use it
         """
         self.cost_function.problem.additional_info = {

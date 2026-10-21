@@ -92,10 +92,12 @@ class LSQfitParser(FitbenchmarkParser):
 
     def _set_additional_info(self):
         """
-        Parse lsqfit covariance.
+        Parse and store the lsqfit covariance matrix.
 
-        Stores in problem.additional_info:
-            - 'covariance': full covariance matrix (n x n)
+        Calls the parent implementation then reads the covariance matrix from
+        the associated ``*_cov.txt`` file and stores it in
+        ``problem.additional_info['covariance']``. If no covariance file is
+        found, ``additional_info`` is left unchanged.
         """
         super()._set_additional_info()
 
@@ -105,7 +107,7 @@ class LSQfitParser(FitbenchmarkParser):
             if cov is not None:
                 self.fitting_problem.additional_info["covariance"] = cov
 
-    def _parse_covariance(self, data_file: str):
+    def _parse_covariance(self, data_file: str) -> np.ndarray | None:
         """
         Extract covariance matrix from file.
 
