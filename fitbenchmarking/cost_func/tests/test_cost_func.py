@@ -2,7 +2,6 @@
 Tests available cost function classes in FitBenchmarking.
 """
 
-import logging
 from unittest import TestCase
 from unittest.mock import MagicMock
 
@@ -143,13 +142,10 @@ class TestNLLSCostFunc(TestCase):
 
     def test_validate_problem_no_warning_without_covariance(self):
         """
-        No warning is emitted when the problem has no covariance matrix
+        Test no warning is emitted when the problem has no covariance matrix.
         """
-        with self.assertLogs("fitbenchmarking", level="WARNING") as cm:
-            # emit an unrelated warning so assertLogs does not fail on empty
-            logging.getLogger("fitbenchmarking").warning("sentinel")
+        with self.assertNoLogs("fitbenchmarking", level="WARNING"):
             self.cost_function.validate_problem()
-        self.assertEqual(len(cm.output), 1, "Expected no covariance warning")
 
     def test_validate_problem_warns_when_covariance_present(self):
         """
@@ -159,11 +155,13 @@ class TestNLLSCostFunc(TestCase):
         self.cost_function.problem.additional_info = {
             "covariance": np.diag([4.0, 16.0, 1.0])
         }
-        with self.assertLogs("fitbenchmarking", level="WARNING") as cm:
+        with self.assertLogs("fitbenchmarking", level="WARNING") as logs:
             self.cost_function.validate_problem()
-        self.assertTrue(
-            any("covariance" in msg for msg in cm.output),
-            "Expected a covariance warning in log output",
+
+        self.assertEqual(len(logs.output), 1)
+        self.assertIn(
+            "provides a covariance matrix, but the selected cost function",
+            logs.output[0],
         )
 
     def test_jac_res(self):
@@ -732,7 +730,6 @@ class TestWhitenedNLLSCostFunc(TestCase):
     def setUp(self):
         """
         Set up a problem with a diagonal covariance matching e=[2, 4, 1].
-        The diagonal case lets us cross-check against WeightedNLLSCostFunc.
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
