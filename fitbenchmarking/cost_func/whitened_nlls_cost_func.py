@@ -2,6 +2,8 @@
 Implements the whitened non-linear least squares cost function
 """
 
+from functools import cached_property
+
 from numpy import ravel
 from scipy.linalg import cholesky, solve_triangular
 
@@ -31,14 +33,12 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
 
     def validate_problem(self):
         """
-        Check that the problem provides a valid covariance matrix and compute
-        the Cholesky factor used by the residual methods.
+        Check that the problem provides a valid covariance matrix.
 
-        Raises:
-            IncompatibleCostFunctionError: When the problem does not supply a
-                covariance matrix.
-            CostFuncError: When the covariance matrix shape does not match
-                the number of data points.
+        :raises IncompatibleCostFunctionError: When the problem does not
+            supply a covariance matrix.
+        :raises CostFuncError: When the covariance matrix shape does not
+            match the number of data points.
         """
         cov = self.problem.additional_info.get("covariance")
         if cov is None:
@@ -53,7 +53,24 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
                 f"the number of data points ({n}). "
                 "Check the covariance file for this problem."
             )
-        self._chol_L = cholesky(cov, lower=True)
+
+    @cached_property
+    def _chol_L(self):  # noqa: N802
+        """
+        Compute and cache the lower Cholesky factor :math:`L` of the
+        covariance matrix :math:`C`, such that :math:`C = L L^T`.
+
+        :raises IncompatibleCostFunctionError: When the problem does not
+            supply a covariance matrix.
+        :rtype: 2D numpy array
+        """
+        cov = self.problem.additional_info.get("covariance")
+        if cov is None:
+            raise IncompatibleCostFunctionError(
+                "WhitenedNLLSCostFunc requires 'covariance' in "
+                "problem.additional_info."
+            )
+        return cholesky(cov, lower=True)
 
     def eval_r_single_dataset(self, params, **kwargs):
         """

@@ -729,31 +729,26 @@ class TestWhitenedNLLSCostFunc(TestCase):
 
     def setUp(self):
         """
-        Set up a problem with a diagonal covariance matching e=[2, 4, 1].
+        Set up a problem with a non-diagonal covariance matrix.
         """
         self.options = Options()
         fitting_problem = FittingProblem(self.options)
         fitting_problem.function = lambda x, p1: x + p1
         self.x_val = np.array([1.0, 8.0, 11.0])
         self.y_val = np.array([6.0, 10.0, 20.0])
-        # diagonal covariance: e = [2, 4, 1] -> C = diag([4, 16, 1])
-        self.cov = np.diag([4.0, 16.0, 1.0])
+        self.cov = np.array(
+            [[4.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 1.0]]
+        )
         fitting_problem.data_x = self.x_val
         fitting_problem.data_y = self.y_val
-        fitting_problem.data_e = np.array([2.0, 4.0, 1.0])
         fitting_problem.additional_info = {"covariance": self.cov}
         self.cost_function = WhitenedNLLSCostFunc(fitting_problem)
-        self.cost_function.validate_problem()
 
     def test_eval_r(self):
         """
         Test that eval_r correctly whitens residuals using the Cholesky factor
         of a non-diagonal covariance matrix
         """
-        cov = np.array([[4.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 1.0]])
-        self.cost_function.problem.additional_info = {"covariance": cov}
-        self.cost_function.validate_problem()
-
         result = self.cost_function.eval_r(
             x=self.x_val, y=self.y_val, params=[5]
         )
@@ -771,7 +766,7 @@ class TestWhitenedNLLSCostFunc(TestCase):
         result = self.cost_function.jac_res(
             params=[5], x=self.x_val, y=self.y_val
         )
-        expected = np.array([[-0.5], [-0.25], [-1.0]])
+        expected = np.array([[-0.5], [-0.5 / np.sqrt(3)], [-1.0]])
         self.assertTrue(np.allclose(result, expected, atol=1e-5))
 
     def test_hes_res(self):
@@ -795,8 +790,14 @@ class TestWhitenedNLLSCostFunc(TestCase):
 
         expected = np.array(
             [
-                [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
-                [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
+                [
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                ],
+                [
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                ],
             ]
         )
         self.assertTrue(np.allclose(hessian_of_residual, expected))
