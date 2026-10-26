@@ -1,5 +1,5 @@
 """
-This file contains tests for the LSQfitParser class.
+This file contains tests for the LsqfitParser class.
 
 It covers the lsqfit-specific behaviour not exercised by the shared
 test_parsers framework:
