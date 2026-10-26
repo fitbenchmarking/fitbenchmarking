@@ -3,7 +3,6 @@ This file implements a parser for lsqfit-specific problem definitions.
 """
 
 import importlib
-import os
 import sys
 import typing
 from pathlib import Path
@@ -94,35 +93,31 @@ class LSQfitParser(FitbenchmarkParser):
         """
         Parse and store the lsqfit covariance matrix.
 
-        Calls the parent implementation then reads the covariance matrix from
-        the associated ``*_cov.txt`` file and stores it in
-        ``problem.additional_info['covariance']``. If no covariance file is
-        found, ``additional_info`` is left unchanged.
+        Calls the parent implementation then, if ``covariance_file`` is given
+        in the problem definition, loads that file and stores it in
+        ``problem.additional_info['covariance']``.
         """
         super()._set_additional_info()
 
-        # Parse covariance for each data file
-        for data_file in self._get_data_file():
-            cov = self._parse_covariance(data_file)
-            if cov is not None:
-                self.fitting_problem.additional_info["covariance"] = cov
+        cov = self._parse_covariance()
+        if cov is not None:
+            self.fitting_problem.additional_info["covariance"] = cov
 
-    def _parse_covariance(self, data_file: str) -> np.ndarray | None:
+    def _parse_covariance(self) -> np.ndarray | None:
         """
-        Extract covariance matrix from file.
+        Load the covariance matrix from the path given by ``covariance_file``
+        in the problem definition file.
 
-        Reads from *_cov.txt (full covariance matrix).
+        The path is resolved relative to the problem definition file's
+        directory. Returns ``None`` when ``covariance_file`` is not specified.
 
-        :param data_file: Path to the data file
-        :type data_file: str
         :return: Covariance matrix, or None
         :rtype: np.ndarray or None
         """
-        data_file = str(data_file)
-        base = data_file.replace(".dat", "")
-        cov_file = f"{base}_cov.txt"
-
-        if not os.path.exists(cov_file):
+        if "covariance_file" not in self._entries:
             return None
 
-        return np.loadtxt(cov_file)
+        cov_path = (
+            Path(self._filename).parent / self._entries["covariance_file"]
+        )
+        return np.loadtxt(cov_path)
