@@ -43,8 +43,9 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
         cov = self.problem.additional_info.get("covariance")
         if cov is None:
             raise IncompatibleCostFunctionError(
-                "WhitenedNLLSCostFunc requires 'covariance' in "
-                "problem.additional_info."
+                "WhitenedNLLSCostFunc requires a covariance matrix; "
+                "its path must be specified through 'covariance_file' "
+                "in the problem definition."
             )
         n = len(self.problem.data_y)
         if cov.shape != (n, n):
@@ -67,8 +68,9 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
         cov = self.problem.additional_info.get("covariance")
         if cov is None:
             raise IncompatibleCostFunctionError(
-                "WhitenedNLLSCostFunc requires 'covariance' in "
-                "problem.additional_info."
+                "WhitenedNLLSCostFunc requires a covariance matrix; "
+                "its path must be specified through 'covariance_file' "
+                "in the problem definition."
             )
         return cholesky(cov, lower=True)
 
