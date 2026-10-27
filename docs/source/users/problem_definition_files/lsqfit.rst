@@ -26,6 +26,19 @@ input_file
   format. The file must be in a subdirectory named ``data_files`` and follow
   the standard ``# x y e`` column convention.
 
+covariance_file
+  An optional path to a file containing the covariance matrix for the
+  problem, relative to the problem file directory. For example:
+
+  .. code-block:: text
+
+     covariance_file = 'data_files/ASB2M2_v_cov.txt'
+
+  When specified, the matrix is loaded and stored internally. To use it in
+  the objective function you must select the ``whitened_nlls`` cost function
+  (see :ref:`fitting_option`). Using any other cost function when a
+  covariance matrix is present will produce a warning.
+
 function
   Specifies the model function with the format:
   ``module=<path>,func=<name>,param1=val1,param2=val2,...``
@@ -55,17 +68,3 @@ fixed_params
 
   For example, with ``function = '...,Nt=48'``, setting
   ``fixed_params = 'Nt'`` keeps ``Nt`` fixed at ``48`` throughout the fit.
-
-Covariance matrix
-=================
-
-If a file named ``<basename>_cov.txt`` exists alongside the data file, it
-will be read as a covariance matrix and stored in
-``problem.additional_info['covariance']``.
-
-.. note::
-
-   Storing a covariance matrix does not automatically affect the fit. To use
-   the full covariance in the objective function you must select the
-   ``whitened_nlls`` cost function (see :ref:`fitting_option`). Using any
-   other cost function with a covariance matrix present will produce a warning.
