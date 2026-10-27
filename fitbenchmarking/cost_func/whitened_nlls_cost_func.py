@@ -18,8 +18,8 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
     """
     This defines the whitened non-linear least squares cost function where,
     given a set of :math:`n` data points :math:`(x_i,y_i)`, a full covariance
-    matrix :math:`C` (stored in ``problem.additional_info['covariance']``), and
-    a model function :math:`f(x,p)`, we find the optimal parameters by solving:
+    matrix :math:`C`, and a model function :math:`f(x,p)`, we find the optimal
+    parameters by solving:
 
     .. math:: \\min_p (y - f(x, p))^T C^{-1} (y - f(x, p))
 
@@ -27,8 +27,9 @@ class WhitenedNLLSCostFunc(BaseNLLSCostFunc):
     residuals :math:`L^{-1}(y - f(x,p))`, where :math:`L` is the lower
     Cholesky factor of :math:`C`.
 
-    The covariance matrix must be positive-definite and stored in
-    ``problem.additional_info['covariance']``.
+    The covariance matrix must be positive-definite and is supplied via
+    ``covariance_file`` in the problem definition file
+    (see :ref:`lsqfit_format`).
     """
 
     def validate_problem(self):
