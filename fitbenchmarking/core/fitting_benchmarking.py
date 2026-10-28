@@ -250,10 +250,12 @@ class Fit:
             cost_func = cost_func_cls(problem)
             try:
                 cost_func.validate_problem()
-            except IncompatibleCostFunctionError:
+            except IncompatibleCostFunctionError as e:
                 LOGGER.info(
-                    "Problem is not compatible with this cost function (%s)",
+                    "Problem is not compatible with this cost "
+                    "function (%s): %s",
                     cf,
+                    e,
                 )
                 continue
             #######################
