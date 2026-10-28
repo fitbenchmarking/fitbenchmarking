@@ -4,16 +4,17 @@
 [![Documentation Status](https://img.shields.io/readthedocs/fitbenchmarking?style=flat-square)](https://fitbenchmarking.readthedocs.io/en/latest)
 [![Coverage Status](https://img.shields.io/coveralls/github/fitbenchmarking/fitbenchmarking.svg?style=flat-square)](https://coveralls.io/github/fitbenchmarking/fitbenchmarking)
 [![Chat](https://img.shields.io/badge/chat-CompareFitMinimizers-lightgrey.svg?style=flat-square&logo=slack)](https://slack.com/)
-[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281/zenodo.14224242-blue.svg?style=flat-square)](https://doi.org/10.5281/zenodo.14224242)
+[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281/zenodo.15546207-blue.svg?style=flat-square)](https://zenodo.org/records/15546207)
 [![JOSS](https://img.shields.io/badge/JOSS-10.21105/joss.03127-brightgreen.svg?style=flat-square)](https://doi.org/10.21105/joss.03127)
 # FitBenchmarking
 
 FitBenchmarking is an open source tool for comparing different minimizers/fitting frameworks. FitBenchmarking is cross platform and we support Windows, Linux and Mac OS. For questions, feature requests or any other inquiries, please open an issue on GitHub.
 
-- **Installation Instructions:** https://fitbenchmarking.readthedocs.io/en/latest/users/install_instructions/index.html
-- **User Documentation & Example Usage:** https://fitbenchmarking.readthedocs.io/en/latest/users/index.html
-- **Community Guidelines:** https://fitbenchmarking.readthedocs.io/en/latest/contributors/guidelines.html
-- **Automated Tests:** Run via GitHub Actions, https://github.com/fitbenchmarking/fitbenchmarking/actions, and tests are documented at https://fitbenchmarking.readthedocs.io/en/latest/users/tests.html
+- [Installation Instructions](https://fitbenchmarking.readthedocs.io/en/latest/users/install_instructions/index.html)
+ > **Note:** Please ensure that you are using the latest version of FitBenchmarking in order to stay up to date with security fixes.
+- [User Documentation & Example Usage](https://fitbenchmarking.readthedocs.io/en/latest/users/index.html)
+- [Community Guidelines](https://fitbenchmarking.readthedocs.io/en/latest/contributors/guidelines.html)
+- Automated Tests are [run via GitHub Actions](https://github.com/fitbenchmarking/fitbenchmarking/actions), please see [our documentation](https://fitbenchmarking.readthedocs.io/en/latest/users/tests.html) for more information.
 
 The package is the result of a collaboration between STFC’s Scientific Computing Department and ISIS Neutron and Muon Facility and the Diamond Light Source. We also would like to acknowledge support from:
 

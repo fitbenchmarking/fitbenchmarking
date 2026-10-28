@@ -34,6 +34,8 @@ class LevmarController(Controller):
 
     jacobian_enabled_solvers = ["levmar"]
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -44,7 +46,6 @@ class LevmarController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self.lm_y = None
         self._popt = None

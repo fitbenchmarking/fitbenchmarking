@@ -18,3 +18,16 @@ Default is 4000 .
 
     [DASH]
     port: 4000
+
+
+IP address (:code:`ip_address`)
+-------------------------------------
+
+This specifies the ip address that the dash app should run on.
+
+Default is 127.0.0.1 .
+
+.. code-block:: rst
+
+    [DASH]
+    ip_address: 127.0.0.1

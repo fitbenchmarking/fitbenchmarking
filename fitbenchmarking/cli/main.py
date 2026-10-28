@@ -178,8 +178,16 @@ of the Fitbenchmarking docs. """
         help="Set the port for Dash.",
     )
 
-    group1 = parser.add_mutually_exclusive_group()
-    group1.add_argument(
+    parser.add_argument(
+        "--ip_address",
+        metavar="IP_ADDRESS",
+        type=str,
+        default="",
+        help="Set the ip address for Dash.",
+    )
+
+    make_plots_group = parser.add_mutually_exclusive_group()
+    make_plots_group.add_argument(
         "--make_plots",
         action="store_true",
         help=(
@@ -187,7 +195,7 @@ of the Fitbenchmarking docs. """
             "during runtime."
         ),
     )
-    group1.add_argument(
+    make_plots_group.add_argument(
         "--dont_make_plots",
         action="store_true",
         help=(
@@ -196,8 +204,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument(
+    results_browser_group = parser.add_mutually_exclusive_group()
+    results_browser_group.add_argument(
         "--results_browser",
         action="store_true",
         help=(
@@ -206,7 +214,7 @@ of the Fitbenchmarking docs. """
             "of a fit benchmark."
         ),
     )
-    group2.add_argument(
+    results_browser_group.add_argument(
         "--no_results_browser",
         action="store_true",
         help=(
@@ -216,8 +224,8 @@ of the Fitbenchmarking docs. """
         ),
     )
 
-    group3 = parser.add_mutually_exclusive_group()
-    group3.add_argument(
+    pbar_group = parser.add_mutually_exclusive_group()
+    pbar_group.add_argument(
         "--pbar",
         action="store_true",
         help=(
@@ -225,7 +233,7 @@ of the Fitbenchmarking docs. """
             "see the progress bar during runtime."
         ),
     )
-    group3.add_argument(
+    pbar_group.add_argument(
         "--no_pbar",
         action="store_true",
         help=(
@@ -268,8 +276,8 @@ of the Fitbenchmarking docs. """
         help="Specify the file path to write the logs to.",
     )
 
-    group2 = parser.add_mutually_exclusive_group()
-    group2.add_argument(
+    append_log_group = parser.add_mutually_exclusive_group()
+    append_log_group.add_argument(
         "--append_log",
         action="store_true",
         help=(
@@ -279,7 +287,7 @@ of the Fitbenchmarking docs. """
             "subsequent run."
         ),
     )
-    group2.add_argument(
+    append_log_group.add_argument(
         "--overwrite_log",
         action="store_true",
         help=(
@@ -296,7 +304,8 @@ of the Fitbenchmarking docs. """
         default="",
         help=(
             "Specify the minimum level of logging to display "
-            "on console during runtime."
+            "on console during runtime. Can be any of: "
+            "NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL ."
         ),
     )
     parser.add_argument(
@@ -304,7 +313,10 @@ of the Fitbenchmarking docs. """
         "--external_output",
         metavar="EXTERNAL_OUTPUT",
         default="",
-        help="Select the amount of information displayed from third-parties.",
+        help=(
+            "Select the amount of information displayed from third-parties. "
+            "Can be any of: display, log_only, debug."
+        ),
     )
 
     parser.add_argument(
@@ -312,13 +324,13 @@ of the Fitbenchmarking docs. """
         default=False,
         action="store_true",
         help=(
-            "Load results from the checkpoint and generate"
+            "Load results from the checkpoint and generate "
             "reports. Will not run any new tests."
         ),
     )
 
-    group4 = parser.add_mutually_exclusive_group()
-    group4.add_argument(
+    run_dash_group = parser.add_mutually_exclusive_group()
+    run_dash_group.add_argument(
         "--run_dash",
         action="store_true",
         help=(
@@ -326,7 +338,7 @@ of the Fitbenchmarking docs. """
             "interactive plots."
         ),
     )
-    group4.add_argument(
+    run_dash_group.add_argument(
         "--dont_run_dash",
         action="store_true",
         help=(
@@ -334,7 +346,98 @@ of the Fitbenchmarking docs. """
             "run dash for interactive plots."
         ),
     )
+
+    jacobian_check_group = parser.add_mutually_exclusive_group()
+    jacobian_check_group.add_argument(
+        "--check_jacobian",
+        action="store_true",
+        help=(
+            "Use this option to check the jacobian against "
+            "a finite difference approximation."
+        ),
+    )
+    jacobian_check_group.add_argument(
+        "--dont_check_jacobian",
+        action="store_true",
+        help=(
+            "Use this option if you have decided not to check the jacobian."
+        ),
+    )
     return parser
+
+
+def parse_options_from_cli(args: argparse.Namespace) -> dict:
+    """
+    parse the command line options, and apply any options which should override
+    the options file or default options.
+    :param args: The command line arguments.
+    :type args: argparse.Namespace
+
+    :return: A dictionary of options to be used in the benchmarking run.
+    :rtype: dict
+    """
+
+    # Dictionary of options which can be set via argparse
+    # rather than from an ini file or from the default options
+    options_dictionary = {
+        "results_dir": args.results_dir,
+        "num_runs": args.num_runs,
+        "algorithm_type": args.algorithm_type,
+        "software": args.software,
+        "jac_method": args.jac_method,
+        "cost_func_type": args.cost_func_type,
+        "comparison_mode": args.comparison_mode,
+        "table_type": args.table_type,
+        "file_name": args.logging_file_name,
+        "level": args.level,
+        "external_output": args.external_output,
+        "run_name": args.run_name,
+        "runtime_metric": args.runtime_metric,
+        "port": args.port,
+        "ip_address": args.ip_address,
+    }
+    # Check if make_plots in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.make_plots:
+        options_dictionary["make_plots"] = True
+    elif args.dont_make_plots:
+        options_dictionary["make_plots"] = False
+
+    # Check if results_browser in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.results_browser:
+        options_dictionary["results_browser"] = True
+    elif args.no_results_browser:
+        options_dictionary["results_browser"] = False
+
+    # Check if run_dash in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.run_dash:
+        options_dictionary["run_dash"] = True
+    elif args.dont_run_dash:
+        options_dictionary["run_dash"] = False
+
+    # Check if check_jacobian in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.check_jacobian:
+        options_dictionary["check_jacobian"] = True
+    elif args.dont_check_jacobian:
+        options_dictionary["check_jacobian"] = False
+
+    # Check if benchmark in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.pbar:
+        options_dictionary["pbar"] = True
+    elif args.no_pbar:
+        options_dictionary["pbar"] = False
+
+    # Check if log_append in options.py should be overridden, and if so,
+    # add to options_dictionary
+    if args.append_log:
+        options_dictionary["append"] = True
+    elif args.overwrite_log:
+        options_dictionary["append"] = False
+    return options_dictionary
 
 
 @exception_handler
@@ -381,7 +484,7 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
     result_dir = []
     pp_dfs_all_prob_sets = {}
     cp = Checkpoint(options=options)
-
+    results = {}
     try:
         for sub_dir in problem_sets:
             # Create full path for the directory that holds a group of
@@ -481,9 +584,8 @@ def run(problem_sets, additional_options=None, options_file="", debug=False):
             "You can also set 'results_dir' in an options file.",
             options.results_dir,
         )
-
     index_page = create_index_page(options, group_labels, result_dir)
-    open_browser(index_page, options, pp_dfs_all_prob_sets)
+    open_browser(index_page, options, pp_dfs_all_prob_sets, results=results)
 
 
 def main():
@@ -495,76 +597,25 @@ def main():
 
     if len(sys.argv) == 1:
         if not args.problem_sets[0].exists():
-            print(
+            LOGGER.error(
                 "The default problem set has either been "
                 "deleted or moved. Please specify a file "
                 "path to a different problem set with the "
                 "-p option."
             )
             sys.exit(1)
-        print(
+        LOGGER.info(
             "Running NIST average_difficulty problem set "
             "with scipy minimizers \n"
         )
 
-    # Dictionary of options which can be set via argparse
-    # rather than from an ini file or from the default options
-    options_dictionary = {
-        "results_dir": args.results_dir,
-        "num_runs": args.num_runs,
-        "algorithm_type": args.algorithm_type,
-        "software": args.software,
-        "jac_method": args.jac_method,
-        "cost_func_type": args.cost_func_type,
-        "comparison_mode": args.comparison_mode,
-        "table_type": args.table_type,
-        "file_name": args.logging_file_name,
-        "level": args.level,
-        "external_output": args.external_output,
-        "run_name": args.run_name,
-        "runtime_metric": args.runtime_metric,
-        "port": args.port,
-    }
-
-    # Check if make_plots in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.make_plots:
-        options_dictionary["make_plots"] = True
-    elif args.dont_make_plots:
-        options_dictionary["make_plots"] = False
-
-    # Check if results_browser in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.results_browser:
-        options_dictionary["results_browser"] = True
-    elif args.no_results_browser:
-        options_dictionary["results_browser"] = False
-
-    # Check if run_dash in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.run_dash:
-        options_dictionary["run_dash"] = True
-    elif args.dont_run_dash:
-        options_dictionary["run_dash"] = False
-
-    # Check if benchmark in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.pbar:
-        options_dictionary["pbar"] = True
-    elif args.no_pbar:
-        options_dictionary["pbar"] = False
-
-    # Check if log_append in options.py should be overridden, and if so,
-    # add to options_dictionary
-    if args.append_log:
-        options_dictionary["append"] = True
-    elif args.overwrite_log:
-        options_dictionary["append"] = False
+    options_dictionary = parse_options_from_cli(args)
 
     if args.load_checkpoint:
         generate_report(
             options_file=args.options_file,
             additional_options=options_dictionary,
+            debug=args.debug_mode,
         )
     else:
         run(

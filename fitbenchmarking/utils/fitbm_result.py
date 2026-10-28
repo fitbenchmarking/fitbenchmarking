@@ -2,8 +2,9 @@
 FitBenchmarking results object
 """
 
-from statistics import fmean, harmonic_mean, median
-from typing import TYPE_CHECKING, Literal, Optional, Union
+import math
+from statistics import StatisticsError, fmean, harmonic_mean, median
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from scipy import stats
@@ -12,6 +13,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -26,16 +28,18 @@ class FittingResult:
     fitting problem test.
     """
 
+    status: str
+
     def __init__(
         self,
         controller: Controller,
-        accuracy: Union[float, list[float]] = np.inf,
-        runtimes: Union[float, list[float]] = np.inf,
+        accuracy: float | list[float] = np.inf,
+        runtimes: float | list[float] = np.inf,
         energy: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: Optional[int] = None,
+        dataset: int | None = None,
     ) -> None:
         """
         Initialise the Fitting Result
@@ -60,12 +64,15 @@ class FittingResult:
         # Problem definition + scores
         self.name: str = problem.name
         self.multivariate: bool = problem.multivariate
+        self.multistart: bool = problem.multistart
         self.problem_format: str = problem.format
         self.problem_desc: str = problem.description
         self.initial_params: list[float] = controller.initial_params
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
+        if hasattr(problem, "mask"):
+            self.mask = problem.mask
 
         if dataset is None:
             self.data_x = problem.data_x
@@ -83,6 +90,33 @@ class FittingResult:
             self.params = controller.final_params[dataset]
             self.accuracy = accuracy[dataset]
 
+        # Needed for spinw 2d case, for plotting
+        indexes_cuts = None
+
+        if "ebin_cens" in problem.additional_info:
+            # If SpinW 1d, make sure data_x is correct
+            if problem.additional_info["plot_type"] == "1d_cuts":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+
+            # In the SpinW 2d case, produce cuts of data
+            elif problem.additional_info["plot_type"] == "2d":
+                n_plots = problem.additional_info["n_plots"]
+                self.data_x_cuts = np.array(
+                    n_plots * problem.additional_info["ebin_cens"].tolist()
+                )
+                indexes_cuts = self.get_indexes_1d_cuts_spinw(problem)
+                self.data_y_cuts, self.data_y_complete = (
+                    self.get_1d_cuts_spinw(indexes_cuts, self.data_y)
+                )
+
+                if self.data_e is not None:
+                    self.data_e_cuts, _ = self.get_1d_cuts_spinw(
+                        indexes_cuts, self.data_e
+                    )
+
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
         self.runtime_metric = runtime_metric
         self.energy = energy
@@ -91,6 +125,21 @@ class FittingResult:
 
         # Posterior pdfs for Bayesian fitting
         self.params_pdfs = controller.params_pdfs
+
+        # Additional plotting info for SpinW powder plots
+        if "n_plots" in problem.additional_info:
+            self.plot_info = {
+                "plot_type": problem.additional_info["plot_type"],
+                "n_plots": problem.additional_info["n_plots"],
+                "subplot_titles": problem.additional_info["subplot_titles"],
+                "ax_titles": problem.additional_info["ax_titles"],
+            }
+
+            for key in ["modQ_cens", "ebin_cens"]:
+                if key in problem.additional_info:
+                    self.plot_info[key] = problem.additional_info[key].tolist()
+        else:
+            self.plot_info = None
 
         # Details of options used for this run
         self.software = controller.software
@@ -101,7 +150,10 @@ class FittingResult:
             if v == self.minimizer
         ]
 
-        jac_enabled = self.minimizer in controller.jacobian_enabled_solvers
+        jac_enabled = (
+            cost_func.jacobian is not None
+            and self.minimizer in controller.jacobian_enabled_solvers
+        )
         hess_enabled = (
             cost_func.hessian is not None
             and self.minimizer in controller.hessian_enabled_solvers
@@ -115,19 +167,32 @@ class FittingResult:
         self.jac_x = None
 
         self.ini_y = problem.ini_y(controller.parameter_set)
+        if hasattr(self, "ini_y") and indexes_cuts is not None:
+            self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
+                indexes_cuts, self.ini_y
+            )
+
         self.fin_y = None
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(
+                self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
+                if hasattr(self, "r_x") and indexes_cuts is not None:
+                    self.r_x_cuts, _ = self.get_1d_cuts_spinw(
+                        indexes_cuts, self.r_x
+                    )
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
             self.fin_y = cost_func.problem.eval_model(
                 self.params, x=self.data_x
             )
+            if hasattr(self, "fin_y") and indexes_cuts is not None:
+                self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
+                    indexes_cuts, self.fin_y
+                )
 
         # String interpretations of the params
         self.ini_function_params = problem.get_function_params(
@@ -139,7 +204,13 @@ class FittingResult:
 
         # Controller error handling
         self.error_flag = controller.flag
-
+        if (
+            isinstance(self.error_flag, int)
+            and self.error_flag in ERROR_FLAG_MAPPINGS
+        ):
+            self.status = ERROR_FLAG_MAPPINGS[self.error_flag]
+        else:
+            self.status = "Unknown error flag"
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
@@ -152,6 +223,49 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
+    def get_1d_cuts_spinw(self, indexes, array_to_cut):
+        """
+        Given a flattened array of spinw y data, this function reshapes it
+        into a 2d array (based on the length of ebin_cens), then takes
+        1d cuts based on the q_cens specified by the user.
+        """
+
+        flattened_mask = self.mask.transpose().flatten()
+        full_array = np.full(flattened_mask.shape, np.nan)
+        full_array[~flattened_mask] = array_to_cut
+        array_to_cut_as_2d = full_array.reshape(self.mask.shape, order="F")
+
+        data_cuts = []
+        for ind in indexes:
+            if len(list(ind[0])) == 1:
+                data_cuts = data_cuts + array_to_cut_as_2d[ind, :][0].tolist()
+
+            elif len(list(ind[0])) > 1:
+                mean_y = np.mean(array_to_cut_as_2d[ind, :][0], axis=0)
+                data_cuts = data_cuts + mean_y.tolist()
+
+        return data_cuts, array_to_cut_as_2d
+
+    def get_indexes_1d_cuts_spinw(self, problem):
+        """
+        Get indexes of 1d cuts for SpinW data, based on the q_cens
+        specified by the user.
+        """
+        modQ_cens = problem.additional_info["modQ_cens"]
+        q_cens = problem.additional_info["q_cens"]
+        dq = problem.additional_info["dq"]
+        qmin = [float(i) - dq for i in q_cens]
+        qmax = [float(i) + dq for i in q_cens]
+
+        indexes_cuts = []
+        for qmin_i, qmax_i in zip(qmin, qmax):
+            indexes_cuts.append(
+                np.where(
+                    np.logical_and(modQ_cens >= qmin_i, modQ_cens <= qmax_i)
+                )
+            )
+        return indexes_cuts
+
     def init_blank(self):
         """
         Initialise a new blank version of the class with the required
@@ -159,17 +273,22 @@ class FittingResult:
         """
         # Variable for calculating best result
         self._norm_acc = None
-        self._norm_runtime = None
         self._norm_energy = None
         self.min_accuracy = np.inf
-        self.min_runtime = np.inf
         self.min_energy = np.inf
         self.is_best_fit = False
+
+        self.min_mean_runtime = np.inf
+        self.min_minimum_runtime = np.inf
+        self.min_maximum_runtime = np.inf
+        self.min_first_runtime = np.inf
+        self.min_median_runtime = np.inf
+        self.min_harmonic_runtime = np.inf
+        self.min_trim_runtime = np.inf
 
         # Paths to various output files
         self.problem_summary_page_link = ""
         self.fitting_report_link = ""
-        self.start_figure_link = ""
         self.figure_link = ""
         self.figure_error = ""
         self.posterior_plots = ""
@@ -198,10 +317,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f"{key} not equal!")
+                    LOGGER.info("%s not equal!", key)
                     return False
             else:
-                print(f"No attr {key}")
+                LOGGER.info("No attr %s", key)
                 return False
         return True
 
@@ -293,9 +412,9 @@ class FittingResult:
     @property
     def minimum_runtime(self):
         """
-        Getting function for min_runtime attribute
+        Getting function for minimum_runtime attribute
 
-        :return: min_runtime value
+        :return: minimum_runtime value
         :rtype: float
         """
         return min(self.runtimes)
@@ -303,9 +422,9 @@ class FittingResult:
     @property
     def maximum_runtime(self):
         """
-        Getting function for max_runtime attribute
+        Getting function for maximum_runtime attribute
 
-        :return: max_runtime value
+        :return: maximum_runtime value
         :rtype: float
         """
         return max(self.runtimes)
@@ -338,7 +457,12 @@ class FittingResult:
         :return: harmonic_runtime value
         :rtype: float
         """
-        return harmonic_mean(self.runtimes)
+        # This try except is added to handle scenarios
+        # when harmonic_mean cannot be calculated.
+        try:
+            return harmonic_mean(self.runtimes)
+        except StatisticsError:
+            return np.inf
 
     @property
     def trim_runtime(self):
@@ -382,30 +506,20 @@ class FittingResult:
         """
         self._norm_acc = value
 
-    @property
-    def norm_runtime(self):
+    def norm_runtime(self, runtime_metric=None):
         """
-        Getting function for norm_runtime attribute
+        Calculates the norm runtime of a given runtime metric.
 
-        :return: normalised runtime value
+        :return: normalised runtime value of the selected
         :rtype: float
         """
-        if self._norm_runtime is None:
-            if self.min_runtime in [np.nan, np.inf]:
-                self._norm_runtime = np.inf
-            else:
-                self._norm_runtime = self.runtime / self.min_runtime
-        return self._norm_runtime
-
-    @norm_runtime.setter
-    def norm_runtime(self, value):
-        """
-        Stores the normalised runtime and updates the value
-
-        :param value: New value for norm_runtime
-        :type value: float
-        """
-        self._norm_runtime = value
+        metric = runtime_metric or self.runtime_metric
+        min_rumtime = getattr(self, f"min_{metric}_runtime")
+        if min_rumtime in [np.nan, np.inf]:
+            norm_runtime = np.inf
+        else:
+            norm_runtime = getattr(self, f"{metric}_runtime") / min_rumtime
+        return norm_runtime
 
     @property
     def norm_energy(self):
@@ -445,3 +559,61 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
+
+    def hover_text(
+        self, include_title=False, style="html", include_cost_func=False
+    ) -> str:
+        """
+        Generate the tooltip text for a given fitting result.
+        :param include_title: Whether to include the result title in the
+            tooltip
+        :type include_title: bool
+
+        :param style: The type of styling tags needed for the tooltip, either
+            css or html. This determines the type of line breaks and bold tags
+            used. Note: Bold text is not applied when using css style
+        :type style: str
+
+        :param include_cost_func: Whether to include the cost function type
+            in the title of the tooltip
+        :type include_cost_func: bool
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+        line_break = "<br>" if style == "html" else r"\a "
+        bold_start = "<b>" if style == "html" else ""
+        bold_end = "</b>" if style == "html" else ""
+
+        if math.isinf(self.runtime) or math.isinf(self.min_accuracy):
+            return f"Error: {self.status}"
+
+        if self.iteration_count is None or self.iteration_count == 0:
+            iterations = "not available"
+        else:
+            iterations = self.iteration_count
+
+        hover_text = (
+            f"Status: {self.status}{line_break}"
+            f"Accuracy: {self.accuracy:.4g}{line_break}"
+            f"{self.runtime_metric.capitalize()}"
+            f" runtime: {self.runtime:.4g}{line_break}"
+            f"Energy usage: {self.energy:.4g}{line_break}"
+            f"Iterations: {iterations}{line_break}"
+            f"Function Evaluations: {self.func_evals}"
+        )
+
+        if include_title:
+            title_parts = [
+                self.modified_minimizer_name(with_software=True),
+                self.problem_tag,
+            ]
+            if include_cost_func:
+                title_parts.append(self.costfun_tag)
+
+            title = " | ".join(
+                f"{bold_start}{part}{bold_end}" for part in title_parts
+            )
+            hover_text = f"{title}{line_break}{hover_text}"
+
+        return hover_text

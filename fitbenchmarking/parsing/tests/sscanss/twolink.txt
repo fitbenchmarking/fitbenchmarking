@@ -1,0 +1,6 @@
+# Fitbenchmark Problem
+software = 'sscanss'
+name = 'basic'
+description = 'This dataset has no real world application. It is used to test the parsing.'
+function ='module=data_files/robots,robot=robot,targets=targets,p1=0.0,p2=1.0'
+parameter_ranges = {'p1': (0,10), 'p2': (0,10)}

@@ -30,6 +30,8 @@ class DFOController(Controller):
         "MCMC": [],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -40,7 +42,6 @@ class DFOController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self.rhobeg = None
         self._status = None

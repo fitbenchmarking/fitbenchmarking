@@ -31,6 +31,8 @@ class ParamonteController(Controller):
         "MCMC": ["paraDram_sampler"],
     }
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -39,7 +41,6 @@ class ParamonteController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.result = None
         self.pmpd = pm.ParaDRAM()
 
@@ -60,6 +61,7 @@ class ParamonteController(Controller):
         self.pmpd.spec.variableNameList = self.par_names
         self.pmpd.spec.variableNameList = list(param_dict.keys())
         self.pmpd.spec.startPointVec = list(param_dict.values())
+        self.pmpd.spec.chainSize = self.chain_length
 
         if self.value_ranges is not None:
             value_ranges_lb, value_ranges_ub = zip(*self.value_ranges)

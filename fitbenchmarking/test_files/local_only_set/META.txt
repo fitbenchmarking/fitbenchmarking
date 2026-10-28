@@ -1,0 +1,4 @@
+local_only_set
+
+This dataset contains a problem in each of the formats that Fitbenchmarking supports which cannot currently be tested in CI.
+It is used during local testing.

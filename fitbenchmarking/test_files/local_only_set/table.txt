@@ -1,0 +1,5 @@
+# Fitbenchmark Problem
+software = 'sscanss'
+name = 'Table'
+description = 'Testing the table.'
+function = 'module=Models/kinematics,robot=table_robot,targets=t_targets,p1=0,p2=0,p3=0,p4=0'

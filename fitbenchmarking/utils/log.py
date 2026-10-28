@@ -27,8 +27,10 @@ def setup_logger(
     :param level: The level of error to print, defaults to 'INFO'
     :type level: str, optional
     """
-    FORMAT = "[%(asctime)s]  %(levelname)s %(filename)s: %(message)s"
-    formatter = logging.Formatter(FORMAT, "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(
+        fmt="[%(asctime)s]  %(levelname)s %(filename)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     handler = logging.FileHandler(log_file, mode="a" if append else "w")
     handler.setFormatter(formatter)

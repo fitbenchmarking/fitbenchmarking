@@ -5,10 +5,12 @@ fitting software.
 """
 
 import os
+import platform
 import timeit
 
 import numpy as np
 from codecarbon import EmissionsTracker
+from scipy.optimize import approx_fprime, check_grad
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
 
@@ -65,26 +67,41 @@ class Fit:
         self._results = []
         self._failed_problems = []
         self._unselected_minimizers = {}
-        self.__start_values_index = 0
-        self.__grabbed_output = output_grabber.OutputGrabber(self._options)
-        self.__emissions_tracker = None
-        self.__logger_prefix = "    "
+        self._start_values_index = 0
+        self._grabbed_output = output_grabber.OutputGrabber(self._options)
+        self._emissions_tracker = None
+        self._logger_prefix = "    "
         if "energy_usage" in options.table_type:
-            self.__emissions_tracker = EmissionsTracker(measure_power_secs=1)
+            if platform.system() == "Darwin":
+                LOGGER.info(
+                    "Please be aware that you may be prompted by "
+                    "CodeCarbon to provide a password to give sudo rights "
+                    "so that the powermetrics tool can be used."
+                )
+            self._emissions_tracker = EmissionsTracker(
+                measure_power_secs=1,
+                tracking_mode="process",
+                save_to_file=False,
+                log_level="error",
+            )
 
-    def benchmark(self):
+    def benchmark(
+        self,
+    ) -> tuple[
+        list[fitbm_result.FittingResult], list[str], dict[str, list[str]]
+    ]:
         """
         Call benchmarking on user input and list of paths.
         The benchmarking structure is:
 
         .. code-block:: python
 
-            __loop_over_starting_values()
-                __loop_over_software()
-                    __loop_over_minimizers()
-                        __loop_over_jacobians()
-                            __loop_over_hessians()
-                                __perform_fit()
+            _loop_over_starting_values()
+                _loop_over_software()
+                    _loop_over_minimizers()
+                        _loop_over_jacobians()
+                            _loop_over_hessians()
+                                _perform_fit()
 
         :return: all results,
                  problems where all fitting failed, and
@@ -100,15 +117,16 @@ class Fit:
         LOGGER.info("Parsing problems")
         for p in problem_group:
             try:
-                with self.__grabbed_output:
+                with self._grabbed_output:
                     parsed = parse_problem_file(p, self._options)
-                    parsed.correct_data()
             except FitBenchmarkException as e:
                 LOGGER.info("Could not parse problem from: %s", p)
                 LOGGER.warning(e)
             else:
-                name_count[parsed.name] = name_count.get(parsed.name, 0) + 1
-                problems.append((p, parsed))
+                for fp in parsed:
+                    fp.correct_data()
+                    name_count[fp.name] = name_count.get(fp.name, 0) + 1
+                    problems.append((p, fp))
 
         LOGGER.info("Running problems")
 
@@ -124,7 +142,7 @@ class Fit:
             else problems
         )
 
-        name_index = {key: 0 for key in name_count}
+        name_index = dict.fromkeys(name_count, 0)
 
         with logging_redirect_tqdm(loggers=[LOGGER]):
             for i, (fname, problem) in enumerate(benchmark_pbar):
@@ -135,17 +153,17 @@ class Fit:
 
                 info_str = (
                     f" Running data from: {os.path.basename(fname)}"
-                    f" {i + 1}/{len(problem_group)} "
+                    f" {i + 1}/{len(problems)} "
                 )
                 LOGGER.info("\n%s", "#" * len(info_str))
                 LOGGER.info(info_str)
                 LOGGER.info("#" * len(info_str))
 
-                results = self.__loop_over_starting_values(problem)
+                results = self._loop_over_starting_values(problem)
                 self._results.extend(results)
 
-                if self.__emissions_tracker:
-                    _ = self.__emissions_tracker.stop()
+        if self._emissions_tracker:
+            _ = self._emissions_tracker.stop()
 
         self._checkpointer.finalise_group(
             self._label, self._failed_problems, self._unselected_minimizers
@@ -157,7 +175,7 @@ class Fit:
             self._unselected_minimizers,
         )
 
-    def __loop_over_starting_values(self, problem):
+    def _loop_over_starting_values(self, problem):
         """
         Loops over starting values from the fitting problem.
 
@@ -186,21 +204,22 @@ class Fit:
         for index in num_start_vals_pbar:
             LOGGER.info(
                 "%sStarting value: %i/%i",
-                self.__logger_prefix,
+                self._logger_prefix,
                 index + 1,
                 num_start_vals,
             )
 
             # Set the values of the start index
-            self.__start_values_index = index
+            self._start_values_index = index
 
             if num_start_vals > 1:
-                problem.name = f"{name}, Start {index + 1}"
+                prefix = (len(str(num_start_vals)) - len(str(index + 1))) * "0"
+                problem.name = f"{name}, Start {prefix}{index + 1}"
 
             #############################
             # Loops over cost functions #
             #############################
-            result = self.__loop_over_cost_function(problem)
+            result = self._loop_over_cost_function(problem)
             results.extend(result)
 
             # Checks to see if all of the minimizers from every software raised
@@ -214,7 +233,7 @@ class Fit:
 
         return results
 
-    def __loop_over_cost_function(self, problem):
+    def _loop_over_cost_function(self, problem):
         """
         Run benchmarking for each cost function given in options.
 
@@ -226,7 +245,7 @@ class Fit:
         """
         results = []
         for cf in self._options.cost_func_type:
-            LOGGER.info("%sCost Function: %s", self.__logger_prefix * 2, cf)
+            LOGGER.info("%sCost Function: %s", self._logger_prefix * 2, cf)
             cost_func_cls = create_cost_func(cf)
             cost_func = cost_func_cls(problem)
             try:
@@ -240,12 +259,12 @@ class Fit:
             #######################
             # Loops over software #
             #######################
-            result = self.__loop_over_fitting_software(cost_func)
+            result = self._loop_over_fitting_software(cost_func)
             results.extend(result)
 
         return results
 
-    def __loop_over_fitting_software(self, cost_func):
+    def _loop_over_fitting_software(self, cost_func):
         """
         Loops over fitting software selected in the options
 
@@ -276,25 +295,25 @@ class Fit:
         )
 
         for s in software_pbar:
-            LOGGER.info("%sSoftware: %s", self.__logger_prefix * 3, s.upper())
+            LOGGER.info("%sSoftware: %s", self._logger_prefix * 3, s.upper())
             try:
                 minimizers = self._options.minimizers[s]
             except KeyError as e:
                 raise UnsupportedMinimizerError(
                     f"No minimizer given for software: {s}"
                 ) from e
-            with self.__grabbed_output:
+            with self._grabbed_output:
                 controller_cls = ControllerFactory.create_controller(
                     software=s
                 )
                 controller = controller_cls(cost_func=cost_func)
 
-            controller.parameter_set = self.__start_values_index
+            controller.parameter_set = self._start_values_index
 
             #########################
             # Loops over minimizers #
             #########################
-            result, minimizer_failed = self.__loop_over_minimizers(
+            result, minimizer_failed = self._loop_over_minimizers(
                 controller=controller, minimizers=minimizers
             )
             results.extend(result)
@@ -303,7 +322,7 @@ class Fit:
 
         return results
 
-    def __loop_over_minimizers(self, controller, minimizers):
+    def _loop_over_minimizers(self, controller, minimizers):
         """
         Loops over minimizers in fitting software
 
@@ -323,7 +342,7 @@ class Fit:
         for minimizer in minimizers:
             controller.minimizer = minimizer
             minimizer_check = True
-            LOGGER.info("%sMinimizer: %s", self.__logger_prefix * 4, minimizer)
+            LOGGER.info("%sMinimizer: %s", self._logger_prefix * 4, minimizer)
             try:
                 controller.validate_minimizer(minimizer, algorithm_type)
             except UnknownMinimizerError as excp:
@@ -340,33 +359,32 @@ class Fit:
                 minimizer_check = False
                 LOGGER.warning(str(excp))
 
-            if controller.problem.value_ranges is not None:
-                try:
-                    controller.check_minimizer_bounds(minimizer)
-                except IncompatibleMinimizerError as excp:
-                    if minimizer_check:
-                        minimizer_check = False
-                        controller.flag = 4
+            try:
+                controller.check_minimizer_bounds(minimizer)
+            except IncompatibleMinimizerError as excp:
+                if minimizer_check:
+                    minimizer_check = False
+                    controller.flag = 4
 
-                        # Calling prepare to fill in the initial parameters
-                        controller.prepare(skip_setup=True)
-                        dummy_result = fitbm_result.FittingResult(
-                            controller=controller
-                        )
-                        self._checkpointer.add_result(dummy_result)
-                        results.append(dummy_result)
-                        LOGGER.warning(str(excp))
+                    # Calling prepare to fill in the initial parameters
+                    controller.prepare(skip_setup=True)
+                    dummy_result = fitbm_result.FittingResult(
+                        controller=controller
+                    )
+                    self._checkpointer.add_result(dummy_result)
+                    results.append(dummy_result)
+                    LOGGER.warning(str(excp))
 
             if minimizer_check:
                 ########################
                 # Loops over Jacobians #
                 ########################
-                result = self.__loop_over_jacobians(controller)
+                result = self._loop_over_jacobians(controller)
                 results.extend(result)
 
         return results, minimizer_failed
 
-    def __loop_over_jacobians(self, controller):
+    def _loop_over_jacobians(self, controller):
         """
         Loops over Jacobians set from the options file
 
@@ -406,14 +424,30 @@ class Fit:
                     if minimizer_check:
                         LOGGER.info(
                             "%sJacobian: %s",
-                            self.__logger_prefix * 5,
-                            jacobian.name() if jacobian.name() else "default",
+                            self._logger_prefix * 5,
+                            jacobian.name() or "default",
+                        )
+
+                    if (
+                        self._options.check_jacobian
+                        and not controller.problem.multifit
+                        and not controller.problem.multistart
+                    ):
+                        params = list(
+                            controller.starting_values[
+                                controller.parameter_set
+                            ].values()
+                        )
+                        self._check_jacobian(
+                            func=cost_func.eval_cost,
+                            jac=cost_func.jac_cost,
+                            params=params,
                         )
 
                     #######################
                     # Loops over Hessians #
                     #######################
-                    result = self.__loop_over_hessians(controller)
+                    result = self._loop_over_hessians(controller)
                     results.extend(result)
 
                     # For minimizers that do not accept jacobians we raise an
@@ -427,7 +461,7 @@ class Fit:
 
         return results
 
-    def __loop_over_hessians(self, controller):
+    def _loop_over_hessians(self, controller):
         """
         Loops over Hessians set from the options file
 
@@ -473,11 +507,11 @@ class Fit:
                         cost_func.hessian.method = num_method
                         hess_name = cost_func.hessian.name()
                     LOGGER.info(
-                        "%sHessian: %s", self.__logger_prefix * 6, hess_name
+                        "%sHessian: %s", self._logger_prefix * 6, hess_name
                     )
 
                 # Perform the fit a number of times specified by num_runs
-                accuracy, runtimes, energy = self.__perform_fit(controller)
+                accuracy, runtimes, energy = self._perform_fit(controller)
                 result_args = {
                     "controller": controller,
                     "accuracy": accuracy,
@@ -491,6 +525,11 @@ class Fit:
                     for i in range(len(accuracy)):
                         result_args["dataset"] = i
                         result = fitbm_result.FittingResult(**result_args)
+                        result.fin_function_params = (
+                            problem.get_function_params(
+                                params=controller.final_params[i]
+                            )
+                        )
                         results.append(result)
                         self._checkpointer.add_result(result)
                 else:
@@ -506,7 +545,7 @@ class Fit:
 
         return results
 
-    def __perform_fit(self, controller):
+    def _perform_fit(self, controller):
         """
         Performs a fit using the provided controller and its data. It
         will be run a number of times specified by num_runs.
@@ -519,24 +558,39 @@ class Fit:
         """
         num_runs = self._options.num_runs
         energy = np.nan
-        tracker = self.__emissions_tracker
+        tracker = self._emissions_tracker
+        tracker_started = False
+        tracker_stopped = False
+
+        # For multifit problems, Mantid combines the datasets itself,
+        # everything else needs the controller to do it
+        combine_datasets = (
+            controller.problem.multifit and controller.software != "mantid"
+        )
 
         try:
-            with self.__grabbed_output:
+            with self._grabbed_output:
+                if combine_datasets:
+                    controller.multifit_init()
                 controller.validate()
                 controller.prepare()
                 if tracker:
                     tracker.start_task()
+                    tracker_started = True
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                     energy = tracker.stop_task().energy_consumed / num_runs
+                    tracker_stopped = True
                 else:
                     runtimes = timeit.Timer(stmt=controller.execute).repeat(
                         num_runs, 1
                     )
                 controller.cleanup()
+                if combine_datasets:
+                    controller.multifit_cleanup()
                 controller.check_attributes()
+
             min_time = np.min(runtimes)
             ratio = np.max(runtimes) / min_time
             tol = 4
@@ -601,15 +655,31 @@ class Fit:
         # Reset the controller timer once exceptions have been handled
         controller.timer.reset()
 
-        # ensure emissions tracker has been stopped if energy not set
-        if energy == np.nan and self.__emissions_tracker:
-            _ = self.__emissions_tracker.stop_task()
+        # Ensure emissions tracker has been stopped if energy not set. The
+        # task is only stopped if it was started, as the fit may have raised
+        # an exception before the task was started.
+        if self._emissions_tracker and tracker_started and not tracker_stopped:
+            _ = self._emissions_tracker.stop_task()
 
         if controller.flag in [3, 6, 7]:
+            multi_fit = controller.problem.multifit
+
+            # The fit failed, so multifit_cleanup may not have run yet.
+            # Running it here splits the combined problem back into its
+            # datasets, so that the parameter names, initial params and
+            # bounds are reported per dataset as they are for a successful
+            # fit. It is a no-op if it has already run.
+            if combine_datasets:
+                controller.multifit_cleanup()
+
+            # A validation error is raised before the controller is prepared,
+            # so initial_params (needed to report the result) have not been set
+            if controller.initial_params is None:
+                controller.prepare(skip_setup=True)
+
             # If there was an exception, set the runtimes and
             # cost function value to be infinite
             energy = np.inf
-            multi_fit = controller.problem.multifit
             runtimes = [np.inf] * num_runs
             controller.final_params = (
                 None if not multi_fit else [None] * len(controller.data_x)
@@ -625,3 +695,37 @@ class Fit:
             controller.check_bounds_respected()
 
         return accuracy, runtimes, energy
+
+    def _check_jacobian(self, func, jac, params):
+        """
+        Check how similar the jacobian is to a finite difference
+        approximation of the function
+
+        :param func: The function for which to compute the jacobian
+        :type func: function
+
+        :param jac: The jacobian of the function being used in Fitbenchmarking
+        :type jac: function
+
+        :param params: The values at which to evaluate the jacobian matrix
+        :type params: list
+
+        """
+        analytical_grad = jac(params)
+        finite_diff_grad = approx_fprime(params, func)
+
+        max_range = (np.ptp(analytical_grad) + np.ptp(finite_diff_grad)) / 2
+
+        error_from_check_grad = check_grad(func, jac, params)
+        normalized_error = error_from_check_grad / max_range
+
+        if normalized_error > 10**-3:
+            LOGGER.warning(
+                "A relative error of %.6f was detected between "
+                "the jacobian computed by Fitbenchmarking and the one "
+                "obtained through a finite difference approximation. "
+                "This might depend on either the initial parameters "
+                "provided or the jacobian function, if this has also "
+                "been provided by the user.",
+                normalized_error,
+            )

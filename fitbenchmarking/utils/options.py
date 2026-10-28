@@ -47,6 +47,7 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
+        "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["alternating", "multistart", "regularisation"],
         "gradient_free": [
             "HillClimbingOptimizer",
@@ -206,6 +207,7 @@ class Options:
             "bumps",
             "ceres",
             "dfo",
+            "galahad",
             "gofit",
             "gradient_free",
             "gsl",
@@ -234,6 +236,7 @@ class Options:
             "analytic",
             "default",
             "numdifftools",
+            "gvar",
         ],
         "hes_method": [
             "best_available",
@@ -262,6 +265,7 @@ class Options:
             "forward",
             "backward",
         ],
+        "gvar": ["forward_ad"],
     }
     VALID_HESSIAN = {
         "scipy": ["2-point", "3-point", "cs"],
@@ -292,6 +296,7 @@ class Options:
         ],
         "results_browser": [True, False],
         "run_dash": [True, False],
+        "check_jacobian": [True, False],
         "colour_map": plt.colormaps(),
     }
     VALID_LOGGING = {
@@ -334,6 +339,7 @@ class Options:
             "Hestenes_Stiefel",
         ],
         "dfo": ["dfols"],
+        "galahad": ["arc", "nls", "tru"],  # , "bgo", "dgo", "trb"],
         "gofit": ["multistart"],
         "gradient_free": [
             "HillClimbingOptimizer",
@@ -451,6 +457,7 @@ class Options:
         "scipy": ["2-point"],
         "default": ["default"],
         "numdifftools": ["central"],
+        "gvar": ["forward_ad"],
     }
     DEFAULT_HESSIAN = {
         "analytic": ["default"],
@@ -469,6 +476,7 @@ class Options:
         "comparison_mode": "both",
         "results_browser": True,
         "run_dash": True,
+        "check_jacobian": True,
         "table_type": [
             "acc",
             "runtime",
@@ -478,6 +486,7 @@ class Options:
         ],
         "run_name": "",
         "checkpoint_filename": "checkpoint.json",
+        "multistart_success_threshold": 1.5,
     }
     DEFAULT_LOGGING = {
         "file_name": "fitbenchmarking.log",
@@ -486,7 +495,7 @@ class Options:
         "external_output": "log_only",
     }
     DEFAULT_RUNTIME = {"runtime_metric": "mean"}
-    DEFAULT_DASH = {"port": 4000}
+    DEFAULT_DASH = {"port": 4000, "ip_address": "127.0.0.1"}
     DEFAULTS = {
         "MINIMIZERS": DEFAULT_MINIMZERS,
         "FITTING": DEFAULT_FITTING,
@@ -628,6 +637,13 @@ class Options:
                 output.getboolean, "run_dash", additional_options
             )
 
+        if "check_jacobian" in additional_options:
+            self.check_jacobian = additional_options["check_jacobian"]
+        else:
+            self.check_jacobian = self.read_value(
+                output.getboolean, "check_jacobian", additional_options
+            )
+
         if "pbar" in additional_options:
             self.pbar = additional_options["pbar"]
         else:
@@ -640,6 +656,9 @@ class Options:
         )
         self.colour_ulim = self.read_value(
             output.getfloat, "colour_ulim", additional_options
+        )
+        self.multistart_success_threshold = self.read_value(
+            output.getfloat, "multistart_success_threshold", additional_options
         )
         self.cmap_range = self.read_value(
             output.getrng, "cmap_range", additional_options
@@ -672,6 +691,10 @@ class Options:
         dash_settings = config["DASH"]
         self.port = self.read_value(
             dash_settings.getint, "port", additional_options
+        )
+
+        self.ip_address = self.read_value(
+            dash_settings.getstr, "ip_address", additional_options
         )
 
         logging = config["LOGGING"]
@@ -801,10 +824,12 @@ class Options:
             "colour_map": self.colour_map,
             "cmap_range": self.cmap_range,
             "colour_ulim": self.colour_ulim,
+            "multistart_success_threshold": self.multistart_success_threshold,
             "comparison_mode": self.comparison_mode,
             "make_plots": self.make_plots,
             "results_browser": self.results_browser,
             "run_dash": self.run_dash,
+            "check_jacobian": self.check_jacobian,
             "pbar": self.pbar,
             "table_type": list_to_string(self.table_type),
             "run_name": self.run_name,
@@ -819,7 +844,7 @@ class Options:
 
         config["RUNTIME"] = {"runtime_metric": self.runtime_metric}
 
-        config["DASH"] = {"port": self.port}
+        config["DASH"] = {"port": self.port, "ip_address": self.ip_address}
 
         return config
 

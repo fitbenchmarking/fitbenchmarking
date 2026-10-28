@@ -52,6 +52,7 @@ def load_mock_results(additional_options=None, filename="checkpoint.json"):
         {
             "checkpoint_filename": os.path.join(cp_dir, filename),
             "external_output": "debug",
+            "run_dash": True,
         }
     )
     options = Options(additional_options=additional_options)
@@ -184,7 +185,7 @@ class PreprocessDataTests(unittest.TestCase):
             {"results_dir": self.results_dir}
         )
         self.min_accuracy = 0.2
-        self.min_runtime = 1.0
+        self.min_mean_runtime = 1.0
 
     def test_preprocess_data(self):
         """
@@ -200,7 +201,7 @@ class PreprocessDataTests(unittest.TestCase):
             for category in problem.values():
                 for r in category:
                     self.assertEqual(r.min_accuracy, self.min_accuracy)
-                    self.assertEqual(r.min_runtime, self.min_runtime)
+                    self.assertEqual(r.min_mean_runtime, self.min_mean_runtime)
 
 
 class CreatePlotsTests(unittest.TestCase):
@@ -225,7 +226,6 @@ class CreatePlotsTests(unittest.TestCase):
         """
         Tests for create_plots where the results object params are not None
         """
-        expected_plot_initial_guess = "initial_guess"
         expected_plot_best = {"prob_0": "plotly_fit4", "prob_1": "plotly_fit3"}
         expected_plotly_fit = {
             "m00_[s0]": "plotly_fit1",
@@ -239,9 +239,6 @@ class CreatePlotsTests(unittest.TestCase):
             "m00_[s0]_jj1": "plotly_fit9",
         }
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
         plot_instance.plot_best.return_value = expected_plot_best
         plot_instance.plotly_fit.return_value = expected_plotly_fit
 
@@ -256,17 +253,6 @@ class CreatePlotsTests(unittest.TestCase):
             for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
-
-                # Check initial guess is correctly set in results
-                self.assertEqual(
-                    best_in_cat.start_figure_link, expected_plot_initial_guess
-                )
-                self.assertTrue(
-                    all(
-                        r.start_figure_link == expected_plot_initial_guess
-                        for r in results
-                    )
-                )
 
                 # Check plot is correctly set in results
                 self.assertEqual(
@@ -296,11 +282,7 @@ class CreatePlotsTests(unittest.TestCase):
                 for r in results:
                     r.params = None
 
-        expected_plot_initial_guess = "initial_guess"
         plot_instance = mock.MagicMock()
-        plot_instance.plot_initial_guess.return_value = (
-            expected_plot_initial_guess
-        )
         # Return the above created `plot_instance`
         plot_mock.return_value = plot_instance
         create_plots(
@@ -313,17 +295,6 @@ class CreatePlotsTests(unittest.TestCase):
             for category_key in results_in_prob:
                 best_in_cat = best_in_prob[category_key]
                 results = results_in_prob[category_key]
-
-                # Check initial guess is correctly set in results
-                self.assertEqual(
-                    best_in_cat.start_figure_link, expected_plot_initial_guess
-                )
-                self.assertTrue(
-                    all(
-                        r.start_figure_link == expected_plot_initial_guess
-                        for r in results
-                    )
-                )
 
                 # Check plot is correctly set in results
                 self.assertEqual(best_in_cat.figure_link, "")
@@ -536,7 +507,8 @@ class ProcessBestResultsTests(unittest.TestCase):
                 self.results, [2, 1, 5, 3, 4], [5, 4, 1, 2, 3]
             ):
                 r.accuracy = accuracy
-                r.runtime = runtime
+                r.runtimes = [runtime]
+                r.runtime_metric = "mean"
             self.best = _process_best_results(self.results)
 
     def test_returns_best_result(self):
@@ -564,11 +536,11 @@ class ProcessBestResultsTests(unittest.TestCase):
 
     def test_minimum_runtime_set(self):
         """
-        Test that min_runtime is set correctly.
+        Test that min_mean_runtime is set correctly.
         """
         fastest = self.results[2]
         for r in self.results:
-            self.assertEqual(r.min_runtime, fastest.runtime)
+            self.assertEqual(r.min_mean_runtime, fastest.mean_runtime)
 
 
 class UpdateWarningTests(unittest.TestCase):
@@ -713,6 +685,7 @@ class DisplayPageTests(unittest.TestCase):
                 id="warning",
             ),
         ]
+        self.cs_layout = [html.Div()]
 
     def test_layout_returned_when_one_plot(self):
         """
@@ -722,8 +695,9 @@ class DisplayPageTests(unittest.TestCase):
         pathname = "127.0.0.1:5009/abc/NIST_low_difficulty/pp/acc"
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id="abc",
         )
@@ -744,8 +718,9 @@ class DisplayPageTests(unittest.TestCase):
         pathname = "127.0.0.1:5009/123/NIST_low_difficulty/pp/acc+runtime"
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id="123",
         )
@@ -762,11 +737,16 @@ class DisplayPageTests(unittest.TestCase):
     @parameterized.expand(
         [
             (
-                "127.0.0.1:5009/old_id/NIST_low_difficulty/pp/acc+runtime",
+                "127.0.0.1:5009/MISSING_RUN_ID/NIST_low_difficulty/pp/acc+runtime",
                 "new_id",
             ),
-            ("127.0.0.1:5009/abc/NIST_low_difficulty/??/acc+runtime", "abc"),
-            ("127.0.0.1:5009/abc/pp/acc+runtime", "abc"),
+            (
+                "127.0.0.1:5009/abc/NIST_low_difficulty/MISSING_PLOT_TYPE/acc+runtime",
+                "abc",
+            ),
+            ("127.0.0.1:5009/abc/MISSING_PROB_SET/pp/acc+runtime", "abc"),
+            ("127.0.0.1:5009/INCORRECT/PATH/FORMAT", "abc"),
+            ("127.0.0.1:5009/", "abc"),
         ]
     )
     def test_dash_url_404(self, pathname, run_id):
@@ -775,12 +755,17 @@ class DisplayPageTests(unittest.TestCase):
         """
         output_div = display_page(
             pathname=pathname,
-            profile_instances_all_groups=self.profile_instances_all_groups,
-            layout=self.layout,
+            performance_profile_instances_all_groups=self.profile_instances_all_groups,
+            performance_profile_layout=self.layout,
+            compare_scatter_layout=self.cs_layout,
             max_solvers=self.max_solvers,
             run_id=run_id,
         )
-        assert isinstance(output_div, str) and output_div.startswith("404")
+        assert isinstance(output_div, list)
+        assert isinstance(output_div[0], html.H2)
+        header_contents = output_div[0].children
+        assert isinstance(header_contents, str)
+        assert "404" in header_contents
 
     def test_styles_consistent_when_two_plts(self):
         """
@@ -798,6 +783,7 @@ class DisplayPageTests(unittest.TestCase):
             self.layout,
             self.max_solvers,
             run_id="abc",
+            compare_scatter_layout=self.cs_layout,
         )
 
         self.assertDictEqual(

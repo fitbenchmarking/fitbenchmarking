@@ -12,9 +12,15 @@ import plotly.graph_objects as go
 from dash import Input, Output, dcc
 
 from fitbenchmarking.results_processing.plots import Plot
+from fitbenchmarking.utils.fitbm_result import FittingResult
+from fitbenchmarking.utils.options import Options
 
 
-def profile(results, fig_dir, options):
+def profile(
+    results: dict[str, dict[str, list[FittingResult]]],
+    fig_dir: str,
+    options: Options,
+) -> tuple[dict[str, str], dict[str, pd.DataFrame]]:
     """
     Function that generates profiler plots
 
@@ -69,7 +75,7 @@ def prepare_profile_data(results):
                         pp[key] = pp[minimizers[i]].copy()
                     minimizers[i] = key
                 pp_data["acc"][minimizers[i]].append(result.norm_acc)
-                pp_data["runtime"][minimizers[i]].append(result.norm_runtime)
+                pp_data["runtime"][minimizers[i]].append(result.norm_runtime())
                 pp_data["energy_usage"][minimizers[i]].append(
                     result.norm_energy
                 )
@@ -433,6 +439,10 @@ class DashPerfProfile:
         self.group_label = group_label
         self.id = self.group_label + "-" + self.profile_name
 
+        dash_not_allowed_characters = [".", "{"]
+        for character in dash_not_allowed_characters:
+            self.id = self.id.replace(character, "")
+
         self.default_opt = []
         for solver in self.data.columns:
             self.default_opt.append({"value": solver, "label": solver})
@@ -507,8 +517,8 @@ class DashPerfProfile:
 
         # If min found is inf, set min to 1 (to avoid getting nan
         # when dividing by min)
-        df_chosen_solvers["min"].replace(
-            to_replace=np.inf, value=1.0, inplace=True
+        df_chosen_solvers["min"] = df_chosen_solvers["min"].replace(
+            to_replace=np.inf, value=1.0
         )
 
         # Divide values by min (thus recalculating the profile)
@@ -516,7 +526,7 @@ class DashPerfProfile:
             df_chosen_solvers["min"], axis="rows"
         )
         # Remove min column
-        df_chosen_solvers.drop(columns=["min"], inplace=True)
+        df_chosen_solvers = df_chosen_solvers.drop(columns=["min"])
         new_dict = df_chosen_solvers.to_dict("list")
 
         step_values, _ = compute_step_values(new_dict)

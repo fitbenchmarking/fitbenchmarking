@@ -8,12 +8,14 @@ from abc import ABCMeta, abstractmethod
 import docutils.core
 import matplotlib as mpl
 
+from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
+from fitbenchmarking.utils.fitbm_result import FittingResult
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-from fitbenchmarking.utils.misc import get_js
+from pandas.io.formats import style
 
 FORMAT_DESCRIPTION = {
     "abs": "Absolute values are displayed in the table.",
@@ -39,6 +41,7 @@ class Table:
 
     __metaclass__ = ABCMeta
     name = None
+    has_cs = False
     output_string_type = {
         "abs": "{:.4g}",
         "rel": "{:.4g}",
@@ -46,6 +49,19 @@ class Table:
     }
     colour_template = "background-color: {0}"
     cbar_title = "No colour bar description given"
+    runtime_choices = [
+        "mean",
+        "minimum",
+        "maximum",
+        "first",
+        "median",
+        "harmonic",
+        "trim",
+    ]
+    color_to_class = {
+        "rgb(0,0,0)": 'class="dark"',
+        "rgb(255,255,255)": 'class="light"',
+    }
 
     def __init__(
         self,
@@ -76,8 +92,13 @@ class Table:
         :type table_name: str
         """
         # Flatten to reduce the necessity on having problems as rows.
+
+        # dict[row/problem, dict[column/minimiser, list[FittingResult]]]
         self.results = results
+
+        # dict[row/problem, dict[column/minimiser, FittingResult]]
         self.best_results = best_results
+
         self.options = options
         self.group_dir = group_dir
         self.pp_locations = pp_locations
@@ -211,12 +232,26 @@ class Table:
         """
         str_dict = {}
         for k, results in self.sorted_results.items():
-            _, text_arrs = self.get_colours_for_row(results)
+            _, text_colors = self.get_colours_for_row(results)
             str_dict[k] = [
-                self.get_str_result(r, t, html)
-                for r, t in zip(results, text_arrs)
+                self.get_str_result(result, color, html)
+                for result, color in zip(results, text_colors)
             ]
         return str_dict
+
+    def get_hover_table(self):
+        """
+        Create a dict with the tooltip for each cell from self.sorted_results
+
+        :return: The dictionary of strings for the table
+        :rtype: dict[list[str]]
+        """
+        str_dict = {}
+        for k, results in self.sorted_results.items():
+            str_dict[k] = [
+                result.hover_text(style="css") for result in results
+            ]
+        return str_dict.values()
 
     def get_colour_df(self, like_df=None):
         """
@@ -281,7 +316,11 @@ class Table:
             error_str = self.get_error_str(
                 result, error_template="<sup>{}</sup>"
             )
-            if "inf" in val_str and self.table_name != "local_min_table.":
+            if (
+                "inf" in val_str
+                and self.table_name != "local_min_table."
+                and "2" not in error_str
+            ):
                 val_str = f'<span class="blank">Error {error_str}</span>'
             elif "N/A" in val_str:
                 val_str = '<span class="blank">N/A</span>'
@@ -310,12 +349,8 @@ class Table:
         :return: The hyperlink representation.
         :rtype: str
         """
-        color_to_class = {
-            "rgb(0,0,0)": 'class="dark"',
-            "rgb(255,255,255)": 'class="light"',
-        }
         val_str = (
-            f"<a {color_to_class[text_col]} "
+            f"<a {self.color_to_class[text_col]} "
             f'href="{self.get_link_str(result)}">'
             f"{val_str}</a>"
         )
@@ -338,6 +373,7 @@ class Table:
         :rtype: tuple[list[str], list[str]]
         """
         values = [self.get_value(r)[0] for r in results]
+        flags = [r.error_flag for r in results]
 
         cmap_name = self.options.colour_map
         cmap = plt.get_cmap(cmap_name)
@@ -348,7 +384,7 @@ class Table:
         col_strs = ["background-colour: #ffffff" for _ in results]
 
         colours, text_str = self.vals_to_colour(
-            values, cmap, cmap_range, log_ulim
+            values, flags, cmap, cmap_range, log_ulim
         )
         for i, c in enumerate(colours):
             try:
@@ -369,31 +405,48 @@ class Table:
         :rtype: pandas.DataFrame
         """
         str_results = self.get_str_dict(html)
-        # Check all rows incase first row has missing information
+        rows, columns = self.format_results_indicies(str_results)
+
+        results_only = np.array(list(str_results.values()))
+
+        table = pd.DataFrame(results_only, index=rows, columns=columns)
+
+        return table
+
+    def format_results_indicies(self, results: dict[str, list[str]]):
+        """
+        Format rows and columns for the results dable
+
+        :param results: The results to format the indices for
+        :type dict: dict[row/problem, list[result string]]]
+        """
+        problems = list(results.keys())
+
+        problem_index_with_sizes = pd.MultiIndex.from_tuples(
+            zip(problems, self.problem_sizes)
+        )
+
         minimizers_list = []
+        # Check all rows incase first row has missing information
         for row in self.sorted_results.values():
-            for i, r in enumerate(row):
-                formatted = (r.software, r.modified_minimizer_name(False))
+            for i, result in enumerate(row):
+                formatted = (
+                    result.software,
+                    result.modified_minimizer_name(False),
+                )
+
+                # add the minimiser the first time it is seen
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
+                # if a longer minimiser name is seen under the same software,
+                # update the tuple to use that minimiser instead
+                # this ensures column width is wide enough for all minimisers
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
                     minimizers_list[i] = formatted
 
         multi_columns = pd.MultiIndex.from_tuples(minimizers_list)
 
-        single_index = list(str_results.keys())
-
-        multi_index = pd.MultiIndex.from_tuples(
-            zip(single_index, self.problem_sizes)
-        )
-
-        results_only = np.array(list(str_results.values()))
-
-        table = pd.DataFrame(
-            results_only, index=multi_index, columns=multi_columns
-        )
-
-        return table
+        return problem_index_with_sizes, multi_columns
 
     def to_html(self):
         """
@@ -421,6 +474,7 @@ class Table:
         minimizer_template = (
             '<a class="minimizer_header" col={0} '
             'title="{1}"'
+            ' data-software="{2}" '
             'href="https://fitbenchmarking.readthedocs.io/'
             "en/latest/users/options/minimizer_option.html"
             '#{2}" target="_blank">{3}</a>'
@@ -472,15 +526,21 @@ class Table:
         multi_index = pd.MultiIndex.from_tuples(double_index)
         table.index = multi_index
 
-        # Get columns where cost function changes
-        column_dividers = [table.columns[0]]
-        for column in table.columns[1:]:
+        style = self.style_df_for_html(multi_index, columns, table.style)
+
+        return style.to_html(table_uuid="table")
+
+    def style_df_for_html(
+        self, index, columns, styler: style.Styler
+    ) -> style.Styler:
+        column_dividers = [styler.columns[0]]
+        for column in styler.columns[1:]:
             if column[0] != column_dividers[-1][0]:
                 column_dividers.append(column)
         column_dividers = column_dividers[1:]
 
         # Set the cell colours and increase bars between cost functions
-        table_style = table.style.apply(
+        styler = styler.apply(
             lambda df: self.get_colour_df(like_df=df), axis=None
         ).set_table_styles(
             table_styles={
@@ -498,7 +558,75 @@ class Table:
             }
         )
 
-        return table_style.to_html(table_uuid="table")
+        hover_table = pd.DataFrame(
+            list(self.get_hover_table()),
+            index=index,
+            columns=columns,
+        )
+
+        styler = styler.set_tooltips(
+            ttips=hover_table,
+            props="white-space: pre;"
+            "visibility: hidden;"
+            "position: absolute; z-index: 1;"
+            "border: 1px solid #8c8b8b;"
+            "background-color: white;"
+            "color: black; font-size: 0.8em;"
+            "border-radius: 0em;"
+            "pointer-events: none;",
+        )
+
+        # when the x/y edge flipping is applied to hover text, how many cells
+        # around the edge should have the flipping applied
+        y_flip_cells = 5
+        x_flip_cells = 3
+
+        # minimum required size of table to apply flipping logic
+        # informed by the size of a row in the x/y axis compared to the size of
+        # a tooltip in the x/y axis
+        y_flip_table_size = 10
+        x_flip_table_size = 6
+
+        y_translate = "-125%"
+        x_translate = "-100%"
+
+        # add styling such that the hover text near the edge of the table is
+        # positioned to stay within the bounds of the table
+        styler = styler.set_table_styles(
+            [
+                {
+                    "selector": (
+                        f"td:nth-last-child(n+{x_flip_table_size})"
+                        f" ~ td:nth-last-child(-n+{x_flip_cells}) .pd-t"
+                    ),
+                    "props": [("transform", f"translate({x_translate})")],
+                },
+                {
+                    "selector": (
+                        f"tr:nth-last-child(n+{y_flip_table_size})"
+                        f" ~ tr:nth-last-child(-n+{y_flip_cells}) .pd-t"
+                    ),
+                    "props": [("transform", f"translate(0,{y_translate})")],
+                },
+                {
+                    "selector": (
+                        f"tr:nth-last-child(n+{y_flip_table_size})"
+                        f" ~ tr:nth-last-child(-n+{y_flip_cells}) "
+                        f"td:nth-last-child(n+{x_flip_table_size})"
+                        f" ~ td:nth-last-child(-n+{x_flip_cells}) .pd-t"
+                    ),
+                    "props": [
+                        (
+                            "transform",
+                            f"translate({x_translate}, {y_translate})",
+                        )
+                    ],
+                },
+            ],
+            overwrite=False,
+        )
+
+        return styler
 
     def to_csv_file(self):
         """
@@ -523,14 +651,21 @@ class Table:
         html = {}
         for name in [self.name, self.options.comparison_mode]:
             descrip = FORMAT_DESCRIPTION[name]
-            if self.name in ["compare", "acc"] and name in ["rel", "both"]:
+            if name in ["rel", "both"]:
                 descrip += (
-                    " Incase of a perfect fit on"
-                    " a problem ``rel = abs / 1e-10``."
+                    " The relative values are calculated by comparing"
+                    " all minimizer results. Unselecting software(s) or"
+                    " minimizer(s) will not update the relative values."
                 )
+                if self.name in ["compare", "acc"]:
+                    descrip += (
+                        " Incase of a perfect fit on"
+                        " a problem ``rel = abs / 1e-10``."
+                    )
             descrip = descrip.replace(":ref:", "")
-            js = get_js(self.options, self.group_dir)
-            docsettings = {"math_output": "MathJax " + js["mathjax"]}
+            docsettings = {
+                "math_output": "MathJax https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
+            }
             description_page = docutils.core.publish_parts(
                 descrip, writer_name="html", settings_overrides=docsettings
             )
@@ -582,7 +717,7 @@ class Table:
         self._file_path = value
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Converts an array of values to a list of hexadecimal colour
         strings using logarithmic sampling from a matplotlib colourmap
@@ -590,6 +725,8 @@ class Table:
 
         :param vals: values in the range [0, 1] to convert to colour strings
         :type vals: list[float]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping
@@ -605,7 +742,7 @@ class Table:
         log_vals = np.log10(vals)
         log_llim = min(log_vals)
         if np.isinf(log_llim):
-            norm_vals = np.repeat(np.nan, len(vals))
+            norm_vals = np.repeat(1, len(vals))
         else:
             norm_vals = (log_vals - log_llim) / (log_ulim - log_llim)
         norm_vals[norm_vals > 1] = 1  # applying upper cutoff
@@ -614,9 +751,9 @@ class Table:
         rgba = cmap(norm_vals)
         hex_strs = [
             mpl.colors.to_hex("whitesmoke")
-            if np.isinf(v)
+            if np.isinf(v) and f != 2
             else mpl.colors.rgb2hex(colour)
-            for colour, v in zip(rgba, vals)
+            for colour, v, f in zip(rgba, vals, flags)
         ]
         text_str = [
             background_to_text(colour[:3], CONTRAST_RATIO_AAA)
@@ -733,8 +870,8 @@ class Table:
 
         items = [
             f'        <li><label class="noselect"><input '
-            f'type="checkbox" checked=true '
-            f"onclick=\"toggle_minimizer('{software}', "
+            f'type="checkbox" checked=true value="{minimizer}"'
+            f" onclick=\"toggle_minimizer('{software}', "
             f"'{minimizer}')\"/> {minimizer}</label></li>"
             for software, minimizer in minimizers
         ]
@@ -742,6 +879,96 @@ class Table:
         return self._dropdown_html(
             "minimizer_dropdown", "Select Minimizers", items
         )
+
+    def software_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of software.
+
+        :return: HTML for a dropdown checklist of softwares.
+        :rtype: str
+        """
+        label_template = (
+            "        <li><label class='noselect'><input "
+            "type='checkbox' checked=true value='{0}' "
+            "onclick=\"toggle_software('{0}')"
+            '"/>{0}</label></li>'
+        )
+        items = [
+            label_template.format(software.replace("_", "-"))
+            for software in self.options.software
+        ]
+        return self._dropdown_html(
+            "software_dropdown", "Select Softwares", items
+        )
+
+    def costfunc_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown checklist of cost functions.
+
+        :return: HTML for a dropdown checklist of cost functions.
+        :rtype: str
+        """
+        label_template = (
+            '        <li><label class="noselect"><input '
+            'type="checkbox" checked=true value="{0}"'
+            "onclick=\"toggle_cost_function('{0}')\"/>"
+            "{0}</label></li>"
+        )
+        items = []
+        for cost_func in self.options.cost_func_type:
+            name = create_cost_func(cost_func).__name__.lower()
+            items.append(label_template.format(name))
+
+        return self._dropdown_html(
+            "costfunc_dropdown", "Select Cost Functions", items
+        )
+
+    def runtime_dropdown_html(self) -> str:
+        """
+        Generates the HTML for a dropdown radio buttons of runtimes.
+
+        :return: HTML for a dropdown radio buttons of runtimes.
+        :rtype: str
+        """
+        problem = next(p for p in self.best_results)
+        cost_func = next(w for w in self.best_results[problem])
+        metric = self.best_results[problem][cost_func].runtime_metric
+        items = [
+            f'        <li><label class="noselect"><input '
+            f'type="radio" name="runtime_selection" '
+            f"{'checked' if rc == metric else ''} "
+            f"onclick=\"update_runtime('{rc}')\"/> {rc}</label></li>"
+            for rc in self.runtime_choices
+        ]
+        return self._dropdown_html(
+            "runtime_dropdown", "Select Runtime Metric", items
+        )
+
+    def get_runtime_value_str(self, result: FittingResult) -> str:
+        """
+        Generates the value str for the compare and runtime tables.
+
+        :param result: The result to generate a string for
+        :type result: fitbenchmarking.utils.ftibm_result.FittingResult
+
+        :return: The value string representation containing all runtime
+                 metrics.
+        :rtype: str
+        """
+        error = result.error_flag if result.error_flag != 0 else ""
+        val_str = ""
+        for rt in self.runtime_choices:
+            formated_runtime = f"{getattr(result, rt + '_runtime'):.4g}"
+            formatted_norm_runtime = f"{result.norm_runtime(rt):.4g}"
+            display_style = "inline" if rt == result.runtime_metric else "none"
+            val_str += (
+                f"<span class='runtime' id='{rt}' "
+                f"style='display:{display_style}'>"
+                f"{formated_runtime} ({formatted_norm_runtime})"
+                f"<sup>{error}</sup>"
+                f"</span>"
+            )
+        return val_str
 
     @staticmethod
     def _dropdown_html(

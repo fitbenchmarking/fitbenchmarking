@@ -3,6 +3,7 @@ compare table
 """
 
 from fitbenchmarking.results_processing.base_table import Table
+from fitbenchmarking.utils.fitbm_result import FittingResult
 
 
 class CompareTable(Table):
@@ -16,8 +17,11 @@ class CompareTable(Table):
     of the expected parameter values (calculated using
     scipy.optimize.curve_fit).
 
+    The compare table is displayed alongside the compare scatter, which
+    aims to plot the same information on a scatter plot.
     """
 
+    has_cs = True
     name = "compare"
     colour_template = "background-image: linear-gradient({0},{0},{1},{1})"
     cbar_title = (
@@ -79,7 +83,7 @@ class CompareTable(Table):
         acc_rel = result.norm_acc
         acc_abs = result.accuracy
 
-        runtime_rel = result.norm_runtime
+        runtime_rel = result.norm_runtime()
         runtime_abs = result.runtime
 
         return [[acc_rel, runtime_rel], [acc_abs, runtime_abs]]
@@ -119,13 +123,15 @@ class CompareTable(Table):
         )
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Override vals_to_colour to allow it to run for both accuracy and
         runtime.
 
         :param vals: The relative values to get the colours for
         :type vals: list[list[float, float]]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping
@@ -139,16 +145,16 @@ class CompareTable(Table):
         """
         acc, runtime = zip(*vals)
         acc_colours, acc_text = Table.vals_to_colour(
-            acc, cmap, cmap_range, log_ulim
+            acc, flags, cmap, cmap_range, log_ulim
         )
         runtime_colours, runtime_text = Table.vals_to_colour(
-            runtime, cmap, cmap_range, log_ulim
+            runtime, flags, cmap, cmap_range, log_ulim
         )
         background_col = zip(acc_colours, runtime_colours)
         foreground_text = zip(acc_text, runtime_text)
         return background_col, foreground_text
 
-    def get_hyperlink(self, result, val_str, text_col):
+    def get_hyperlink(self, result: FittingResult, val_str, text_col):
         """
         Generates the hyperlink for a given result
 
@@ -175,6 +181,6 @@ class CompareTable(Table):
             f"{val_str[0]}</a>"
             f"<a {color_to_class[stext]} "
             f'href="{self.get_link_str(result)}">'
-            f"{val_str[1]}</a>"
+            f"{self.get_runtime_value_str(result)}</a>"
         )
         return val_str

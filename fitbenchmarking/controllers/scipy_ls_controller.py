@@ -36,6 +36,9 @@ class ScipyLSController(Controller):
 
     sparsity_enabled_solvers = ["trf", "dogbox"]
 
+    no_bounds_minimizers = ["lm-scipy"]
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialise the class.
@@ -46,8 +49,6 @@ class ScipyLSController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ["lm-scipy"]
         self.param_ranges = None
         self.result = None
         self._status = None
@@ -92,7 +93,7 @@ class ScipyLSController(Controller):
         }
         if not self.cost_func.jacobian.use_default_jac:
             kwargs["jac"] = self.cost_func.jac_res
-        if self.minimizer != "lm":
+        if self._minimizer != "lm":
             kwargs["bounds"] = self.param_ranges
         self.result = least_squares(**kwargs)
         self._popt = self.result.x

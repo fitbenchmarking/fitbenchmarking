@@ -15,6 +15,8 @@ Examples of horace problems are:
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/PCSMO_at_001_data.txt
 
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW_powder_data/tri_AFM_powder.txt
+
 .. note::
   The Horace file format requires you to have run the benchmark problem in Horace 
   using :code:`fit()` and :code:`simulate()` successfully. Relevant links on 
@@ -165,6 +167,31 @@ Examples of the simulate_function:
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_IX_1D_test1.m
 
 .. literalinclude:: ../../../../examples/benchmark_problems/Horace/m_scripts/simulate_functions/fb_simulate_pcsmo_test.m
+
+process_function
+  For SpinW 2D powder fitting problems, a process_function must be added. This is defined by a matlab file which, given the 
+  2D powder data, produces 1D cuts along Q values defined by the user, by using the function `replace_2D_data_with_1D_cuts()` 
+  from SpinW. The matlab file takes in:
+
+    * the path to the 2D powder data, 
+    * `params` (a structure of parameters, including `J1` and the model parameters)
+    * `qcens` (the Q values provided by the user). 
+
+Examples of the process_function:
+  
+.. literalinclude:: ../../../../examples/benchmark_problems/SpinW_powder_data/m_scripts/process_functions/process_tri_AFM.m
+
+plot_type
+  For SpinW 2D powder fitting problems, the plot type must be specified. Currently, support is only available for plotting
+  1D cuts and so plot_type should be set to '1D_cuts'.
+
+q_cens
+  For SpinW 2D powder fitting problems, the values of Q at which the 1D cuts have been taken.
+  These values should be provided as a comma-separated string.
+
+dq 
+  For SpinW 2D powder fitting problems, dq is needed for taking the 1D cuts.
+  For any given Q value provided by the user (through q_cens), a range going from Q-dq to Q+dq will be considered for taking the 1D cuts.
 
 .. note::
    All the functions needed in the fitting must be in the subdirectory of the benchmark problem.

@@ -14,14 +14,14 @@ class CeresCostFunction(pyceres.CostFunction):
     Cost function for Ceres solver
     """
 
-    def __init__(self, fb_cf):
+    def __init__(self, fb_cf, param_names):
         # MUST BE CALLED. Initializes the Ceres::CostFunction class
         super().__init__()
         self.fb_cf = fb_cf
 
         # MUST BE CALLED. Sets the size of the residuals and parameters
         self.set_num_residuals(len(self.fb_cf.problem.data_x))
-        self.set_parameter_block_sizes([len(self.fb_cf.problem.param_names)])
+        self.set_parameter_block_sizes([len(param_names)])
 
     # The CostFunction::Evaluate(...) virtual function implementation
 
@@ -99,6 +99,8 @@ class CeresController(Controller):
         "Hestenes_Stiefel",
     ]
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -107,18 +109,19 @@ class CeresController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
         self.result = None
         self._status = None
         self.ceres_problem = pyceres.Problem()
         self.ceres_options = pyceres.SolverOptions()
         self.ceres_summary = pyceres.SolverSummary()
-        self.ceres_cost_func = CeresCostFunction(self.cost_func)
 
     def setup(self):
         """
         Setup problem ready to be run with Ceres solver
         """
+        self.ceres_cost_func = CeresCostFunction(
+            self.cost_func, self.par_names
+        )
         self.result = np.array(self.initial_params)
 
         self.ceres_problem.add_residual_block(

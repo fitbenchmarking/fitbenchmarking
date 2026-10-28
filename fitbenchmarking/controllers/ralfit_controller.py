@@ -69,6 +69,8 @@ class RALFitController(Controller):
         "newton-tensor_reg",
     ]
 
+    support_for_bounds = True
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -79,7 +81,6 @@ class RALFitController(Controller):
         """
         super().__init__(cost_func)
 
-        self.support_for_bounds = True
         self.param_ranges = None
         self._status = None
         self._popt = None
@@ -152,7 +153,7 @@ class RALFitController(Controller):
                   be passed for hessian evaluation
         :type r: numpy array
         :return: hessian 2nd order term
-                 :math:`\sum_{i=1}^m r_i \\nabla^2 r_i`
+                 :math:`\\sum_{i=1}^m r_i \\nabla^2 r_i`
         :rtype: numpy array
         """
         H, _ = self.cost_func.hes_res(params)

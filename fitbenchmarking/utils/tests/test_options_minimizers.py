@@ -3,9 +3,9 @@ Test the MINIMIZERS section for the options file
 """
 
 import inspect
-import os
 import shutil
 import unittest
+from pathlib import Path
 
 from parameterized import parameterized
 
@@ -204,16 +204,15 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         Sets the directory to save the temporary ini files in
         """
-        options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, "tests", "files")
-        os.mkdir(self.test_files_dir)
+        options_dir = Path(inspect.getfile(Options)).parent
+        self.test_files_dir = options_dir / "tests" / "files"
+        self.test_files_dir.mkdir(parents=True, exist_ok=True)
 
     def tearDown(self):
         """
         Deletes temporary folder and results produced
         """
-        if os.path.exists(self.test_files_dir):
-            shutil.rmtree(self.test_files_dir)
+        shutil.rmtree(self.test_files_dir, ignore_errors=True)
 
     def generate_user_ini_file(self, options_set, software):
         """
@@ -229,9 +228,7 @@ class UserMininimizerOptionTests(unittest.TestCase):
         """
         new_line = f"\n{' ' * (len(software) + 2)}"
         config_str = f"[MINIMIZERS]\n{software}: {new_line.join(options_set)}"
-        opts_file = os.path.join(
-            self.test_files_dir, f"test_{software}_valid.ini"
-        )
+        opts_file = self.test_files_dir / f"test_{software}_valid.ini"
         with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
         return opts_file

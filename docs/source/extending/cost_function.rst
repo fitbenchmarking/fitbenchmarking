@@ -29,6 +29,22 @@ you will need to:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.hes_cost()
               :noindex:
 
+  .. note::
+     Non-linear least squares cost functions should subclass
+     :class:`~fitbenchmarking.cost_func.nlls_base_cost_func.BaseNLLSCostFunc`
+     instead, and implement the residuals for a single dataset:
+
+      -  .. automethod:: fitbenchmarking.cost_func.nlls_base_cost_func.BaseNLLSCostFunc.eval_r_single_dataset()
+                :noindex:
+
+     The residuals for the whole problem are then evaluated by
+
+      -  .. automethod:: fitbenchmarking.cost_func.nlls_base_cost_func.BaseNLLSCostFunc.eval_r()
+                :noindex:
+
+     which is implemented in the base class, and which takes care of calling
+     ``eval_r_single_dataset``. This is needed to ensure the multifit capability.
+
 2. Document the available cost functions by:
 
   * adding ``<cost_func>`` to the ``cost_func_type`` option in :ref:`fitting_option`.

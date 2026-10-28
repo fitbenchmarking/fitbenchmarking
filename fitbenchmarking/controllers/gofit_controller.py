@@ -36,6 +36,9 @@ class GOFitController(Controller):
 
     jacobian_enabled_solvers = ["multistart", "regularisation"]
 
+    support_for_bounds = True
+    no_bounds_minimizers = ["regularisation"]
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -46,8 +49,6 @@ class GOFitController(Controller):
 
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
-        self.no_bounds_minimizers = ["regularisation"]
         self._options = None
         self._nsplit = None
         self._p0 = None
@@ -78,9 +79,7 @@ class GOFitController(Controller):
         # set split point for CrystalField problems
         if self.minimizer == "alternating":
             try:
-                self._nsplit = self.problem.param_names.index(
-                    "IntensityScaling"
-                )
+                self._nsplit = self.par_names.index("IntensityScaling")
             except ValueError as minimizer_incompatible:
                 raise IncompatibleMinimizerError(
                     "alternating minimizer currently only supports "

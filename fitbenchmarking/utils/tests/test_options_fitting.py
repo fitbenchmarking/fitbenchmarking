@@ -3,9 +3,9 @@ Test the FITTING section for the options file
 """
 
 import inspect
-import os
 import shutil
 import unittest
+from pathlib import Path
 
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.options import Options
@@ -79,25 +79,24 @@ class FittingOptionTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
-class UserFittingOptionTests(unittest.TestCase):
+class BaseFittingOptionTests(unittest.TestCase):
     """
-    Checks the fitting in the options file are set correctly or raise errors
+    A base class for the fitting options tests with the common methods
     """
 
     def setUp(self):
         """
         Sets the directory to save the temporary ini files in
         """
-        options_dir = os.path.dirname(inspect.getfile(Options))
-        self.test_files_dir = os.path.join(options_dir, "tests", "files")
-        os.mkdir(self.test_files_dir)
+        options_dir = Path(inspect.getfile(Options)).parent
+        self.test_files_dir = options_dir / "tests" / "files"
+        self.test_files_dir.mkdir(parents=True, exist_ok=True)
 
     def tearDown(self):
         """
         Deletes temporary folder and results produced
         """
-        if os.path.exists(self.test_files_dir):
-            shutil.rmtree(self.test_files_dir)
+        shutil.rmtree(self.test_files_dir, ignore_errors=True)
 
     def generate_user_ini_file(self, opt_name, config_str):
         """
@@ -111,11 +110,8 @@ class UserFittingOptionTests(unittest.TestCase):
         :return: location of temporary ini file
         :rtype: str
         """
-        opts_file = os.path.join(
-            self.test_files_dir, f"test_{opt_name}_valid.ini"
-        )
-        with open(opts_file, "w", encoding="utf-8") as f:
-            f.write(config_str)
+        opts_file = self.test_files_dir / f"test_{opt_name}_valid.ini"
+        opts_file.write_text(config_str, encoding="utf-8")
         return opts_file
 
     def shared_valid(self, opt_name, options_set, config_str):
@@ -146,6 +142,12 @@ class UserFittingOptionTests(unittest.TestCase):
         opts_file = self.generate_user_ini_file(opt_name, config_str)
         with self.assertRaises(exceptions.OptionsError):
             Options(opts_file)
+
+
+class UserFittingOptionTests(BaseFittingOptionTests):
+    """
+    Checks the fitting in the options file are set correctly or raise errors
+    """
 
     def test_invalid_option_key(self):
         """

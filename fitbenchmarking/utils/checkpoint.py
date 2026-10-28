@@ -10,7 +10,6 @@ import pickle
 import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import numpy as np
 
@@ -47,9 +46,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: Optional[TemporaryDirectory] = None
-        self.problems_file: Optional[str] = None
-        self.results_file: Optional[str] = None
+        self.dir: TemporaryDirectory | None = None
+        self.problems_file: str | None = None
+        self.results_file: str | None = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(
@@ -104,11 +103,14 @@ class Checkpoint:
             "accuracy": result.accuracy,
             "runtime": result.runtime,
             "runtimes": result.runtimes,
+            "runtime_metric": result.runtime_metric,
             "energy": result.energy,
             "iteration_count": result.iteration_count,
             "func_evals": result.func_evals,
             "flag": result.error_flag,
+            "multistart": result.multistart,
             "params_pdfs": result.params_pdfs,
+            "plot_info": result.plot_info,
             "software": result.software,
             "minimizer": result.minimizer,
             "jacobian": result.jac,
@@ -122,6 +124,7 @@ class Checkpoint:
             "J": _compress(result.jac_x),
             "fin_y": _compress(result.fin_y),
             "tags": result.algorithm_type,
+            "status": result.status,
         }
 
         with open(self.results_file, "a", encoding="utf-8") as f:
@@ -245,14 +248,17 @@ class Checkpoint:
             f.write("\n}")
         self.finalised = True
 
-    def load(self):
-        # pylint: disable=R0915
+    def load(
+        self,
+    ) -> tuple[
+        dict[str, list[FittingResult]], dict, dict[str, list[str]], dict
+    ]:
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
 
         :return: Instantiated fitting results,
-                 unselected minimisers, failed problems
+                 unselected minimizers, failed problems
                  config
         :rtype: Tuple[dict[str, list[FittingResult]],
                       dict, dict[str, list[str]], dict]
@@ -326,11 +332,14 @@ class Checkpoint:
                 new_result.accuracy = r["accuracy"]
                 new_result.runtime = r["runtime"]
                 new_result.runtimes = r["runtimes"]
+                new_result.runtime_metric = r["runtime_metric"]
                 new_result.energy = r["energy"]
                 new_result.iteration_count = r["iteration_count"]
                 new_result.func_evals = r["func_evals"]
                 new_result.error_flag = r["flag"]
+                new_result.multistart = r["multistart"]
                 new_result.params_pdfs = r["params_pdfs"]
+                new_result.plot_info = r["plot_info"]
                 new_result.software = r["software"]
                 new_result.minimizer = r["minimizer"]
                 new_result.jac = r["jacobian"]
@@ -344,6 +353,7 @@ class Checkpoint:
                 new_result.r_x = _decompress(r["r"])
                 new_result.jac_x = _decompress(r["J"])
                 new_result.algorithm_type = r["tags"]
+                new_result.status = r.get("status", "unknown")
 
                 new_result.name = r["name"]
                 p = problems[new_result.name]
@@ -375,7 +385,8 @@ def _compress(value):
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
-    return a85encode(pickle.dumps(value)).decode("ascii")
+    # set protocol to 4 as default switched to 5 in python 3.14
+    return a85encode(pickle.dumps(value, protocol=4)).decode("ascii")
 
 
 def _decompress(value: str):

@@ -5,6 +5,8 @@ Implements the base Parser as a Context Manager.
 import contextlib
 from abc import ABCMeta, abstractmethod
 
+from fitbenchmarking.parsing.fitting_problem import FittingProblem
+
 
 class Parser:
     """
@@ -56,7 +58,7 @@ class Parser:
             self.file.close()
 
     @abstractmethod
-    def parse(self):
+    def parse(self) -> FittingProblem | list[FittingProblem]:
         """
         Parse the file into a FittingProblem.
 

@@ -30,8 +30,8 @@ PyCUTEst interface.
 Currently this is only supported for Mac and Linux, and can be installed by
 following the instructions outlined on the `pycutest documentation <https://jfowkes.github.io/pycutest/_build/html/install.html>`_
 
-Please note that the ``PYCUTEST_CACHE`` environment variable must be set, and it must be
-in the ``PYTHONPATH``.
+The ``PYCUTEST_CACHE`` variable is used to determine the cache location for CUTEst problems. 
+If this variable is not set, the current working directory will be used as the cache location.
 
 GSL
 ---
@@ -49,9 +49,16 @@ Horace
 ------
 
 Horace can be installed by following the instructions `on the Horace
-website <https://pace-neutrons.github.io/Horace/3.6.0/Download_and_setup.html>`__.
+website <https://pace-neutrons.github.io/Horace/v4.0.0/introduction/Download_and_setup.html>`__.
 In addition, MATLAB and the MATLAB engine must be installed following the
 :ref:`instructions given below<matlab-install>`.
+
+SpinW
+-----
+
+SpinW can be installed by following the instructions `on the SpinW website
+<https://spinw.org/IntroToSpinW/#/install1>`__. In addition, MATLAB and the MATLAB
+engine must be installed following the :ref:`instructions given below<matlab-install>`.
 
 .. _levmar-install:
 
@@ -77,16 +84,17 @@ at `<https://download.mantidproject.org/>`_.
 MATLAB
 ------
 
-MATLAB is available to use as fitting software in FitBenchmarking, and is
-called via the MATLAB Engine API for Python.
+MATLAB is available to use as fitting software in FitBenchmarking, and is called via the MATLAB Engine API for Python. Therefore, 
+to use MATLAB within Fitbenchmarking, both MATLAB and the MATLAB engine must be installed. Official installation instructions 
+for MATLAB are available at `<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_. For more 
+information on how to install MATLAB through WSL, please refer to :ref:`external-instructions-matlab`. 
 
-To use this fitting software, both MATLAB and the MATLAB engine must be
-installed. Installation instructions for MATLAB are available at
-`<https://uk.mathworks.com/help/install/ug/install-products-with-internet-connection.html>`_,
-and instructions for installing and setting up the MATLAB engine are
-here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_.
-Furthermore, Matlab requires additional Python packages to be installed. You can find the instructions on how to install 
-these packages by following the link provided: :ref:`here <extra_dependencies>`.
+Instructions for installing and setting up the MATLAB engine are
+here: `<https://uk.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html>`_. 
+
+Furthermore, MATLAB requires additional Python packages to be installed. You can find the instructions on how 
+to install these packages by following the link provided: :ref:`here <extra_dependencies>`.
+
 
 RALFit
 ------
@@ -94,6 +102,13 @@ RALFit
 RALFit is available to use as fitting software.
 
 Instructions on how to build the python interface are at `<https://ralfit.readthedocs.io/projects/Python/en/latest/install.html>`_
+
+SScanSS-2
+---------
+
+SScanSS-2 is used in parsing some inverse kinematics files.
+
+Install instructions can be found on the `SScanSS-2 Github page <https://github.com/ISISNeutronMuon/SScanSS-2>`__.
 
 Theseus
 -------

@@ -119,9 +119,7 @@ class GSLController(Controller):
         :return: result from cost_func.eval_r and eval_j
         :rtype: (numpy array, numpy array)
         """
-        f = self.cost_func.eval_r(p)
-        df = self.cost_func.jac_res(p)
-        return f, df
+        return self.cost_func.eval_r(p), self.cost_func.jac_res(p)
 
     def _chi_squared(self, p, data=None):
         """
@@ -161,9 +159,7 @@ class GSLController(Controller):
         :return: result from cost_func.eval_cost and _jac_chi_squared
         :rtype: (numpy array, numpy array)
         """
-        f = self.cost_func.eval_cost(p)
-        df = self._jac_chi_squared(p)
-        return f, df
+        return self.cost_func.eval_cost(p), self._jac_chi_squared(p)
 
     def setup(self):
         """

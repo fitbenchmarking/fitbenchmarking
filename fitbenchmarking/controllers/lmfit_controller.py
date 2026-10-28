@@ -2,11 +2,9 @@
 Implements a controller for the lmfit fitting software.
 """
 
-import numpy as np
 from lmfit import Minimizer, Parameters
 
 from fitbenchmarking.controllers.base_controller import Controller
-from fitbenchmarking.utils.exceptions import MissingBoundsError
 
 
 class LmfitController(Controller):
@@ -98,6 +96,9 @@ class LmfitController(Controller):
         "trust-exact",
     ]
 
+    support_for_bounds = True
+    bounds_required_minimizers = ["dual_annealing", "differential_evolution"]
+
     def __init__(self, cost_func):
         """
         Initialises variables used for temporary storage.
@@ -106,13 +107,9 @@ class LmfitController(Controller):
                 :class:`~fitbenchmarking.cost_func.base_cost_func.CostFunc`
         """
         super().__init__(cost_func)
-        self.support_for_bounds = True
-        self.bound_minimizers = ["dual_annealing", "differential_evolution"]
         self.lmfit_out = None
         self.lmfit_params = Parameters()
-        self._param_names = [
-            f"p{i}" for (i, _) in enumerate(self.problem.param_names)
-        ]
+        self._param_names = None
 
     def lmfit_resdiuals(self, params):
         """
@@ -142,13 +139,7 @@ class LmfitController(Controller):
         """
         Setup problem ready to be run with lmfit
         """
-
-        if (
-            self.value_ranges is None or np.any(np.isinf(self.value_ranges))
-        ) and self.minimizer in self.bound_minimizers:
-            raise MissingBoundsError(
-                f"{self.minimizer} requires finite bounds on all parameters"
-            )
+        self._param_names = [f"p{i}" for (i, _) in enumerate(self.par_names)]
 
         for i, name in enumerate(self._param_names):
             kwargs = {"name": name, "value": self.initial_params[i]}
@@ -166,6 +157,8 @@ class LmfitController(Controller):
         if self.minimizer == "emcee":
             kwargs["progress"] = False
             kwargs["burn"] = 300
+            kwargs["nwalkers"] = 100
+            kwargs["steps"] = int(self.chain_length / kwargs["nwalkers"])
             minner = Minimizer(self.lmfit_loglike, self.lmfit_params)
         else:
             minner = Minimizer(self.lmfit_resdiuals, self.lmfit_params)
@@ -195,7 +188,7 @@ class LmfitController(Controller):
         if self.minimizer == "emcee":
             params_pdf_dict = self.lmfit_out.flatchain.to_dict(orient="list")
             self.params_pdfs = dict(
-                zip(self.problem.param_names, list(params_pdf_dict.values()))
+                zip(self.par_names, list(params_pdf_dict.values()))
             )
 
         self.final_params = [

@@ -17,6 +17,7 @@ a newline-separated list. Available options are:
 * ``ceres`` (external software -- see :ref:`external-instructions`)
 * ``CUTEst`` (external software -- see :ref:`external-instructions`)
 * ``dfo`` (external software -- see :ref:`extra_dependencies`)
+* ``galahad`` (external software -- see :ref:`extra_dependencies`)
 * ``gofit`` (external software -- see :ref:`extra_dependencies`)
 * ``gradient_free`` (external software -- see :ref:`extra_dependencies`)
 * ``gsl`` (external software -- see :ref:`external-instructions`)
@@ -53,7 +54,7 @@ Default software options are ``scipy`` and ``scipy_ls``
 
 .. warning::
 
-   Software must be listed to be here to be run.
+   Software must be listed here to be run.
    Any minimizers set in :ref:`minimizer_option` will not be run if the software is not also
    present in this list.
 
@@ -120,6 +121,7 @@ Current Jacobian methods are:
 * ``scipy`` -  uses :ref:`SciPy's finite difference Jacobian approximations <scipy-jac>`.
 * ``default`` - uses the default derivative approximation implemented in the minimizer.
 * ``numdifftools`` - uses the python package :ref:`numdifftools <numdifftools-jac>`.
+* ``gvar`` - uses :ref:`automatic differentiation <gvar-jac>` from the python package ``gvar``.
 * ``best_available`` - uses the analytic jacobian if it is available, otherwise uses a Scipy jacobian.
 
 Default is ``best_available``

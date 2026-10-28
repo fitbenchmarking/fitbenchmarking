@@ -19,7 +19,7 @@ def lorentz3d(t, x, sigma, r, b):
         r (float): The value in the above equations
         b (float): The value in the above equations
     """
-    if len(x.shape) == 1:
+    if x.ndim == 1:
         return np.array([
             sigma * (x[1] - x[0]),
             r * x[0] - x[1] - x[0] * x[1],

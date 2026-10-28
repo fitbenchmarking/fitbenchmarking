@@ -40,6 +40,9 @@ The cost functions that are currently supported are:
     .. currentmodule:: fitbenchmarking.cost_func.poisson_cost_func
     .. autoclass:: fitbenchmarking.cost_func.poisson_cost_func.PoissonCostFunc
                :noindex:
+    .. note::
+         The Poisson cost function is only valid for problems with non-negative data.
+         Additionally, residuals plots will not be available when using this cost function.
 
 - Weighted non-linear least squares cost function with log-likelihood evaluation
 

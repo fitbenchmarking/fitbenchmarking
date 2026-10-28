@@ -130,7 +130,7 @@ class LocalMinTable(Table):
         return local_min, norm_rel
 
     @staticmethod
-    def vals_to_colour(vals, cmap, cmap_range, log_ulim):
+    def vals_to_colour(vals, flags, cmap, cmap_range, log_ulim):
         """
         Converts an array of values to a list of hexadecimal colour strings
         using sampling from a matplotlib colourmap according to whether a
@@ -141,6 +141,8 @@ class LocalMinTable(Table):
 
         :param vals: values in the range [0, 1] to convert to colour strings
         :type vals: list[float]
+        :param flags: The flags associated with the results
+        :type flags: list[int]
         :param cmap: matplotlib colourmap
         :type cmap: matplotlib colourmap object
         :param cmap_range: values in range [0, 1] for colourmap cropping

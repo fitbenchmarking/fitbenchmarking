@@ -15,21 +15,9 @@ from fitbenchmarking.utils.exceptions import (
     UnknownTableError,
 )
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS, get_css, get_js
 
 LOGGER = get_logger()
-
-ERROR_OPTIONS = {
-    0: "Successfully converged",
-    1: "Software reported maximum number of iterations exceeded",
-    2: "Software run but didn't converge to solution",
-    3: "Software raised an exception",
-    4: "Solver doesn't support bounded problems",
-    5: "Solution doesn't respect parameter bounds",
-    6: "Solver has exceeded maximum allowed runtime",
-    7: "Validation of the provided options failed",
-    8: "Confidence in fit could not be calculated",
-}
 
 SORTED_TABLE_NAMES = ["compare", "acc", "runtime", "local_min", "energy_usage"]
 
@@ -102,15 +90,6 @@ def create_results_tables(
             else:
                 table_format = description[options.comparison_mode]
 
-            if suffix in ["runtime", "compare"]:
-                run_str = (
-                    "The <b>runtime metric</b> displayed in "
-                    "the tables is <span class='pill'>{}</span>."
-                )
-                description[suffix] = description[suffix] + run_str.format(
-                    options.runtime_metric
-                )
-
             root = os.path.dirname(getfile(fitbenchmarking))
             template_dir = os.path.join(root, "templates")
 
@@ -129,12 +108,10 @@ def create_results_tables(
                 minimizers for minimizers in unselected_minimzers.values()
             )
 
-            n_solvers_large = False
             key1 = list(results.keys())[0]
             key11 = list(results[key1].keys())[0]
-            n_solvers = len(results[key1][key11])
-            if n_solvers > 15:
-                n_solvers_large = True
+            n_minimizers = len(results[key1][key11])
+            n_minimizers_large = n_minimizers > 15
 
             with open(f"{table.file_path}html", "w", encoding="utf-8") as f:
                 f.write(
@@ -144,33 +121,43 @@ def create_results_tables(
                         dropdown_style=css["dropdown"],
                         table_style=css["table"],
                         dropdown_js=js["dropdown"],
-                        mathjax=js["mathjax"],
+                        mathjax="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
                         table_js=js["table"],
                         table=html["table"],
                         problem_dropdown=html["problem_dropdown"],
+                        costfunc_dropdown=html["costfunc_dropdown"],
+                        software_dropdown=html["software_dropdown"],
                         minimizer_dropdown=html["minim_dropdown"],
-                        probsize_checkbox=html["probsize_checkb"],
+                        probsize_checkbox=html["probsize_checkbox"],
+                        runtime_dropdown=html["runtime_dropdown"],
                         table_description=description[suffix],
                         table_format=table_format,
                         result_name=table.table_title,
+                        has_cs=table.has_cs,
                         has_pp=bool(table.pps),
                         pp_filenames=[
                             os.path.relpath(table.pp_locations[p], group_dir)
                             for p in table.pps
                         ],
                         pp_dash_url=(
-                            f"http://127.0.0.1:{options.port}/"
+                            f"http://{options.ip_address}:{options.port}/"
                             f"{options.run_id}/{os.path.basename(group_dir)}/"
                             f"pp/{'+'.join(table.pps)}"
                         ),
+                        cs_dash_url=(
+                            f"http://{options.ip_address}:{options.port}/"
+                            f"{options.run_id}/{os.path.basename(group_dir)}/"
+                            f"cs/_"
+                        ),
+                        dash_url=f"http://{options.ip_address}:{options.port}",
                         cbar=cbar,
                         run_name=run_name,
-                        error_message=ERROR_OPTIONS,
+                        error_message=ERROR_FLAG_MAPPINGS,
                         failed_problems=failed_problems,
                         unselected_minimzers=unselected_minimzers,
                         algorithm_type=options.algorithm_type,
                         report_failed_min=report_failed_min,
-                        n_solvers_large=n_solvers_large,
+                        n_minimizers_large=n_minimizers_large,
                     )
                 )
 
@@ -253,15 +240,17 @@ def generate_table(
     csv_table = table.to_csv_file()
     cbar = table.save_colourbar(fig_dir)
 
-    problem_dropdown_html = table.problem_dropdown_html()
-    minimizer_dropdown_html = table.minimizer_dropdown_html()
-    probsize_checkbox_html = table.probsize_checkbox_html()
-
     html_dict = {
         "table": html_table,
-        "problem_dropdown": problem_dropdown_html,
-        "minim_dropdown": minimizer_dropdown_html,
-        "probsize_checkb": probsize_checkbox_html,
+        "problem_dropdown": table.problem_dropdown_html(),
+        "minim_dropdown": table.minimizer_dropdown_html(),
+        "probsize_checkbox": table.probsize_checkbox_html(),
+        "software_dropdown": table.software_dropdown_html(),
+        "costfunc_dropdown": table.costfunc_dropdown_html(),
+        "runtime_dropdown": "",
     }
+
+    if suffix in ["compare", "runtime"]:
+        html_dict["runtime_dropdown"] = table.runtime_dropdown_html()
 
     return table, html_dict, csv_table, cbar

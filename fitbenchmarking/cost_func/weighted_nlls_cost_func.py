@@ -2,6 +2,7 @@
 Implements the weighted non-linear least squares cost function
 """
 
+import numpy as np
 from numpy import ravel
 from scipy.sparse import issparse
 
@@ -25,7 +26,7 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
     `here <https://en.wikipedia.org/wiki/Non-linear_least_squares>`__.
     """
 
-    def eval_r(self, params, **kwargs):
+    def eval_r_single_dataset(self, params, **kwargs):
         """
         Calculate the residuals, :math:`\\frac{y_i - f(x_i, p)}{e_i}`
 
@@ -46,7 +47,6 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
             )
         result = (y - self.problem.eval_model(params=params, x=x)) / e
 
-        # Flatten in case of a vector function
         return ravel(result)
 
     def jac_res(self, params, **kwargs):
@@ -62,6 +62,11 @@ class WeightedNLLSCostFunc(BaseNLLSCostFunc):
         :rtype: a list of 1D numpy arrays
         """
         e = kwargs.get("e", self.problem.data_e)
+
+        # for multifit problems, e is a list of arrays, one for each
+        # dataset, so we need to concatenate them into a single array
+        if isinstance(e, list):
+            e = np.concatenate(e)
 
         jac = self.jacobian.eval(params, **kwargs)
 

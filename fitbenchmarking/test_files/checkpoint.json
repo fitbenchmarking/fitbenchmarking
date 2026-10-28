@@ -46,11 +46,14 @@
                 15.0,
                 16.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m10",
         "jacobian": "j0",
@@ -63,7 +66,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -76,11 +80,14 @@
                 14.0,
                 15.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.0001,
         "iteration_count": 5,
         "func_evals": 15,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m11",
         "jacobian": "j0",
@@ -93,7 +100,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -106,11 +114,14 @@
                 13.0,
                 14.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m01",
         "jacobian": "j0",
@@ -123,7 +134,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -134,11 +146,14 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,
         "flag": 4,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m00",
         "jacobian": null,
@@ -151,7 +166,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -164,11 +180,14 @@
                 11.0,
                 12.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 4,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m10",
         "jacobian": "j1",
@@ -181,7 +200,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -194,11 +214,14 @@
                 10.0,
                 11.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 5,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m11",
         "jacobian": "j1",
@@ -211,7 +234,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_0",
@@ -222,11 +246,14 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 3,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m01",
         "jacobian": "j1",
@@ -239,7 +266,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PrA<gV^-c`'9*(Ham(4nio[hgV^-c`'9K.P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -250,11 +278,14 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 10,
         "func_evals": 15,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m10",
         "jacobian": "j0",
@@ -267,7 +298,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -278,11 +310,14 @@
         "runtimes": [
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-07,
         "iteration_count": 7,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m11",
         "jacobian": "j0",
@@ -295,7 +330,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -307,11 +343,14 @@
                 1.0,
                 3.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-06,
         "iteration_count": 5,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m01",
         "jacobian": "j0",
@@ -324,7 +363,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -335,11 +375,14 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m00",
         "jacobian": "j0",
@@ -352,7 +395,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -365,11 +409,14 @@
                 1.5,
                 1.5
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 7,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m10",
         "jacobian": "j1",
@@ -382,7 +429,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -395,11 +443,14 @@
                 3.0,
                 1.0
         ],
+        "runtime_metric": "mean",
         "energy": 1e-05,
         "iteration_count": 10,
         "func_evals": 20,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s1",
         "minimizer": "m11",
         "jacobian": "j1",
@@ -412,7 +463,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -425,11 +477,14 @@
                 15.0,
                 20.0
         ],
+        "runtime_metric": "mean",
         "energy": 0.001,
         "iteration_count": 10,
         "func_evals": 15,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m01",
         "jacobian": "j1",
@@ -442,7 +497,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       },
       {
         "name": "prob_1",
@@ -453,11 +509,14 @@
         "runtimes": [
                 Infinity
         ],
+        "runtime_metric": "mean",
         "energy": Infinity,
         "iteration_count": null,
         "func_evals": null,
         "flag": 0,
+        "multistart": false,
         "params_pdfs": null,
+        "plot_info": null,
         "software": "s0",
         "minimizer": "m00",
         "jacobian": "j1",
@@ -470,7 +529,8 @@
         "r": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bjWYM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6Poh(z!!!$\"z!!!$\"z!!&7*P[Z6",
         "J": "J-;.Kz!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\"%r]MP\\:/X\"_;_#E+P8tP`,ZX30]8ULQk]$-qaZ$!BcTA:/4F]s8W*ks8W-!9)s'u@YmH+zzzzzzzzzzzzP]W.!/c",
         "fin_y": "J-;.1z!!!\"X'lJ/2E-X'GDfTDAD09Z:Bjl%&@<n)r$t\"$d@rH7+FE2M6FHhuRN!4*AD/acbN!F62@<-BsH'FMW9)s[16NLY\\LQk]$-qaS6\",2tQ\",mCoFEqh:P`q>j!bOEVM26qO;NrS&\",m7CPYOtK9)nqks%<=ks8P^lFHg6k6PqU81G^gCdm':hR@0J2ffoH:zi'3HJP[Z6",
-        "tags": []
+        "tags": [],
+        "status": "test-status"
       }
     ],
     "failed_problems": [],

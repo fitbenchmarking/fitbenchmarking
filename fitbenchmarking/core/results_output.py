@@ -9,8 +9,8 @@ import platform
 import re
 import webbrowser
 from shutil import copytree
-from typing import Optional, Union
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
@@ -24,6 +24,7 @@ from fitbenchmarking.results_processing import (
     problem_summary_page,
     tables,
 )
+from fitbenchmarking.results_processing.compare_scatter import CompareScatter
 from fitbenchmarking.results_processing.performance_profiler import (
     DashPerfProfile,
 )
@@ -31,7 +32,7 @@ from fitbenchmarking.utils import create_dirs
 from fitbenchmarking.utils.exceptions import PlottingError
 from fitbenchmarking.utils.fitbm_result import FittingResult
 from fitbenchmarking.utils.log import get_logger
-from fitbenchmarking.utils.misc import get_css, get_js
+from fitbenchmarking.utils.misc import get_css
 from fitbenchmarking.utils.options import Options
 from fitbenchmarking.utils.write_files import write_file
 
@@ -72,9 +73,6 @@ def save_results(
     :rtype: str, dict[str, pandas.DataFrame]
     """
     group_dir, supp_dir, fig_dir = create_directories(options, group_name)
-
-    for r in results:
-        setattr(r, "runtime_metric", options.runtime_metric)
 
     best_results, results_dict = preprocess_data(results)
 
@@ -167,7 +165,7 @@ def preprocess_data(results: list[FittingResult]):
     col_sections = ["costfun"]
 
     # Generate the columns, category, and row tags and sort
-    rows: Union[list[str], set[str]] = set()
+    rows: list[str] | set[str] = set()
     columns = {}
     for r in results:
         # Error 4 means none of the jacobians ran so can't infer the
@@ -195,7 +193,7 @@ def preprocess_data(results: list[FittingResult]):
     }
 
     # Build the sorted results dictionary
-    sorted_results: dict[str, dict[str, list[Optional[FittingResult]]]] = {
+    sorted_results: dict[str, dict[str, list[FittingResult | None]]] = {
         r.strip(":"): {
             k: [None for _ in category] for k, category in columns.items()
         }
@@ -283,6 +281,7 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     """
     Process the best result from a list of FittingResults.
     This includes:
+
      - Setting the `is_best_fit` flag,
      - Setting the `min_accuracy` value,
      - Setting the `min_runtime` value, and
@@ -295,13 +294,22 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
     :rtype: FittingResult
     """
     best = results[0]
-    fastest = results[0]
+    fastest = {
+        "mean_runtime": results[0],
+        "minimum_runtime": results[0],
+        "maximum_runtime": results[0],
+        "first_runtime": results[0],
+        "median_runtime": results[0],
+        "harmonic_runtime": results[0],
+        "trim_runtime": results[0],
+    }
     lowest = results[0]
     for result in results[1:]:
         if best.accuracy > result.accuracy:
             best = result
-        if fastest.runtime > result.runtime:
-            fastest = result
+        for key in fastest:
+            if getattr(fastest[key], key) > getattr(result, key):
+                fastest[key] = result
         if lowest.energy > result.energy:
             lowest = result
 
@@ -309,7 +317,15 @@ def _process_best_results(results: list[FittingResult]) -> FittingResult:
 
     for result in results:
         result.min_accuracy = best.accuracy
-        result.min_runtime = fastest.runtime
+        result.min_mean_runtime = fastest["mean_runtime"].mean_runtime
+        result.min_minimum_runtime = fastest["minimum_runtime"].minimum_runtime
+        result.min_maximum_runtime = fastest["maximum_runtime"].maximum_runtime
+        result.min_first_runtime = fastest["first_runtime"].first_runtime
+        result.min_median_runtime = fastest["median_runtime"].median_runtime
+        result.min_harmonic_runtime = fastest[
+            "harmonic_runtime"
+        ].harmonic_runtime
+        result.min_trim_runtime = fastest["trim_runtime"].trim_runtime
         result.min_energy = lowest.energy
 
     return best
@@ -349,18 +365,23 @@ def create_plots(options, results, best_results, figures_dir):
     """
     for best_dict, prob_result in zip(best_results.values(), results.values()):
         plot_dict = {}
-        initial_guess_path = {}
-        df = {}
+        data = {}
 
         # Create a dataframe for each problem
         # Rows are datapoints in the fits
         for cf, cat_results in prob_result.items():
             # first, load with raw data
-            df[cf] = pd.DataFrame(
+            data[cf] = pd.DataFrame(
                 {
-                    "x": cat_results[0].data_x,
-                    "y": cat_results[0].data_y,
-                    "e": cat_results[0].data_e,
+                    "x": cat_results[0].data_x
+                    if not hasattr(cat_results[0], "data_x_cuts")
+                    else cat_results[0].data_x_cuts,
+                    "y": cat_results[0].data_y
+                    if not hasattr(cat_results[0], "data_y_cuts")
+                    else cat_results[0].data_y_cuts,
+                    "e": cat_results[0].data_e
+                    if not hasattr(cat_results[0], "data_e_cuts")
+                    else cat_results[0].data_e_cuts,
                     "minimizer": "Data",
                     "cost_function": cf,
                     "best": False,
@@ -369,29 +390,41 @@ def create_plots(options, results, best_results, figures_dir):
             # next the initial data
             tmp_df = pd.DataFrame(
                 {
-                    "x": cat_results[0].data_x,
-                    "y": cat_results[0].ini_y,
-                    "e": cat_results[0].data_e,
+                    "x": cat_results[0].data_x
+                    if not hasattr(cat_results[0], "data_x_cuts")
+                    else cat_results[0].data_x_cuts,
+                    "y": cat_results[0].ini_y
+                    if not hasattr(cat_results[0], "ini_y_cuts")
+                    else cat_results[0].ini_y_cuts,
+                    "e": cat_results[0].data_e
+                    if not hasattr(cat_results[0], "data_e_cuts")
+                    else cat_results[0].data_e_cuts,
                     "minimizer": "Starting Guess",
                     "cost_function": cf,
                     "best": False,
                 }
             )
-            df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+            data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
             # then get data for each minimizer
             for result in cat_results:
                 tmp_df = pd.DataFrame(
                     {
-                        "x": result.data_x,
-                        "y": result.fin_y,
-                        "e": result.data_e,
+                        "x": result.data_x
+                        if not hasattr(result, "data_x_cuts")
+                        else result.data_x_cuts,
+                        "y": result.fin_y
+                        if not hasattr(result, "fin_y_cuts")
+                        else result.fin_y_cuts,
+                        "e": result.data_e
+                        if not hasattr(result, "data_e_cuts")
+                        else result.data_e_cuts,
                         "minimizer": result.sanitised_min_name(True),
                         "cost_function": cf,
                         "best": result.is_best_fit,
                     }
                 )
-                df[cf] = pd.concat([df[cf], tmp_df], ignore_index=True)
+                data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
         # For each result, if it succeeded, create a plot and add plot links to
         # the results object
@@ -407,9 +440,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = str(e)
                 continue
 
-            # Create a plot showing the initial guess and get filename
-            initial_guess_path[cf] = plot.plot_initial_guess(df[cf])
-
             # Get filenames of best plot first
             # If none of the fits succeeded, params could be None
             # Otherwise, add the best fit to the plot
@@ -420,10 +450,9 @@ def create_plots(options, results, best_results, figures_dir):
                 best_dict[
                     cf
                 ].figure_error = "Minimizer failed to produce any parameters"
-            best_dict[cf].start_figure_link = initial_guess_path[cf]
             plot_dict[cf] = plot
 
-            plot_paths = plot.plotly_fit(df[cf])
+            plot_paths = plot.plotly_fit(data[cf])
 
             # Check if plot was successful
             if cf not in plot_dict:
@@ -437,7 +466,6 @@ def create_plots(options, results, best_results, figures_dir):
                     result.figure_error = (
                         "Minimizer failed to produce any parameters"
                     )
-                result.start_figure_link = initial_guess_path[cf]
 
         # For each result, if it succeeded and produced posterior pdf estimates
         # for each parameter, create histogram plots and add plot links to the
@@ -469,7 +497,6 @@ def create_problem_level_index(
     :params config: Dictionary containing env config
     :type config: dict
     """
-    js = get_js(options, group_dir)
 
     root = os.path.dirname(inspect.getfile(fitbenchmarking))
     template_dir = os.path.join(root, "templates")
@@ -487,7 +514,7 @@ def create_problem_level_index(
             template.render(
                 css_style_sheet=css["main"],
                 custom_style=css["custom"],
-                mathjax=js["mathjax"],
+                mathjax="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js",
                 group_name=group_name,
                 table_type=names,
                 links=links,
@@ -554,7 +581,9 @@ def create_index_page(
     return output_file
 
 
-def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
+def open_browser(
+    output_file: str, options, pp_dfs_all_prob_sets, results
+) -> None:
     """
     Opens a browser window to show the results of a fit benchmark.
 
@@ -565,6 +594,8 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
     :param pp_dfs_all_prob_sets: For each problem set, data to create
                                  dash plots.
     :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
+    :param results: A list of every fitting result generated
+    :type results: list[FittingResult]
     """
     use_url = False
     # On Mac, need prefix for webbrowser
@@ -602,7 +633,43 @@ def open_browser(output_file: str, options, pp_dfs_all_prob_sets) -> None:
         )
 
     if options.run_dash:
-        run_dash_app(options, pp_dfs_all_prob_sets)
+        app = Dash(
+            __name__,
+            suppress_callback_exceptions=True,
+            external_stylesheets=[dbc.themes.BOOTSTRAP],
+        )
+        log = logging.getLogger("werkzeug")
+        log.disabled = True
+
+        app.layout = html.Div(
+            [
+                dcc.Location(id="url", refresh=False),
+                html.Div(id="page-content", children=[]),
+            ]
+        )
+
+        max_solvers = 15
+
+        app = add_perfomance_profile_callbacks(app, max_solvers)
+        profile_instances_all_groups = create_performance_profile_instances(
+            pp_dfs_all_prob_sets
+        )
+        performance_profile_layout = get_performance_profile_layout()
+        compare_scatter = CompareScatter(app, options, results=results)
+        compare_scatter_layout, app = compare_scatter.get_layout()
+        app.callback(
+            Output("page-content", "children"), [Input("url", "pathname")]
+        )(
+            lambda x: display_page(
+                x,
+                performance_profile_instances_all_groups=profile_instances_all_groups,
+                compare_scatter_layout=compare_scatter_layout,
+                performance_profile_layout=performance_profile_layout,
+                max_solvers=max_solvers,
+                run_id=options.run_id,
+            )
+        )
+        app.run(host=options.ip_address, port=options.port)
 
 
 def update_warning(solvers, max_solvers):
@@ -650,22 +717,30 @@ def check_max_solvers(opts, solvers, max_solvers):
 
 def display_page(
     pathname: str,
-    profile_instances_all_groups: "dict[str, dict[str, DashPerfProfile]]",
-    layout: "list",
+    performance_profile_instances_all_groups: dict[
+        str, dict[str, DashPerfProfile]
+    ],
+    performance_profile_layout: list,
     max_solvers: int,
     run_id: str,
+    compare_scatter_layout: list | html.Div,
 ):
     """
     Update the layout of the dash app.
 
     :param pathname: The link to the page with the Dash plot
     :type pathname: str
-    :param profile_instances_all_groups: The data to be plotted
+
+    :param profile_instances_all_groups: The data to be plotted (formatted as
+        problem set: dict())
     :type profile_instances_all_groups: dict[str[dict]]
+
     :param layout: Layout of the Dash app
     :type layout: list of dcc or html components
+
     :param max_solvers: Maximum number of solvers that can be plotted
     :type max_solvers: int
+
     :param run_id: The id for the run that is plotted in dash
     :type run_id: str
 
@@ -676,22 +751,88 @@ def display_page(
     try:
         _, plot_id, group, plot, metric_str = pathname.split("/")
     except ValueError:
-        return (
-            "404 Page Error! Path does not have the expected format. "
-            "Please provide it in the following form:  \n"
-            "ip-address:port/run_id/problem_set/plot/performance_profile."
-        )
+        out_msg = [
+            "Path does not have the expected format. "
+            "Please provide it in the following form:",
+            html.Br(),
+            "ip-address:port/run_id/problem_set/plot_type/source_table.",
+            html.Br(),
+            "Please see the following for an example of the expected "
+            "formatting:",
+        ]
+
+        for problem_set in performance_profile_instances_all_groups:
+            for plot in performance_profile_instances_all_groups[problem_set]:
+                out_msg.extend(
+                    [html.Br(), f"/{run_id}/{problem_set}/pp/{plot}"]
+                )
+            out_msg.extend([html.Br(), f"/{run_id}/{problem_set}/cs/_"])
+            all_tables_string = "+".join(
+                list(
+                    performance_profile_instances_all_groups[
+                        problem_set
+                    ].keys()
+                )
+            )
+
+            out_msg.extend(
+                [html.Br(), f"/{run_id}/{problem_set}/pp/{all_tables_string}"]
+            )
+
+        return [html.H2("404 Page Error!"), html.Div(out_msg)]
 
     if run_id != plot_id:
-        return (
-            "404 Page Error! Dash plots are not available for these results."
-            "You can use `fitbenchmarking --load-checkpoint` to fix this."
+        return [
+            html.H2("404 Page Error!"),
+            html.Div(
+                [
+                    "Dash plots are not available for these results. "
+                    "Check that the URL contains the correct run ID and that "
+                    "the current run generated dash plots",
+                    html.Br(),
+                    "You can use `fitbenchmarking --load_checkpoint` to load "
+                    "from a run where dash plots were generated.",
+                    html.Br(),
+                    f"Most recent run ID: {run_id}",
+                ]
+            ),
+        ]
+
+    if plot == "cs":
+        return compare_scatter_layout
+    elif plot == "pp":
+        group_profiles = {}
+        try:
+            group_profiles = performance_profile_instances_all_groups[group]
+        except KeyError:
+            valid_problem_sets = list(
+                performance_profile_instances_all_groups.keys()
+            )
+            return [
+                html.H2("404 Page Error!"),
+                "The problem set was not recognized.",
+                html.Br(),
+                f"Valid names include: {valid_problem_sets}",
+            ]
+        return build_performance_profile_page(
+            group_profiles, performance_profile_layout, metric_str, max_solvers
         )
-    if plot != "pp":
-        return f"404 Page Error! Plot type '{plot}' not available."
+    else:
+        valid_plot_types = {
+            "pp": "performance profile",  # performance profile
+            "cs": "compare scatter",
+        }
+        return [
+            html.H2("404 Page Error!"),
+            f"Plot type '{plot}' not available.",
+            html.Br(),
+            f"valid plot types include: {valid_plot_types}",
+        ]
 
-    group_profiles = profile_instances_all_groups[group]
 
+def build_performance_profile_page(
+    group_profiles, layout, metric_str, max_solvers
+):
     new_layout = layout
 
     try:
@@ -709,32 +850,38 @@ def display_page(
 
             new_layout = [*new_layout, group_profiles[metric].layout()]
     except KeyError:
-        return (
-            "404 Page Error! The path was not recognized. \n"
-            "The path needs to end in a list of table names "
-            "separated by '+'."
-        )
+        return [
+            html.H2("404 Page Error!"),
+            "The path was not recognized.",
+            html.Br(),
+            "The path needs to end in a list of table names separated by '+'.",
+            html.Br(),
+            f"Valid names include: {list(group_profiles.keys())}",
+        ]
 
     opts = group_profiles["acc"].default_opt
 
     layout[1].options = opts
     layout[1].value = [i["label"] for i in opts[:max_solvers]]
+
     return html.Div(new_layout)
 
 
-def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
-    """
-    Runs the Dash app to produce the interactive performance profile
-    plots.
+def add_perfomance_profile_callbacks(app: Dash, max_solvers):
+    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
+        lambda x: update_warning(x, max_solvers=max_solvers)
+    )
 
-    :param options: The user options for the benchmark.
-    :type options: fitbenchmarking.utils.options.Options
-    :param pp_dfs_all_prob_sets: For each problem set, data to create
-                                 dash plots.
-    :type pp_dfs_all_prob_sets: dict[str, dict[str, pandas.DataFrame]]
-    """
+    app.callback(
+        Output("dropdown", "options"),
+        [Input("dropdown", "options"), Input("dropdown", "value")],
+    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
 
-    layout = [
+    return app
+
+
+def get_performance_profile_layout():
+    return [
         dcc.RadioItems(
             id="Log axis toggle",
             options=["Log x-axis", "Linear x-axis"],
@@ -777,9 +924,11 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
         ),
     ]
 
+
+def create_performance_profile_instances(pp_dfs_all_prob_sets):
     profile_instances_all_groups = {}
     for group, pp_dfs in pp_dfs_all_prob_sets.items():
-        inst = {
+        profile_instances_all_groups[group] = {
             "acc": DashPerfProfile(
                 profile_name="Accuracy", pp_df=pp_dfs["acc"], group_label=group
             ),
@@ -794,44 +943,4 @@ def run_dash_app(options, pp_dfs_all_prob_sets) -> None:
                 group_label=group,
             ),
         }
-        profile_instances_all_groups[group] = inst
-
-    # Needed to prevent unnecessary warning in the terminal
-    # 'werkzeug' is the name of the logger used by dash
-    log = logging.getLogger("werkzeug")
-    log.disabled = True
-
-    app = Dash(__name__, suppress_callback_exceptions=True)
-
-    app.layout = html.Div(
-        [
-            dcc.Location(id="url", refresh=False),
-            html.Div(id="page-content", children=[]),
-        ]
-    )
-
-    max_solvers = 15
-
-    app.callback(Output("warning", "children"), [Input("dropdown", "value")])(
-        lambda x: update_warning(x, max_solvers=max_solvers)
-    )
-
-    app.callback(
-        Output("dropdown", "options"),
-        [Input("dropdown", "options"), Input("dropdown", "value")],
-    )(lambda x, y: check_max_solvers(x, y, max_solvers=max_solvers))
-
-    # Create the callback to handle multiple pages
-    app.callback(
-        Output("page-content", "children"), [Input("url", "pathname")]
-    )(
-        lambda x: display_page(
-            x,
-            profile_instances_all_groups=profile_instances_all_groups,
-            layout=layout,
-            max_solvers=max_solvers,
-            run_id=options.run_id,
-        )
-    )
-
-    app.run(port=options.port)
+    return profile_instances_all_groups

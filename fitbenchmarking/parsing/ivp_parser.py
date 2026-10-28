@@ -52,7 +52,7 @@ class IVPParser(FitbenchmarkParser):
         self._starting_values = [{n: pf[n] for n in p_names}]
 
         def fitFunction(x, *p):
-            if len(x.shape) == 1:
+            if x.ndim == 1:
                 x = np.array([x])
             y = np.zeros_like(x)
             for i, inp in enumerate(x):

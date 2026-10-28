@@ -7,6 +7,8 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
+from parameterized import parameterized
+
 import fitbenchmarking
 from fitbenchmarking import test_files
 from fitbenchmarking.results_processing import fitting_report
@@ -110,35 +112,32 @@ class GetFigurePathsTests(unittest.TestCase):
         self.options = Options()
         self.result = load_mock_results()[0]
 
-    def test_with_links(self):
+    @parameterized.expand(
+        [
+            ("", ""),
+            ("some_link", "other_link"),
+        ]
+    )
+    def test_with_links(self, f_link, p_link):
         """
-        Tests that the returned links are correct when links are passed in.
+        Tests the output of get_figure_paths.
         """
-        self.result.figure_link = "some_link"
-        self.result.start_figure_link = "other_link"
-        self.result.posterior_plots = "another_link"
-        figure_link, start_link, posterior_link = (
-            fitting_report.get_figure_paths(self.result)
-        )
-        self.assertEqual(figure_link, os.path.join("figures", "some_link"))
-        self.assertEqual(start_link, os.path.join("figures", "other_link"))
-        self.assertEqual(
-            posterior_link, os.path.join("figures", "another_link")
+        self.result.figure_link = f_link
+        self.result.posterior_plots = p_link
+
+        figure_link, posterior_link = fitting_report.get_figure_paths(
+            self.result
         )
 
-    def test_no_links(self):
-        """
-        Tests that links are not changed if an empty string is given.
-        """
-        self.result.figure_link = ""
-        self.result.start_figure_link = ""
-        self.result.posterior_plots = ""
-        figure_link, start_link, posterior_link = (
-            fitting_report.get_figure_paths(self.result)
+        expected_figure_link = (
+            os.path.join("figures", f_link) if f_link else ""
         )
-        self.assertEqual(figure_link, "")
-        self.assertEqual(start_link, "")
-        self.assertEqual(posterior_link, "")
+        expected_posterior_link = (
+            os.path.join("figures", p_link) if p_link else ""
+        )
+
+        self.assertEqual(figure_link, expected_figure_link)
+        self.assertEqual(posterior_link, expected_posterior_link)
 
 
 if __name__ == "__main__":
