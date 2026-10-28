@@ -12,7 +12,7 @@ import numpy as np
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
 
-class LSQfitParser(FitbenchmarkParser):
+class LsqfitParser(FitbenchmarkParser):
     """
     Parser for FitBenchmark problems with lsqfit-specific metadata.
 

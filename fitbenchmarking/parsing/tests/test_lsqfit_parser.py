@@ -21,21 +21,21 @@ import numpy as np
 from parameterized import parameterized
 
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
-from fitbenchmarking.parsing.lsqfit_parser import LSQfitParser
+from fitbenchmarking.parsing.lsqfit_parser import LsqfitParser
 from fitbenchmarking.utils.options import Options
 
 
-class TestLSQfitParser(TestCase):
+class TestLsqfitParser(TestCase):
     """
-    Tests the LSQfitParser class.
+    Tests the LsqfitParser class.
     """
 
-    @patch.object(LSQfitParser, "__init__", lambda a, b, c: None)
+    @patch.object(LsqfitParser, "__init__", lambda a, b, c: None)
     def setUp(self):
         """
         Set up resources before each test case.
         """
-        self.parser = LSQfitParser("test_file.txt", Options())
+        self.parser = LsqfitParser("test_file.txt", Options())
         self.parser._filename = "test_file.txt"
         self.parser.fitting_problem = FittingProblem(Options())
 
@@ -73,7 +73,7 @@ class TestLSQfitParser(TestCase):
         self.assertIsNone(result)
 
     @patch(
-        "fitbenchmarking.parsing.lsqfit_parser.LSQfitParser._parse_covariance"
+        "fitbenchmarking.parsing.lsqfit_parser.LsqfitParser._parse_covariance"
     )
     @patch(
         "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser"
@@ -99,7 +99,7 @@ class TestLSQfitParser(TestCase):
         )
 
     @patch(
-        "fitbenchmarking.parsing.lsqfit_parser.LSQfitParser._parse_covariance"
+        "fitbenchmarking.parsing.lsqfit_parser.LsqfitParser._parse_covariance"
     )
     @patch(
         "fitbenchmarking.parsing.fitbenchmark_parser.FitbenchmarkParser"
