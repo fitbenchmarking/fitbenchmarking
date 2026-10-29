@@ -19,12 +19,14 @@ from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
 from fitbenchmarking.jacobian.analytic_jacobian import Analytic
 from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
+from fitbenchmarking.jacobian.gvar_jacobian import Gvar
 from fitbenchmarking.jacobian.jacobian_factory import create_jacobian
 from fitbenchmarking.jacobian.numdifftools_jacobian import Numdifftools
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
 from fitbenchmarking.utils import exceptions
 from fitbenchmarking.utils.exceptions import (
+    IncompatibleJacobianError,
     NoSparseJacobianError,
     SparseJacobianIsDenseError,
 )
@@ -162,6 +164,14 @@ class TestJacobianName(TestCase):
         jacobian.method = "some_method"
         self.assertEqual(jacobian.name(), "analytic")
 
+    def test_gvar_jacobian(self):
+        """
+        Test the name is correct for the gvar jacobian.
+        """
+        jacobian = Gvar(self.fitting_problem)
+        jacobian.method = "forward_ad"
+        self.assertEqual(jacobian.name(), "gvar forward_ad")
+
 
 class TestJacobianClass(TestCase):
     """
@@ -253,6 +263,30 @@ class TestJacobianClass(TestCase):
             jac.method = method
             eval_result = jac.eval(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
+
+    def test_gvar_eval(self):
+        """
+        Test whether gvar evaluation is correct. Automatic differentiation
+        is exact, so a much tighter tolerance is used here than for the
+        finite difference approximations.
+        """
+        jac = Gvar(self.cost_func.problem)
+        jac.method = "forward_ad"
+        eval_result = jac.eval(params=self.params)
+        np.testing.assert_allclose(self.actual, eval_result, rtol=1e-14)
+
+    def test_gvar_eval_raises_error_for_undifferentiable_model(self):
+        """
+        Test that a model which cannot be differentiated by gvar raises an
+        IncompatibleJacobianError
+        """
+        self.fitting_problem.function = lambda x, p1, p2: f(
+            x, float(p1), float(p2)
+        )
+        jac = Gvar(self.cost_func.problem)
+        jac.method = "forward_ad"
+        with self.assertRaises(IncompatibleJacobianError):
+            jac.eval(params=self.params)
 
     def test_analytic_cutest_no_errors(self):
         """
@@ -407,6 +441,16 @@ class TestDerivCostFunc(TestCase):
             eval_result = self.cost_func.jac_cost(params=self.params)
             self.assertTrue(np.isclose(self.actual, eval_result).all())
 
+    def test_gvar_eval(self):
+        """
+        Test whether gvar evaluation is correct
+        """
+        jac = Gvar(self.cost_func.problem)
+        jac.method = "forward_ad"
+        self.cost_func.jacobian = jac
+        eval_result = self.cost_func.jac_cost(params=self.params)
+        np.testing.assert_allclose(self.actual, eval_result, rtol=1e-14)
+
     def test_analytic_cutest(self):
         """
         Test analytic jacobian
@@ -491,6 +535,7 @@ class TestFactory(TestCase):
             ("scipy", Scipy),
             ("analytic", Analytic),
             ("best_available", BestAvailable),
+            ("gvar", Gvar),
         ]
 
         invalid = ["numpy", "random_jac"]

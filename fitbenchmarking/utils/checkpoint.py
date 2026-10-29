@@ -258,7 +258,7 @@ class Checkpoint:
         failed problems and unselected minimizers.
 
         :return: Instantiated fitting results,
-                 unselected minimisers, failed problems
+                 unselected minimizers, failed problems
                  config
         :rtype: Tuple[dict[str, list[FittingResult]],
                       dict, dict[str, list[str]], dict]
@@ -385,7 +385,8 @@ def _compress(value):
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
-    return a85encode(pickle.dumps(value)).decode("ascii")
+    # set protocol to 4 as default switched to 5 in python 3.14
+    return a85encode(pickle.dumps(value, protocol=4)).decode("ascii")
 
 
 def _decompress(value: str):

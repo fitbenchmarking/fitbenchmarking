@@ -9,6 +9,9 @@ from numpy import dot, matmul
 
 from fitbenchmarking.cost_func.base_cost_func import CostFunc
 from fitbenchmarking.utils.exceptions import CostFuncError
+from fitbenchmarking.utils.log import get_logger
+
+LOGGER = get_logger()
 
 
 class BaseNLLSCostFunc(CostFunc):
@@ -45,6 +48,21 @@ class BaseNLLSCostFunc(CostFunc):
 
         self.invalid_algorithm_types = ["MCMC"]
 
+    def validate_problem(self):
+        """
+        Warn if the problem supplies a covariance matrix, but
+        it's not used.  Subclasses that use the covariance (e.g.
+        WhitenedNLLSCostFunc) should override this method.
+        """
+        if self.problem.additional_info.get("covariance") is not None:
+            LOGGER.warning(
+                "Problem '%s' provides a covariance matrix, but the "
+                "selected cost function '%s' does not use it. "
+                "Consider using 'whitened_nlls' instead.",
+                self.problem.name,
+                type(self).__name__,
+            )
+
     @abstractmethod
     def eval_r_single_dataset(self, params, **kwargs):
         """
@@ -77,7 +95,7 @@ class BaseNLLSCostFunc(CostFunc):
         """
         if not (self.problem.multifit and self.problem.multifit_param_names):
             return False
-        return x is None or isinstance(x, (list, tuple)) or np.ndim(x) > 1
+        return x is None or isinstance(x, list | tuple) or np.ndim(x) > 1
 
     def eval_r(self, params, **kwargs):
         """
@@ -150,9 +168,9 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 1D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        J = self.jac_res(params, **kwargs)
+        jacobian_of_residual = self.jac_res(params, **kwargs)
 
-        return 2.0 * J.T.dot(r)
+        return 2.0 * jacobian_of_residual.T.dot(r)
 
     def hes_cost(self, params, **kwargs):
         """
@@ -167,6 +185,11 @@ class BaseNLLSCostFunc(CostFunc):
         :rtype: 2D numpy array
         """
         r = self.eval_r(params, **kwargs)
-        H, J = self.hes_res(params, **kwargs)
+        hessian_of_residual, jacobian_of_residual = self.hes_res(
+            params, **kwargs
+        )
 
-        return 2.0 * (matmul(J.T, J) + matmul(H, r))
+        return 2.0 * (
+            matmul(jacobian_of_residual.T, jacobian_of_residual)
+            + matmul(hessian_of_residual, r)
+        )

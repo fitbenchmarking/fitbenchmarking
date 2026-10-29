@@ -29,6 +29,20 @@ you will need to:
     -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.hes_cost()
               :noindex:
 
+    You may also override the optional method:
+
+    -  .. automethod:: fitbenchmarking.cost_func.base_cost_func.CostFunc.validate_problem()
+              :noindex:
+
+       This is called before fitting to check whether the problem is compatible
+       with the cost function (e.g. that required entries in
+       ``problem.additional_info`` are present). The default implementation does
+       nothing. Override it to raise
+       :class:`~fitbenchmarking.utils.exceptions.IncompatibleCostFunctionError`
+       when the problem cannot be used with your cost function, or
+       :class:`~fitbenchmarking.utils.exceptions.CostFuncError` when the
+       problem data is invalid (e.g. wrong shape).
+
   .. note::
      Non-linear least squares cost functions should subclass
      :class:`~fitbenchmarking.cost_func.nlls_base_cost_func.BaseNLLSCostFunc`
@@ -73,7 +87,7 @@ You will also find it useful to implement the subclass members of
 
 .. currentmodule:: fitbenchmarking.cost_func.base_cost_func
 .. autoclass:: fitbenchmarking.cost_func.base_cost_func.CostFunc
-          :members: eval_cost, jac_res, jac_cost, hes_res, hes_cost
+          :members: eval_cost, jac_res, jac_cost, hes_res, hes_cost, validate_problem
           :noindex:
 
 .. currentmodule:: fitbenchmarking.jacobian.base_jacobian

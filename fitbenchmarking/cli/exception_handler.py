@@ -35,7 +35,7 @@ def exception_handler(f):
             if debug:
                 raise
 
-            LOGGER.error(str(e))
+            LOGGER.error(e, exc_info=debug)
             sys.exit(1)
 
         except Exception as e:
@@ -43,7 +43,7 @@ def exception_handler(f):
             if debug:
                 raise
 
-            LOGGER.error(str(e))
+            LOGGER.error(e, exc_info=debug)
             sys.exit(1)
 
     return wrapped

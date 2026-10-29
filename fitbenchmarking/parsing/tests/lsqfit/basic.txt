@@ -1,0 +1,6 @@
+# Fitbenchmark Problem
+software = 'lsqfit'
+name = 'basic'
+description = 'A basic lsqfit parser test problem'
+input_file = 'data_files/basic.dat'
+function = 'module=functions/basic_func,func=linear,p1=0.0,p2=1.0'

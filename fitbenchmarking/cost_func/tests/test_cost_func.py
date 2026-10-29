@@ -22,6 +22,9 @@ from fitbenchmarking.cost_func.poisson_cost_func import (
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.whitened_nlls_cost_func import (
+    WhitenedNLLSCostFunc,
+)
 from fitbenchmarking.hessian.analytic_hessian import Analytic
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.fitting_problem import FittingProblem
@@ -137,6 +140,30 @@ class TestNLLSCostFunc(TestCase):
         """
         self.cost_function.validate_problem()
 
+    def test_validate_problem_no_warning_without_covariance(self):
+        """
+        Test no warning is raised when the problem has no covariance matrix.
+        """
+        with self.assertNoLogs("fitbenchmarking", level="WARNING"):
+            self.cost_function.validate_problem()
+
+    def test_validate_problem_warns_when_covariance_present(self):
+        """
+        A warning is raised when the problem supplies a covariance matrix
+        but the cost function does not use it
+        """
+        self.cost_function.problem.additional_info = {
+            "covariance": np.diag([4.0, 16.0, 1.0])
+        }
+        with self.assertLogs("fitbenchmarking", level="WARNING") as logs:
+            self.cost_function.validate_problem()
+
+        self.assertEqual(len(logs.output), 1)
+        self.assertIn(
+            "provides a covariance matrix, but the selected cost function",
+            logs.output[0],
+        )
+
     def test_jac_res(self):
         """
         Test that jac_res works for the NLLs cost function
@@ -145,10 +172,12 @@ class TestNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[-1.0], [-1.0], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_jac_cost(self):
         """
@@ -180,7 +209,7 @@ class TestNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
 
@@ -190,7 +219,7 @@ class TestNLLSCostFunc(TestCase):
                 [[-300.0, -19200.0, -36300.0], [-300.0, -19200.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_hes_cost(self):
         """
@@ -311,10 +340,10 @@ class TestWeightedNLLSCostFunc(TestCase):
         self.cost_function.jacobian = mock_jacobian
 
         e = [np.array([2.0, 2.0]), np.array([4.0, 4.0])]
-        J = self.cost_function.jac_res(params=[5], e=e)
+        jacobian_of_residual = self.cost_function.jac_res(params=[5], e=e)
 
         expected = np.array([[-1.0], [-1.0], [-1.0], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_jac_res(self):
         """
@@ -324,12 +353,12 @@ class TestWeightedNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(
+        jacobian_of_residual = self.cost_function.jac_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
         expected = np.array([[-0.5], [-0.25], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -346,7 +375,7 @@ class TestWeightedNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
@@ -356,7 +385,7 @@ class TestWeightedNLLSCostFunc(TestCase):
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -425,12 +454,12 @@ class TestLoglikeNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(
+        jacobian_of_residual = self.cost_function.jac_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
         expected = np.array([[-0.5], [-0.25], [-1.0]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -447,7 +476,7 @@ class TestLoglikeNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val, e=self.e_val
         )
 
@@ -457,7 +486,7 @@ class TestLoglikeNLLSCostFunc(TestCase):
                 [[-150.0, -4800.0, -36300.0], [-150.0, -4800.0, -36300.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -532,10 +561,12 @@ class TestHellingerNLLSCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[-0.20412415], [-0.13867504], [-0.125]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -552,7 +583,7 @@ class TestHellingerNLLSCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
         expected = np.array(
@@ -561,7 +592,7 @@ class TestHellingerNLLSCostFunc(TestCase):
                 [[-2.0, -16.0, -22.0], [-2.0, -16.0, -22.0]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -642,10 +673,12 @@ class TestPoissonCostFunc(TestCase):
         jacobian.method = "2-point"
         self.cost_function.jacobian = jacobian
 
-        J = self.cost_function.jac_res(params=[5], x=self.x_val, y=self.y_val)
+        jacobian_of_residual = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
 
         expected = np.array([[0.0], [0.23076923], [-0.25]])
-        self.assertTrue(np.allclose(J, expected))
+        self.assertTrue(np.allclose(jacobian_of_residual, expected))
 
     def test_hes_res(self):
         """
@@ -662,7 +695,7 @@ class TestPoissonCostFunc(TestCase):
         )
         self.cost_function.hessian = hessian
 
-        H, _ = self.cost_function.hes_res(
+        hessian_of_residual, _ = self.cost_function.hes_res(
             params=[5], x=self.x_val, y=self.y_val
         )
 
@@ -672,7 +705,7 @@ class TestPoissonCostFunc(TestCase):
                 [[300.96, 19201.6, 36303.2], [300.96, 19201.6, 36303.2]],
             ]
         )
-        self.assertTrue(np.allclose(H, expected))
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
 
     def test_validate_problem_correct(self):
         """
@@ -687,6 +720,111 @@ class TestPoissonCostFunc(TestCase):
         self.cost_function.problem.data_y[2] = -0.05
         with self.assertRaises(IncompatibleCostFunctionError):
             self.cost_function.validate_problem()
+
+
+class TestWhitenedNLLSCostFunc(TestCase):
+    """
+    Tests for the WhitenedNLLSCostFunc class
+    """
+
+    def setUp(self):
+        """
+        Set up a problem with a non-diagonal covariance matrix.
+        """
+        self.options = Options()
+        fitting_problem = FittingProblem(self.options)
+        fitting_problem.function = lambda x, p1: x + p1
+        self.x_val = np.array([1.0, 8.0, 11.0])
+        self.y_val = np.array([6.0, 10.0, 20.0])
+        self.cov = np.array(
+            [[4.0, 2.0, 0.0], [2.0, 4.0, 0.0], [0.0, 0.0, 1.0]]
+        )
+        fitting_problem.data_x = self.x_val
+        fitting_problem.data_y = self.y_val
+        fitting_problem.additional_info = {"covariance": self.cov}
+        self.cost_function = WhitenedNLLSCostFunc(fitting_problem)
+
+    def test_eval_r(self):
+        """
+        Test that eval_r correctly whitens residuals using the Cholesky factor
+        of a non-diagonal covariance matrix
+        """
+        result = self.cost_function.eval_r(
+            x=self.x_val, y=self.y_val, params=[5]
+        )
+        expected = np.array([0.0, -np.sqrt(3), 4.0])
+        self.assertTrue(np.allclose(result, expected))
+
+    def test_jac_res(self):
+        """
+        Test that jac_res works for the whitened NLLS cost function
+        """
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+
+        result = self.cost_function.jac_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
+        expected = np.array([[-0.5], [-0.5 / np.sqrt(3)], [-1.0]])
+        self.assertTrue(np.allclose(result, expected, atol=1e-5))
+
+    def test_hes_res(self):
+        """
+        Test that hes_res works for the whitened NLLS cost function
+        """
+        self.cost_function.problem.function = fun
+        self.cost_function.problem.jacobian = jac
+        self.cost_function.problem.hessian = hes
+        jacobian = Scipy(self.cost_function.problem)
+        jacobian.method = "2-point"
+        self.cost_function.jacobian = jacobian
+        hessian = Analytic(
+            self.cost_function.problem, self.cost_function.jacobian
+        )
+        self.cost_function.hessian = hessian
+
+        hessian_of_residual, _ = self.cost_function.hes_res(
+            params=[5], x=self.x_val, y=self.y_val
+        )
+
+        expected = np.array(
+            [
+                [
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                ],
+                [
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                    [-150.0, -6350.0 * np.sqrt(3), -36300.0],
+                ],
+            ]
+        )
+        self.assertTrue(np.allclose(hessian_of_residual, expected))
+
+    def test_validate_problem_incorrect(self):
+        """
+        Test that validate_problem raises IncompatibleCostFunctionError when
+        no covariance matrix is present
+        """
+        self.cost_function.problem.additional_info = {}
+        self.assertRaises(
+            IncompatibleCostFunctionError,
+            self.cost_function.validate_problem,
+        )
+
+    def test_validate_problem_wrong_covariance_shape(self):
+        """
+        Test that validate_problem raises CostFuncError when the covariance
+        shape does not match the number of data points
+        """
+        self.cost_function.problem.additional_info = {
+            "covariance": np.diag([1.0, 1.0])  # 2x2 but data has 3 points
+        }
+        self.assertRaises(
+            exceptions.CostFuncError,
+            self.cost_function.validate_problem,
+        )
 
 
 class FactoryTests(TestCase):

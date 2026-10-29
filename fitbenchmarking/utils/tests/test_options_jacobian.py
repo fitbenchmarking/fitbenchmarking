@@ -29,6 +29,7 @@ class JacobianOptionTesJacobians(unittest.TestCase):
             "analytic": ["default"],
             "best_available": ["default"],
             "default": ["default"],
+            "gvar": ["forward_ad"],
             "numdifftools": ["central"],
             "scipy": ["2-point"],
         }
@@ -56,6 +57,7 @@ class UserJacobianOptionTests(BaseFittingOptionTests):
             "analytic": ["default"],
             "best_available": ["default"],
             "default": ["default"],
+            "gvar": ["forward_ad"],
             "numdifftools": ["central"],
             "scipy": ["cs"],
         }
