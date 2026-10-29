@@ -39,6 +39,7 @@ autodoc_mock_imports = [
     "iminuit",
     "levmar",
     "lmfit",
+    "lsqfit",
     "mantid",
     "matlab",
     "nlopt",
