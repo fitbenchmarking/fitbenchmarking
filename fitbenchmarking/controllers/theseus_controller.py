@@ -2,8 +2,12 @@
 Implements a controller for the Theseus fitting software.
 """
 
-from collections.abc import Sequence
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 import numpy as np
 import theseus as th
@@ -24,8 +28,8 @@ class TheseusCostFunction(th.CostFunction):
         var: list[th.Vector],
         auxvar: Sequence[th.Variable],
         dim: int,
-        cost_weight: Optional[th.CostWeight] = None,
-        name: Optional[str] = None,
+        cost_weight: th.CostWeight | None = None,
+        name: str | None = None,
     ):
         if cost_weight is None:
             cost_weight = th.ScaleCostWeight(1.0)
@@ -79,7 +83,7 @@ class TheseusCostFunction(th.CostFunction):
         """
         return self._dim
 
-    def _copy_impl(self, new_name: Optional[str] = None):
+    def _copy_impl(self, new_name: str | None = None):
         return TheseusCostFunction(  # type: ignore
             var=[v.copy() for v in self.var],
             auxvar=[v.copy() for v in self.auxvar],
@@ -126,7 +130,6 @@ class TheseusController(Controller):
         self.th_optim = None
         self.th_info = None
         self.th_cost_func = None
-        self._param_names = self.problem.param_names
         self.th_inputs = None
         self.result = None
 
@@ -134,6 +137,7 @@ class TheseusController(Controller):
         """
         Setup problem ready to be run with Theseus
         """
+        self._param_names = self.par_names
         x_tensor = torch.from_numpy(np.array([self.problem.data_x]))
         y_tensor = torch.from_numpy(np.array([self.problem.data_y]))
 
@@ -148,7 +152,7 @@ class TheseusController(Controller):
         params = [
             params * torch.ones((1, 1)) for params in self.initial_params
         ]
-        param_dict = dict(zip(self.problem.param_names, params))
+        param_dict = dict(zip(self.par_names, params))
 
         self.th_inputs = {"x_data": th_x, "y_data": th_y, **param_dict}
 

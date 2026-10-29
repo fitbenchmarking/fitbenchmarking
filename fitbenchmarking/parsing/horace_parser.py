@@ -11,8 +11,11 @@ import numpy as np
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 from fitbenchmarking.utils.exceptions import ParsingError
+from fitbenchmarking.utils.log import get_logger
 from fitbenchmarking.utils.matlab_engine import ENG as eng
 from fitbenchmarking.utils.matlab_engine import add_persistent_matlab_var
+
+LOGGER = get_logger()
 
 
 def horace_on():
@@ -62,10 +65,10 @@ class HoraceParser(FitbenchmarkParser):
 
         # A container for improving efficiency in function call if calling
         # with full input data
-        self._horace_x: typing.Optional[np.ndarray] = None
-        self._horace_w: typing.Optional[str] = None
-        self._horace_msk: typing.Optional[str] = None
-        self._horace_path: typing.Optional[str] = None
+        self._horace_x: np.ndarray | None = None
+        self._horace_w: str | None = None
+        self._horace_msk: str | None = None
+        self._horace_path: str | None = None
 
     def _process_spinw_data(self, data_file_path):
         """
@@ -80,7 +83,7 @@ class HoraceParser(FitbenchmarkParser):
         q_cens = [float(i) for i in self._entries["q_cens"].split(",")]
         foreground_dict = self._parsed_func[0]
         params_dict = {
-            k: v for k, v in foreground_dict.items() if k not in {"foreground"}
+            k: v for k, v in foreground_dict.items() if k != "foreground"
         }
 
         process_f = self._parse_function(self._entries["process_function"])
@@ -98,6 +101,12 @@ class HoraceParser(FitbenchmarkParser):
         for var in ["y", "e"]:
             eng.evalc(f"{var}_final = fitpow.{var}")
         eng.evalc("x = fitpow.ebin_cens")
+
+        eng.evalc("x_size = size(x)")
+        x_size = [int(x) for x in list(eng.workspace["x_size"][0])]
+        rows, cols = x_size
+        if rows > 1 and cols == 1:
+            eng.evalc("x=x'")  # need x to be a row vector
         eng.evalc(f"x_final = repelem(x,{len(q_cens)},1)'")
 
         # Create and fill struct
@@ -152,18 +161,13 @@ class HoraceParser(FitbenchmarkParser):
             )
         except Exception as e:
             raise ParsingError(
-                f"Failed to evaluate wye_function: {script}"
+                f"Failed to evaluate wye_function: {script}: {e}"
             ) from e
-
+        mask = np.array(eng.workspace[f"{self._horace_msk}"])
         signal = np.array(eng.workspace["y"], dtype=np.float64)
         error = np.array(eng.workspace["e"], dtype=np.float64)
 
         # check for NaNs in 2D SpinW problems
-        if "plot_type" in self._entries and np.isnan([signal, error]).any():
-            raise ParsingError(
-                "SpinW problems should not contain NaN values, "
-                "please ensure these are removed within the wye function "
-            )
 
         add_persistent_matlab_var(self._horace_msk)
         add_persistent_matlab_var(self._horace_w)
@@ -175,7 +179,7 @@ class HoraceParser(FitbenchmarkParser):
         x = np.ones(len(y))
 
         self._horace_x = x
-        return {"x": x, "y": y, "e": e}
+        return {"x": x, "y": y, "e": e, "mask": mask}
 
     def _create_function(self) -> typing.Callable:
         """
@@ -290,7 +294,7 @@ class HoraceParser(FitbenchmarkParser):
             """
             horace_on()
             eng.evalc(f"addpath(genpath('{self._horace_path}'))")
-            print(eng.evalc(f"load('{path}')"))
+            LOGGER.info(eng.evalc(f"load('{path}')"))
 
         self.fitting_problem.set_persistent_vars = set_persistent_vars
 
@@ -333,12 +337,31 @@ class HoraceParser(FitbenchmarkParser):
             eng.evalc(f"ebin_cens = {self._horace_w}(1).x")
 
             if self.fitting_problem.additional_info["plot_type"] == "2d":
-                self.fitting_problem.additional_info["ebin_cens"] = np.array(
+                # Calculate ebin_cens
+                ebin_cens = np.array(
                     eng.workspace["ebin_cens"][0], dtype=np.float64
-                )[0]
-                self.fitting_problem.additional_info["modQ_cens"] = np.array(
+                )
+                if len(ebin_cens) == 1:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        ebin_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["ebin_cens"] = (
+                        np.array([i[0] for i in ebin_cens], dtype=np.float64)
+                    )
+
+                # Calculate modQ_cens
+                modQ_cens = np.array(
                     eng.workspace["ebin_cens"][1], dtype=np.float64
-                )[0]
+                )
+                if len(modQ_cens) == 1:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        modQ_cens[0]
+                    )
+                else:
+                    self.fitting_problem.additional_info["modQ_cens"] = (
+                        np.array([i[0] for i in modQ_cens], dtype=np.float64)
+                    )
 
                 if "dq" in self._entries:
                     dq = float(self._entries["dq"])
@@ -368,13 +391,4 @@ class HoraceParser(FitbenchmarkParser):
             else:
                 raise ParsingError(
                     "q_cens are required for plotting 1D cuts of SpinW data"
-                )
-
-            if not float(
-                len(self.fitting_problem.data_y)
-                / self.fitting_problem.additional_info["n_plots"]
-            ).is_integer():
-                raise ParsingError(
-                    "Number of data points must be divisible "
-                    "by number of q_cens"
                 )

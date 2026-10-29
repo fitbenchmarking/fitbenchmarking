@@ -2,8 +2,9 @@
 FitBenchmarking results object
 """
 
+import math
 from statistics import StatisticsError, fmean, harmonic_mean, median
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from scipy import stats
@@ -12,6 +13,7 @@ from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.cost_func.nlls_base_cost_func import BaseNLLSCostFunc
 from fitbenchmarking.utils.debug import get_printable_table
 from fitbenchmarking.utils.log import get_logger
+from fitbenchmarking.utils.misc import ERROR_FLAG_MAPPINGS
 
 if TYPE_CHECKING:
     from fitbenchmarking.cost_func.base_cost_func import CostFunc
@@ -26,16 +28,18 @@ class FittingResult:
     fitting problem test.
     """
 
+    status: str
+
     def __init__(
         self,
         controller: Controller,
-        accuracy: Union[float, list[float]] = np.inf,
-        runtimes: Union[float, list[float]] = np.inf,
+        accuracy: float | list[float] = np.inf,
+        runtimes: float | list[float] = np.inf,
         energy: float = np.inf,
         runtime_metric: Literal[
             "mean", "minimum", "maximum", "first", "median", "harmonic", "trim"
         ] = "mean",
-        dataset: Optional[int] = None,
+        dataset: int | None = None,
     ) -> None:
         """
         Initialise the Fitting Result
@@ -67,6 +71,8 @@ class FittingResult:
         self.param_names = controller.par_names
         self.equation = problem.equation
         self.plot_scale = problem.plot_scale
+        if hasattr(problem, "mask"):
+            self.mask = problem.mask
 
         if dataset is None:
             self.data_x = problem.data_x
@@ -103,12 +109,12 @@ class FittingResult:
                 )
                 indexes_cuts = self.get_indexes_1d_cuts_spinw(problem)
                 self.data_y_cuts, self.data_y_complete = (
-                    self.get_1d_cuts_spinw(problem, indexes_cuts, self.data_y)
+                    self.get_1d_cuts_spinw(indexes_cuts, self.data_y)
                 )
 
                 if self.data_e is not None:
                     self.data_e_cuts, _ = self.get_1d_cuts_spinw(
-                        problem, indexes_cuts, self.data_e
+                        indexes_cuts, self.data_e
                     )
 
         self.runtimes = runtimes if isinstance(runtimes, list) else [runtimes]
@@ -163,19 +169,19 @@ class FittingResult:
         self.ini_y = problem.ini_y(controller.parameter_set)
         if hasattr(self, "ini_y") and indexes_cuts is not None:
             self.ini_y_cuts, _ = self.get_1d_cuts_spinw(
-                problem, indexes_cuts, self.ini_y
+                indexes_cuts, self.ini_y
             )
 
         self.fin_y = None
         if self.params is not None:
             cost_func.problem.timer.reset()
             if isinstance(cost_func, BaseNLLSCostFunc):
-                self.r_x = cost_func.eval_r(
+                self.r_x = cost_func.eval_r_single_dataset(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
                 )
                 if hasattr(self, "r_x") and indexes_cuts is not None:
                     self.r_x_cuts, _ = self.get_1d_cuts_spinw(
-                        problem, indexes_cuts, self.r_x
+                        indexes_cuts, self.r_x
                     )
                 self.jac_x = cost_func.jac_res(
                     self.params, x=self.data_x, y=self.data_y, e=self.data_e
@@ -185,7 +191,7 @@ class FittingResult:
             )
             if hasattr(self, "fin_y") and indexes_cuts is not None:
                 self.fin_y_cuts, self.fin_y_complete = self.get_1d_cuts_spinw(
-                    problem, indexes_cuts, self.fin_y
+                    indexes_cuts, self.fin_y
                 )
 
         # String interpretations of the params
@@ -198,7 +204,13 @@ class FittingResult:
 
         # Controller error handling
         self.error_flag = controller.flag
-
+        if (
+            isinstance(self.error_flag, int)
+            and self.error_flag in ERROR_FLAG_MAPPINGS
+        ):
+            self.status = ERROR_FLAG_MAPPINGS[self.error_flag]
+        else:
+            self.status = "Unknown error flag"
         # Attributes for table creation
         self.costfun_tag: str = cost_func.__class__.__name__
         self.problem_tag: str = self.name
@@ -211,21 +223,17 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
-    def get_1d_cuts_spinw(self, problem, indexes, array_to_cut):
+    def get_1d_cuts_spinw(self, indexes, array_to_cut):
         """
         Given a flattened array of spinw y data, this function reshapes it
         into a 2d array (based on the length of ebin_cens), then takes
         1d cuts based on the q_cens specified by the user.
         """
 
-        len_single_data_x = len(problem.additional_info["ebin_cens"].tolist())
-        len_y_flattened = len(array_to_cut)
-        new_shape = (
-            int(len_y_flattened / len_single_data_x),
-            len_single_data_x,
-        )
-        reshaped_data = array_to_cut.reshape(new_shape)
-        array_to_cut_as_2d = reshaped_data
+        flattened_mask = self.mask.transpose().flatten()
+        full_array = np.full(flattened_mask.shape, np.nan)
+        full_array[~flattened_mask] = array_to_cut
+        array_to_cut_as_2d = full_array.reshape(self.mask.shape, order="F")
 
         data_cuts = []
         for ind in indexes:
@@ -309,10 +317,10 @@ class FittingResult:
                 if not isinstance(match, bool):
                     match = (getattr(other, key) != getattr(self, key)).all()
                 if match:
-                    print(f"{key} not equal!")
+                    LOGGER.info("%s not equal!", key)
                     return False
             else:
-                print(f"No attr {key}")
+                LOGGER.info("No attr %s", key)
                 return False
         return True
 
@@ -551,3 +559,61 @@ class FittingResult:
     @sanitised_name.setter
     def sanitised_name(self, value):
         raise RuntimeError("sanitised_name can not be edited")
+
+    def hover_text(
+        self, include_title=False, style="html", include_cost_func=False
+    ) -> str:
+        """
+        Generate the tooltip text for a given fitting result.
+        :param include_title: Whether to include the result title in the
+            tooltip
+        :type include_title: bool
+
+        :param style: The type of styling tags needed for the tooltip, either
+            css or html. This determines the type of line breaks and bold tags
+            used. Note: Bold text is not applied when using css style
+        :type style: str
+
+        :param include_cost_func: Whether to include the cost function type
+            in the title of the tooltip
+        :type include_cost_func: bool
+
+        :return: The generated tooltip
+        :rtype: str
+        """
+        line_break = "<br>" if style == "html" else r"\a "
+        bold_start = "<b>" if style == "html" else ""
+        bold_end = "</b>" if style == "html" else ""
+
+        if math.isinf(self.runtime) or math.isinf(self.min_accuracy):
+            return f"Error: {self.status}"
+
+        if self.iteration_count is None or self.iteration_count == 0:
+            iterations = "not available"
+        else:
+            iterations = self.iteration_count
+
+        hover_text = (
+            f"Status: {self.status}{line_break}"
+            f"Accuracy: {self.accuracy:.4g}{line_break}"
+            f"{self.runtime_metric.capitalize()}"
+            f" runtime: {self.runtime:.4g}{line_break}"
+            f"Energy usage: {self.energy:.4g}{line_break}"
+            f"Iterations: {iterations}{line_break}"
+            f"Function Evaluations: {self.func_evals}"
+        )
+
+        if include_title:
+            title_parts = [
+                self.modified_minimizer_name(with_software=True),
+                self.problem_tag,
+            ]
+            if include_cost_func:
+                title_parts.append(self.costfun_tag)
+
+            title = " | ".join(
+                f"{bold_start}{part}{bold_end}" for part in title_parts
+            )
+            hover_text = f"{title}{line_break}{hover_text}"
+
+        return hover_text

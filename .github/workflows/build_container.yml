@@ -1,17 +1,19 @@
-# Build and push a container to ghcr.io
-name: 'Update Container'
+# Build and push containers to ghcr.io
+name: 'Update Containers'
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'Container/**'
+      - 'Containers/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'Container/**'
+      - 'Containers/**'
+    schedule:
+      - cron: '0 0 1 * *'
   workflow_dispatch:
 
 env:
@@ -20,8 +22,13 @@ env:
 jobs:
   build:
     if: github.event.repository.fork == false
-    name: Build the container
+    name: Build the containers
     runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        container: ['full-tests', 'mantid-tests']
+  
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -33,21 +40,20 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build container
+    - name: Build ${{ matrix.container }} container
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
         containerfiles: |
-          Container/Containerfile
-        context: Container
-        image: fitbenchmarking-extras
+          Containers/${{ matrix.container }}/Containerfile
+        context: Containers/${{ matrix.container }}
+        image: fitbenchmarking-extras-${{ matrix.container }}
         tags: latest
     
-    - name: Push to ghcr.io
-      if: github.event_name == 'push'
+    - name: Push ${{ matrix.container }} to ghcr.io
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
       uses: redhat-actions/push-to-registry@v2
       with:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
         registry: ${{ env.IMAGE_REGISTRY }}
-

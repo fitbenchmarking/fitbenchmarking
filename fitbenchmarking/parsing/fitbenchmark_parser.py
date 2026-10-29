@@ -5,10 +5,11 @@ This file implements a parser for the Fitbenchmark data format.
 import importlib
 import re
 import sys
+from collections.abc import Callable
 from contextlib import suppress
 from functools import partialmethod
+from itertools import repeat
 from pathlib import Path
-from typing import Callable, Optional, Union
 
 import numpy as np
 
@@ -183,13 +184,33 @@ class FitbenchmarkParser(Parser):
         :param fit_ranges: A list of fit ranges.
         :type fit_ranges: list
         """
-        self.fitting_problem.data_x = data_points[0]["x"]
-        self.fitting_problem.data_y = data_points[0]["y"]
-        self.fitting_problem.data_e = data_points[0].get("e", None)
+        # TODO: do we need to check that software not mantid here?
+        if self.fitting_problem.multifit:
+            self.fitting_problem.data_x = [d["x"] for d in data_points]
+            self.fitting_problem.data_y = [d["y"] for d in data_points]
+            self.fitting_problem.data_e = [
+                d.get("e", None) for d in data_points
+            ]
 
-        if fit_ranges and "x" in fit_ranges[0]:
-            self.fitting_problem.start_x = fit_ranges[0]["x"][0]
-            self.fitting_problem.end_x = fit_ranges[0]["x"][1]
+            if not fit_ranges:
+                fit_ranges = list(repeat({}, len(data_points)))
+
+            self.fitting_problem.start_x = [
+                f["x"][0] if "x" in f else None for f in fit_ranges
+            ]
+            self.fitting_problem.end_x = [
+                f["x"][1] if "x" in f else None for f in fit_ranges
+            ]
+        else:
+            self.fitting_problem.data_x = data_points[0]["x"]
+            self.fitting_problem.data_y = data_points[0]["y"]
+            if "mask" in data_points[0]:
+                self.fitting_problem.mask = data_points[0]["mask"]
+            self.fitting_problem.data_e = data_points[0].get("e", None)
+
+            if fit_ranges and "x" in fit_ranges[0]:
+                self.fitting_problem.start_x = fit_ranges[0]["x"][0]
+                self.fitting_problem.end_x = fit_ranges[0]["x"][1]
 
     def _get_plot_scale(self) -> str:
         """
@@ -211,7 +232,11 @@ class FitbenchmarkParser(Parser):
         """
         Sets any additional info for a fitting problem.
         """
-        return
+        if self.fitting_problem.multifit:
+            ties = re.findall(
+                r"['\"](.*?)['\"]", self._entries.get("ties", "")
+            )
+            self.fitting_problem.additional_info["ties"] = ties
 
     def _get_data_file(self) -> list:
         """
@@ -276,7 +301,7 @@ class FitbenchmarkParser(Parser):
 
         return entries
 
-    def _parse_string(self, key: str, func: Optional[str] = None):
+    def _parse_string(self, key: str, func: str | None = None):
         """
         if key == "function"
             Get the params from the function as a list of dicts
@@ -302,7 +327,7 @@ class FitbenchmarkParser(Parser):
     _parse_function = partialmethod(_parse_string, "function")
     _parse_jac_function = partialmethod(_parse_string, "jac")
 
-    def _get_jacobian(self, jac_type) -> Optional[Callable]:
+    def _get_jacobian(self, jac_type) -> Callable | None:
         """
         Process the dense/sparse jac function into a callable.
         Returns None if this is not possible.
@@ -409,7 +434,7 @@ class FitbenchmarkParser(Parser):
         return value
 
     @staticmethod
-    def _parse_function_value(value: str) -> Union[int, float, bool, str]:
+    def _parse_function_value(value: str) -> int | float | bool | str:
         """
         Parse a value from a string into a numerical type if possible.
 
@@ -499,7 +524,7 @@ def _parse_range(range_str: str) -> dict:
 
         pattern = (
             r'\'?"?([\w\.\s]+)"?\'?\s*:\s*'
-            r"([\(\[\{])([\d\.]+),\s*([\d\.]+)([\)\]\}])"
+            r"([\(\[\{])([-?\d\.]+),\s*([-?\d\.]+)([\)\]\}])"
         )
 
         if not (matches := re.findall(pattern, range_str)):

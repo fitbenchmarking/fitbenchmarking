@@ -100,6 +100,8 @@ Points to consider
      parameters being within the :math:`2\sigma` bounds. The reciporcal of this value is displayed in the FitBenchmarking results tables, so that the lowest number
      represents the best result, which is consistent with chi squared.
 
+- MCMC minimizers are not available for MultiFit problems yet (see :ref:`mantid_file`).
+
 
 
 

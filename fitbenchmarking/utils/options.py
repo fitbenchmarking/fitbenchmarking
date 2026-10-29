@@ -234,6 +234,7 @@ class Options:
             "analytic",
             "default",
             "numdifftools",
+            "gvar",
         ],
         "hes_method": [
             "best_available",
@@ -248,6 +249,7 @@ class Options:
             "hellinger_nlls",
             "loglike_nlls",
             "poisson",
+            "whitened_nlls",
         ],
     }
     VALID_JACOBIAN = {
@@ -262,6 +264,7 @@ class Options:
             "forward",
             "backward",
         ],
+        "gvar": ["forward_ad"],
     }
     VALID_HESSIAN = {
         "scipy": ["2-point", "3-point", "cs"],
@@ -452,6 +455,7 @@ class Options:
         "scipy": ["2-point"],
         "default": ["default"],
         "numdifftools": ["central"],
+        "gvar": ["forward_ad"],
     }
     DEFAULT_HESSIAN = {
         "analytic": ["default"],

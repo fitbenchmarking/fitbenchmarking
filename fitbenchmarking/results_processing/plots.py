@@ -5,7 +5,6 @@ guess plot.
 
 from itertools import cycle
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import plotly.colors as ptly_colors
@@ -14,7 +13,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from fitbenchmarking.utils.exceptions import PlottingError
-from fitbenchmarking.utils.misc import get_js
 
 
 class Plot:
@@ -88,9 +86,8 @@ class Plot:
         :param options: The options for the run
         :type options: utils.options.Options
         """
-        plotly_path = get_js(options, figures_dir).get("plotly")
         html_file_name = Path(figures_dir) / htmlfile
-        fig.write_html(html_file_name, include_plotlyjs=plotly_path)
+        fig.write_html(html_file_name, include_plotlyjs="cdn")
 
     @staticmethod
     def best_filename(result) -> str:
@@ -193,7 +190,7 @@ class Plot:
                 title=self.result.name, legend=self._legend_style
             )
             self._update_to_logscale_if_needed(fig, self.result)
-
+            self._add_menu_buttons(fig)
             htmlfile = (
                 f"{minimizer}_fit_for_{self.result.costfun_tag}"
                 f"_{self.result.sanitised_name}.html"
@@ -470,8 +467,18 @@ class Plot:
         :return: The path to the new plot
         :rtype: str
         """
-        first_result = next(iter(categories.values()))[0]
-        col_vals = np.linspace(0, 1, len(list(categories.values())[0]))
+        # Exclude cost functions with no residuals (i.e. Poisson)
+        # to avoid blank rows in the plot
+        plottable = {
+            k: v
+            for k, v in categories.items()
+            if any(r.r_x is not None for r in v)
+        }
+        if not plottable:
+            return ""
+
+        first_result = next(iter(plottable.values()))[0]
+        col_vals = np.linspace(0, 1, len(list(plottable.values())[0]))
         colours = Plot._sample_colours(col_vals)
         n_plots_per_row = 1
         subplot_titles = None
@@ -482,17 +489,15 @@ class Plot:
 
         # Create subplots on each row if needed
         if n_plots_per_row > 1:
-            fig = Plot._create_empty_residuals_plots(
-                categories, subplot_titles
-            )
+            fig = Plot._create_empty_residuals_plots(plottable, subplot_titles)
         else:
             fig = make_subplots(
-                rows=len(categories),
+                rows=len(plottable),
                 cols=n_plots_per_row,
-                subplot_titles=list(categories.keys()),
+                subplot_titles=list(plottable.keys()),
             )
 
-        for row_ind, (results) in enumerate(categories.values(), 1):
+        for row_ind, (results) in enumerate(plottable.values(), 1):
             for result, colour in zip(results, colours):
                 if result.params is not None:
                     fig = Plot._add_residual_traces(
@@ -712,6 +717,7 @@ class Plot:
                 if (
                     result.plot_info["plot_type"] == "2d"
                     and result.is_best_fit
+                    and hasattr(result, "fin_y_complete")
                 ):
                     img = np.rot90(result.fin_y_complete.T, k=4)
                     fig.add_trace(
@@ -822,9 +828,11 @@ class Plot:
 
         # Place name of cost function on left hand side of figure
         fig.for_each_annotation(
-            lambda a: a.update(x=-0.08, textangle=-90)
-            if a.text in row_titles
-            else ()
+            lambda a: (
+                a.update(x=-0.08, textangle=-90)
+                if a.text in row_titles
+                else ()
+            )
         )
         return fig
 
@@ -984,6 +992,40 @@ class Plot:
         return fig
 
     @staticmethod
+    def _add_menu_buttons(fig) -> go.Figure:
+        """
+        Adds an interactible button to the plot, to toggle error bars
+
+        :param fig: The plotly figure to update the axis for
+        :type fig: plotly.graph_objects.Figure
+
+        :return: Updated plot
+        :rtype: plotly.graph_objects.Figure
+        """
+        fig.update_layout(
+            updatemenus=[
+                {
+                    "type": "buttons",
+                    "direction": "down",
+                    "showactive": False,
+                    "x": 1.25,
+                    "y": 1.15,
+                    "xanchor": "right",
+                    "yanchor": "top",
+                    "buttons": [
+                        {
+                            "label": "Toggle error bars",
+                            "method": "restyle",
+                            "args": [{"error_y.visible": [True]}, [0]],
+                            "args2": [{"error_y.visible": [False]}, [0]],
+                        }
+                    ],
+                }
+            ]
+        )
+        return fig
+
+    @staticmethod
     def _sample_colours(points: np.ndarray) -> list[str]:
         """
         Samples plotly colours based on values passed as input.
@@ -1000,7 +1042,7 @@ class Plot:
         return plotly_colours
 
     @staticmethod
-    def _get_n_plots_and_titles(result) -> tuple[int, Optional[str], str]:
+    def _get_n_plots_and_titles(result) -> tuple[int, str | None, str]:
         """
         A helper method that returns number of plots, subplot titles
         and axis titles.

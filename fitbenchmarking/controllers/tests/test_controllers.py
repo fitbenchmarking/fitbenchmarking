@@ -11,8 +11,7 @@ from unittest.mock import patch
 import nlopt
 import numpy as np
 from parameterized import parameterized
-from pytest import mark
-from pytest import test_type as TEST_TYPE
+from pytest import mark, test_type
 
 from conftest import run_for_test_types
 from fitbenchmarking import test_files
@@ -21,10 +20,13 @@ from fitbenchmarking.controllers.controller_factory import ControllerFactory
 from fitbenchmarking.cost_func.loglike_nlls_cost_func import (
     LoglikeNLLSCostFunc,
 )
+from fitbenchmarking.cost_func.poisson_cost_func import PoissonCostFunc
 from fitbenchmarking.cost_func.weighted_nlls_cost_func import (
     WeightedNLLSCostFunc,
 )
 from fitbenchmarking.hessian.scipy_hessian import Scipy as ScipyHessian
+from fitbenchmarking.jacobian.analytic_jacobian import Analytic
+from fitbenchmarking.jacobian.best_available_jacobian import BestAvailable
 from fitbenchmarking.jacobian.default_jacobian import Default
 from fitbenchmarking.jacobian.scipy_jacobian import Scipy
 from fitbenchmarking.parsing.parser_factory import parse_problem_file
@@ -448,8 +450,315 @@ class BaseControllerTests(TestCase):
         software = controller.software
         assert software == "my_dummy_software"
 
+    def test_multifit_init(self):
+        """
+        Test multifit_init builds the combined parameter array,
+        prefixing tied parameters with 'shared.' and per-dataset
+        parameters with 'd<i>.'
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+        # Bounds are per-parameter, aligned with the original parameter order.
+        controller.value_ranges = [(0, 5), (10, 20)]
 
-@run_for_test_types(TEST_TYPE, "default", "all")
+        controller.multifit_init()
+
+        expected = {"d0.A0": 0.0, "d1.A0": 0.0, "shared.A1": 1.0}
+        assert controller.starting_values == [expected]
+        assert controller.par_names == list(expected.keys())
+        assert controller._save_starting_values == [{"A0": 0.0, "A1": 1.0}]
+        # The free parameter's bounds are repeated per dataset and the tied
+        # parameter's bounds appear once, matching the expanded param order.
+        assert controller.value_ranges == [(0, 5), (0, 5), (10, 20)]
+        assert controller._save_value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_init_no_bounds(self):
+        """
+        Test multifit_init leaves value_ranges as None when no
+        bounds are set
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller.starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.problem.additional_info["ties"] = ["A1"]
+        controller.value_ranges = None
+
+        controller.multifit_init()
+
+        assert controller.value_ranges is None
+        assert controller._save_value_ranges is None
+
+    def _setup_cleanup_controller(self):
+        """
+        Create a controller for a two dataset multifit problem, in the state
+        it would be left in by multifit_init.
+
+        :return: A controller ready for multifit_cleanup to be called on
+        :rtype: DummyController
+        """
+        controller = DummyController(self.cost_func)
+        controller._dataset_count = 2
+        controller._save_starting_values = [{"A0": 0.0, "A1": 1.0}]
+        controller.par_names = ["d0.A0", "d1.A0", "shared.A1"]
+        controller.problem.multifit_param_names = controller.par_names
+        # The expanded bounds (as built by multifit_init) and the original
+        # per-parameter bounds that should be restored.
+        controller.value_ranges = [(0, 5), (0, 5), (10, 20)]
+        controller._save_value_ranges = [(0, 5), (10, 20)]
+        return controller
+
+    def test_multifit_cleanup(self):
+        """
+        Test multifit_cleanup maps the final params onto a list
+        of lists (one per dataset) and resets the parameter names
+        to their original (unprefixed) form
+        """
+        controller = self._setup_cleanup_controller()
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        # Each dataset keeps its own params plus the shared (tied) params
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+        # Bounds are restored to the original per-parameter form
+        assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_failed_fit(self):
+        """
+        Test multifit_cleanup restores the single dataset parameter names
+        and initial params when the fit failed, so that the failure can be
+        reported for each dataset
+        """
+        controller = self._setup_cleanup_controller()
+        # A fit which failed leaves the final params unset
+        controller.final_params = [None, None]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [None, None]
+        assert controller.par_names == ["A0", "A1"]
+        assert controller.initial_params == [0.0, 1.0]
+        assert controller.value_ranges == [(0, 5), (10, 20)]
+
+    def test_multifit_cleanup_after_previous_fit(self):
+        """
+        Test multifit_cleanup uses the combined parameter names held on the
+        problem, so that it still works when a previous fit (e.g. with
+        another minimizer) has already reduced par_names
+        """
+        controller = self._setup_cleanup_controller()
+        # par_names as left behind by the cleanup of a previous fit
+        controller.par_names = ["A0", "A1"]
+        controller.final_params = [10.0, 20.0, 5.0]
+
+        controller.multifit_cleanup()
+
+        assert controller.final_params == [[10.0, 5.0], [20.0, 5.0]]
+        assert controller.par_names == ["A0", "A1"]
+
+    def test_eval_chisq_multifit(self):
+        """
+        Test eval_chisq evaluates the cost for each dataset
+        separately and returns a list of results in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+
+        params = [[1.0], [2.0]]
+        x = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        y = [np.array([1.0, 2.0]), np.array([3.0, 4.0])]
+        e = [np.array([1.0, 1.0]), np.array([1.0, 1.0])]
+
+        with patch.object(
+            controller.cost_func, "eval_cost", side_effect=[10, 20]
+        ) as mock:
+            result = controller.eval_chisq(params=params, x=x, y=y, e=e)
+
+        assert result == [10, 20]
+        assert mock.call_count == 2
+
+    def test_check_bounds_respected_multifit_true(self):
+        """
+        Test that no error flag is set when the final params of every
+        dataset respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        # Asymmetric bounds so that indexing by parameter position (correct)
+        # differs from indexing by dataset (the previous bug).
+        controller.value_ranges = [(0, 10), (100, 200)]
+        controller.final_params = [[1, 150], [3, 150]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 0
+
+    def test_check_bounds_respected_multifit_false(self):
+        """
+        Test that the correct error flag is set when the final params of
+        a dataset do not respect the parameter bounds in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.value_ranges = [(0, 10), (100, 200)]
+        # The first parameter of the second dataset (300) is out of its
+        # bounds (0, 10).
+        controller.final_params = [[1, 150], [300, 150]]
+        controller.flag = 0
+
+        controller.check_bounds_respected()
+
+        assert controller.flag == 5
+
+    def _poisson_controller(self):
+        """
+        Create a controller with a cost function which is not a least
+        squares one, ready for validate to be called on.
+
+        :return: A controller using the Poisson cost function
+        :rtype: DummyController
+        """
+        cost_func = PoissonCostFunc(self.problem)
+        cost_func.jacobian = Scipy(self.problem)
+        cost_func.jacobian.method = "2-point"
+        return DummyController(cost_func)
+
+    def test_validate_multifit_non_least_squares_cost_func(self):
+        """
+        Test that a cost function which is not a least squares one is
+        rejected in the multifit case
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_mantid(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted in the multifit case when the software is mantid, as
+        mantid combines the datasets itself
+        """
+        controller = self._poisson_controller()
+        controller.problem.multifit = True
+        controller._software = "mantid"
+
+        controller.validate()
+
+    def test_validate_multifit_non_least_squares_cost_func_not_multifit(self):
+        """
+        Test that a cost function which is not a least squares one is
+        accepted when the problem is not a multifit problem
+        """
+        controller = self._poisson_controller()
+
+        controller.validate()
+
+    def test_validate_multifit_analytic_jacobian(self):
+        """
+        Test that an analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_best_available_jacobian(self):
+        """
+        Test that a 'best_available' Jacobian which resolves to the
+        analytic Jacobian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = BestAvailable(controller.problem)
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_analytic_jacobian_not_multifit(self):
+        """
+        Test that an analytic Jacobian is accepted when the problem is
+        not a multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.jacobian = lambda x, p: np.array([x])
+        controller.cost_func.jacobian = Analytic(controller.problem)
+        controller.cost_func.jacobian.method = "default"
+
+        controller.validate()
+
+    def test_validate_multifit_hessian(self):
+        """
+        Test that a Hessian is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_hessian_not_multifit(self):
+        """
+        Test that a Hessian is accepted when the problem is not a
+        multifit problem
+        """
+        controller = DummyController(self.cost_func)
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.cost_func.hessian = ScipyHessian(
+            controller.problem, controller.cost_func.jacobian
+        )
+        controller.cost_func.hessian.method = "2-point"
+
+        controller.validate()
+
+    def test_validate_multifit_mcmc_minimizer(self):
+        """
+        Test that an MCMC minimizer is rejected in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "dream"
+
+        with self.assertRaises(exceptions.IncompatibleMultifitError):
+            controller.validate()
+
+    def test_validate_multifit_supported_options(self):
+        """
+        Test that a numerical Jacobian and a non MCMC minimizer are
+        accepted in the multifit case
+        """
+        controller = DummyController(self.cost_func)
+        controller.problem.multifit = True
+        controller.cost_func.jacobian = Scipy(controller.problem)
+        controller.cost_func.jacobian.method = "2-point"
+        controller.algorithm_check = {"MCMC": ["dream"]}
+        controller.minimizer = "lm-scipy"
+
+        controller.validate()
+
+
+@run_for_test_types(test_type, "default", "all")
 class DefaultControllerTests(TestCase):
     """
     Tests for each controller class
@@ -461,6 +770,12 @@ class DefaultControllerTests(TestCase):
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
         self.cost_func.jacobian = self.jac
+        self.hes = ScipyHessian(
+            self.cost_func.problem, self.cost_func.jacobian
+        )
+        self.hes.method = "2-point"
+        self.cost_func.hessian = self.hes
+
         self.shared_tests = ControllerSharedTesting()
 
     def test_bumps(self):
@@ -590,6 +905,38 @@ class DefaultControllerTests(TestCase):
         controller.lmfit_out.success = False
         self.shared_tests.check_diverged(controller)
 
+    def test_galahad(self):
+        """
+        GalahadController: Test for output shape
+        """
+        controller = create_controller("galahad", self.cost_func)
+        controller.minimizer = "arc"
+        self.shared_tests.controller_run_test(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": 0}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_converged(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": -18}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_max_iterations(controller)
+
+        with (
+            patch.object(
+                controller._module, "information", return_value={"status": -16}
+            ),
+            patch.object(controller._module, "terminate", autospec=True),
+        ):
+            self.shared_tests.check_diverged(controller)
+
     @parameterized.expand(["lmfit", "bumps"])
     def test_variable_names_corrected_in_controllers(self, controller_name):
         """
@@ -599,10 +946,12 @@ class DefaultControllerTests(TestCase):
         controller = ControllerFactory.create_controller(controller_name)
         self.cost_func.param_names = ["b.1", "b@2", "b-3", "b_4"]
         control = controller(self.cost_func)
+        control.initial_params = [1, 2, 3, 4]
+        control.setup()
         assert control._param_names == ["p0", "p1", "p2", "p3"]
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class ControllerBoundsTests(TestCase):
     """
     Tests to ensure controllers handle and respect bounds correctly
@@ -612,7 +961,7 @@ class ControllerBoundsTests(TestCase):
         """
         Setup for bounded problem
         """
-        self.cost_func = make_cost_func("cubic-fba-test-bounds.txt")
+        self.cost_func = make_cost_func("1D_cylinder_neutron_def0_bounds.txt")
         self.problem = self.cost_func.problem
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
@@ -626,8 +975,7 @@ class ControllerBoundsTests(TestCase):
             ("dfo", "dfols"),
             ("bumps", "amoeba"),
             ("ralfit", "gn"),
-            ("mantid", "Levenberg-Marquardt"),
-            ("nlopt", "LD_LBFGS"),
+            ("nlopt", "LN_NELDERMEAD"),
             ("ceres", "Levenberg_Marquardt"),
             ("lmfit", "least_squares"),
         ]
@@ -650,7 +998,41 @@ class ControllerBoundsTests(TestCase):
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "mantid")
+class MantidControllerBoundsTests(TestCase):
+    """
+    Tests to ensure mantid controllers handle and respect bounds correctly
+    """
+
+    def setUp(self):
+        """
+        Setup for bounded problem
+        """
+        self.cost_func = make_cost_func("cubic-fba-test-bounds.txt")
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.cost_func.jacobian = self.jac
+
+    def test_mantid_controller_bounds(self):
+        """
+        Test that runs bounded problem and checks
+        `final_params` respect parameter bounds
+        """
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "Levenberg-Marquardt"
+
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+
+@run_for_test_types(test_type, "mantid")
 class ControllerValidateTests(TestCase):
     """
     Tests to ensure controller data is validated correctly.
@@ -799,7 +1181,7 @@ class ControllerValidateTests(TestCase):
         controller.validate()
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class ExternalControllerTests(TestCase):
     """
     Tests for each controller class
@@ -843,41 +1225,6 @@ class ExternalControllerTests(TestCase):
         controller._status = 0
         self.shared_tests.check_converged(controller)
         controller._status = 2
-        self.shared_tests.check_diverged(controller)
-
-    @parameterized.expand(["Levenberg-Marquardt", "FABADA"])
-    def test_mantid(self, minimizer):
-        """
-        MantidController: Test for output shape
-        """
-        controller = create_controller("mantid", self.cost_func)
-
-        controller.minimizer = minimizer
-        self.shared_tests.controller_run_test(controller)
-
-        controller._status = "success"
-        self.shared_tests.check_converged(controller)
-        controller._status = "Failed to converge"
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = "Failed"
-        self.shared_tests.check_diverged(controller)
-
-    def test_mantid_default_jacobian(self):
-        """
-        MantidController: Test for default jacobian
-        """
-        self.shared_tests = ControllerSharedTesting()
-        self.cost_func.jacobian = Default(self.problem)
-
-        controller = create_controller("mantid", self.cost_func)
-        controller.minimizer = "Levenberg-Marquardt"
-        self.shared_tests.controller_run_test(controller)
-
-        controller._status = "success"
-        self.shared_tests.check_converged(controller)
-        controller._status = "Failed to converge"
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = "Failed"
         self.shared_tests.check_diverged(controller)
 
     @parameterized.expand(["lmsder", "nmsimplex", "conjugate_pr"])
@@ -927,7 +1274,57 @@ class ExternalControllerTests(TestCase):
         self.shared_tests.check_max_iterations(controller)
 
 
-@run_for_test_types(TEST_TYPE, "matlab")
+@run_for_test_types(test_type, "mantid")
+class MantidControllerTests(TestCase):
+    """
+    Tests for the Mantid Controller
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func()
+        self.problem = self.cost_func.problem
+        self.jac = Scipy(self.cost_func.problem)
+        self.jac.method = "2-point"
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = self.jac
+
+    @parameterized.expand(["Levenberg-Marquardt", "FABADA"])
+    def test_mantid(self, minimizer):
+        """
+        MantidController: Test for output shape
+        """
+        controller = create_controller("mantid", self.cost_func)
+
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
+
+    def test_mantid_default_jacobian(self):
+        """
+        MantidController: Test for default jacobian
+        """
+        self.shared_tests = ControllerSharedTesting()
+        self.cost_func.jacobian = Default(self.problem)
+
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "Levenberg-Marquardt"
+        self.shared_tests.controller_run_test(controller)
+
+        controller._status = "success"
+        self.shared_tests.check_converged(controller)
+        controller._status = "Failed to converge"
+        self.shared_tests.check_max_iterations(controller)
+        controller._status = "Failed"
+        self.shared_tests.check_diverged(controller)
+
+
+@run_for_test_types(test_type, "matlab")
 class MatlabControllerTests(TestCase):
     """
     Tests for each controller class and for the
@@ -1061,14 +1458,14 @@ class MatlabControllerTests(TestCase):
         controller.clear_matlab()
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 class GlobalOptimizationControllerTests(TestCase):
     """
     Tests for each controller class
     """
 
     def setUp(self):
-        self.cost_func = make_cost_func("cubic-fba-test-go.txt")
+        self.cost_func = make_cost_func("ECKERLE4.SIF")
         self.problem = self.cost_func.problem
         self.jac = Scipy(self.cost_func.problem)
         self.jac.method = "2-point"
@@ -1106,7 +1503,7 @@ class GlobalOptimizationControllerTests(TestCase):
         self.shared_tests.check_diverged(controller)
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "all")
 @mark.skipif(
     platform.system() == "Windows",
     reason=(
@@ -1121,7 +1518,7 @@ class BayesianControllerTests(TestCase):
 
     def setUp(self):
         self.cost_func = make_cost_func(
-            "cubic-fba-test-go.txt", cost_func_type="loglike_nlls"
+            "ECKERLE4.SIF", cost_func_type="loglike_nlls"
         )
         self.problem = self.cost_func.problem
         self.shared_tests = ControllerSharedTesting()
@@ -1130,7 +1527,6 @@ class BayesianControllerTests(TestCase):
         [
             ("paramonte", "paraDram_sampler", 1),
             ("bumps", "dream", 0),
-            ("mantid", "FABADA", 0),
             ("lmfit", "emcee", 0),
         ]
     )
@@ -1152,7 +1548,35 @@ class BayesianControllerTests(TestCase):
         )
 
 
-@run_for_test_types(TEST_TYPE, "all")
+@run_for_test_types(test_type, "mantid")
+class MantidBayesianControllerTests(TestCase):
+    """
+    Tests for Mantid Bayesian minimizers
+    """
+
+    def setUp(self):
+        self.cost_func = make_cost_func(
+            "cubic-fba-test-go.txt", cost_func_type="loglike_nlls"
+        )
+        self.problem = self.cost_func.problem
+        self.shared_tests = ControllerSharedTesting()
+
+    def test_output_shape_mantid(self):
+        """
+        Test output shape for FABADA
+        """
+        controller_class = ControllerFactory.create_controller("mantid")
+        controller = controller_class(self.cost_func)
+        controller.minimizer = "FABADA"
+        controller.chain_length = 1000
+        self.shared_tests.controller_run_test(controller)
+
+        self.assertEqual(
+            len(controller.params_pdfs), len(controller.final_params)
+        )
+
+
+@run_for_test_types(test_type, "all")
 @mark.skipif(
     platform.system() == "Windows",
     reason=(
@@ -1163,6 +1587,56 @@ class BayesianControllerTests(TestCase):
 class BayesianControllerBoundsTests(TestCase):
     """
     Tests to ensure Bayesian controllers handle and respect bounds correctly
+    """
+
+    def setUp(self):
+        """
+        Setup for bounded problem for Bayesian fitting
+        """
+        self.cost_func = make_cost_func("ECKERLE4.SIF", "loglike_nlls")
+        self.problem = self.cost_func.problem
+
+    def check_bounds(self, controller):
+        """
+        Run bounded problem and check `final_params` respect
+        parameter bounds
+        """
+        controller.parameter_set = 0
+        controller.prepare()
+        controller.fit()
+        controller.cleanup()
+
+        for count, value in enumerate(controller.final_params):
+            self.assertLessEqual(controller.value_ranges[count][0], value)
+            self.assertGreaterEqual(controller.value_ranges[count][1], value)
+
+    @parameterized.expand(
+        [
+            ("paramonte", "paraDram_sampler"),
+            ("bumps", "dream"),
+            ("lmfit", "emcee"),
+        ]
+    )
+    def test_parameter_bounds(self, controller_name, minimizer):
+        """
+        Test that parameter bounds are
+        respected for bounded problems
+        """
+        controller = create_controller(controller_name, self.cost_func)
+        controller.minimizer = minimizer
+        if minimizer == "emcee":
+            controller.chain_length = 50000
+        else:
+            controller.chain_length = 1000
+
+        self.check_bounds(controller)
+
+
+@run_for_test_types(test_type, "mantid")
+class MantidBayesianControllerBoundsTests(TestCase):
+    """
+    Tests to ensure Mantid Bayesian minizers handle
+    and respect bounds correctly
     """
 
     def setUp(self):
@@ -1188,30 +1662,19 @@ class BayesianControllerBoundsTests(TestCase):
             self.assertLessEqual(controller.value_ranges[count][0], value)
             self.assertGreaterEqual(controller.value_ranges[count][1], value)
 
-    @parameterized.expand(
-        [
-            ("paramonte", "paraDram_sampler"),
-            ("bumps", "dream"),
-            ("mantid", "FABADA"),
-            ("lmfit", "emcee"),
-        ]
-    )
-    def test_parameter_bounds(self, controller_name, minimizer):
+    def test_parameter_bounds_mantid(self):
         """
-        Test that parameter bounds are
+        Test that FABADA parameter bounds are
         respected for bounded problems
         """
-        controller = create_controller(controller_name, self.cost_func)
-        controller.minimizer = minimizer
-        if minimizer == "emcee":
-            controller.chain_length = 50000
-        else:
-            controller.chain_length = 1000
+        controller = create_controller("mantid", self.cost_func)
+        controller.minimizer = "FABADA"
+        controller.chain_length = 1000
 
         self.check_bounds(controller)
 
 
-@run_for_test_types(TEST_TYPE, "default", "all")
+@run_for_test_types(test_type, "default", "all", "mantid")
 class FactoryTests(TestCase):
     """
     Tests for the ControllerFactory
@@ -1225,14 +1688,21 @@ class FactoryTests(TestCase):
         controller = ControllerFactory.create_controller(software)
         self.assertTrue(controller.__name__.lower().startswith(name))
 
-    @parameterized.expand(["mantid", "ralfit"])
-    @run_for_test_types(TEST_TYPE, "all")
-    def test_external_imports(self, software):
+    @run_for_test_types(test_type, "all")
+    def test_external_imports(self):
         """
         Test that the factory returns the correct external class for inputs
         """
-        controller = ControllerFactory.create_controller(software)
-        self.assertTrue(controller.__name__.lower().startswith(software))
+        controller = ControllerFactory.create_controller("ralfit")
+        self.assertTrue(controller.__name__.lower().startswith("ralfit"))
+
+    @run_for_test_types(test_type, "mantid")
+    def test_mantid_import(self):
+        """
+        Test that the factory returns the correct external class for inputs
+        """
+        controller = ControllerFactory.create_controller("mantid")
+        self.assertTrue(controller.__name__.lower().startswith("mantid"))
 
     @parameterized.expand(["foo", "bar", "hello", "r2d2"])
     def test_check_invalid(self, software):

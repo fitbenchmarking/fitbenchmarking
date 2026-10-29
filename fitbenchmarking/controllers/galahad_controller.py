@@ -3,13 +3,16 @@ Implements a controller for the GALAHAD fitting software.
 """
 
 from contextlib import suppress
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from galahad import arc, bgo, dgo, nls, trb, tru
 
 from fitbenchmarking.controllers.base_controller import Controller
 from fitbenchmarking.utils.exceptions import IncompatibleMinimizerError
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class GalahadController(Controller):
@@ -51,9 +54,7 @@ class GalahadController(Controller):
         """
         super().__init__(cost_func)
 
-        self._num_vars = len(self.cost_func.problem.param_names)
         self._hessian: Callable = self._noop
-        self._initial_params_array = np.zeros(self._num_vars)
         self._module = arc
         self._jacobian = self.cost_func.jac_cost
         self._P = self._eval_hes_res_product
@@ -65,6 +66,8 @@ class GalahadController(Controller):
         """
         Setup problem ready to be run with GALAHAD
         """
+        self._num_vars = len(self.par_names)
+        self._initial_params_array = np.zeros(self._num_vars)
         minimizer: str = self.minimizer
 
         # Ground work for supporting variants with tuned parameters
@@ -94,15 +97,23 @@ class GalahadController(Controller):
         x_u = np.array(x_u)
 
         opts = self._module.initialize()
+
+        if minimizer in ["arc", "nls"]:
+            opts["glrt_options"]["impose_descent"] = False
+
         kwargs: dict[str, Any] = {
             "options": opts,
         }
 
         if minimizer in ["arc", "tru"]:
+            if not has_hessian:
+                raise IncompatibleMinimizerError(
+                    "Requires hessian information (for now)"
+                )
             kwargs.update(
                 {
                     "n": self._num_vars,
-                    "H_type": "dense" if has_hessian else "absent",
+                    "H_type": "dense",
                     "H_ne": 10,
                     "H_row": None,
                     "H_col": None,
@@ -123,7 +134,7 @@ class GalahadController(Controller):
                 }
             )
 
-        elif minimizer in ["nls"]:
+        elif minimizer == "nls":
             if not has_hessian:
                 raise IncompatibleMinimizerError(
                     "Requires hessian information (for now)"
@@ -178,7 +189,7 @@ class GalahadController(Controller):
                 "eval_g": self._jacobian,
                 "eval_h": self._hessian,
             }
-        elif self._minimizer in ["nls"]:
+        elif self._minimizer == "nls":
             m = self.data_x.shape[0]
             kwargs = {
                 "n": self._num_vars,

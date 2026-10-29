@@ -9,9 +9,8 @@ nist formats gives mantiddev different rankings in terms of
 speed.
 """
 
-import re
+from collections.abc import Callable
 from itertools import repeat
-from typing import Callable, Optional
 
 import mantid.simpleapi as msapi
 import numpy as np
@@ -40,13 +39,9 @@ class MantidDevParser(FitbenchmarkParser):
         """
         Sets any additional info for a fitting problem.
         """
-        if self.fitting_problem.multifit:
-            # Sets the ties used for a mantid fit function.
-            self.fitting_problem.additional_info["mantid_ties"] = re.findall(
-                r"['\"](.*?)['\"]", self._entries.get("ties", "")
-            )
+        super()._set_additional_info()
 
-    def _dense_jacobian(self) -> Optional[Callable]:
+    def _dense_jacobian(self) -> Callable | None:
         """
         Sometimes mantid will give the error
         RuntimeError: Integration is not implemented for this function.

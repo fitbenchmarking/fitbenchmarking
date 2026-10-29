@@ -10,7 +10,6 @@ import pickle
 import sys
 from base64 import a85decode, a85encode
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import numpy as np
 
@@ -47,9 +46,9 @@ class Checkpoint:
         self.options = options
 
         # File paths for temp files
-        self.dir: Optional[TemporaryDirectory] = None
-        self.problems_file: Optional[str] = None
-        self.results_file: Optional[str] = None
+        self.dir: TemporaryDirectory | None = None
+        self.problems_file: str | None = None
+        self.results_file: str | None = None
 
         # The persistent checkpoint file
         self.cp_file: str = os.path.join(
@@ -125,6 +124,7 @@ class Checkpoint:
             "J": _compress(result.jac_x),
             "fin_y": _compress(result.fin_y),
             "tags": result.algorithm_type,
+            "status": result.status,
         }
 
         with open(self.results_file, "a", encoding="utf-8") as f:
@@ -248,13 +248,17 @@ class Checkpoint:
             f.write("\n}")
         self.finalised = True
 
-    def load(self):
+    def load(
+        self,
+    ) -> tuple[
+        dict[str, list[FittingResult]], dict, dict[str, list[str]], dict
+    ]:
         """
         Load fitting results from a checkpoint file along with
         failed problems and unselected minimizers.
 
         :return: Instantiated fitting results,
-                 unselected minimisers, failed problems
+                 unselected minimizers, failed problems
                  config
         :rtype: Tuple[dict[str, list[FittingResult]],
                       dict, dict[str, list[str]], dict]
@@ -349,6 +353,7 @@ class Checkpoint:
                 new_result.r_x = _decompress(r["r"])
                 new_result.jac_x = _decompress(r["J"])
                 new_result.algorithm_type = r["tags"]
+                new_result.status = r.get("status", "unknown")
 
                 new_result.name = r["name"]
                 p = problems[new_result.name]
@@ -380,7 +385,8 @@ def _compress(value):
     :return: The compressed string ready for writing to json file
     :rtype: str
     """
-    return a85encode(pickle.dumps(value)).decode("ascii")
+    # set protocol to 4 as default switched to 5 in python 3.14
+    return a85encode(pickle.dumps(value, protocol=4)).decode("ascii")
 
 
 def _decompress(value: str):
