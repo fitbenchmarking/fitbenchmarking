@@ -88,14 +88,16 @@ class ControllerSharedTesting:
     """
 
     @staticmethod
-    def controller_run_test(controller):
+    def controller_run_test(controller, parameter_set=0):
         """
         Utility function to run controller and check output is in generic form
 
         :param controller: Controller to test, with setup already completed
         :type controller: Object derived from BaseSoftwareController
+        :param parameter_set: Index of the starting values to use
+        :type parameter_set: int
         """
-        controller.parameter_set = 0
+        controller.parameter_set = parameter_set
         controller.prepare()
         controller.execute()
         controller.cleanup()
@@ -1518,9 +1520,11 @@ class BayesianControllerTests(TestCase):
 
     def setUp(self):
         self.cost_func = make_cost_func(
-            "ECKERLE4.SIF", cost_func_type="loglike_nlls"
+            "cubic.dat", cost_func_type="loglike_nlls"
         )
         self.problem = self.cost_func.problem
+        self.cost_func.jacobian = Scipy(self.problem)
+        self.cost_func.jacobian.method = "2-point"
         self.shared_tests = ControllerSharedTesting()
 
     @parameterized.expand(
@@ -1528,6 +1532,7 @@ class BayesianControllerTests(TestCase):
             ("paramonte", "paraDram_sampler", 1),
             ("bumps", "dream", 0),
             ("lmfit", "emcee", 0),
+            ("pyro", "NUTS", 0),
         ]
     )
     def test_output_shape(self, controller_name, minimizer, offset):
@@ -1539,9 +1544,15 @@ class BayesianControllerTests(TestCase):
         controller.minimizer = minimizer
         if minimizer == "emcee":
             controller.chain_length = 50000
+        elif minimizer == "NUTS":
+            # NUTS evaluates the cost function many times per sample
+            controller.chain_length = 50
+            controller.warmup_steps = 50
         else:
             controller.chain_length = 1000
-        self.shared_tests.controller_run_test(controller)
+        # The second set of starting values is non-zero, which lmfit's emcee
+        # needs to initialise its walkers
+        self.shared_tests.controller_run_test(controller, parameter_set=1)
 
         self.assertEqual(
             len(controller.params_pdfs), len(controller.final_params) + offset

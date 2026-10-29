@@ -747,6 +747,29 @@ The Paramonte minimizers are set as follows:
    The additional dependency Paramonte must be installed to use these minimizers;
    see :ref:`extra_dependencies`.
 
+.. _pyro:
+
+Pyro (``pyro``)
+===============
+
+`Pyro <https://pyro.ai/>`__ is a probabilistic programming library built on
+PyTorch. We currently support:
+
+* `No-U-Turn Sampler <https://docs.pyro.ai/en/stable/mcmc.html#nuts>`__ (:code:`NUTS`)
+
+**Licence** Pyro is available under an `Apache 2.0 licence <https://github.com/pyro-ppl/pyro/blob/dev/LICENSE.md>`__
+
+The Pyro minimizers are set as follows:
+
+.. code-block:: rst
+
+    [MINIMIZERS]
+    pyro: NUTS
+
+.. warning::
+   The additional dependencies Pyro and PyTorch must be installed to use these
+   minimizers; see :ref:`extra_dependencies`.
+
 .. _ralfit:
 
 RALFit (``ralfit``)
