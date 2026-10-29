@@ -27,7 +27,7 @@ Library's nonlinear least-squares solver (NLLS) is an adapted version of
 the :ref:`RALFit solver <ralfit>` 
 (See also `RALFit documentation <https://ralfit.readthedocs.io/projects/Fortran/en/latest/>`__).
 
-This solver supports the same capabilites as RALFit:
+This solver supports the same capabilities as RALFit:
 
 * Gauss-Newton, trust region method (:code:`gn`)
 * Hybrid Newton/Gauss-Newton, trust region method (:code:`hybrid`)
@@ -40,7 +40,8 @@ This solver supports the same capabilites as RALFit:
 
 **Links** `Github - AOCL Data Analytics <https://github.com/amd/aocl-data-analytics/>`__.
 
-**Licence** AOCL Data Analytics is available under a `3-clause BSD Licence <https://github.com/ralna/RALFit/blob/master/LICENCE>`__.
+**Licence** AOCL Data Analytics is available under open source licence
+(see the `AOCL-DA licence <https://github.com/amd/aocl-data-analytics/blob/main/License>`__).
 
 The AOCLDA minimizers are set as follows:
 
@@ -55,7 +56,8 @@ The AOCLDA minimizers are set as follows:
             newton_reg
 
 .. warning::
-   The external package `aoclda` must be installed to use these minimizers.
+   The additional dependency AOCL-DA must be installed for this to be available;
+   See :ref:`extra_dependencies`.
 
 .. _bumps:
 

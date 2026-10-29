@@ -16,7 +16,7 @@ FitBenchmarking can be installed via the command line by entering:
 
 .. code-block:: bash
 
-      python -m pip install fitbenchmarking[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
+      python -m pip install fitbenchmarking[aoclda,bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 
 This will install the latest stable version of FitBenchmarking.
@@ -50,7 +50,7 @@ of the code that is still in development.
 
    .. code-block:: bash
 
-      python -m pip install .[bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
+      python -m pip install .[aoclda,bumps,DFO,gradient_free,minuit,SAS,numdifftools,lmfit,nlopt]
 
 4. Additional software that cannot be installed via pip can also be used
    with FitBenchmarking.  Follow the instructions at
@@ -77,6 +77,7 @@ or
 
 where valid strings ``option-x`` are:
 
+* ``aoclda`` -- installs the `AMD AOCL Data Analytics (AOCL-DA) <https://github.com/amd/aocl-data-analytics>`__ library, used for its nonlinear least-squares fitting package.
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
 * ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`_ fitting package.
 * ``galahad`` -- installs the Python interface to the `GALAHAD <https://www.galahad.rl.ac.uk/>`__ nonlinear optimization library.

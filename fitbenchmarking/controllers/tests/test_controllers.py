@@ -5,6 +5,7 @@ Tests for the controllers available from a default fitbenchmarking install
 import inspect
 import os
 import platform
+import warnings
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -937,6 +938,50 @@ class DefaultControllerTests(TestCase):
         ):
             self.shared_tests.check_diverged(controller)
 
+    @parameterized.expand(
+        ["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"]
+    )
+    def test_aoclda(self, minimizer):
+        """
+        AOCLDAController: Tests for output shape
+        """
+        controller = create_controller("aoclda", self.cost_func)
+
+        controller.minimizer = minimizer
+        self.shared_tests.controller_run_test(controller)
+
+        controller._warnings = None
+        self.shared_tests.check_converged(controller)
+        controller._warnings = [
+            warnings.WarningMessage(
+                message="overflow encountered in exp",
+                category=RuntimeWarning,
+                filename="",
+                lineno=1,
+            )
+        ]
+        self.shared_tests.check_converged(controller)
+        controller._warnings = [
+            warnings.WarningMessage(
+                message="RALFit solver warning message: Maximum number of "
+                "iterations reached (return=-1).",
+                category=RuntimeWarning,
+                filename="",
+                lineno=1,
+            )
+        ]
+        self.shared_tests.check_max_iterations(controller)
+        controller._warnings = [
+            warnings.WarningMessage(
+                message="RALFit solver warning message: test for diverged "
+                "flag",
+                category=RuntimeWarning,
+                filename="",
+                lineno=1,
+            )
+        ]
+        self.shared_tests.check_diverged(controller)
+
     @parameterized.expand(["lmfit", "bumps"])
     def test_variable_names_corrected_in_controllers(self, controller_name):
         """
@@ -1243,25 +1288,6 @@ class ExternalControllerTests(TestCase):
         controller.flag = 1
         self.shared_tests.check_max_iterations(controller)
         controller.flag = 2
-        self.shared_tests.check_diverged(controller)
-
-    @parameterized.expand(
-        ["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"]
-    )
-    def test_aoclda(self, minimizer):
-        """
-        AOCLDAController: Tests for output shape
-        """
-        controller = create_controller("aoclda", self.cost_func)
-
-        controller.minimizer = minimizer
-        self.shared_tests.controller_run_test(controller)
-
-        controller._status = 0
-        self.shared_tests.check_converged(controller)
-        controller._status = 1
-        self.shared_tests.check_max_iterations(controller)
-        controller._status = 2
         self.shared_tests.check_diverged(controller)
 
     @parameterized.expand(

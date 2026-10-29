@@ -94,6 +94,10 @@ class AOCLDAController(Controller):
 
     support_for_bounds = True
 
+    # Text used to identify the warnings raised by the solver
+    _SOLVER_WARNING = "RALFit solver warning message"
+    _MAX_ITERATIONS = "Maximum number of iterations"
+
     def __init__(self, cost_func):
         """
         Initialises variable used for temporary storage.
@@ -111,15 +115,11 @@ class AOCLDAController(Controller):
         self._x = None
         self._warnings = None
 
-        # All these options should be passed
-        self.maxit = 500  # Same as RALFit
-        # self.ftol = 1e-5
-        # self.abs_ftol = 1e-6  # Similar to Ceres?
-        # self.gtol = 1e-8
-        # self.abs_gtol = 1e-10  # Similar to Ceres?
-        self.xtol = 1e-8
+        # Same as the RALFit controller, all other stopping tolerances use
+        # the solver defaults (which match the RALFit defaults)
+        self.maxit = 500
 
-    def eval_r(_, x, r, data) -> int:
+    def eval_r(self, x, r, data) -> int:
         """
         Function to ensure correct inputs and outputs
         are used for the AOCLDA residual evaluation
@@ -137,25 +137,25 @@ class AOCLDAController(Controller):
         r[:] = data.cost_func.eval_r(x)
         return 0
 
-    def jac_eval(_, x, J, data) -> int:
+    def jac_eval(self, x, jac, data) -> int:
         """
         Function to ensure correct inputs and outputs
         are used for the AOCLDA jacobian evaluation
 
         :param x: coefficients
         :type x: numpy array
-        :param J: output, jacobian 1nd order term
-                  Store J update in-place.
+        :param jac: output, jacobian 1st order term
+                    Store jac update in-place.
         :type: numpy array
         :param data: alias to `self`
         :type: pointer
         :return: evaluation flag
         :rtype: int
         """
-        J[:] = data.cost_func.jac_res(x)
+        jac[:] = data.cost_func.jac_res(x)
         return 0
 
-    def hes_eval(_, x, r, Hr, data) -> int:
+    def hes_eval(self, x, r, hr, data) -> int:
         """
         Function to ensure correct inputs and outputs
         are used for the AOCLDA hessian evaluation
@@ -164,18 +164,18 @@ class AOCLDAController(Controller):
         :type x: numpy array
         :param r: residuals, required by AOCLDA to
                   be passed for hessian evaluation
+        :type r: numpy array
+        :param hr: output, hessian 2nd order term
+                   :math:`\\sum_{i=1}^m r_i \\nabla^2 r_i`.
+                   Store hr update in-place.
+        :type: numpy array
         :param data: alias to `self`
         :type: pointer
-        :type r: numpy array
-        :param Hr: output, hessian 2nd order term
-                   :math:`\\sum_{i=1}^m r_i \\nabla^2 r_i`.
-                   Store Hr update in-place.
-        :type: numpy array
         :return: evaluation flag
         :rtype: int
         """
-        H, _ = data.cost_func.hes_res(x)
-        Hr[:] = np.matmul(H, r)
+        hes, _ = data.cost_func.hes_res(x)
+        hr[:] = np.matmul(hes, r)
         return 0
 
     def setup(self):
@@ -185,7 +185,7 @@ class AOCLDAController(Controller):
 
         n_coef = len(self.initial_params)
         n_res = len(self.data_y)
-        VERBOSE = 0
+        verbose = 0
 
         # Use bytestrings explicitly as python 3 defaults to unicode.
         if self.minimizer == "gn":
@@ -242,7 +242,7 @@ class AOCLDAController(Controller):
             model=model,
             method=method,
             glob_strategy=glob_strategy,
-            verbose=VERBOSE,
+            verbose=verbose,
         )
 
         # Set initial iterate
@@ -255,24 +255,24 @@ class AOCLDAController(Controller):
         Run problem with AOCLDA.
         Note: only this method is timed
         """
+        # Only use exact second derivatives if a Hessian is available
+        hes = self.hes_eval if self.cost_func.hessian else None
+
         with warnings.catch_warnings(record=True) as self._warnings:
+            # Record every warning, regardless of any filters set elsewhere.
             # Solver raises RuntimeWarning for
             # 1: Software reported maximum number of iterations exceeded
             # 2: Software run but didn't converge to solution
             # these are handled in cleanup
+            warnings.simplefilter("always")
             self._handle.fit(
                 x=self._x,
                 fun=self.eval_r,
                 jac=self.jac_eval,
-                hes=self.hes_eval,
+                hes=hes,
                 hep=None,
                 data=self,
                 maxit=self.maxit,
-                xtol=self.xtol,
-                # ftol=self.ftol,
-                # abs_ftol=self.abs_ftol,
-                # gtol=self.gtol,
-                # abs_gtol=self.abs_gtol,
             )
 
     def cleanup(self):
@@ -281,21 +281,22 @@ class AOCLDAController(Controller):
         will be read from.
         """
 
-        if self._warnings is not None and len(self._warnings) > 0:
-            for warning in self._warnings:
-                if warning.category.__name__ == "RuntimeWarning":
-                    if (
-                        str(warning.message)[31:59]
-                        == "Maximum number of iterations"
-                    ):
-                        self.flag = 1
-                        break
-                    else:
-                        self.flag = 2
-                        break
-                # ignore all other
-        else:
-            self.flag = 0
+        # Only warnings raised by the solver are considered, any other
+        # warnings (e.g. numpy overflow when evaluating the model) are ignored
+        solver_messages = [
+            str(warning.message)
+            for warning in self._warnings or []
+            if issubclass(warning.category, RuntimeWarning)
+            and self._SOLVER_WARNING in str(warning.message)
+        ]
+
+        self.flag = 0
+        for message in solver_messages:
+            if self._MAX_ITERATIONS in message:
+                self.flag = 1
+            else:
+                self.flag = 2
+                break
 
         self.iteration_count = self._handle.n_iter
         self.func_evals = self._handle.n_eval["f"]  # "fd_f" also available
