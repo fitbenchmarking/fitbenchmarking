@@ -77,7 +77,7 @@ or
 
 where valid strings ``option-x`` are:
 
-* ``aoclda`` -- installs the `AMD AOCL Data Analytics (AOCL-DA) <https://github.com/amd/aocl-data-analytics>`__ library, used for its nonlinear least-squares fitting package.
+* ``aoclda`` -- installs the `AMD AOCL Data Analytics (AOCL-DA) <https://github.com/amd/aocl-data-analytics>`__ library, used for its nonlinear least-squares fitting package. This is only installed on Linux.
 * ``bumps``-- installs the `Bumps <https://bumps.readthedocs.io>`_ fitting package.
 * ``DFO`` -- installs the `DFO-LS <https://numericalalgorithmsgroup.github.io/dfols/build/html/index.html>`_ fitting package.
 * ``galahad`` -- installs the Python interface to the `GALAHAD <https://www.galahad.rl.ac.uk/>`__ nonlinear optimization library.

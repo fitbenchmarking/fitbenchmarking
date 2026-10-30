@@ -938,6 +938,10 @@ class DefaultControllerTests(TestCase):
         ):
             self.shared_tests.check_diverged(controller)
 
+    @mark.skipif(
+        platform.system() in ["Windows", "Darwin"],
+        reason=("AOCLDA is only supported on Linux"),
+    )
     @parameterized.expand(
         ["gn", "gn_reg", "hybrid", "hybrid_reg", "newton", "newton_reg"]
     )
