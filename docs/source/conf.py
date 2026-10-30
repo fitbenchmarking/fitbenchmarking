@@ -42,6 +42,7 @@ autodoc_mock_imports = [
     "mantid",
     "matlab",
     "nlopt",
+    "pyro",
     "numdifftools",
     "paramonte",
     "pyceres",

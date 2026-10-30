@@ -32,6 +32,7 @@ a newline-separated list. Available options are:
 * ``minuit`` (external software -- see :ref:`extra_dependencies`)
 * ``nlopt`` (external software -- see :ref:`extra_dependencies`)
 * ``paramonte`` (external software -- see :ref:`extra_dependencies`)
+* ``pyro`` (external software -- see :ref:`extra_dependencies`)
 * ``ralfit`` (external software -- see :ref:`external-instructions`)
 * ``scipy`` (default software)
 * ``scipy_ls`` (default software)

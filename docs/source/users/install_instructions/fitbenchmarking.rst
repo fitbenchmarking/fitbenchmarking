@@ -91,6 +91,7 @@ where valid strings ``option-x`` are:
 * ``nlopt``-- installs the `NLopt <https://github.com/DanielBok/nlopt-python#installation>`_ fitting package.
 * ``lmfit``-- installs the `LMFIT <https://lmfit.github.io/lmfit-py/installation.html>`_ and `emcee <https://emcee.readthedocs.io/en/stable/user/install/>`__ fitting package.
 * ``paramonte`` -- installs the `Paramonte <https://www.cdslab.org/paramonte/index.html>`__ package.
+* ``pyro`` -- installs the `Pyro <https://pyro.ai/>`__ (``pyro-ppl``) and `PyTorch <https://pytorch.org/>`__ packages.
 * ``hogben`` -- installs the `HOGBEN <https://github.com/jfkcooper/HOGBEN>`__ package.
 
 
