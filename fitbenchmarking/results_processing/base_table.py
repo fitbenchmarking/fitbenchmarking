@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 
 import docutils.core
 import matplotlib as mpl
+from docutils.writers import html4css1
 
 from fitbenchmarking.cost_func.cost_func_factory import create_cost_func
 from fitbenchmarking.utils.fitbm_result import FittingResult
@@ -93,10 +94,10 @@ class Table:
         """
         # Flatten to reduce the necessity on having problems as rows.
 
-        # dict[row/problem, dict[column/minimiser, list[FittingResult]]]
+        # dict[row/problem, dict[column/minimizer, list[FittingResult]]]
         self.results = results
 
-        # dict[row/problem, dict[column/minimiser, FittingResult]]
+        # dict[row/problem, dict[column/minimizer, FittingResult]]
         self.best_results = best_results
 
         self.options = options
@@ -435,12 +436,12 @@ class Table:
                     result.modified_minimizer_name(False),
                 )
 
-                # add the minimiser the first time it is seen
+                # add the minimizer the first time it is seen
                 if len(minimizers_list) == i:
                     minimizers_list.append(formatted)
-                # if a longer minimiser name is seen under the same software,
-                # update the tuple to use that minimiser instead
-                # this ensures column width is wide enough for all minimisers
+                # if a longer minimizer name is seen under the same software,
+                # update the tuple to use that minimizer instead
+                # this ensures column width is wide enough for all minimizers
                 elif len(minimizers_list[i][1]) < len(formatted[1]):
                     minimizers_list[i] = formatted
 
@@ -667,7 +668,9 @@ class Table:
                 "math_output": "MathJax https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
             }
             description_page = docutils.core.publish_parts(
-                descrip, writer_name="html", settings_overrides=docsettings
+                descrip,
+                writer=html4css1.Writer(),
+                settings_overrides=docsettings,
             )
             html[name] = description_page["body"].replace("<blockquote>\n", "")
         return html
