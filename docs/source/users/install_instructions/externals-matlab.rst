@@ -13,7 +13,7 @@ should follow the equivalent steps for their setup if it differs.
 .. _with_x11_forwarding:
 
 Installing through X11 Forwarding
-********************************
+*********************************
 
 X11 Forwarding can be enabled through a server like VcXsrv, an X server for Windows that allows users to run graphical apps 
 from a Linux environment on a Windows  machine. 
