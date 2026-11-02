@@ -287,6 +287,18 @@ class FitbmResultTests(unittest.TestCase):
         self.result.min_runtime = np.inf
         self.assertEqual(self.result.norm_runtime(), np.inf)
 
+    @parameterized.expand(
+        [
+            (0.001, 0.00025, 4.0),
+            (0.001, np.inf, np.inf),
+        ]
+    )
+    def test_norm_energy(self, energy, min_energy, expected):
+        """Test normalised energy for finite and infinite dataset minima."""
+        self.result.energy = energy
+        self.result.min_energy = min_energy
+        self.assertEqual(self.result.norm_energy, expected)
+
     def test_sanitised_name(self):
         """
         Test that sanitised names are correct.
