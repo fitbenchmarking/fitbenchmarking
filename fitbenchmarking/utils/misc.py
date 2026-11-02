@@ -4,9 +4,13 @@ Miscellaneous functions and utilities used in fitting benchmarking.
 
 import glob
 import os
+from typing import TYPE_CHECKING
 
 from fitbenchmarking.utils.exceptions import NoDataError
 from fitbenchmarking.utils.log import get_logger
+
+if TYPE_CHECKING:
+    from fitbenchmarking.utils.options import Options
 
 LOGGER = get_logger()
 
@@ -24,7 +28,7 @@ ERROR_FLAG_MAPPINGS = {
 }
 
 
-def get_problem_files(data_dir):
+def get_problem_files(data_dir: str) -> list[str]:
     """
     Gets all the problem definition files from the specified problem
     set directory.
@@ -57,7 +61,7 @@ def get_problem_files(data_dir):
     return problems
 
 
-def get_css(options, working_directory):
+def get_css(options: "Options", working_directory: str) -> dict[str, str]:
     """
     Returns the path of the local css folder
 
@@ -79,7 +83,7 @@ def get_css(options, working_directory):
     return css_dict
 
 
-def get_js(options, working_directory):
+def get_js(options: "Options", working_directory: str) -> dict[str, str]:
     """
     Returns the path of the local js folder
 
