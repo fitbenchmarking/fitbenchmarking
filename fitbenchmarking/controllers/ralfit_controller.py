@@ -156,8 +156,8 @@ class RALFitController(Controller):
                  :math:`\\sum_{i=1}^m r_i \\nabla^2 r_i`
         :rtype: numpy array
         """
-        H, _ = self.cost_func.hes_res(params)
-        return np.matmul(H, r)
+        hessian, _ = self.cost_func.hes_res(params)
+        return np.matmul(hessian, r)
 
     def fit(self):
         """
