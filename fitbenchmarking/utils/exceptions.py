@@ -36,7 +36,7 @@ class ValidationException(FitBenchmarkException):
     a combination from running.
     """
 
-    class_message = "An error occured while verifying controller."
+    class_message = "An error occurred while verifying controller."
 
 
 class OptionsError(FitBenchmarkException):
@@ -120,7 +120,7 @@ class FittingProblemError(FitBenchmarkException):
     Indicates a problem with the fitting problem.
     """
 
-    class_message = "Fitting Problem raised and exception."
+    class_message = "Fitting Problem raised an exception."
     error_code = 10
 
 
@@ -303,10 +303,10 @@ class IncompatibleProblemError(ValidationException):
 
 class CheckpointError(FitBenchmarkException):
     """
-    Indicates an error occured during checkpointing.
+    Indicates an error occurred during checkpointing.
     """
 
-    class_message = "An error occured during handling the checkpoint file."
+    class_message = "An error occurred during handling the checkpoint file."
     error_code = 28
 
 
