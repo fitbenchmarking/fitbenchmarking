@@ -336,7 +336,7 @@ class Options:
         "DASH": VALID_DASH,
     }
 
-    DEFAULT_MINIMZERS = {
+    DEFAULT_MINIMIZERS = {
         "aoclda": [
             "gn",
             "gn_reg",
@@ -514,7 +514,7 @@ class Options:
     DEFAULT_RUNTIME = {"runtime_metric": "mean"}
     DEFAULT_DASH = {"port": 4000, "ip_address": "127.0.0.1"}
     DEFAULTS = {
-        "MINIMIZERS": DEFAULT_MINIMZERS,
+        "MINIMIZERS": DEFAULT_MINIMIZERS,
         "FITTING": DEFAULT_FITTING,
         "JACOBIAN": DEFAULT_JACOBIAN,
         "HESSIAN": DEFAULT_HESSIAN,
