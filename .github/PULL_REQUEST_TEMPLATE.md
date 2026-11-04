@@ -16,6 +16,10 @@ Describe your changes and why you're making them.
 
 -->
 
+## AI Disclosure
+If AI tools were used in the development of this contribution, 
+please briefly describe how they were used.
+
 
 ## Testing Instructions
 
