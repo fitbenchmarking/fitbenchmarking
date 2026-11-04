@@ -16,7 +16,15 @@ FitBenchmarking is an open source tool for comparing different minimizers/fittin
 - [Community Guidelines](https://fitbenchmarking.readthedocs.io/en/latest/contributors/guidelines.html)
 - Automated Tests are [run via GitHub Actions](https://github.com/fitbenchmarking/fitbenchmarking/actions), please see [our documentation](https://fitbenchmarking.readthedocs.io/en/latest/users/tests.html) for more information.
 
-[!IMPORTANT] AI-assisted contributions are welcome, but contributors must understand, test, and take responsibility for all submitted code. Pull requests consisting primarily of unreviewed AI-generated output may be rejected. Issues labelled "good first issue" are intended as learning opportunities for human contributors. Please refer to our [AI policy](https://fitbenchmarking.readthedocs.io/en/latest/contributors/ai_policy.html) for more details.
+> **Important**
+>
+> AI-assisted contributions are welcome, but contributors must understand,
+> test, and take responsibility for all submitted code. Pull requests
+> consisting primarily of unreviewed AI-generated output may be rejected.
+> Issues labelled `good first issue` are intended as learning opportunities
+> for human contributors. Please refer to our
+> [AI policy](https://fitbenchmarking.readthedocs.io/en/latest/contributors/ai_policy.html)
+> for more details.
 
 The package is the result of a collaboration between STFC’s Scientific Computing Department and ISIS Neutron and Muon Facility and the Diamond Light Source. We also would like to acknowledge support from:
 
