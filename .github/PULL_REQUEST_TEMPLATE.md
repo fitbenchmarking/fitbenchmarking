@@ -17,9 +17,15 @@ Describe your changes and why you're making them.
 -->
 
 ## AI Disclosure
-If AI tools were used in the development of this contribution, 
-please briefly describe how they were used.
 
+<!---
+
+If AI tools were used in the development of this contribution, 
+please briefly describe how they were used and how you have met 
+the expectations set out in our AI Policy 
+(https://fitbenchmarking.readthedocs.io/en/latest/contributors/ai_policy.html) .
+
+-->
 
 ## Testing Instructions
 
