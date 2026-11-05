@@ -23,6 +23,10 @@ div.row {
 }
 
 a {
+  text-decoration: underline;
+}
+
+table a {
   text-decoration: none;
 }
 
