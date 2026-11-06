@@ -1,0 +1,9 @@
+# Fitbenchmark Problem
+software = 'lsqfit'
+name = 'VA_correlator'
+description = 'S-parameter time-moment fit to Conserved V-A channel (CCPTEP, Nf=8, am=0.08), t=6..12'
+input_file = 'data_files/VA_correlator.dat'
+covariance_file = 'data_files/VA_correlator_cov.txt'
+function = 'module=functions/sparam_fit_form,func=sparam_fit_form,C_A_plus=0.0142,C_A_minus=-0.0177,C_V_plus=-0.0275,C_V_minus=0.0023,m_rho=0.675846,m_a_1=0.948933,max_time=24'
+fixed_params = 'm_rho,m_a_1,max_time'
+plot_scale = 'logy'
