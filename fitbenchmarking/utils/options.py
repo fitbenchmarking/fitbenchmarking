@@ -3,6 +3,7 @@ This file will handle all interaction with the options configuration file.
 """
 
 import configparser
+import difflib
 import glob
 import os
 import uuid
@@ -561,12 +562,30 @@ class Options:
             config.read(file_name)
 
             # Checks that the user defined sections are valid
-            if config.sections() != self.VALID_SECTIONS:
-                raise OptionsError(
-                    f"Invalid options sections set, {config.sections()}, "
-                    f"the valid sections are {self.VALID_SECTIONS}"
+            unknown_sections = [
+                section
+                for section in config.sections()
+                if section not in self.VALID_SECTIONS
+            ]
+            if unknown_sections:
+                quoted_sections = ", ".join(
+                    repr(section) for section in unknown_sections
                 )
-            config.sections()
+                message = (
+                    f"Unknown section(s) in options file: {quoted_sections}."
+                )
+                suggestions = []
+                for section in unknown_sections:
+                    matches = difflib.get_close_matches(
+                        section, self.VALID_SECTIONS, n=1
+                    )
+                    if matches:
+                        suggestions.append(
+                            f"{matches[0]!r} instead of {section!r}"
+                        )
+                if suggestions:
+                    message += f" Did you mean {', '.join(suggestions)}?"
+                raise OptionsError(message)
 
             # Checks that the options within the sections are valid
             for key in self.VALID_SECTIONS:
