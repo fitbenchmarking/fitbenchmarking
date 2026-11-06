@@ -165,7 +165,9 @@ class UnsupportedMinimizerError(FitBenchmarkException):
     Indicates that the controller does not support a given minimizer.
     """
 
-    class_message = "FitBenchmarking ran with no results"
+    class_message = (
+        "FitBenchmarking encountered an unsupported or unconfigured minimizer"
+    )
     error_code = 15
 
 
@@ -174,7 +176,9 @@ class CostFuncError(FitBenchmarkException):
     Indicates a problem with the cost function class.
     """
 
-    class_message = "FitBenchmarking ran with no results"
+    class_message = (
+        "FitBenchmarking encountered an error with the cost function"
+    )
     error_code = 16
 
 
