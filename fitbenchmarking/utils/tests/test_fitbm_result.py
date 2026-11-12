@@ -755,14 +755,14 @@ class FitbmResultTests(unittest.TestCase):
         self.assertEqual(hover_text, f"Error: {self.result.status}")
         
         
-    @parameterized.expand([(0.005, 0.0005, 5.0),#test with small values 
+    @parameterized.expand([(0.005, 0.0005, 10.0),#test with small values 
                            (0, 5, 0.0)#Test with zero value
                     ,(9.0, 3.0,3.0),#Test with normal values
                     
                     (np.inf, np.inf, np.inf) #Test with infinite values
                     
                     ])
-    
+    #test
     def test_norm_energy(self, energy, min_energy, expected):
         #this tests that the fuction norm_energy returns the expected results
         
