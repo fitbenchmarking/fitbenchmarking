@@ -199,7 +199,7 @@ class CreateResultsTableTests(unittest.TestCase):
                 "runtime": "pp_2",
             },
             failed_problems=[],
-            unselected_minimzers={"min1": []},
+            unselected_minimizers={"min1": ["test-minimizer"]},
         )
         for suffix in SORTED_TABLE_NAMES:
             for table_type in ["html", "csv"]:
@@ -208,6 +208,12 @@ class CreateResultsTableTests(unittest.TestCase):
                 self.assertTrue(
                     os.path.isfile(file_name), f"Could not find {file_name}"
                 )
+
+        with open(
+            os.path.join(self.group_dir, "acc_table.html"),
+            encoding="utf-8",
+        ) as report:
+            self.assertIn("test-minimizer", report.read())
 
 
 if __name__ == "__main__":

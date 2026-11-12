@@ -30,7 +30,7 @@ def create_results_tables(
     fig_dir,
     pp_locations,
     failed_problems,
-    unselected_minimzers,
+    unselected_minimizers,
 ):
     """
     Saves the results of the fitting to html/csv tables.
@@ -51,9 +51,9 @@ def create_results_tables(
     :param failed_problems: list of failed problems to be reported in the
                             html output
     :type failed_problems: list
-    :params unselected_minimzers: Dictionary containing unselected minimizers
+    :param unselected_minimizers: Dictionary containing unselected minimizers
                                   based on the algorithm_type option
-    :type unselected_minimzers: dict
+    :type unselected_minimizers: dict
 
     :return: filepaths to each table
              e.g {'acc': <acc-table-filename>, 'runtime': ...}
@@ -105,7 +105,7 @@ def create_results_tables(
                 f.write(csv_table)
 
             report_failed_min = any(
-                minimizers for minimizers in unselected_minimzers.values()
+                minimizers for minimizers in unselected_minimizers.values()
             )
 
             key1 = list(results.keys())[0]
@@ -154,7 +154,7 @@ def create_results_tables(
                         run_name=run_name,
                         error_message=ERROR_FLAG_MAPPINGS,
                         failed_problems=failed_problems,
-                        unselected_minimzers=unselected_minimzers,
+                        unselected_minimizers=unselected_minimizers,
                         algorithm_type=options.algorithm_type,
                         report_failed_min=report_failed_min,
                         n_minimizers_large=n_minimizers_large,
