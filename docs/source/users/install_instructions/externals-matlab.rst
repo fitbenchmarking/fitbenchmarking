@@ -4,8 +4,7 @@
 Installing Matlab through WSL in a Linux environment
 ####################################################
 
-There are a couple of ways to install MATLAB through WSL in a Linux environment, one of which requires X11 Forwarding, 
-while the other doesn't require a graphical interface. 
+These instructions describe installing MATLAB through WSL using X11 Forwarding.
 
 Note that these instructions assume that WSL is running a Ubuntu/Debian based system, and using a bash shell. The user 
 should follow the equivalent steps for their setup if it differs.
@@ -13,8 +12,8 @@ should follow the equivalent steps for their setup if it differs.
 
 .. _with_x11_forwarding:
 
-Method 1: through X11 Forwarding
-********************************
+Installing through X11 Forwarding
+*********************************
 
 X11 Forwarding can be enabled through a server like VcXsrv, an X server for Windows that allows users to run graphical apps 
 from a Linux environment on a Windows  machine. 
@@ -74,76 +73,3 @@ MATLAB, Curve Fitting Toolbox, Optimization Toolbox, and Statistics and Machine 
 In the last window, before the installation starts, there will be a question on whether to create symbolic links and where. 
 Ticking that box is needed if the selected `<matlabroot>` does not correspond to the default `/usr/local/`, and the path 
 provided there should correspond to the previously used `<matlabroot>`.
-
-
-.. _without_graphical_interface:
-
-Method 2: without graphical interface
-*************************************
-
-The following instructions allow to install Matlab without using X11 Forwarding.
-
-.. _get-software:
-
-Get the software
-----------------
-
-#. Download the installer in Windows from Matlab: `<https://uk.mathworks.com/downloads/>`_. 
-#. Log in to your MathWorks account.
-#. Go to "Advanced Options" in the installer and select "Download without installing".
-#. Select the toolboxes you want to install. We recommend selecting MATLAB, Curve Fitting Toolbox, Optimization Toolbox, and Statistics and Machine Learning Toolbox.
-#. Copy the download to WSL.
-
-
-.. _get-mac-address:
-
-Get the current mac address
----------------------------
-
-#. Open WSL and type ``ip link show bond0``.
-#. Note the mac address (just after ``link/ether`` in the output).
-
-
-Get the licence
----------------
-
-#. Open the MathWorks licence centre (this may require logging in): `<https://uk.mathworks.com/licensecenter/licenses>`_. 
-#. Click on the MALTAB licence.
-#. Go to the "Install and Activate" tab.
-#. Click "View current activations" on the right hand menu.
-#. Click "Activate a computer".
-#. Fill in the form:
-
-    * Operating System: Linux
-    * Host ID: `<host-id>` (the mac address noted in :ref:`get-mac-address`)
-    * Computer login name: Username in WSL
-    * Activation Label: A unique identifier for the licence (e.g. "R2022b wsl")
-    
-#. Download the licence file to WSL and copy the file installation key somewhere temporarily.
-#. Create a "prep_matlab" function in one of `~/.profile`, `~/.bashrc`, or `~/.bash_aliases`. This will reset an unused mac address to the one required for the licence.
-
-.. code-block:: rst
-
-    prep_matlab() {
-        wantmac=<host-id>
-        mac=$(ip link show bond0 | awk '/ether/ {print $2}')
-        if [[ $mac !=  $wantmac ]]; then
-            sudo ip link set dev bond0 address $wantmac
-        fi
-    }
-
-
-Install
--------
-
-Unzip the download and edit the `installer_input.txt` file, setting the following:
-
-    * Destination folder.
-    * File installation key from the licence steps.
-    * Agree to licence (`agreeToLicense=yes`).
-    * Output file - if anything fails this is the only way to get information.
-    * Improve matlab (e.g. `improveMATLAB=no`).
-    * Licence path.
-    * Uncomment all downloaded packages -- these must be a subset of the ones selected in :ref:`get-software`, it will not download extras.
-
-Run `./install -inputFile installer_input.txt`
