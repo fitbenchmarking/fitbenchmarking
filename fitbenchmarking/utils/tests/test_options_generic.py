@@ -143,16 +143,25 @@ class OptionsWriteTests(unittest.TestCase):
         Tests that the user defined sections are incorrect.
         """
         config_str = """
-            [MINIMIZERS SECTION]
+            [MINIMIZERS]
 
-            [FITTING]
+            [FITING]
+
+            [CUSTOM_SECTION]
+
             """
         opts_file = Path("test_options_tests_valid.ini")
+        self.addCleanup(opts_file.unlink, missing_ok=True)
         with open(opts_file, "w", encoding="utf-8") as f:
             f.write(config_str)
-        with self.assertRaises(exceptions.OptionsError):
+        with self.assertRaises(exceptions.OptionsError) as error:
             Options(opts_file)
-        opts_file.unlink(missing_ok=True)
+        self.assertEqual(
+            str(error.exception),
+            "Failed to process options.\nDetails: Unknown section(s) in "
+            "options file: 'FITING', 'CUSTOM_SECTION'. "
+            "Did you mean 'FITTING' instead of 'FITING'?",
+        )
 
 
 if __name__ == "__main__":
