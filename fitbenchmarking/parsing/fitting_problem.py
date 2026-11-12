@@ -3,12 +3,8 @@ Implements the FittingProblem class, this will be the object that inputs are
 parsed into before being passed to the controllers
 """
 
-try:
-    from itertools import izip_longest
-except ImportError:
-    # python3
-    from itertools import zip_longest as izip_longest
 import contextlib
+from itertools import zip_longest
 
 import numpy as np
 
@@ -206,7 +202,7 @@ class FittingProblem:
         """
         params = [
             f"{n}={p}"
-            for n, p in izip_longest(
+            for n, p in zip_longest(
                 self.param_names, params if params is not None else []
             )
         ]
