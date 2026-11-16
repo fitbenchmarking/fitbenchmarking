@@ -18,11 +18,11 @@ FitBenchmarking is an open source tool for comparing different minimizers/fittin
 
 ## 🤖 AI-Assisted Contributions
 
-AI-assisted contributions are welcome, but contributors must understand,
-test, and take responsibility for all submitted code. Pull requests
-consisting primarily of unreviewed AI-generated output may be rejected.
-Issues labelled "good first issue" are intended as learning opportunities
-for human contributors. Please refer to our
+AI-assisted contributions must be disclosed, and contributors are fully responsible for understanding and 
+explaining any AI-generated content they submit. AI-generated communication and autonomous AI-submitted pull 
+requests are not permitted. Issues labelled "good first issue" are reserved exclusively for human contributors
+who are learning the project. The use of AI tools to generate all or a substantial portion of a solution for 
+these issues is prohibited, and related pull requests will be rejected. Please refer to our
 [AI policy](https://fitbenchmarking.readthedocs.io/en/latest/contributors/ai_policy.html)
 for more details.
 
