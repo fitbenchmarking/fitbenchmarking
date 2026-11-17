@@ -1,12 +1,10 @@
 """
 Functions to update style sheet from fitbenchmarking.com
 """
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
 import inspect
 import os
+from itertools import zip_longest
+
 import wget
 
 import fitbenchmarking

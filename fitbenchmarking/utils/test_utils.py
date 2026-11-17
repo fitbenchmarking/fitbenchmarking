@@ -52,10 +52,8 @@ def compare_files(
         # actual line with the expected line in this pre-processing step.
         # This ensures that `difflib.unified_diff` treats them as identical,
         # so only genuine mismatches exceeding tolerance are highlighted.
-        try:
-            from itertools import zip_longest
-        except ImportError:
-            from itertools import izip_longest as zip_longest
+        from itertools import zip_longest
+
         actual_output_lines = [
             exp
             if exp is not None and act is not None and eq(exp, act)
