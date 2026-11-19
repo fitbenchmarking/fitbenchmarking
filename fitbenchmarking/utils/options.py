@@ -3,6 +3,7 @@ This file will handle all interaction with the options configuration file.
 """
 
 import configparser
+import difflib
 import glob
 import os
 import uuid
@@ -572,11 +573,16 @@ class Options:
             for key in self.VALID_SECTIONS:
                 default_options_list = list(self.DEFAULTS[key].keys())
                 user_options_list = [option[0] for option in config.items(key)]
-                if not set(user_options_list) <= set(default_options_list):
+                unknown_options_list = [
+                    option
+                    for option in user_options_list
+                    if option not in default_options_list
+                ]
+                if unknown_options_list:
                     raise OptionsError(
-                        f"Invalid options key set in the {key} Section: \n"
-                        f"{user_options_list}, \n "
-                        f"the valid keys are: \n{default_options_list}"
+                        self._unknown_options_message(
+                            key, unknown_options_list, default_options_list
+                        )
                     )
 
         minimizers = config["MINIMIZERS"]
@@ -777,6 +783,41 @@ class Options:
                     f"more of {self.VALID[section][option]}"
                 )
         return value
+
+    @staticmethod
+    def _unknown_options_message(section, unknown_options, valid_options):
+        """
+        Build a short error message for option keys that are not recognised,
+        suggesting the closest valid key where one exists.
+
+        :param section: The section of the options file, eg. "FITTING"
+        :type section: str
+        :param unknown_options: The keys that are not valid in this section
+        :type unknown_options: list[str]
+        :param valid_options: The full list of valid keys within this section
+        :type valid_options: list[str]
+
+        :return: the error message
+        :type return: str
+        """
+
+        descriptions = []
+
+        for option in unknown_options:
+            matches = difflib.get_close_matches(option, valid_options, n=1)
+            if matches:
+                descriptions.append(
+                    f"'{option}' (did you mean '{matches[0]}'?)"
+                )
+            else:
+                descriptions.append(f"'{option}'")
+        return (
+            f"Unknown option(s) in [{section}] section: "
+            f"{', '.join(descriptions)}"
+            f"For a list of all valid options, see "
+            "https://fitbenchmarking.readthedocs.io/en/latest/users/"
+            "options/index.html"
+        )
 
     @property
     def results_dir(self) -> str:
