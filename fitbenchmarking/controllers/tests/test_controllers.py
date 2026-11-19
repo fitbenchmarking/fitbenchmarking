@@ -908,9 +908,9 @@ class DefaultControllerTests(TestCase):
 
     @mark.xfail(
         reason=(
-            "libgalahad_double.so requests an executable stack"
-            " (PT_GNU_STACK=RWE) which newer kernels reject."
-            " Fix pending in an upcoming galahad release."
+            "libgalahad_double.so requests an executable stack "
+            "(PT_GNU_STACK=RWE), which is rejected by newer Linux kernels. "
+            "Expected to be fixed in a future GALAHAD release."
         ),
         strict=False,
     )
