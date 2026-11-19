@@ -622,6 +622,20 @@ class PlotTests(unittest.TestCase):
         assert mock_add_trace.call_count == 9
         assert mock_write_html.call_count == 1
 
+    def test_plotly_fit_without_error_column(self):
+        """
+        Test that plotly_fit still creates the expected files when the
+        dataframe has no "e" column (i.e. the problem has no error data)
+        """
+        df = self.df[("Fake_Test_Data", "prob_1")].drop(columns="e")
+        file_names = self.plot.plotly_fit(df)
+
+        self.assertIsNone(self.plot._error_dict["array"])
+        self.assertTrue(file_names)
+        for file_name in file_names.values():
+            path = os.path.join(self.figures_dir, file_name)
+            self.assertTrue(os.path.exists(path))
+
 
 if __name__ == "__main__":
     unittest.main()

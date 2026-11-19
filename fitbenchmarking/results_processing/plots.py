@@ -122,7 +122,11 @@ class Plot:
         y_best = df_fit["y"][df_fit["best"]]
         x_data = df_fit["x"][df_fit["minimizer"] == "Data"]
         y_data = df_fit["y"][df_fit["minimizer"] == "Data"]
-        self._error_dict["array"] = df_fit["e"][df_fit["minimizer"] == "Data"]
+        self._error_dict["array"] = (
+            df_fit["e"][df_fit["minimizer"] == "Data"]
+            if "e" in df_fit.columns
+            else None
+        )
 
         n_plots, subplot_titles, ax_titles = self._get_n_plots_and_titles(
             self.result
