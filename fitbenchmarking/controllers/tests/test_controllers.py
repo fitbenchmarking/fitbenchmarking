@@ -906,6 +906,14 @@ class DefaultControllerTests(TestCase):
         controller.lmfit_out.success = False
         self.shared_tests.check_diverged(controller)
 
+    @mark.xfail(
+        reason=(
+            "libgalahad_double.so requests an executable stack"
+            " (PT_GNU_STACK=RWE) which newer kernels reject."
+            " Fix pending in an upcoming galahad release."
+        ),
+        strict=False,
+    )
     def test_galahad(self):
         """
         GalahadController: Test for output shape
