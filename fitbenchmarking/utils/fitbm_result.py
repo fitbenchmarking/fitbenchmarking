@@ -223,7 +223,11 @@ class FittingResult:
         self.jacobian_tag: str = self.jac if self.jac is not None else ""
         self.hessian_tag: str = self.hess if self.hess is not None else ""
 
-    def get_1d_cuts_spinw(self, indexes, array_to_cut):
+    def get_1d_cuts_spinw(
+        self,
+        indexes: list[tuple[np.ndarray, ...]],
+        array_to_cut: np.ndarray,
+    ) -> tuple[list[float], np.ndarray]:
         """
         Given a flattened array of spinw y data, this function reshapes it
         into a 2d array (based on the length of ebin_cens), then takes
@@ -246,7 +250,9 @@ class FittingResult:
 
         return data_cuts, array_to_cut_as_2d
 
-    def get_indexes_1d_cuts_spinw(self, problem):
+    def get_indexes_1d_cuts_spinw(
+        self, problem: "FittingProblem"
+    ) -> list[tuple[np.ndarray, ...]]:
         """
         Get indexes of 1d cuts for SpinW data, based on the q_cens
         specified by the user.
@@ -266,7 +272,7 @@ class FittingResult:
             )
         return indexes_cuts
 
-    def init_blank(self):
+    def init_blank(self) -> None:
         """
         Initialise a new blank version of the class with the required
         placeholder values not set during standard initialisation.
@@ -293,7 +299,7 @@ class FittingResult:
         self.figure_error = ""
         self.posterior_plots = ""
 
-    def __str__(self):
+    def __str__(self) -> str:
         info = {
             "Cost Function": self.costfun_tag,
             "Problem": self.problem_tag,
@@ -310,7 +316,7 @@ class FittingResult:
 
         return get_printable_table("FittingResult", info)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         for key in self.__dict__:
             if hasattr(other, key):
                 match = getattr(other, key) != getattr(self, key)
@@ -324,7 +330,7 @@ class FittingResult:
                 return False
         return True
 
-    def get_n_parameters(self):
+    def get_n_parameters(self) -> int:
         """
         Returns number of parameters for the result.
 
@@ -333,7 +339,7 @@ class FittingResult:
         """
         return len(self.initial_params)
 
-    def get_n_data_points(self):
+    def get_n_data_points(self) -> int:
         """
         Returns number of data points for the result.
 
@@ -364,7 +370,7 @@ class FittingResult:
 
         return name
 
-    def sanitised_min_name(self, with_software=False):
+    def sanitised_min_name(self, with_software: bool = False) -> str:
         """
         Sanitise the modified minimizer name into one which can be used as a
         filename.
@@ -379,7 +385,7 @@ class FittingResult:
         )
 
     @property
-    def runtime_metric(self):
+    def runtime_metric(self) -> str:
         """
         Getting function for runtime_metric attribute
 
@@ -389,7 +395,7 @@ class FittingResult:
         return self._runtime_metric
 
     @runtime_metric.setter
-    def runtime_metric(self, value):
+    def runtime_metric(self, value: str) -> None:
         """
         Stores the runtime_metric
 
@@ -400,7 +406,7 @@ class FittingResult:
         self.runtime = getattr(self, value + "_runtime")
 
     @property
-    def mean_runtime(self):
+    def mean_runtime(self) -> float:
         """
         Getting function for mean_runtime attribute
 
@@ -410,7 +416,7 @@ class FittingResult:
         return fmean(self.runtimes)
 
     @property
-    def minimum_runtime(self):
+    def minimum_runtime(self) -> float:
         """
         Getting function for minimum_runtime attribute
 
@@ -420,7 +426,7 @@ class FittingResult:
         return min(self.runtimes)
 
     @property
-    def maximum_runtime(self):
+    def maximum_runtime(self) -> float:
         """
         Getting function for maximum_runtime attribute
 
@@ -430,7 +436,7 @@ class FittingResult:
         return max(self.runtimes)
 
     @property
-    def first_runtime(self):
+    def first_runtime(self) -> float:
         """
         Getting function for first_runtime attribute
 
@@ -440,7 +446,7 @@ class FittingResult:
         return self.runtimes[0]
 
     @property
-    def median_runtime(self):
+    def median_runtime(self) -> float:
         """
         Getting function for meadian_runtime attribute
 
@@ -450,7 +456,7 @@ class FittingResult:
         return median(self.runtimes)
 
     @property
-    def harmonic_runtime(self):
+    def harmonic_runtime(self) -> float:
         """
         Getting function for harmonic_runtime attribute
 
@@ -465,7 +471,7 @@ class FittingResult:
             return np.inf
 
     @property
-    def trim_runtime(self):
+    def trim_runtime(self) -> float:
         """
         Getting function for trimmed_runtime attribute
 
@@ -475,7 +481,7 @@ class FittingResult:
         return stats.trim_mean(self.runtimes, 0.2)
 
     @property
-    def norm_acc(self):
+    def norm_acc(self) -> float:
         """
         Getting function for norm_acc attribute
 
@@ -497,7 +503,7 @@ class FittingResult:
         return self._norm_acc
 
     @norm_acc.setter
-    def norm_acc(self, value):
+    def norm_acc(self, value: float) -> None:
         """
         Stores the normalised accuracy and updates the value
 
@@ -506,7 +512,7 @@ class FittingResult:
         """
         self._norm_acc = value
 
-    def norm_runtime(self, runtime_metric=None):
+    def norm_runtime(self, runtime_metric: str | None = None) -> float:
         """
         Calculates the norm runtime of a given runtime metric.
 
@@ -522,7 +528,7 @@ class FittingResult:
         return norm_runtime
 
     @property
-    def norm_energy(self):
+    def norm_energy(self) -> float:
         """
         Getting function for norm_energy attribute
 
@@ -537,7 +543,7 @@ class FittingResult:
         return self._norm_energy
 
     @norm_energy.setter
-    def norm_energy(self, value):
+    def norm_energy(self, value: float) -> None:
         """
         Stores the normalised energy and updates the value
 
@@ -547,7 +553,7 @@ class FittingResult:
         self._norm_energy = value
 
     @property
-    def sanitised_name(self):
+    def sanitised_name(self) -> str:
         """
         Sanitise the problem name into one which can be used as a filename.
 
@@ -557,11 +563,14 @@ class FittingResult:
         return self.name.replace(",", "").replace(" ", "_")
 
     @sanitised_name.setter
-    def sanitised_name(self, value):
+    def sanitised_name(self, value: str) -> None:
         raise RuntimeError("sanitised_name can not be edited")
 
     def hover_text(
-        self, include_title=False, style="html", include_cost_func=False
+        self,
+        include_title: bool = False,
+        style: Literal["html", "css"] = "html",
+        include_cost_func: bool = False,
     ) -> str:
         """
         Generate the tooltip text for a given fitting result.
