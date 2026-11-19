@@ -813,7 +813,7 @@ class Options:
                 descriptions.append(f"'{option}'")
         return (
             f"Unknown option(s) in [{section}] section: "
-            f"{', '.join(descriptions)}"
+            f"{', '.join(descriptions)}\n"
             f"For a list of all valid options, see "
             "https://fitbenchmarking.readthedocs.io/en/latest/users/"
             "options/index.html"
