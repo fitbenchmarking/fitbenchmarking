@@ -6,6 +6,7 @@ import inspect
 import os
 import shutil
 import unittest
+import warnings
 from tempfile import TemporaryDirectory
 from unittest import mock
 from unittest.mock import patch
@@ -220,6 +221,26 @@ class CreatePlotsTests(unittest.TestCase):
                 {"results_dir": self.results_dir}
             )
             self.best_results, self.results = preprocess_data(results)
+
+    @mock.patch("fitbenchmarking.results_processing.plots.Plot")
+    def test_create_plots_failed_fit_no_future_warning(self, plot_mock):
+        """
+        Tests that create_plots does not raise a pandas FutureWarning when
+        a minimizer failed to produce a fit (i.e. fin_y is None)
+        """
+        for results_in_prob in self.results.values():
+            for results in results_in_prob.values():
+                failed = next(r for r in results if not r.is_best_fit)
+                failed.params = None
+                failed.fin_y = None
+
+        plot_mock.return_value = mock.MagicMock()
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", FutureWarning)
+            create_plots(
+                self.options, self.results, self.best_results, self.results_dir
+            )
 
     @mock.patch("fitbenchmarking.results_processing.plots.Plot")
     def test_create_plots_with_params(self, plot_mock):

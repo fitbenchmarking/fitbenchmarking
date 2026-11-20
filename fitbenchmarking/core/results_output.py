@@ -386,7 +386,7 @@ def create_plots(options, results, best_results, figures_dir):
                     "cost_function": cf,
                     "best": False,
                 }
-            )
+            ).dropna(axis="columns", how="all")
             # next the initial data
             tmp_df = pd.DataFrame(
                 {
@@ -403,7 +403,7 @@ def create_plots(options, results, best_results, figures_dir):
                     "cost_function": cf,
                     "best": False,
                 }
-            )
+            ).dropna(axis="columns", how="all")
             data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
             # then get data for each minimizer
@@ -423,7 +423,7 @@ def create_plots(options, results, best_results, figures_dir):
                         "cost_function": cf,
                         "best": result.is_best_fit,
                     }
-                )
+                ).dropna(axis="columns", how="all")
                 data[cf] = pd.concat([data[cf], tmp_df], ignore_index=True)
 
         # For each result, if it succeeded, create a plot and add plot links to
