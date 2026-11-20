@@ -7,9 +7,11 @@ from unittest.mock import Mock, patch
 import plotly.graph_objects as go
 from dash import Dash, Input, Output, State
 
-from fitbenchmarking.results_processing.compare_scatter import (
-    CompareScatter,
+from fitbenchmarking.results_processing.compare_scatter import CompareScatter
+from fitbenchmarking.results_processing.compare_scatter_data_model import (
     CompareScatterDataModel,
+)
+from fitbenchmarking.results_processing.compare_scatter_view import (
     CompareScatterView,
 )
 from fitbenchmarking.utils.fitbm_result import FittingResult

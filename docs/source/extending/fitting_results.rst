@@ -17,7 +17,7 @@ outputs the following should be considered:
 
 - Any new FittingResult attributes which should be plotted on the compare 
   scatter should be added to the ``plottable_attributes`` list in 
-  :meth:`~fitbenchmarking.results_processing.compare_scatter.CompareScatterDataModel.get_plottable_attributes`
+  :meth:`~fitbenchmarking.results_processing.compare_scatter_data_model.CompareScatterDataModel.get_plottable_attributes`
   and to the dictionary of human readable attributes in the 
   same class (:meth:`CompareScatterDataModel._known_mappings`)
 
