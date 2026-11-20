@@ -174,7 +174,6 @@ class OptionsWriteTests(unittest.TestCase):
             Options(opts_file)
 
         message = str(context.exception)
-        message = str(context.exception)
         self.assertIn(
             "Unknown option(s) in [FITTING] section: 'num_run' "
             "(did you mean 'num_runs'?)",
