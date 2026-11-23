@@ -256,6 +256,40 @@ class FitbmResultTests(unittest.TestCase):
 
     @parameterized.expand(
         [
+            (0.004, 0.002, 2.0),
+            (0.001, np.inf, np.inf),
+            (0.001, np.nan, np.inf),
+        ]
+    )
+    def test_norm_energy(self, energy, min_energy, expected):
+        """
+        Test norm_energy returns the expected result.
+        """
+        self.result.energy = energy
+        self.result.min_energy = min_energy
+        self.assertEqual(self.result.norm_energy, expected)
+
+    def test_norm_energy_is_cached(self):
+        """
+        Test that norm_energy caches its calculated value.
+        """
+        self.result.energy = 0.004
+        self.result.min_energy = 0.002
+        self.assertEqual(self.result.norm_energy, 2.0)
+
+        self.result.energy = 0.100
+        self.result.min_energy = 0.001
+        self.assertEqual(self.result.norm_energy, 2.0)
+
+    def test_norm_energy_setter(self):
+        """
+        Test that norm_energy can be set explicitly.
+        """
+        self.result.norm_energy = 3.5
+        self.assertEqual(self.result.norm_energy, 3.5)
+
+    @parameterized.expand(
+        [
             ("mean", [0.005, 0.015, 0.01], 0.001, 10),
             ("minimum", [1.00, 2.00, 3.00, 4.00, 6.00], 0.05, 20),
             ("maximum", [0, 2.00, 3.00, 4.00, 6.00], 3.00, 2),
