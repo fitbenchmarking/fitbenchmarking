@@ -108,8 +108,8 @@ class PoissonCostFunc(CostFunc):
         :return: evaluated Jacobian of the cost function
         :rtype: 1D numpy array
         """
-        J = self.jac_res(params, **kwargs)
-        return np.sum(J, 0)
+        jacobian = self.jac_res(params, **kwargs)
+        return np.sum(jacobian, 0)
 
     def hes_res(self, params, **kwargs):
         """
@@ -150,8 +150,8 @@ class PoissonCostFunc(CostFunc):
         :return: evaluated Hessian of the cost function
         :rtype: 2D numpy array
         """
-        H, _ = self.hes_res(params, **kwargs)
-        return np.sum(H, 2)
+        hessian, _ = self.hes_res(params, **kwargs)
+        return np.sum(hessian, 2)
 
     def validate_problem(self):
         """
