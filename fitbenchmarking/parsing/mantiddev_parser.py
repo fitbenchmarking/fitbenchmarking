@@ -63,7 +63,9 @@ class MantidDevParser(FitbenchmarkParser):
         i0 = np.argmax(fp.data_x >= fp.start_x) if fp.start_x else 0
         # np.where returns a list of lists if more than one match,
         # otherwise an int is returned
-        end_index = np.where(...)
+        end_index = (
+            np.where(fp.data_x <= fp.end_x) if fp.end_x else len(fp.data_x)
+        )
         end_index = (
             end_index[0][-1] if not isinstance(end_index, int) else end_index
         )
