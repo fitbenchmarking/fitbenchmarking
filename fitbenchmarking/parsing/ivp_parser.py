@@ -51,7 +51,7 @@ class IVPParser(FitbenchmarkParser):
         self._equation = fun.__name__
         self._starting_values = [{n: pf[n] for n in p_names}]
 
-        def fitFunction(x, *p):
+        def fit_function(x, *p):
             if x.ndim == 1:
                 x = np.array([x])
             y = np.zeros_like(x)
@@ -66,7 +66,7 @@ class IVPParser(FitbenchmarkParser):
                 y[i, :] = soln.y[:, -1]
             return y
 
-        return fitFunction
+        return fit_function
 
     def _get_equation(self) -> str:
         """
