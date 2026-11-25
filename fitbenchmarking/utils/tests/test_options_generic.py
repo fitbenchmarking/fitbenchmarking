@@ -154,6 +154,66 @@ class OptionsWriteTests(unittest.TestCase):
             Options(opts_file)
         opts_file.unlink(missing_ok=True)
 
+    def test_unknown_option_key_suggests_close_match(self):
+        """
+        Tests that a misspelt option key raises an error that names only
+        the unknown key and suggests the closest valid key,
+        then links the user to the documentation for more detail.
+        """
+        config_str = """
+            [FITTING]
+            num_run: 5
+            """
+
+        opts_file = Path("test_options_tests_unknown_key.ini")
+        with open(opts_file, "w", encoding="utf-8") as f:
+            f.write(config_str)
+        self.addCleanup(opts_file.unlink, missing_ok=True)
+
+        with self.assertRaises(exceptions.OptionsError) as context:
+            Options(opts_file)
+
+        message = str(context.exception)
+        self.assertIn(
+            "Unknown option(s) in [FITTING] section: 'num_run' "
+            "(did you mean 'num_runs'?)",
+            message,
+        )
+        self.assertIn(
+            "For a list of all valid options, see "
+            "https://fitbenchmarking.readthedocs.io/en/latest/users/"
+            "options/index.html",
+            message,
+        )
+        # The full list of valid keys should no longer be listed
+        self.assertNotIn("algorithm_type", message)
+
+    def test_unknown_option_key_without_close_match(self):
+        """
+        Tests that an unknown option key with no similar valid key is
+        reported without a suggestion, but with a link.
+        """
+        config_str = """
+            [FITTING]
+            xyz: 5
+            """
+        opts_file = Path("test_options_tests_unknown_key_no_match.ini")
+        with open(opts_file, "w", encoding="utf-8") as f:
+            f.write(config_str)
+        self.addCleanup(opts_file.unlink, missing_ok=True)
+
+        with self.assertRaises(exceptions.OptionsError) as context:
+            Options(opts_file)
+
+        message = str(context.exception)
+        self.assertIn("Unknown option(s) in [FITTING] section: 'xyz'", message)
+        self.assertNotIn("did you mean", message)
+        self.assertIn(
+            "https://fitbenchmarking.readthedocs.io/en/latest/users/"
+            "options/index.html",
+            message,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

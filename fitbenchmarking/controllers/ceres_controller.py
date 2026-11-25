@@ -24,8 +24,10 @@ class CeresCostFunction(pyceres.CostFunction):
         self.set_parameter_block_sizes([len(param_names)])
 
     # The CostFunction::Evaluate(...) virtual function implementation
-
-    def Evaluate(self, parameters, residuals, jacobians):
+    # The below ruff exclusion is taken because the method signature
+    # is defined by the Ceres library and cannot be changed to follow
+    # typical Python conventions.
+    def Evaluate(self, parameters, residuals, jacobians):  # noqa: N802
         """
         Evaluate for Ceres solver
         """

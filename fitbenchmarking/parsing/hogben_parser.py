@@ -50,14 +50,14 @@ class HogbenParser(FitbenchmarkParser):
 
         self._starting_values = [dict(zip(p_names, svals))]
 
-        def fitFunction(x, *params):
+        def fit_function(x, *params):
             if len(params) == refnx_model.parameters.nvary():
                 for idx, param in enumerate(varying_params):
                     param.value = params[idx]
             y = refnx_model(x, p=refnx_model.parameters.pvals)
             return y
 
-        return fitFunction
+        return fit_function
 
     def _get_equation(self) -> str:
         """
