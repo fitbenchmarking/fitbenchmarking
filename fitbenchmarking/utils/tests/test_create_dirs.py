@@ -54,7 +54,7 @@ class CreateDirsTests(unittest.TestCase):
 
         shutil.rmtree(results_dir_expected)
 
-    def test_groupResults_create_correct_group_results(self):
+    def test_group_results_create_correct_group_results(self):
         """
         Check that the Group results directory is as expected
         """

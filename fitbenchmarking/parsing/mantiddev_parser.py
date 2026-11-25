@@ -14,7 +14,7 @@ from itertools import repeat
 
 import mantid.simpleapi as msapi
 import numpy as np
-from mantid.api import FunctionDomain1DVector as FDV
+from mantid.api import FunctionDomain1DVector
 
 from fitbenchmarking.parsing.fitbenchmark_parser import FitbenchmarkParser
 
@@ -63,13 +63,17 @@ class MantidDevParser(FitbenchmarkParser):
         i0 = np.argmax(fp.data_x >= fp.start_x) if fp.start_x else 0
         # np.where returns a list of lists if more than one match,
         # otherwise an int is returned
-        iN = np.where(fp.data_x <= fp.end_x) if fp.end_x else len(fp.data_x)
-        iN = iN[0][-1] if not isinstance(iN, int) else iN
+        end_index = (
+            np.where(fp.data_x <= fp.end_x) if fp.end_x else len(fp.data_x)
+        )
+        end_index = (
+            end_index[0][-1] if not isinstance(end_index, int) else end_index
+        )
 
-        x_data = fp.data_x[i0 : iN + 1]
+        x_data = fp.data_x[i0 : end_index + 1]
 
         # cache the x values for later
-        self._cache_x = FDV(x_data)
+        self._cache_x = FunctionDomain1DVector(x_data)
         self._N_x = len(x_data)
 
         try:
@@ -98,12 +102,12 @@ class MantidDevParser(FitbenchmarkParser):
         for param, key in zip(params, self._params_dict.keys()):
             self._mantid_function[key] = param
         # get mantid Jacobian
-        J = self._mantid_function.functionDeriv(self._cache_x)
+        mantid_jacobian = self._mantid_function.functionDeriv(self._cache_x)
         # set np Jacobian values
         jac = np.zeros((self._N_x, len(self._params_dict.keys())))
         for i in range(self._N_x):
             for j in range(len(self._params_dict.keys())):
-                jac[i, j] = J.get(i, j)
+                jac[i, j] = mantid_jacobian.get(i, j)
         return jac
 
     def _create_function(self) -> Callable:

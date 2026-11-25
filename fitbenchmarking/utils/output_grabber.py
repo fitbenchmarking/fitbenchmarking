@@ -98,14 +98,14 @@ class StreamGrabber:
         """
         Stop capturing the stream data and save the text in `capturedtext`.
         """
-        # Print the escape character to make the readOutput method stop:
+        # Print the escape character to make the read_output method stop:
         self.origstream.write(self.escape_char)
         # Flush the stream to make sure all our data goes in before
         # the escape character:
         self.origstream.flush()
 
         # Reads the output and stores it in capturedtext
-        self.readOutput()
+        self.read_output()
 
         # Close the pipes:
         os.close(self.pipe_in)
@@ -117,7 +117,7 @@ class StreamGrabber:
         # Close the duplicate streams:
         os.close(self.streamfd)
 
-    def readOutput(self):
+    def read_output(self):
         """
         Read the stream data (one byte at a time)
         and save the text in `capturedtext`.
