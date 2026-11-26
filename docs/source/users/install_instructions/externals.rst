@@ -39,7 +39,7 @@ GSL
 GSL is used as a fitting software in FitBenchmarking, and is called via the
 pyGSL interface.
 
-Install instructions can be found at the `pyGSL docs <http://pygsl.sourceforge.net/>`__.
+Install instructions can be found at the `pyGSL docs <https://pygsl.readthedocs.io/en/latest/ref/install.html>`__.
 This package is also installable via pip, provided GSL is available on your system;
 see our example build script in `build/gsl`.
 
