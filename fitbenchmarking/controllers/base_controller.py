@@ -568,13 +568,13 @@ class Controller:
         :param algorithm_type: the algorithm type selected from the options
         :type algorithm_type: list
         """
-        minimzer_selection = [[] for _ in range(len(algorithm_type))]
+        minimizer_selection = [[] for _ in range(len(algorithm_type))]
 
         for ind, alg in enumerate(algorithm_type):
-            minimzer_selection[ind] = self.algorithm_check[alg]
-        result = any(minimizer in list for list in minimzer_selection)
+            minimizer_selection[ind] = self.algorithm_check[alg]
+        result = any(minimizer in list for list in minimizer_selection)
 
-        if minimzer_selection == [[]]:
+        if minimizer_selection == [[]]:
             message = (
                 "For the selected software, there are no minimizers "
                 "with the algorithm type(s) selected in the "
@@ -587,7 +587,7 @@ class Controller:
                 f"The algorithm type(s) of the minimizer selected,"
                 f"{minimizer}, does not match the algorithm type(s)"
                 "selected in the options file. For this software, "
-                f"available minimizers are: {minimzer_selection}"
+                f"available minimizers are: {minimizer_selection}"
             )
             raise UnknownMinimizerError(message)
 

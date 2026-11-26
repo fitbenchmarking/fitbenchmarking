@@ -29,7 +29,7 @@ class SASViewParser(FitbenchmarkParser):
         starting_values = self._get_starting_values()
         param_names = list(starting_values[0].keys())
 
-        def fitFunction(x, *tmp_params):
+        def fit_function(x, *tmp_params):
             model = load_model(equation)
 
             data = empty_data1D(x)
@@ -40,4 +40,4 @@ class SASViewParser(FitbenchmarkParser):
 
             return func_wrapper.theory()
 
-        return fitFunction
+        return fit_function

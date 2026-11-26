@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import numpy as np
 from parameterized import parameterized
 
-from fitbenchmarking.results_processing.compare_scatter import (
+from fitbenchmarking.results_processing.compare_scatter_data_model import (
     CompareScatterDataModel,
 )
 from fitbenchmarking.results_processing.tests.test_compare_scatter import (

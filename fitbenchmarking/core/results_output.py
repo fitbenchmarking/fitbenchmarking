@@ -102,7 +102,7 @@ def save_results(
         fig_dir=fig_dir,
         pp_locations=pp_locations,
         failed_problems=failed_problems,
-        unselected_minimzers=unselected_minimizers,
+        unselected_minimizers=unselected_minimizers,
     )
 
     create_problem_level_index(
