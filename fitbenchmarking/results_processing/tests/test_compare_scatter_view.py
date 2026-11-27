@@ -9,7 +9,7 @@ from dash import dcc, html
 from parameterized import parameterized
 from plotly.validator_cache import ValidatorCache
 
-from fitbenchmarking.results_processing.compare_scatter import (
+from fitbenchmarking.results_processing.compare_scatter_view import (
     CompareScatterView,
 )
 
@@ -534,7 +534,7 @@ class CompareScatterViewTests(unittest.TestCase):
 
     @parameterized.expand(["all", "none"])
     @patch(
-        "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
+        "fitbenchmarking.results_processing.compare_scatter_view.CompareScatterView.set_trace_opacity"
     )
     def test_apply_state_to_all_or_none(
         self, select, mock_trace_opacity: Mock
@@ -570,7 +570,7 @@ class CompareScatterViewTests(unittest.TestCase):
 
     @parameterized.expand([True, False])
     @patch(
-        "fitbenchmarking.results_processing.compare_scatter.CompareScatterView.set_trace_opacity"
+        "fitbenchmarking.results_processing.compare_scatter_view.CompareScatterView.set_trace_opacity"
     )
     def test_apply_state(self, start_state, mock_trace_opacity: Mock):
         """

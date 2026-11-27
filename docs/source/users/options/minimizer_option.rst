@@ -315,7 +315,7 @@ GSL (``gsl``)
 
 The `GNU Scientific Library <https://www.gnu.org/software/gsl/>`__ is a numerical library that
 provides a wide range of mathematical routines.  We call GSL using  the `pyGSL Python interface
-<https://sourceforge.net/projects/pygsl/>`__.
+<https://github.com/pygsl/pygsl>`__.
 
 The GSL routines have a number of parameters that need to be chosen, often without default suggestions.
 We have taken the values as used by Mantid.
@@ -324,25 +324,25 @@ We provide implementations for the following
 packages in the `multiminimize <https://www.gnu.org/software/gsl/doc/html/multimin.html>`__ and `multifit <https://www.gnu.org/software/gsl/doc/html/nls.html>`__ sections of the library:
 
 
-* `Levenberg-Marquardt (unscaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit__nlin.lmder>`__ (:code:`lmder`)
+* `Levenberg-Marquardt (unscaled) <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multifit_nlin.py#L75>`__ (:code:`lmder`)
 
-* `Levenberg-Marquardt (scaled) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multifit_nlin.lmsder>`__ (:code:`lmsder`)
+* `Levenberg-Marquardt (scaled) <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multifit_nlin.py#L88>`__ (:code:`lmsder`)
 
-* `Nelder-Mead Simplex Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex>`__ (:code:`nmsimplex`)
+* `Nelder-Mead Simplex Algorithm <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L181>`__ (:code:`nmsimplex`)
 
-* `Nelder-Mead Simplex Algorithm (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.nmsimplex2>`__ (:code:`nmsimplex2`)
+* `Nelder-Mead Simplex Algorithm (version 2) <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L209>`__ (:code:`nmsimplex2`)
 
-* `Polak-Ribiere Conjugate Gradient Algorithm <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_pr>`__ (:code:`conjugate_pr`)
+* `Polak-Ribiere Conjugate Gradient Algorithm <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L131>`__ (:code:`conjugate_pr`)
 
-* `Fletcher-Reeves Conjugate-Gradient <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.conjugate_fr>`__ (:code:`conjugate_fr`)
+* `Fletcher-Reeves Conjugate-Gradient <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L141>`__ (:code:`conjugate_fr`)
 
-* `The vector quasi-Newton BFGS method <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs>`__ (:code:`vector_bfgs`)
+* `The vector quasi-Newton BFGS method <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L160>`__ (:code:`vector_bfgs`)
 
-* `The vector quasi-Newton BFGS method (version 2) <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.vector_bfgs2>`__ (:code:`vector_bfgs2`)
+* `The vector quasi-Newton BFGS method (version 2) <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L176>`__ (:code:`vector_bfgs2`)
 
-* `Steepest Descent <http://pygsl.sourceforge.net/api/pygsl.html#pygsl.multiminimize.steepest_descent>`__ (:code:`steepest_descent`)
+* `Steepest Descent <https://github.com/pygsl/pygsl/blob/v2.6.7/pygsl/multiminimize.py#L117>`__ (:code:`steepest_descent`)
 
-**Links** `SourceForge PyGSL <http://pygsl.sourceforge.net/>`__
+**Links** `GitHub - PyGSL <https://github.com/pygsl/pygsl>`__
 
 **Licence** The GNU Scientific Library is available under the `GPL-3 licence <https://www.gnu.org/licenses/gpl-3.0.html>`__ .
 
